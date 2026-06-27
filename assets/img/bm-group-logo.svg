@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 220" role="img" aria-labelledby="title desc">
+  <title id="title">BM Group Development</title>
+  <desc id="desc">Логотип BM Group Development в монохромном стиле</desc>
+  <rect width="420" height="220" fill="none"/>
+  <g fill="#111">
+    <path d="M158 40l42 42-26 26-16-16 10-10-10-10-42 42-26-26 68-68z"/>
+    <path d="M226 40l42 42-78 78-26-26 52-52-10-10-10 10-26-26 56-56z"/>
+    <text x="210" y="176" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="38" font-weight="900" letter-spacing="3">BM GROUP</text>
+    <text x="210" y="205" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="16">DEVELOPMENT</text>
+  </g>
+</svg>
