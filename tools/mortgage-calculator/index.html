@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ипотечный калькулятор | Просторная 4А</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <style>
+    .calc-result {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .calc-metric {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .calc-metric strong {
+      display: block;
+      color: var(--red);
+      font-size: 30px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .calc-metric span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="container topbar__inner"><a class="brand" href="../../index.html"><span class="brand__etagi"><span class="brand__mark"></span>этажи</span><span class="brand__divider"></span><img class="brand__bm" src="../../assets/img/bm-group-logo.svg" alt="BM Group Development"></a><nav class="nav"><a href="../../ipoteka/">Ипотека</a><a href="../../kvartiry/">Квартиры</a><a href="../../contacts/">Заявка</a></nav></div></header>
+  <main>
+    <div class="container breadcrumbs"><a href="../../index.html">Главная</a> / Ипотечный калькулятор</div>
+    <section class="page-hero"><div class="container"><span class="eyebrow">Инструмент консультации</span><h1>Ипотечный калькулятор</h1><p class="lead">Быстрый расчёт примерного ежемесячного платежа. Это не банковское одобрение и не публичная оферта, а ориентир для первичной консультации.</p></div></section>
+    <section class="cta"><div class="container lead-panel"><div>
+      <h2>Параметры расчёта</h2>
+      <div class="form">
+        <label>Стоимость квартиры, ₽<input id="price" type="number" min="0" step="10000" value="4200000"></label>
+        <label>Первоначальный взнос, ₽<input id="down" type="number" min="0" step="10000" value="800000"></label>
+        <label>Ставка, % годовых<input id="rate" type="number" min="0" step="0.1" value="6"></label>
+        <label>Срок, лет<input id="years" type="number" min="1" max="40" step="1" value="20"></label>
+      </div>
+      <p class="tool-note">После появления реальных цен можно заменить значения по умолчанию на актуальные сценарии.</p>
+    </div><div>
+      <h2>Результат</h2>
+      <div class="calc-result">
+        <div class="calc-metric"><strong id="loan">0 ₽</strong><span>Сумма кредита</span></div>
+        <div class="calc-metric"><strong id="payment">0 ₽</strong><span>Примерный ежемесячный платеж</span></div>
+        <div class="calc-metric"><strong id="income">0 ₽</strong><span>Ориентировочный доход для комфортного платежа 40%</span></div>
+      </div>
+      <p class="tool-note" id="warning"></p>
+      <p><a class="button" href="../../contacts/?utm_source=calculator&utm_medium=tool&utm_campaign=prostornaya_mortgage">Получить ипотечную консультацию</a></p>
+    </div></div></section>
+    <section><div class="container article">
+      <h2>Как использовать расчёт</h2>
+      <p>Калькулятор помогает быстро понять порядок платежа до публикации точных цен. Для реальной заявки всё равно нужно уточнять программу, ставку, первоначальный взнос, доход, кредитную историю и требования банка.</p>
+      <h2>Что спросить у клиента после расчёта</h2>
+      <ul class="list">
+        <li>Какой ежемесячный платёж комфортен.</li>
+        <li>Есть ли первоначальный взнос.</li>
+        <li>Нужно ли продавать свою недвижимость.</li>
+        <li>Есть ли действующие кредиты.</li>
+        <li>Кто будет заёмщиком и созаёмщиком.</li>
+      </ul>
+    </div></section>
+  </main>
+  <footer class="footer"><div class="container footer__inner"><div><strong>Ипотечный калькулятор</strong></div><div>Предварительный расчёт не заменяет консультацию банка или ипотечного специалиста.</div></div></footer>
+  <script>
+    const formatter = new Intl.NumberFormat("ru-RU", {
+      style: "currency",
+      currency: "RUB",
+      maximumFractionDigits: 0
+    });
+
+    const fields = ["price", "down", "rate", "years"];
+    const loanNode = document.getElementById("loan");
+    const paymentNode = document.getElementById("payment");
+    const incomeNode = document.getElementById("income");
+    const warningNode = document.getElementById("warning");
+
+    function getNumber(id) {
+      return Number(document.getElementById(id).value || 0);
+    }
+
+    function calculate() {
+      const price = getNumber("price");
+      const down = getNumber("down");
+      const rate = getNumber("rate");
+      const years = getNumber("years");
+      const loan = Math.max(price - down, 0);
+      const months = Math.max(years * 12, 1);
+      const monthlyRate = rate / 100 / 12;
+      let payment = 0;
+
+      if (loan > 0 && monthlyRate > 0) {
+        payment = loan * (monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
+      } else if (loan > 0) {
+        payment = loan / months;
+      }
+
+      loanNode.textContent = formatter.format(loan);
+      paymentNode.textContent = formatter.format(payment);
+      incomeNode.textContent = formatter.format(payment / 0.4);
+
+      if (down > price) {
+        warningNode.textContent = "Первоначальный взнос больше стоимости квартиры. Проверьте значения.";
+      } else if (down < price * 0.1) {
+        warningNode.textContent = "Первоначальный взнос меньше 10%. Для многих программ этого может быть недостаточно.";
+      } else {
+        warningNode.textContent = "Расчёт ориентировочный. Точные условия зависят от банка и программы.";
+      }
+    }
+
+    fields.forEach((id) => {
+      document.getElementById(id).addEventListener("input", calculate);
+    });
+
+    calculate();
+  </script>
+</body>
+</html>
