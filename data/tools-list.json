@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Генератор UTM-ссылок",
+    "url": "/tools/utm-builder/",
+    "owner": "маркетинг",
+    "purpose": "персональные ссылки риэлторов"
+  },
+  {
+    "title": "Ипотечный калькулятор",
+    "url": "/tools/mortgage-calculator/",
+    "owner": "ипотека",
+    "purpose": "предварительный расчет платежа"
+  },
+  {
+    "title": "Скрипт первого звонка",
+    "url": "/tools/call-script/",
+    "owner": "отдел продаж",
+    "purpose": "квалификация заявок"
+  },
+  {
+    "title": "Тест Web3Forms",
+    "url": "/web3forms-test/",
+    "owner": "администратор сайта",
+    "purpose": "проверка отправки заявок"
+  }
+]
