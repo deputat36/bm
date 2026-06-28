@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1590 530" role="img" aria-labelledby="title desc">
+  <title id="title">Обложка ВКонтакте: дом на Просторной 4А</title>
+  <desc id="desc">Горизонтальная обложка сообщества о новом доме на Просторной 4А в Борисоглебске</desc>
+  <defs>
+    <linearGradient id="coverBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff8ef"/>
+      <stop offset="0.52" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f1d2bd"/>
+    </linearGradient>
+    <linearGradient id="building" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d89a72"/>
+      <stop offset="1" stop-color="#a86543"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="-18" dy="22" stdDeviation="18" flood-color="#52301f" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+
+  <rect width="1590" height="530" fill="url(#coverBg)"/>
+  <rect x="0" y="0" width="28" height="530" fill="#e31e24"/>
+  <circle cx="1320" cy="-140" r="360" fill="#fff" opacity="0.62"/>
+  <circle cx="1260" cy="530" r="260" fill="#e31e24" opacity="0.08"/>
+
+  <g transform="translate(980 42)" filter="url(#shadow)">
+    <rect x="0" y="74" width="330" height="390" rx="7" fill="#b87a55"/>
+    <rect x="78" y="0" width="360" height="464" rx="7" fill="url(#building)"/>
+    <g fill="#f9efe7">
+      <rect x="126" y="36" width="48" height="48" rx="2"/>
+      <rect x="206" y="36" width="48" height="48" rx="2"/>
+      <rect x="286" y="36" width="48" height="48" rx="2"/>
+      <rect x="126" y="105" width="48" height="48" rx="2"/>
+      <rect x="206" y="105" width="48" height="48" rx="2"/>
+      <rect x="286" y="105" width="48" height="48" rx="2"/>
+      <rect x="126" y="174" width="48" height="48" rx="2"/>
+      <rect x="206" y="174" width="48" height="48" rx="2"/>
+      <rect x="286" y="174" width="48" height="48" rx="2"/>
+      <rect x="126" y="243" width="48" height="48" rx="2"/>
+      <rect x="206" y="243" width="48" height="48" rx="2"/>
+      <rect x="286" y="243" width="48" height="48" rx="2"/>
+      <rect x="126" y="312" width="48" height="48" rx="2"/>
+      <rect x="206" y="312" width="48" height="48" rx="2"/>
+      <rect x="286" y="312" width="48" height="48" rx="2"/>
+      <rect x="126" y="381" width="48" height="48" rx="2"/>
+      <rect x="206" y="381" width="48" height="48" rx="2"/>
+      <rect x="286" y="381" width="48" height="48" rx="2"/>
+    </g>
+    <rect x="224" y="405" width="70" height="59" fill="#6d432f"/>
+  </g>
+
+  <g transform="translate(100 74)">
+    <g aria-label="Этажи">
+      <rect x="0" y="6" width="34" height="34" fill="none" stroke="#e31e24" stroke-width="6"/>
+      <rect x="0" y="6" width="11" height="34" fill="#e31e24"/>
+      <text x="48" y="36" font-family="Arial Black, Arial, sans-serif" font-size="44" font-weight="900" fill="#e31e24">этажи</text>
+    </g>
+    <text x="0" y="144" font-family="Arial Black, Arial, sans-serif" font-size="76" font-weight="900" fill="#e31e24">ПРОСТОРНАЯ 4А</text>
+    <text x="0" y="204" font-family="Arial, sans-serif" font-size="34" font-weight="800" fill="#151515">новый 9-этажный кирпичный дом</text>
+    <text x="0" y="260" font-family="Arial, sans-serif" font-size="25" fill="#333333">Борисоглебск • раннее информирование • заявки без обязательств</text>
+
+    <g transform="translate(0 312)">
+      <rect x="0" y="0" width="238" height="62" rx="8" fill="#e31e24"/>
+      <text x="119" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="900" fill="#ffffff">Оставить заявку</text>
+      <text x="270" y="39" font-family="Arial, sans-serif" font-size="24" font-weight="800" fill="#151515">deputat36.github.io/bm</text>
+    </g>
+  </g>
+
+  <g transform="translate(640 74)" opacity="0.94">
+    <rect x="0" y="0" width="250" height="310" rx="8" fill="#ffffff" stroke="#e8e8e8"/>
+    <text x="28" y="58" font-family="Arial Black, Arial, sans-serif" font-size="26" font-weight="900" fill="#151515">Что будет</text>
+    <text x="28" y="106" font-family="Arial, sans-serif" font-size="22" fill="#333333">планировки</text>
+    <text x="28" y="150" font-family="Arial, sans-serif" font-size="22" fill="#333333">цены</text>
+    <text x="28" y="194" font-family="Arial, sans-serif" font-size="22" fill="#333333">ипотека</text>
+    <text x="28" y="238" font-family="Arial, sans-serif" font-size="22" fill="#333333">ход строительства</text>
+  </g>
+</svg>
