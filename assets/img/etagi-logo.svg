@@ -1,10 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 76" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 92" role="img" aria-labelledby="title desc">
   <title id="title">Этажи</title>
-  <desc id="desc">Логотип агентства недвижимости Этажи в красном фирменном стиле</desc>
+  <desc id="desc">Логотип агентства недвижимости Этажи: красный знак здания и надпись этажи</desc>
   <g fill="#e31e24">
-    <path d="M6 15c0-4.4 3.6-8 8-8h29c4.4 0 8 3.6 8 8v9H34v-5H23v38h11v-8h17v12c0 4.4-3.6 8-8 8H14c-4.4 0-8-3.6-8-8V15z"/>
-    <path d="M57 7h17v62H57z"/>
-    <path d="M80 7h17v17H80zM80 30h17v39H80z"/>
+    <path d="M8 65 22 22 80 2l51 63H8z"/>
+    <path d="M75 7v9l49 53h-11L75 27v9l31 33H95L75 47v8l20 14H82L75 64v5H63V11l12-4z"/>
   </g>
-  <text x="112" y="55" fill="#e31e24" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="50" font-weight="900">этажи</text>
+  <g fill="#fff">
+    <path d="M76 16 123 65h-9L76 25z"/>
+    <path d="M76 31 110 65h-9L76 40z"/>
+    <path d="M76 46 98 65h-9L76 55z"/>
+    <path d="M76 61 88 65H76z"/>
+  </g>
+  <text x="148" y="67" fill="#e31e24" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="58" font-weight="900" letter-spacing="-1">этажи</text>
 </svg>
