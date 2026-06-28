@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Генератор ссылок для риэлторов | Просторная 4А</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <style>
+    .tool-output {
+      width: 100%;
+      min-height: 112px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font: 700 15px/1.5 Arial, sans-serif;
+      color: var(--black);
+      background: #fff;
+      resize: vertical;
+    }
+
+    .tool-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .tool-note {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="container topbar__inner"><a class="brand" href="../../index.html"><span class="brand__etagi"><span class="brand__mark"></span>этажи</span><span class="brand__divider"></span><img class="brand__bm" src="../../assets/img/bm-group-logo.svg" alt="BM Group Development"></a><nav class="nav"><a href="../../contacts/">Заявка</a><a href="../../kvartiry/">Квартиры</a><a href="../../ipoteka/">Ипотека</a></nav></div></header>
+  <main>
+    <div class="container breadcrumbs"><a href="../../index.html">Главная</a> / Генератор ссылок</div>
+    <section class="page-hero"><div class="container"><span class="eyebrow">Инструмент отдела продаж</span><h1>Генератор ссылок для риэлторов</h1><p class="lead">Соберите ссылку с UTM-метками и кодом риэлтора. По такой ссылке можно понять, откуда пришла заявка и за каким специалистом её закрепить.</p></div></section>
+    <section class="cta"><div class="container lead-panel"><div>
+      <h2>Параметры ссылки</h2>
+      <p>Используйте короткий код риэлтора латиницей: фамилия, имя или внутренний ID. Для платной рекламы обязательно заполняйте `utm_campaign`.</p>
+      <div class="form">
+        <label>Страница
+          <select id="path">
+            <option value="">Главная</option>
+            <option value="contacts/">Форма заявки</option>
+            <option value="kvartiry/">Квартиры</option>
+            <option value="kvartiry/1-komnatnye/">1-комнатные</option>
+            <option value="kvartiry/2-komnatnye/">2-комнатные</option>
+            <option value="kvartiry/3-komnatnye/">3-комнатные</option>
+            <option value="ipoteka/">Ипотека</option>
+            <option value="investoram/">Инвесторам</option>
+            <option value="semeyam/">Семьям</option>
+            <option value="pokupka-s-prodazhey/">Покупка после продажи</option>
+            <option value="dokumenty/">Документы</option>
+          </select>
+        </label>
+        <label>Код риэлтора<input id="realtor" placeholder="ivanov"></label>
+        <label>ID риэлтора<input id="realtor_id" placeholder="123"></label>
+        <label>Источник `utm_source`
+          <select id="utm_source">
+            <option value="vk">vk</option>
+            <option value="telegram">telegram</option>
+            <option value="avito">avito</option>
+            <option value="qr">qr</option>
+            <option value="direct">direct</option>
+            <option value="manual">manual</option>
+          </select>
+        </label>
+        <label>Тип `utm_medium`
+          <select id="utm_medium">
+            <option value="post">post</option>
+            <option value="story">story</option>
+            <option value="ad">ad</option>
+            <option value="message">message</option>
+            <option value="qr">qr</option>
+            <option value="link">link</option>
+          </select>
+        </label>
+        <label>Кампания `utm_campaign`<input id="utm_campaign" value="prostornaya_start"></label>
+        <label>Вариант `utm_content`<input id="utm_content" placeholder="post_01"></label>
+      </div>
+    </div><div>
+      <h2>Готовая ссылка</h2>
+      <textarea class="tool-output" id="result" readonly></textarea>
+      <div class="tool-actions">
+        <button class="button" type="button" id="copy">Скопировать</button>
+        <a class="button button--ghost" id="open" href="#" target="_blank" rel="noopener">Открыть</a>
+      </div>
+      <p class="tool-note" id="copy-status">Ссылка обновляется автоматически.</p>
+    </div></div></section>
+  </main>
+  <footer class="footer"><div class="container footer__inner"><div><strong>UTM-ссылки Просторная 4А</strong></div><div>Инструмент не отправляет данные и работает только в браузере.</div></div></footer>
+  <script>
+    const baseUrl = "https://deputat36.github.io/bm/";
+    const fields = ["path", "realtor", "realtor_id", "utm_source", "utm_medium", "utm_campaign", "utm_content"];
+    const result = document.getElementById("result");
+    const openLink = document.getElementById("open");
+    const copyButton = document.getElementById("copy");
+    const copyStatus = document.getElementById("copy-status");
+
+    function slug(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "_")
+        .replace(/[^a-z0-9а-яё_-]/gi, "");
+    }
+
+    function buildUrl() {
+      const path = document.getElementById("path").value;
+      const url = new URL(path, baseUrl);
+      const params = {
+        realtor: slug(document.getElementById("realtor").value),
+        realtor_id: slug(document.getElementById("realtor_id").value),
+        utm_source: document.getElementById("utm_source").value,
+        utm_medium: document.getElementById("utm_medium").value,
+        utm_campaign: slug(document.getElementById("utm_campaign").value),
+        utm_content: slug(document.getElementById("utm_content").value)
+      };
+
+      Object.entries(params).forEach(([key, value]) => {
+        if (value) url.searchParams.set(key, value);
+      });
+
+      result.value = url.toString();
+      openLink.href = url.toString();
+      copyStatus.textContent = "Ссылка обновлена.";
+    }
+
+    fields.forEach((id) => {
+      document.getElementById(id).addEventListener("input", buildUrl);
+      document.getElementById(id).addEventListener("change", buildUrl);
+    });
+
+    copyButton.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(result.value);
+      copyStatus.textContent = "Ссылка скопирована.";
+    });
+
+    buildUrl();
+  </script>
+</body>
+</html>
