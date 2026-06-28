@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Скрипт первого звонка | Просторная 4А</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <style>
+    .script-box {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .script-box + .script-box {
+      margin-top: 14px;
+    }
+
+    .script-box p {
+      margin: 10px 0 0;
+      color: var(--muted);
+    }
+
+    .note-output {
+      width: 100%;
+      min-height: 210px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font: 700 15px/1.5 Arial, sans-serif;
+      resize: vertical;
+    }
+
+    .checkbox-list label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 10px 0;
+      font-weight: 700;
+    }
+
+    .checkbox-list input {
+      width: auto;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="container topbar__inner"><a class="brand" href="../../index.html"><span class="brand__etagi"><span class="brand__mark"></span>этажи</span><span class="brand__divider"></span><img class="brand__bm" src="../../assets/img/bm-group-logo.svg" alt="BM Group Development"></a><nav class="nav"><a href="../utm-builder/">UTM</a><a href="../mortgage-calculator/">Калькулятор</a><a href="../../contacts/">Заявка</a></nav></div></header>
+  <main>
+    <div class="container breadcrumbs"><a href="../../index.html">Главная</a> / Скрипт звонка</div>
+    <section class="page-hero"><div class="container"><span class="eyebrow">Отдел продаж</span><h1>Скрипт первого звонка по заявке</h1><p class="lead">Инструмент помогает одинаково обрабатывать заявки с сайта: уточнить интерес, понять приоритет и зафиксировать следующий шаг.</p></div></section>
+    <section><div class="container grid grid--2">
+      <div>
+        <div class="script-box">
+          <h3>1. Начало звонка</h3>
+          <p>Здравствуйте, меня зовут ____. Вы оставляли заявку по новому дому на Просторной 4А. Уточню пару вопросов, чтобы после появления подтверждённых данных направить вам только подходящую информацию.</p>
+        </div>
+        <div class="script-box">
+          <h3>2. Важное уточнение</h3>
+          <p>Заявка предварительная: это не бронь и не обязательство покупки. Сейчас задача — понять, какой вариант вам интересен.</p>
+        </div>
+        <div class="script-box">
+          <h3>3. Вопросы</h3>
+          <div class="checkbox-list">
+            <label><input type="checkbox" data-question="Комнатность уточнена"> Какую квартиру рассматриваете: 1-, 2- или 3-комнатную?</label>
+            <label><input type="checkbox" data-question="Цель покупки уточнена"> Для кого покупка: для себя, семьи, ребёнка, родителей или инвестиций?</label>
+            <label><input type="checkbox" data-question="Способ покупки уточнён"> Как планируете покупать: ипотека, наличные, продажа своей недвижимости?</label>
+            <label><input type="checkbox" data-question="Бюджет уточнён"> Какой ориентировочный бюджет комфортен?</label>
+            <label><input type="checkbox" data-question="Срок покупки уточнён"> В какие сроки хотите купить?</label>
+            <label><input type="checkbox" data-question="Критерии выбора уточнены"> Что важнее всего: цена, этаж, планировка, площадь, двор, документы?</label>
+          </div>
+        </div>
+      </div>
+      <div>
+        <form class="form" id="call-form">
+          <label>Имя клиента<input id="client" placeholder="Имя"></label>
+          <label>Телефон<input id="phone" placeholder="+7 ___ ___-__-__"></label>
+          <label>Интерес<select id="interest"><option>Не уточнён</option><option>1-комнатная</option><option>2-комнатная</option><option>3-комнатная</option><option>Ипотека</option><option>Инвестиция</option><option>Покупка после продажи</option></select></label>
+          <label>Приоритет<select id="priority"><option>A — горячая заявка</option><option>B — есть интерес</option><option>C — ранний прогрев</option><option>D — неактуально</option></select></label>
+          <label>Следующий шаг<select id="next"><option>Ждать планировки</option><option>Ждать цены</option><option>Ипотечная консультация</option><option>Оценка своей недвижимости</option><option>Повторный звонок</option><option>Вопрос по документам</option><option>Закрыть как неактуальную</option></select></label>
+          <label>Комментарий<textarea id="comment" placeholder="Коротко: бюджет, сроки, что важно"></textarea></label>
+          <button class="button" type="button" id="build">Сформировать заметку</button>
+        </form>
+        <h2>Заметка для CRM</h2>
+        <textarea class="note-output" id="note" readonly></textarea>
+        <p><button class="button button--ghost" type="button" id="copy">Скопировать заметку</button></p>
+      </div>
+    </div></section>
+  </main>
+  <footer class="footer"><div class="container footer__inner"><div><strong>Скрипт звонка</strong></div><div>Инструмент работает в браузере и не сохраняет данные клиента.</div></div></footer>
+  <script>
+    const note = document.getElementById("note");
+
+    function value(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function checkedQuestions() {
+      return Array.from(document.querySelectorAll("[data-question]:checked")).map((item) => `- ${item.dataset.question}`);
+    }
+
+    function buildNote() {
+      const lines = [
+        "Заявка Просторная 4А",
+        `Клиент: ${value("client") || "не указано"}`,
+        `Телефон: ${value("phone") || "не указано"}`,
+        `Интерес: ${value("interest")}`,
+        `Приоритет: ${value("priority")}`,
+        `Следующий шаг: ${value("next")}`,
+        "",
+        "Что уточнено:",
+        ...(checkedQuestions().length ? checkedQuestions() : ["- вопросы пока не отмечены"]),
+        "",
+        `Комментарий: ${value("comment") || "нет комментария"}`,
+        `Дата: ${new Date().toLocaleString("ru-RU")}`
+      ];
+      note.value = lines.join("\n");
+    }
+
+    document.getElementById("build").addEventListener("click", buildNote);
+    document.getElementById("copy").addEventListener("click", async () => {
+      buildNote();
+      await navigator.clipboard.writeText(note.value);
+    });
+
+    buildNote();
+  </script>
+</body>
+</html>
