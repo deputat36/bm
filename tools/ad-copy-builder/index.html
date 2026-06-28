@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Генератор рекламных текстов | Просторная 4А</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <style>
+    .copy-output {
+      min-height: 360px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="container topbar__inner"><a class="brand" href="../../index.html"><span class="brand__etagi"><span class="brand__mark"></span>этажи</span><span class="brand__divider"></span><img class="brand__bm" src="../../assets/img/bm-group-logo.svg" alt="BM Group Development"></a><nav class="nav"><a href="../">Инструменты</a><a href="../utm-builder/">UTM</a><a href="../../contacts/">Заявка</a></nav></div></header>
+  <main>
+    <div class="container breadcrumbs"><a href="../../index.html">Главная</a> / <a href="../">Инструменты</a> / Рекламные тексты</div>
+    <section class="page-hero"><div class="container"><span class="eyebrow">Маркетинг</span><h1>Генератор рекламных текстов</h1><p class="lead">Внутренний инструмент для быстрых VK-постов и объявлений по дому на Просторной 4А. Тексты не обещают бронь, скидки, цены или конкретные квартиры без подтверждения.</p></div></section>
+    <section><div class="container grid grid--2">
+      <div>
+        <form class="form">
+          <label>Сценарий
+            <select id="scenario">
+              <option value="selection">Подбор квартиры</option>
+              <option value="consult">Консультация</option>
+              <option value="early">Ранний доступ</option>
+              <option value="mortgage">Ипотека</option>
+              <option value="docs">Документы</option>
+            </select>
+          </label>
+          <label>Формат
+            <select id="format">
+              <option value="post">VK-пост</option>
+              <option value="ad">Короткое объявление</option>
+              <option value="story">Сторис</option>
+            </select>
+          </label>
+          <label>Имя риэлтора или подпись
+            <input id="realtor" placeholder="Например: Анна, Этажи">
+          </label>
+          <button class="button" type="button" id="build">Собрать текст</button>
+        </form>
+      </div>
+      <div>
+        <div class="copy-output" id="output"></div>
+        <div class="copy-row">
+          <button class="button" type="button" id="copy">Скопировать</button>
+          <a class="button button--ghost" href="../utm-builder/">Собрать UTM</a>
+        </div>
+      </div>
+    </div></section>
+  </main>
+  <footer class="footer"><div class="container footer__inner"><div><strong>Рекламные тексты Просторная 4А</strong></div><div>Перед запуском рекламы проверяйте факты и посадочную страницу.</div></div></footer>
+  <script>
+    const pages = {
+      selection: "/podbor-kvartiry/",
+      consult: "/konsultatsiya-po-novostroyke/",
+      early: "/ranniy-dostup/",
+      mortgage: "/ipoteka/",
+      docs: "/dokumenty/"
+    };
+
+    const texts = {
+      selection: {
+        title: "Подбор квартиры",
+        post: "Рассматриваете квартиру в новом доме на Просторной 4А?\n\nМожно заранее оставить критерии: комнатность, этаж, бюджет, ипотека или покупка после продажи своей недвижимости.\n\nКогда появятся подтверждённые цены и планировки, будет проще быстро отобрать подходящие варианты.\n\nЗаявка не является бронью и не обязывает к покупке.",
+        ad: "Подбор квартиры на Просторной 4А. Оставьте критерии заранее: комнатность, этаж, бюджет и способ покупки.",
+        story: "Просторная 4А\nПодбор квартиры заранее\n1, 2 или 3 комнаты\nОставьте заявку"
+      },
+      consult: {
+        title: "Консультация",
+        post: "Есть вопросы по новому дому на Просторной 4А?\n\nМожно заранее обсудить покупку, ипотеку, документы, планировки и последовательность действий.\n\nМы не называем неподтверждённые цены и не обещаем бронь. Консультация нужна, чтобы разобраться в ситуации и зафиксировать ваш интерес.",
+        ad: "Консультация по покупке новостройки в Борисоглебске. Разберём ипотеку, документы и шаги покупки.",
+        story: "Есть вопросы по Просторной 4А?\nКонсультация без обязательств\nОставьте телефон"
+      },
+      early: {
+        title: "Ранний доступ",
+        post: "Дом на Просторной 4А готовится к раскрытию новых данных.\n\nЕсли хотите узнать о ценах, планировках, документах и условиях покупки после подтверждения информации, оставьте заявку на раннее информирование.\n\nЭто не бронь и не очередь на покупку. Это способ не пропустить важные обновления.",
+        ad: "Раннее информирование по Просторной 4А: цены, планировки и документы после подтверждения.",
+        story: "Просторная 4А\nУзнать первым\nЦены и планировки после публикации"
+      },
+      mortgage: {
+        title: "Ипотека",
+        post: "Планируете покупать квартиру в новостройке, но не знаете, какой платёж будет комфортным?\n\nИпотеку можно подготовить заранее: оценить первоначальный взнос, платёж, документы и последовательность сделки.\n\nПо дому на Просторной 4А условия будут уточняться после появления подтверждённых данных.",
+        ad: "Ипотечная консультация по новостройке. Подготовьте платёж и документы заранее.",
+        story: "Ипотека на новостройку\nПлатёж и документы\nКонсультация заранее"
+      },
+      docs: {
+        title: "Документы",
+        post: "Перед покупкой квартиры в новостройке важно проверять документы, сроки, условия покупки и статус опубликованных данных.\n\nПо дому на Просторной 4А мы будем добавлять подтверждённые материалы по мере появления.\n\nОставьте вопрос, если хотите получить обновление по документам.",
+        ad: "Документы по Просторной 4А: следите за обновлениями и задайте вопрос специалисту.",
+        story: "Документы Просторная 4А\nПроверяем по фактам\nОставьте вопрос"
+      }
+    };
+
+    function render() {
+      const scenario = document.getElementById("scenario").value;
+      const format = document.getElementById("format").value;
+      const realtor = document.getElementById("realtor").value.trim();
+      const item = texts[scenario];
+      const signature = realtor ? `\n\n${realtor}` : "";
+      document.getElementById("output").textContent = `${item.title}\n\n${item[format]}${signature}\n\nПосадочная страница: ${pages[scenario]}\n\nПроверить перед публикацией:\n- нет обещания брони;\n- нет неподтверждённых цен;\n- ссылка ведёт на правильную страницу;\n- телефон или форма заявки работают.`;
+    }
+
+    document.getElementById("build").addEventListener("click", render);
+    document.getElementById("scenario").addEventListener("change", render);
+    document.getElementById("format").addEventListener("change", render);
+    document.getElementById("copy").addEventListener("click", async () => {
+      await navigator.clipboard.writeText(document.getElementById("output").textContent);
+    });
+    render();
+  </script>
+</body>
+</html>
