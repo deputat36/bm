@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SEO-чек-лист страницы | Просторная 4А</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <style>
+    .checklist-output {
+      min-height: 320px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="container topbar__inner"><a class="brand" href="../../index.html"><span class="brand__etagi"><span class="brand__mark"></span>этажи</span><span class="brand__divider"></span><img class="brand__bm" src="../../assets/img/bm-group-logo.svg" alt="BM Group Development"></a><nav class="nav"><a href="../">Инструменты</a><a href="../../novosti/">Новости</a><a href="../../contacts/">Заявка</a></nav></div></header>
+  <main>
+    <div class="container breadcrumbs"><a href="../../index.html">Главная</a> / <a href="../">Инструменты</a> / SEO-чек-лист</div>
+    <section class="page-hero"><div class="container"><span class="eyebrow">SEO-контроль</span><h1>SEO-чек-лист страницы</h1><p class="lead">Внутренний инструмент для проверки новых страниц, статей и обновлений по дому на Просторной 4А перед отправкой в индекс.</p></div></section>
+    <section><div class="container grid grid--2">
+      <div>
+        <form class="form">
+          <label>Тип страницы
+            <select id="pageType">
+              <option value="landing">Посадочная страница</option>
+              <option value="article">SEO-статья</option>
+              <option value="apartment">Страница квартир</option>
+              <option value="docs">Документы или ход строительства</option>
+            </select>
+          </label>
+          <label>URL страницы
+            <input id="pageUrl" placeholder="/novostroyki-borisoglebsk/">
+          </label>
+          <label>Главный запрос
+            <input id="mainQuery" placeholder="новостройки Борисоглебска">
+          </label>
+          <button class="button" type="button" id="build">Собрать чек-лист</button>
+        </form>
+      </div>
+      <div>
+        <div class="checklist-output" id="output"></div>
+        <div class="copy-row">
+          <button class="button" type="button" id="copy">Скопировать</button>
+        </div>
+      </div>
+    </div></section>
+  </main>
+  <footer class="footer"><div class="container footer__inner"><div><strong>SEO-чек-лист Просторная 4А</strong></div><div>Раздел закрыт от индексации.</div></div></footer>
+  <script>
+    const checks = {
+      landing: [
+        "Title содержит главный запрос и Просторная 4А или Борисоглебск",
+        "Description объясняет пользу страницы и ведёт к заявке",
+        "H1 не дублирует title дословно",
+        "Есть форма заявки или заметная ссылка на /contacts/",
+        "Есть осторожная формулировка по неподтверждённым данным",
+        "Страница добавлена в sitemap.xml и SEO-карту",
+        "Есть 2-3 внутренние ссылки на квартиру, цены, планировки или документы"
+      ],
+      article: [
+        "Title отвечает на конкретный вопрос покупателя",
+        "В начале есть прямой ответ без лишней воды",
+        "Есть ссылки на /contacts/, /kvartiry/ или релевантную посадочную страницу",
+        "Нет неподтверждённых цен, сроков и обещаний бронирования",
+        "Статья добавлена в /novosti/ и sitemap.xml",
+        "Есть дата или понятный контекст обновления"
+      ],
+      apartment: [
+        "Title содержит комнатность и Борисоглебск или Просторная 4А",
+        "Есть сценарии покупки: для себя, семьи, детей, инвестиций",
+        "Форма заявки передаёт интерес по комнатности",
+        "Площади и цены не указаны как факт без подтверждения",
+        "Есть ссылки на ипотеку, цены, планировки и документы",
+        "Добавлена микроразметка WebPage"
+      ],
+      docs: [
+        "Указано, какие документы уже есть, а каких не хватает",
+        "Нет фразы 'всё проверено', если документов пока нет",
+        "Есть призыв оставить вопрос или подписаться на обновление",
+        "После добавления документа обновлена дата страницы",
+        "URL отправлен на переобход после изменения"
+      ]
+    };
+
+    const queries = {
+      landing: ["новостройки Борисоглебска", "квартиры в новостройке Борисоглебск", "купить квартиру Борисоглебск новостройка"],
+      article: ["Просторная 4А Борисоглебск", "дом на Просторной 4А", "БМ Групп Борисоглебск"],
+      apartment: ["квартира Просторная 4А", "1 комнатная квартира Борисоглебск новостройка", "2 комнатная квартира Борисоглебск новостройка"],
+      docs: ["документы Просторная 4А", "ход строительства Просторная 4А", "разрешение на строительство Просторная 4А"]
+    };
+
+    function render() {
+      const type = document.getElementById("pageType").value;
+      const url = document.getElementById("pageUrl").value.trim() || "URL не указан";
+      const mainQuery = document.getElementById("mainQuery").value.trim() || queries[type][0];
+      const list = checks[type].map((item) => `- [ ] ${item}`).join("\n");
+      const queryList = queries[type].map((item) => `- ${item}`).join("\n");
+      document.getElementById("output").textContent = `URL: ${url}\nГлавный запрос: ${mainQuery}\n\nПроверки:\n${list}\n\nДополнительные запросы:\n${queryList}\n\nПосле публикации:\n- [ ] Проверить страницу в браузере\n- [ ] Проверить форму заявки\n- [ ] Отправить URL в Яндекс.Вебмастер\n- [ ] Добавить URL в таблицу SEO-контроля`;
+    }
+
+    document.getElementById("build").addEventListener("click", render);
+    document.getElementById("pageType").addEventListener("change", render);
+    document.getElementById("copy").addEventListener("click", async () => {
+      await navigator.clipboard.writeText(document.getElementById("output").textContent);
+    });
+    render();
+  </script>
+</body>
+</html>
