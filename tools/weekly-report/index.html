@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Недельный отчёт по заявкам | Просторная 4А</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <style>
+    .report-output {
+      width: 100%;
+      min-height: 340px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      font: 700 15px/1.5 Arial, sans-serif;
+      resize: vertical;
+      background: #fff;
+    }
+
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .metric {
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--red);
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 760px) {
+      .metrics-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="container topbar__inner"><a class="brand" href="../../index.html"><span class="brand__etagi"><span class="brand__mark"></span>этажи</span><span class="brand__divider"></span><img class="brand__bm" src="../../assets/img/bm-group-logo.svg" alt="BM Group Development"></a><nav class="nav"><a href="../">Инструменты</a><a href="../utm-builder/">UTM</a><a href="../call-script/">Звонок</a></nav></div></header>
+  <main>
+    <div class="container breadcrumbs"><a href="../../index.html">Главная</a> / <a href="../">Инструменты</a> / Недельный отчёт</div>
+    <section class="page-hero"><div class="container"><span class="eyebrow">Контроль результата</span><h1>Недельный отчёт по заявкам</h1><p class="lead">Инструмент для ручной сводки по заявкам, источникам, риэлторам и следующим действиям после запуска рекламы.</p></div></section>
+    <section><div class="container grid grid--2">
+      <form class="form" id="report-form">
+        <label>Период<input id="period" value="Неделя"></label>
+        <label>Всего заявок<input id="leads" type="number" min="0" value="0"></label>
+        <label>Дозвонились<input id="connected" type="number" min="0" value="0"></label>
+        <label>Горячие заявки A<input id="hot" type="number" min="0" value="0"></label>
+        <label>Ипотечные консультации<input id="mortgage" type="number" min="0" value="0"></label>
+        <label>Нужно продать свою недвижимость<input id="sale" type="number" min="0" value="0"></label>
+        <label>Лучший источник<input id="topSource" placeholder="vk / story / ad / realtor"></label>
+        <label>Лучший риэлтор / код<input id="topRealtor" placeholder="ivanov"></label>
+        <label>Главные вопросы клиентов<textarea id="questions" placeholder="Цены, планировки, сроки, документы"></textarea></label>
+        <label>Что сделать на следующей неделе<textarea id="actions" placeholder="Добавить пост, проверить ссылки, перезвонить клиентам"></textarea></label>
+        <button class="button" type="button" id="build">Сформировать отчёт</button>
+      </form>
+      <div>
+        <h2>Итоги</h2>
+        <div class="metrics-row">
+          <div class="metric"><strong id="conversion">0%</strong><span>Дозвон</span></div>
+          <div class="metric"><strong id="hotRate">0%</strong><span>Горячие</span></div>
+          <div class="metric"><strong id="mortgageRate">0%</strong><span>Ипотека</span></div>
+        </div>
+        <textarea class="report-output" id="report" readonly></textarea>
+        <p><button class="button button--ghost" type="button" id="copy">Скопировать отчёт</button></p>
+      </div>
+    </div></section>
+  </main>
+  <footer class="footer"><div class="container footer__inner"><div><strong>Недельный отчёт</strong></div><div>Инструмент работает локально в браузере и не сохраняет данные.</div></div></footer>
+  <script>
+    const ids = ["period", "leads", "connected", "hot", "mortgage", "sale", "topSource", "topRealtor", "questions", "actions"];
+    const report = document.getElementById("report");
+
+    function value(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function number(id) {
+      return Number(value(id) || 0);
+    }
+
+    function percent(part, total) {
+      if (!total) return "0%";
+      return `${Math.round((part / total) * 100)}%`;
+    }
+
+    function buildReport() {
+      const leads = number("leads");
+      const connected = number("connected");
+      const hot = number("hot");
+      const mortgage = number("mortgage");
+      const sale = number("sale");
+      const conversion = percent(connected, leads);
+      const hotRate = percent(hot, leads);
+      const mortgageRate = percent(mortgage, leads);
+
+      document.getElementById("conversion").textContent = conversion;
+      document.getElementById("hotRate").textContent = hotRate;
+      document.getElementById("mortgageRate").textContent = mortgageRate;
+
+      report.value = [
+        `Отчёт по заявкам Просторная 4А: ${value("period") || "период не указан"}`,
+        "",
+        `Всего заявок: ${leads}`,
+        `Дозвонились: ${connected} (${conversion})`,
+        `Горячие заявки A: ${hot} (${hotRate})`,
+        `Ипотечные консультации: ${mortgage} (${mortgageRate})`,
+        `Нужно продать свою недвижимость: ${sale}`,
+        "",
+        `Лучший источник: ${value("topSource") || "не указан"}`,
+        `Лучший риэлтор / код: ${value("topRealtor") || "не указан"}`,
+        "",
+        "Главные вопросы клиентов:",
+        value("questions") || "не заполнено",
+        "",
+        "Что сделать на следующей неделе:",
+        value("actions") || "не заполнено",
+        "",
+        `Дата формирования: ${new Date().toLocaleString("ru-RU")}`
+      ].join("\n");
+    }
+
+    ids.forEach((id) => {
+      document.getElementById(id).addEventListener("input", buildReport);
+    });
+
+    document.getElementById("build").addEventListener("click", buildReport);
+    document.getElementById("copy").addEventListener("click", async () => {
+      buildReport();
+      await navigator.clipboard.writeText(report.value);
+    });
+
+    buildReport();
+  </script>
+</body>
+</html>
