@@ -1,0 +1,4 @@
+realtor,realtor_id,name,role,base_campaign,example_url
+ivanov,001,Иванов Иван,риэлтор,prostornaya_start,https://deputat36.github.io/bm/?realtor=ivanov&realtor_id=001&utm_source=vk&utm_medium=post&utm_campaign=prostornaya_start
+petrova,002,Петрова Анна,риэлтор,prostornaya_kvartiry,https://deputat36.github.io/bm/kvartiry/?realtor=petrova&realtor_id=002&utm_source=vk&utm_medium=post&utm_campaign=prostornaya_kvartiry
+test,000,Тестовый риэлтор,тест,prostornaya_test,https://deputat36.github.io/bm/contacts/?realtor=test&realtor_id=000&utm_source=manual&utm_medium=link&utm_campaign=prostornaya_test
