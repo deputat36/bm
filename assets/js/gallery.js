@@ -10,31 +10,13 @@
       file: 'assets/img/gallery-b64/zhk-prostornaya-4a-fasad.b64',
       image: 'assets/img/gallery/zhk-prostornaya-4a-fasad.jpg',
       title: 'Фасад дома',
-      alt: 'Фасад 9-этажного кирпичного дома ЖК Теллерманов сад'
+      alt: 'Фасад 9-этажного дома ЖК Теллерманов сад'
     },
     {
       file: 'assets/img/gallery-b64/zhk-prostornaya-4a-dvor.b64',
       image: 'assets/img/gallery/zhk-prostornaya-4a-dvor.jpg',
       title: 'Двор и благоустройство',
-      alt: 'Двор ЖК Теллерманов сад с детскими и прогулочными зонами'
-    },
-    {
-      file: 'assets/img/gallery-b64/zhk-prostornaya-4a-frontalnyy-fasad.b64',
-      image: 'assets/img/gallery/zhk-prostornaya-4a-frontalnyy-fasad.jpg',
-      title: 'Фронтальный фасад',
-      alt: 'Фронтальный вид фасада ЖК Теллерманов сад'
-    },
-    {
-      file: 'assets/img/gallery-b64/zhk-prostornaya-4a-vid-sverhu.b64',
-      image: 'assets/img/gallery/zhk-prostornaya-4a-vid-sverhu.jpg',
-      title: 'Вид сверху',
-      alt: 'Вид сверху на дома, двор и парковку ЖК Теллерманов сад'
-    },
-    {
-      file: 'assets/img/gallery-b64/zhk-prostornaya-4a-rakurs-doma.b64',
-      image: 'assets/img/gallery/zhk-prostornaya-4a-rakurs-doma.jpg',
-      title: 'Ракурс территории',
-      alt: 'Ракурс домов и территории ЖК Теллерманов сад'
+      alt: 'Двор ЖК Теллерманов сад с прогулочными и детскими зонами'
     }
   ];
 
@@ -60,8 +42,10 @@
   async function base64ToDataUrl(url) {
     const response = await fetch(url, { cache: 'force-cache' });
     if (!response.ok) return null;
+
     const base64 = (await response.text()).trim();
     if (!base64) return null;
+
     return 'data:image/jpeg;base64,' + base64;
   }
 
@@ -78,14 +62,16 @@
   }
 
   function placeholderCard(item) {
-    return `<figure class="render-card render-card--placeholder"><div class="render-card__body"><strong>${escapeHtml(item.title)}</strong><span>Изображение будет добавлено после загрузки файла</span></div></figure>`;
+    return `<figure class="render-card render-card--placeholder"><div class="render-card__body"><strong>${escapeHtml(item.title)}</strong><span>Изображение готовится к публикации</span></div></figure>`;
   }
 
-  async function cardHtml(item, basePath) {
+  async function cardHtml(item, basePath, index) {
     const image = await resolveImage(item, basePath);
     if (!image.isReady) return placeholderCard(item);
 
-    return `<a class="render-card" href="${image.href}" target="_blank" rel="noopener"><img src="${image.src}" alt="${escapeHtml(item.alt)}" loading="lazy"><span class="render-card__body"><strong>${escapeHtml(item.title)}</strong><span>Открыть изображение</span></span></a>`;
+    const wideClass = index === 0 ? ' render-card--wide' : '';
+
+    return `<a class="render-card${wideClass}" href="${image.href}" target="_blank" rel="noopener"><img src="${image.src}" alt="${escapeHtml(item.alt)}" loading="lazy"><span class="render-card__body"><strong>${escapeHtml(item.title)}</strong><span>Открыть изображение</span></span></a>`;
   }
 
   async function renderGallery(root) {
@@ -95,17 +81,19 @@
 
     root.innerHTML = '<div class="render-gallery__loading">Загружаем рендеры проекта...</div>';
 
-    const cards = await Promise.all(items.map((item) => cardHtml(item, basePath)));
+    const cards = await Promise.all(items.map((item, index) => cardHtml(item, basePath, index)));
     root.innerHTML = cards.join('');
   }
 
   async function renderHero(root) {
     const basePath = root.dataset.galleryBase || '';
     const image = await resolveImage(renders[0], basePath);
+
     if (!image.isReady) {
       root.classList.add('is-empty');
       return;
     }
+
     root.innerHTML = `<img src="${image.src}" alt="${escapeHtml(renders[0].alt)}">`;
   }
 
