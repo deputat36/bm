@@ -1,22 +1,46 @@
 (() => {
   const renders = [
     {
-      file: 'assets/img/gallery-b64/zhk-prostornaya-4a-obshchiy-vid.b64',
-      image: 'assets/img/gallery/zhk-prostornaya-4a-obshchiy-vid.jpg',
-      title: 'Общий вид проекта',
-      alt: 'Рендер ЖК Теллерманов сад в Борисоглебске — общий вид фасадов и благоустроенной территории'
+      file: 'assets/img/gallery-b64/Borisoglebsk_002.b64',
+      image: 'assets/img/gallery/Borisoglebsk_002.jpg',
+      title: 'Общий вид комплекса',
+      alt: 'ЖК Теллерманов сад в Борисоглебске — общий вид жилого комплекса'
     },
     {
-      file: 'assets/img/gallery-b64/zhk-prostornaya-4a-fasad.b64',
-      image: 'assets/img/gallery/zhk-prostornaya-4a-fasad.jpg',
-      title: 'Фасад дома',
-      alt: 'Фасад 9-этажного дома ЖК Теллерманов сад'
+      file: 'assets/img/gallery-b64/Borisoglebsk_003.b64',
+      image: 'assets/img/gallery/Borisoglebsk_003.jpg',
+      title: 'Фронтальный фасад',
+      alt: 'Фронтальный фасад дома ЖК Теллерманов сад'
     },
     {
-      file: 'assets/img/gallery-b64/zhk-prostornaya-4a-dvor.b64',
-      image: 'assets/img/gallery/zhk-prostornaya-4a-dvor.jpg',
-      title: 'Двор и благоустройство',
-      alt: 'Двор ЖК Теллерманов сад с прогулочными и детскими зонами'
+      file: 'assets/img/gallery-b64/Borisoglebsk_007.b64',
+      image: 'assets/img/gallery/Borisoglebsk_007.jpg',
+      title: 'Вид сверху на территорию',
+      alt: 'Вид сверху на территорию ЖК Теллерманов сад'
+    },
+    {
+      file: 'assets/img/gallery-b64/Borisoglebsk_005.b64',
+      image: 'assets/img/gallery/Borisoglebsk_005.jpg',
+      title: 'Фасад и двор',
+      alt: 'Фасад дома и благоустроенный двор ЖК Теллерманов сад'
+    },
+    {
+      file: 'assets/img/gallery-b64/Borisoglebsk_006.b64',
+      image: 'assets/img/gallery/Borisoglebsk_006.jpg',
+      title: 'Дворовая перспектива',
+      alt: 'Дворовая перспектива ЖК Теллерманов сад'
+    },
+    {
+      file: 'assets/img/gallery-b64/Borisoglebsk_004.b64',
+      image: 'assets/img/gallery/Borisoglebsk_004.jpg',
+      title: 'Аэровид комплекса',
+      alt: 'Аэровид домов и благоустройства ЖК Теллерманов сад'
+    },
+    {
+      file: 'assets/img/gallery-b64/Borisoglebsk_001.b64',
+      image: 'assets/img/gallery/Borisoglebsk_001.jpg',
+      title: 'Вид сверху и парковка',
+      alt: 'Вид сверху на дома, двор и парковку ЖК Теллерманов сад'
     }
   ];
 
@@ -42,10 +66,8 @@
   async function base64ToDataUrl(url) {
     const response = await fetch(url, { cache: 'force-cache' });
     if (!response.ok) return null;
-
     const base64 = (await response.text()).trim();
     if (!base64) return null;
-
     return 'data:image/jpeg;base64,' + base64;
   }
 
@@ -88,12 +110,10 @@
   async function renderHero(root) {
     const basePath = root.dataset.galleryBase || '';
     const image = await resolveImage(renders[0], basePath);
-
     if (!image.isReady) {
       root.classList.add('is-empty');
       return;
     }
-
     root.innerHTML = `<img src="${image.src}" alt="${escapeHtml(renders[0].alt)}">`;
   }
 
