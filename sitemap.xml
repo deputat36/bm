@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://tellermanovsad.ru/</loc><priority>1.0</priority></url>
-  <url><loc>https://tellermanovsad.ru/o-zhk/</loc><priority>0.95</priority></url>
-  <url><loc>https://tellermanovsad.ru/kvartiry/</loc><priority>0.9</priority></url>
-  <url><loc>https://tellermanovsad.ru/planirovki/</loc><priority>0.9</priority></url>
-  <url><loc>https://tellermanovsad.ru/ceny/</loc><priority>0.9</priority></url>
-  <url><loc>https://tellermanovsad.ru/dokumenty/</loc><priority>0.9</priority></url>
-  <url><loc>https://tellermanovsad.ru/proektnaya-deklaratsiya-36-001139/</loc><priority>0.85</priority></url>
-  <url><loc>https://tellermanovsad.ru/galereya/</loc><priority>0.9</priority></url>
-  <url><loc>https://tellermanovsad.ru/zastroyschik/</loc><priority>0.8</priority></url>
-  <url><loc>https://tellermanovsad.ru/infrastruktura/</loc><priority>0.8</priority></url>
-  <url><loc>https://tellermanovsad.ru/ipoteka/</loc><priority>0.8</priority></url>
-  <url><loc>https://tellermanovsad.ru/hod-stroitelstva/</loc><priority>0.8</priority></url>
-  <url><loc>https://tellermanovsad.ru/novosti/</loc><priority>0.7</priority></url>
-  <url><loc>https://tellermanovsad.ru/faq/</loc><priority>0.7</priority></url>
-  <url><loc>https://tellermanovsad.ru/contacts/</loc><priority>0.95</priority></url>
+  <url><loc>https://tellermanovsad.ru/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://tellermanovsad.ru/o-zhk/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://tellermanovsad.ru/kvartiry/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tellermanovsad.ru/planirovki/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tellermanovsad.ru/ceny/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tellermanovsad.ru/dokumenty/</loc><lastmod>2026-06-29</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tellermanovsad.ru/proektnaya-deklaratsiya-36-001139/</loc><lastmod>2026-06-29</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://tellermanovsad.ru/galereya/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tellermanovsad.ru/zastroyschik/</loc><lastmod>2026-06-29</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tellermanovsad.ru/infrastruktura/</loc><lastmod>2026-06-29</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tellermanovsad.ru/ipoteka/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://tellermanovsad.ru/hod-stroitelstva/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tellermanovsad.ru/novosti/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://tellermanovsad.ru/faq/</loc><lastmod>2026-06-29</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://tellermanovsad.ru/contacts/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://tellermanovsad.ru/novostroyka-borisoglebsk/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://tellermanovsad.ru/kvartiry-ot-zastroyschika-borisoglebsk/</loc><lastmod>2026-06-29</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://tellermanovsad.ru/prostornaya-4a/</loc><lastmod>2026-06-29</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tellermanovsad.ru/privacy/</loc><lastmod>2026-06-29</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
 </urlset>
