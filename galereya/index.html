@@ -6,9 +6,8 @@
   <title>Галерея ЖК «Теллерманов сад» в Борисоглебске</title>
   <meta name="description" content="Рендеры ЖК «Теллерманов сад» в Борисоглебске: фасады, благоустроенный двор, закрытая территория и общий вид жилого комплекса.">
   <link rel="stylesheet" href="../assets/css/styles.css">
-  <style>
-    .render-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.render-card{margin:0;border-radius:12px;overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}.render-card img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}.render-card figcaption{padding:14px 16px;font-weight:900}.render-gallery__loading{padding:24px;border-radius:12px;background:#fff;border:1px solid var(--line)}@media(max-width:760px){.render-gallery{grid-template-columns:1fr}}
-  </style>
+  <link rel="stylesheet" href="../assets/css/gallery.css">
+  <link rel="stylesheet" href="../assets/css/gallery-fix.css">
 </head>
 <body>
   <header class="topbar">
@@ -42,13 +41,14 @@
       </div>
     </section>
 
-    <section>
+    <section class="gallery-page">
       <div class="container">
         <div class="section__head">
           <h2>Визуализации</h2>
-          <p>Добавляем рендеры по мере поступления материалов. Сейчас опубликованы первые изображения фасада и общего вида проекта.</p>
+          <p>Первые рендеры уже опубликованы. Остальные изображения появятся автоматически после загрузки файлов в репозиторий.</p>
         </div>
         <div class="render-gallery" data-render-gallery data-gallery-base="../"></div>
+        <div class="render-note">Если часть карточек отображается как заглушка, значит соответствующий JPG или B64-файл ещё не загружен в репозиторий.</div>
       </div>
     </section>
   </main>
