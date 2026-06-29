@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Галерея проекта на Просторной 4А в Борисоглебске</title>
+  <meta name="description" content="Рендеры нового 9-этажного кирпичного дома на Просторной 4А: фасады, двор и общий вид проекта в Борисоглебске.">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <style>
+    .render-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.render-card{margin:0;border-radius:12px;overflow:hidden;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow)}.render-card img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}.render-card figcaption{padding:14px 16px;font-weight:900}.render-gallery__loading{padding:24px;border-radius:12px;background:#fff;border:1px solid var(--line)}@media(max-width:760px){.render-gallery{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="../" aria-label="Дом на Просторной 4А">
+        <span class="brand__etagi"><span class="brand__mark"></span>этажи</span>
+        <span class="brand__divider"></span>
+        <img class="brand__bm" src="../assets/img/bm-group-logo.svg" alt="BM Group Development">
+      </a>
+      <nav class="nav" aria-label="Основное меню">
+        <a href="../dom-prostornaya-4a/">О доме</a>
+        <a href="../kvartiry/">Квартиры</a>
+        <a href="../planirovki/">Планировки</a>
+        <a href="../ceny/">Цены</a>
+        <a href="../ipoteka/">Ипотека</a>
+        <a href="../hod-stroitelstva/">Ход строительства</a>
+        <a href="../faq/">FAQ</a>
+        <a class="button" href="../#lead">Оставить заявку</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="breadcrumbs container"><a href="../">Главная</a> / Галерея проекта</div>
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow">Рендеры проекта</span>
+        <h1>Галерея дома на Просторной 4А</h1>
+        <p class="lead">Первые визуальные материалы проекта: фасады, общий вид дома и благоустроенная закрытая территория.</p>
+        <div class="hero__actions"><a class="button" href="../#lead">Оставить заявку</a><a class="button button--ghost" href="../kvartiry/">Посмотреть квартиры</a></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section__head">
+          <h2>Визуализации</h2>
+          <p>Добавляем рендеры по мере поступления материалов. Сейчас опубликованы первые изображения фасада и общего вида проекта.</p>
+        </div>
+        <div class="render-gallery" data-render-gallery data-gallery-base="../"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="container footer__inner"><div><strong>Дом на Просторной 4А</strong><br>Информационный сайт о новом доме в Борисоглебске.</div><div>Не является официальным сайтом застройщика. Информация уточняется и обновляется.</div></div></footer>
+  <script src="../assets/js/gallery.js"></script>
+</body>
+</html>
