@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /tools/
+Disallow: /docs/
+Disallow: /data/
 
 Sitemap: https://deputat36.github.io/bm/sitemap.xml
