@@ -1,7 +1,8 @@
 const SITE_CONFIG = {
-  // После подключения Supabase/CRM/Google Forms сюда ставится URL обработчика.
+  // После подключения Web3Forms/Supabase/CRM сюда ставится URL обработчика.
   LEAD_ENDPOINT: "",
-  phoneDisplay: "",
+  phoneDisplay: "8 903 857-69-09",
+  phoneHref: "tel:+79038576909",
   vkLink: ""
 };
 
@@ -36,6 +37,8 @@ function collectFormData(form) {
   new FormData(form).forEach((value, key) => {
     data[key] = String(value).trim();
   });
+  data.project = "ЖК Теллерманов сад";
+  data.phone_for_contact = SITE_CONFIG.phoneDisplay;
   data.source = window.location.pathname;
   data.page_title = document.title;
   data.referrer = document.referrer;
@@ -80,17 +83,19 @@ document.querySelectorAll("[data-lead-form]").forEach((form) => {
     }
 
     try {
-      await sendLead(collectFormData(form));
+      const result = await sendLead(collectFormData(form));
       form.reset();
       if (status) {
-        status.textContent = SITE_CONFIG.LEAD_ENDPOINT
-          ? "Заявка отправлена. Мы свяжемся с вами после уточнения информации по дому."
-          : "Форма готова. Для реального сбора заявок подключите обработчик в assets/js/main.js.";
+        if (result.offline) {
+          status.innerHTML = `Форма пока работает в тестовом режиме. Для быстрой связи позвоните: <a href="${SITE_CONFIG.phoneHref}">${SITE_CONFIG.phoneDisplay}</a>.`;
+        } else {
+          status.textContent = "Заявка отправлена. Мы свяжемся с вами по ЖК «Теллерманов сад».";
+        }
         status.classList.add("is-visible");
       }
     } catch (error) {
       if (status) {
-        status.textContent = "Не удалось отправить заявку. Попробуйте ещё раз или позвоните специалисту.";
+        status.innerHTML = `Не удалось отправить заявку. Позвоните специалисту: <a href="${SITE_CONFIG.phoneHref}">${SITE_CONFIG.phoneDisplay}</a>.`;
         status.classList.add("is-visible");
       }
     } finally {
