@@ -1,0 +1,112 @@
+.hero--with-render {
+  min-height: 760px;
+  background:
+    linear-gradient(90deg, rgba(255, 248, 239, 0.98) 0%, rgba(255, 248, 239, 0.94) 42%, rgba(255, 248, 239, 0.18) 72%, rgba(255, 248, 239, 0.06) 100%),
+    url("../img/gallery/zhk-prostornaya-4a-obshchiy-vid.jpg") center right / cover no-repeat,
+    linear-gradient(135deg, #f6e2cf, #c28b68);
+}
+
+.hero--with-render::before,
+.hero--with-render::after {
+  display: none;
+}
+
+.gallery-preview {
+  padding-top: 30px;
+}
+
+.render-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.render-card {
+  position: relative;
+  min-height: 270px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background:
+    linear-gradient(135deg, rgba(227, 30, 36, 0.16), rgba(21, 21, 21, 0.18)),
+    var(--image, linear-gradient(135deg, #d0a47e, #56443b));
+  background-position: center;
+  background-size: cover;
+  box-shadow: var(--shadow);
+  color: #fff;
+  text-decoration: none;
+}
+
+.render-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.58));
+}
+
+.render-card__body {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 18px;
+  z-index: 1;
+}
+
+.render-card__body strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.render-card__body span {
+  display: block;
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 14px;
+}
+
+.render-card--wide {
+  grid-column: span 2;
+}
+
+.render-note {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-left: 4px solid var(--red);
+  background: #fff;
+  color: var(--muted);
+}
+
+.gallery-page .render-card {
+  min-height: 330px;
+}
+
+.gallery-page .render-card--wide {
+  min-height: 390px;
+}
+
+@media (max-width: 980px) {
+  .hero--with-render {
+    background:
+      linear-gradient(180deg, rgba(255, 248, 239, 0.98) 0%, rgba(255, 248, 239, 0.90) 58%, rgba(255, 248, 239, 0.25) 100%),
+      url("../img/gallery/zhk-prostornaya-4a-obshchiy-vid.jpg") center bottom / cover no-repeat,
+      linear-gradient(135deg, #f6e2cf, #c28b68);
+  }
+
+  .render-gallery {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .render-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .render-card,
+  .render-card--wide,
+  .gallery-page .render-card,
+  .gallery-page .render-card--wide {
+    grid-column: auto;
+    min-height: 250px;
+  }
+}
