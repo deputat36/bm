@@ -1,6 +1,6 @@
 const SITE_CONFIG = {
   // Быстрый вариант для статического сайта: получить ключ на Web3Forms и вставить сюда.
-  WEB3FORMS_ACCESS_KEY: "",
+  WEB3FORMS_ACCESS_KEY: "c6b147c0-0ce0-43cb-a41d-2d112b6f1364",
 
   // Альтернативный вариант: свой обработчик, Supabase Edge Function или CRM endpoint.
   LEAD_ENDPOINT: "",
