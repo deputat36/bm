@@ -1,12 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 100" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 86" role="img" aria-labelledby="title desc">
   <title id="title">Этажи</title>
-  <desc id="desc">Компактный красный логотип Этажи для шапки сайта.</desc>
-  <g fill="#e31e24">
-    <path d="M8 82H94V20L48 8 14 34Z"/>
-    <path d="M94 20l45 62H94Z"/>
-    <path d="M93 27l39 55h-8L93 39Z"/>
-    <path d="M93 43l28 39h-8L93 55Z"/>
-    <path d="M93 59l17 23h-8L93 70Z"/>
-  </g>
-  <text x="154" y="67" fill="#e31e24" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="48" font-weight="900" letter-spacing="-2">этажи</text>
+  <desc id="desc">Аккуратный красный логотип Этажи для сайта.</desc>
+  <text x="0" y="61" fill="#e31e24" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="58" font-weight="900" letter-spacing="-3">этажи</text>
 </svg>
