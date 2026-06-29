@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 220" role="img" aria-labelledby="etagiLogoWhiteTitle etagiLogoWhiteDesc">
+  <title id="etagiLogoWhiteTitle">Этажи — белая версия</title>
+  <desc id="etagiLogoWhiteDesc">Белая версия логотипа компании Этажи для размещения на тёмном или цветном фоне.</desc>
+  <g fill="#ffffff">
+    <path d="M26 178 248 176 222 50 154 0 40 76Z"/>
+    <path d="M202 42 356 178H337L202 58Z"/>
+    <path d="M204 75 328 178H309L204 91Z"/>
+    <path d="M205 108 300 178H281L205 124Z"/>
+    <path d="M207 141 271 178H252L207 157Z"/>
+    <path d="M207 174 242 178H223L207 190Z"/>
+  </g>
+  <text x="408" y="158" fill="#ffffff" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="152" font-weight="900" letter-spacing="-8">этажи</text>
+</svg>
