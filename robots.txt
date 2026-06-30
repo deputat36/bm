@@ -14,6 +14,10 @@ Disallow: /price/
 Disallow: /ipoteka-start/
 Disallow: /callback/
 Disallow: /1k/
+Disallow: /studiya/
+Disallow: /odnokomnatnye/
+Disallow: /dvuhkomnatnye/
+Disallow: /trehkomnatnye/
 Disallow: /matkapital/
 Disallow: /obmen/
 Disallow: /sertifikat/
