@@ -13,6 +13,7 @@ Disallow: /zayavka/
 Disallow: /price/
 Disallow: /ipoteka-start/
 Disallow: /callback/
+Disallow: /spisok-ozhidaniya/
 Disallow: /1k/
 Disallow: /studiya/
 Disallow: /odnokomnatnye/
