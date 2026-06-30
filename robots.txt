@@ -14,5 +14,16 @@ Disallow: /price/
 Disallow: /ipoteka-start/
 Disallow: /callback/
 Disallow: /1k/
+Disallow: /matkapital/
+Disallow: /obmen/
+Disallow: /sertifikat/
+Disallow: /dlya-sebya/
+Disallow: /pervaya-kvartira/
+Disallow: /semeynaya-pokupka/
+Disallow: /detjam/
+Disallow: /planirovki-zayavka/
+Disallow: /konsultaciya/
+Disallow: /byudzhet/
+Disallow: /check/
 
 Sitemap: https://tellermanovsad.ru/sitemap.xml
