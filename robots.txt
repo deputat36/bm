@@ -3,5 +3,16 @@ Allow: /
 Disallow: /tools/
 Disallow: /docs/
 Disallow: /data/
+Disallow: /links/
+Disallow: /utm/
+Disallow: /menedzheram/
+Disallow: /realtor/
+Disallow: /qr/
+Disallow: /start/
+Disallow: /zayavka/
+Disallow: /price/
+Disallow: /ipoteka-start/
+Disallow: /callback/
+Disallow: /1k/
 
 Sitemap: https://tellermanovsad.ru/sitemap.xml
