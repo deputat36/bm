@@ -1,0 +1,20 @@
+{
+  "id": "project-1",
+  "name": "Название проекта",
+  "slug": "project-1",
+  "city": "Борисоглебск",
+  "address": "уточняется",
+  "status": "draft",
+  "class": "уточняется",
+  "floors": "уточняется",
+  "wall_material": "уточняется",
+  "apartments_total": "уточняется",
+  "area_min": "уточняется",
+  "area_max": "уточняется",
+  "deadline": "уточняется",
+  "keys_deadline": "уточняется",
+  "apartment_types": [],
+  "documents": [],
+  "source_notes": "Данные нужно сверить перед публикацией",
+  "lead_interest_value": "Новостройка"
+}
