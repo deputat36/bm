@@ -14,6 +14,7 @@ Disallow: /price/
 Disallow: /ipoteka-start/
 Disallow: /callback/
 Disallow: /spisok-ozhidaniya/
+Disallow: /kvartiry-ot-zastroyschika-borisoglebsk/
 Disallow: /1k/
 Disallow: /studiya/
 Disallow: /odnokomnatnye/
