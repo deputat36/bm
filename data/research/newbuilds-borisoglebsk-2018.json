@@ -1,0 +1,149 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-05",
+  "scope": {
+    "city": "Борисоглебск",
+    "region": "Воронежская область",
+    "period_from": "2018-01-01",
+    "description": "Рабочий реестр многоквартирных новостроек Борисоглебска с 2018 года для последующего переноса на портал novostroyki-borisoglebsk.ru."
+  },
+  "publication_rules": {
+    "public_pages_include_only": [
+      "verification_status=confirmed",
+      "is_public_ready=true"
+    ],
+    "do_not_publish_statuses": [
+      "requires_check",
+      "do_not_publish"
+    ],
+    "price_rule": "Цены, наличие квартир, скидки и специальные условия не публикуются без актуального подтверждения.",
+    "legal_rule": "Портал не должен позиционироваться как официальный сайт застройщика, ЖК или отдела продаж."
+  },
+  "verification_statuses": {
+    "confirmed": "Есть официальный публичный источник, дата проверки и непротиворечивые данные.",
+    "partially_confirmed": "Есть часть публичных подтверждений, но не хватает актуальной сверки или отдельных характеристик.",
+    "requires_check": "Данные нельзя публиковать как факт до проверки.",
+    "do_not_publish": "Данные не выводятся на публичный сайт, в рекламу, sitemap и SEO-тексты."
+  },
+  "confirmed_projects": [
+    {
+      "id": "tellermanov-sad",
+      "slug": "tellermanov-sad",
+      "name": "ЖК Теллерманов сад",
+      "alternative_names": [
+        "Дом на Просторной 4А",
+        "Новостройка на Просторной 4А",
+        "ЖК на Просторной 4А"
+      ],
+      "city": "Борисоглебск",
+      "region": "Воронежская область",
+      "address": "ул. Просторная, 4А",
+      "status": "Строится",
+      "builder_id": "bm-group-chernozemye",
+      "builder_name": "СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ",
+      "floors": 9,
+      "entrances": 1,
+      "apartments_total": 70,
+      "area_min": 27.71,
+      "area_max": 63.76,
+      "handover": "I квартал 2028",
+      "keys_until": "30.09.2028",
+      "project_declaration": "36-001139",
+      "nash_dom_rf_id": "72480",
+      "building_permit": "36-04-13-2026",
+      "building_permit_date": "2026-06-08",
+      "project_declaration_date": "2026-06-26",
+      "apartment_types": [
+        {
+          "type": "studio",
+          "title": "Студии",
+          "rooms": 0,
+          "count": 9,
+          "area_min": 27.71,
+          "area_max": 27.71
+        },
+        {
+          "type": "one-room",
+          "title": "1-комнатные",
+          "rooms": 1,
+          "count": 17,
+          "area_min": 39.77,
+          "area_max": 41.65
+        },
+        {
+          "type": "two-room",
+          "title": "2-комнатные",
+          "rooms": 2,
+          "count": 35,
+          "area_min": 43.28,
+          "area_max": 56.93
+        },
+        {
+          "type": "three-room",
+          "title": "3-комнатные",
+          "rooms": 3,
+          "count": 9,
+          "area_min": 63.76,
+          "area_max": 63.76
+        }
+      ],
+      "verification_status": "partially_confirmed",
+      "is_public_ready": false,
+      "last_checked_at": "2026-07-05",
+      "public_project_file": "data/projects/tellermanov-sad.json",
+      "notes": "Данные уже внесены в рабочую карточку проекта. Перед снятием noindex и переносом в публичные витрины нужно повторно сверить актуальную редакцию ЕИСЖС / проектной декларации.",
+      "sources": [
+        {
+          "type": "project_profile",
+          "title": "Рабочая JSON-карточка проекта в репозитории",
+          "path": "data/projects/tellermanov-sad.json",
+          "verification_status": "partially_confirmed",
+          "notes": "Подтверждает структуру данных, внесенных в проект. Не заменяет повторную сверку с первоисточником."
+        },
+        {
+          "type": "project_declaration",
+          "title": "Проектная декларация №36-001139",
+          "number": "36-001139",
+          "date": "2026-06-26",
+          "verification_status": "requires_check",
+          "notes": "Нужно проверить актуальную редакцию на ЕИСЖС перед публичной публикацией."
+        },
+        {
+          "type": "eiszh_card",
+          "title": "Карточка объекта ЕИСЖС / наш.дом.рф",
+          "number": "72480",
+          "verification_status": "requires_check",
+          "notes": "Нужно повторно открыть карточку и зафиксировать дату проверки."
+        }
+      ]
+    }
+  ],
+  "requires_check_projects": [],
+  "do_not_publish_projects": [],
+  "research_tasks": [
+    {
+      "id": "collect-built-houses-2018-plus",
+      "title": "Собрать построенные многоквартирные дома с 2018 года",
+      "status": "todo",
+      "notes": "Искать через разрешения на ввод, ЕИСЖС, документы администрации и публичные источники."
+    },
+    {
+      "id": "collect-under-construction",
+      "title": "Собрать строящиеся дома",
+      "status": "in_progress",
+      "notes": "Первый рабочий объект — ЖК Теллерманов сад. Остальные объекты не добавлять без публичного подтверждения."
+    },
+    {
+      "id": "collect-planned-projects",
+      "title": "Собрать планируемые проекты с публичными подтверждениями",
+      "status": "todo",
+      "notes": "Закрытые или предварительные сведения не публиковать и не переносить в публичные карточки."
+    },
+    {
+      "id": "verify-builders",
+      "title": "Проверить всех застройщиков и юридические лица",
+      "status": "todo",
+      "notes": "Сверять с ЕИСЖС, проектными декларациями и ЕГРЮЛ."
+    }
+  ]
+}
