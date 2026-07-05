@@ -33,7 +33,8 @@
 - новости;
 - FAQ;
 - контакты и форма заявки;
-- лидогенерационная страница `/zayavka/`.
+- лидогенерационная страница `/zayavka/`;
+- страница подтверждения заявки `/spasibo/`.
 
 ## Текущий опубликованный адрес
 
@@ -66,6 +67,7 @@ https://tellermanovsad.ru/
 /spravochnik/
 /sravnenie/
 /zayavka/
+/spasibo/
 /contacts/
 /privacy/
 ```
@@ -106,12 +108,15 @@ https://tellermanovsad.ru/
 - UTM-метки и рекламные клик-метки;
 - код специалиста `realtor` / `realtor_id`;
 - согласие на обработку персональных данных;
+- время заполнения формы;
+- антиспам-проверку honeypot;
 - автоматическую квалификацию `hot`, `warm` или `cold`.
 
 Текущая отправка:
 
 - email-копия через Web3Forms;
-- подготовлен `LEAD_ENDPOINT` для будущей передачи в CRM, Supabase Edge Function или другой обработчик.
+- подготовлен `LEAD_ENDPOINT` для будущей передачи в CRM, Supabase Edge Function или другой обработчик;
+- после успешной отправки пользователь попадает на `/spasibo/`, где фиксируется событие просмотра страницы благодарности.
 
 Настройка находится в `assets/js/main.js`:
 
@@ -119,8 +124,16 @@ https://tellermanovsad.ru/
 const SITE_CONFIG = {
   WEB3FORMS_ACCESS_KEY: "...",
   LEAD_ENDPOINT: "",
-  SEND_EMAIL_COPY: true
+  SEND_EMAIL_COPY: true,
+  ENABLE_THANK_YOU_REDIRECT: true
 };
+```
+
+События аналитики:
+
+```text
+lead_submit
+lead_thankyou_view
 ```
 
 Пример рекламной ссылки:
@@ -137,6 +150,8 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 - `docs/migration-tellermanovsad.md` — план переноса текущего сайта ЖК в раздел портала;
 - `docs/development-roadmap.md` — этапы дальнейшей разработки;
 - `docs/leadgen-strategy.md` — стратегия лидогенерации, формы, UTM, квалификация, сценарии менеджера;
+- `docs/utm-playbook.md` — шаблоны UTM-ссылок для ВК, Telegram, офлайн-рекламы, QR и персональных ссылок специалистов;
+- `docs/manager-lead-handling.md` — инструкция менеджеру по обработке заявок, звонкам, статусам и безопасным формулировкам;
 - `docs/legal-safety-strategy.md` — юридически безопасное позиционирование портала, дисклеймеры, стоп-лист формулировок, шаблоны карточек ЖК, рекламы и постов;
 - `docs/supabase-leads.sql` — схема таблиц для хранения заявок и истории обработки в Supabase.
 
@@ -154,9 +169,9 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 ## Ближайшие задачи
 
 1. Подключить `LEAD_ENDPOINT` к Supabase Edge Function или CRM webhook.
-2. Создать серверную валидацию заявок и антиспам.
+2. Добавить серверную валидацию заявок и rate limit.
 3. Настроить уведомления менеджерам.
-4. Добавить страницу «Спасибо» и события аналитики.
+4. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
 5. Зафиксировать полную карту URL портала.
 6. Создать модель данных ЖК и застройщика.
 7. Подготовить структуру `/zhk/tellermanov-sad/`.
