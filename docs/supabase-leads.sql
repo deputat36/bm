@@ -43,9 +43,11 @@ create table if not exists public.newbuild_leads (
   source_path text,
   referrer text,
   user_agent text,
+  submit_time_seconds integer,
 
   tracking jsonb not null default '{}'::jsonb,
   qualification jsonb not null default '{}'::jsonb,
+  spam_check jsonb not null default '{}'::jsonb,
   raw_payload jsonb not null default '{}'::jsonb,
 
   personal_data_consent boolean not null default false,
@@ -100,6 +102,7 @@ create index if not exists newbuild_leads_crm_status_idx on public.newbuild_lead
 create index if not exists newbuild_leads_manager_id_idx on public.newbuild_leads (manager_id);
 create index if not exists newbuild_leads_tracking_gin_idx on public.newbuild_leads using gin (tracking);
 create index if not exists newbuild_leads_qualification_gin_idx on public.newbuild_leads using gin (qualification);
+create index if not exists newbuild_leads_spam_check_gin_idx on public.newbuild_leads using gin (spam_check);
 
 create table if not exists public.newbuild_lead_events (
   id uuid primary key default gen_random_uuid(),
@@ -153,8 +156,10 @@ alter table public.newbuild_lead_events enable row level security;
 --   name,
 --   phone,
 --   phone_normalized,
+--   submit_time_seconds,
 --   tracking,
 --   qualification,
+--   spam_check,
 --   raw_payload,
 --   personal_data_consent,
 --   marketing_consent,
@@ -169,11 +174,18 @@ alter table public.newbuild_lead_events enable row level security;
 --   payload->>'name',
 --   payload->>'phone',
 --   payload->>'phone_normalized',
+--   nullif(payload->>'submit_time_seconds', '')::integer,
 --   coalesce(payload->'tracking', '{}'::jsonb),
 --   coalesce(payload->'qualification', '{}'::jsonb),
+--   coalesce(payload->'spam_check', '{}'::jsonb),
 --   payload,
 --   payload->>'personal_data_consent' = 'yes',
 --   payload->>'marketing_consent' = 'yes',
 --   payload->>'consent_text',
 --   payload->>'policy_url'
 -- );
+
+-- Если таблица уже была создана до добавления полей антиспама, выполнить миграцию:
+-- alter table public.newbuild_leads add column if not exists submit_time_seconds integer;
+-- alter table public.newbuild_leads add column if not exists spam_check jsonb not null default '{}'::jsonb;
+-- create index if not exists newbuild_leads_spam_check_gin_idx on public.newbuild_leads using gin (spam_check);
