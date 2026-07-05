@@ -118,6 +118,14 @@ https://tellermanovsad.ru/
 - подготовлен `LEAD_ENDPOINT` для будущей передачи в CRM, Supabase Edge Function или другой обработчик;
 - после успешной отправки пользователь попадает на `/spasibo/`, где фиксируется событие просмотра страницы благодарности.
 
+Подготовлена серверная заготовка:
+
+```text
+supabase/functions/newbuild-lead/index.ts
+```
+
+Она принимает заявку, валидирует телефон и согласие, отсекает спам, пишет данные в `newbuild_leads`, создаёт событие в `newbuild_lead_events` и может отправлять уведомление в Telegram.
+
 Настройка находится в `assets/js/main.js`:
 
 ```js
@@ -153,7 +161,8 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 - `docs/utm-playbook.md` — шаблоны UTM-ссылок для ВК, Telegram, офлайн-рекламы, QR и персональных ссылок специалистов;
 - `docs/manager-lead-handling.md` — инструкция менеджеру по обработке заявок, звонкам, статусам и безопасным формулировкам;
 - `docs/legal-safety-strategy.md` — юридически безопасное позиционирование портала, дисклеймеры, стоп-лист формулировок, шаблоны карточек ЖК, рекламы и постов;
-- `docs/supabase-leads.sql` — схема таблиц для хранения заявок и истории обработки в Supabase.
+- `docs/supabase-leads.sql` — схема таблиц для хранения заявок и истории обработки в Supabase;
+- `docs/supabase-edge-function-leads.md` — инструкция по подключению Supabase Edge Function для заявок.
 
 ## Принципы разработки
 
@@ -168,9 +177,9 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 
 ## Ближайшие задачи
 
-1. Подключить `LEAD_ENDPOINT` к Supabase Edge Function или CRM webhook.
-2. Добавить серверную валидацию заявок и rate limit.
-3. Настроить уведомления менеджерам.
+1. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
+2. Добавить server-side rate limit.
+3. Настроить Telegram-уведомления менеджерам.
 4. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
 5. Зафиксировать полную карту URL портала.
 6. Создать модель данных ЖК и застройщика.
