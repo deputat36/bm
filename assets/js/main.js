@@ -4,6 +4,8 @@ const SITE_CONFIG = {
   SEND_EMAIL_COPY: true,
   ENABLE_THANK_YOU_REDIRECT: true,
   project: "Портал Новостройки Борисоглебска",
+  projectId: "newbuilds-borisoglebsk",
+  projectName: "Новостройки Борисоглебска",
   defaultComplex: "ЖК Теллерманов сад",
   phoneDisplay: "8 903 857-69-09",
   phoneHref: "tel:+79038576909",
@@ -175,7 +177,10 @@ function collectFormData(form) {
   const honeypotFilled = Boolean(data.website);
 
   data.project = data.project || form.dataset.project || SITE_CONFIG.project;
+  data.project_id = data.project_id || form.dataset.projectId || SITE_CONFIG.projectId;
+  data.project_name = data.project_name || form.dataset.projectName || SITE_CONFIG.projectName || data.project;
   data.residential_complex = data.residential_complex || form.dataset.complex || SITE_CONFIG.defaultComplex;
+  data.residential_complex_id = data.residential_complex_id || form.dataset.complexId || "";
   data.lead_type = data.lead_type || form.dataset.leadType || "general";
   data.form_id = data.form_id || form.dataset.formId || `${data.lead_type}_${window.location.pathname.replace(/[^a-zа-я0-9]/gi, "_")}`;
   data.phone_normalized = normalizePhone(data.phone);
@@ -217,7 +222,10 @@ function leadToReadableText(data) {
     `Тип заявки: ${data.lead_type || ""}`,
     `ID фиксации клиента: ${data.client_fixation_id || ""}`,
     `Проект: ${data.project || ""}`,
+    `ID проекта: ${data.project_id || ""}`,
+    `Название проекта: ${data.project_name || ""}`,
     `ЖК: ${data.residential_complex || ""}`,
+    `ID ЖК: ${data.residential_complex_id || ""}`,
     `Имя: ${data.name || ""}`,
     `Телефон: ${data.phone || ""}`,
     `Телефон нормализованный: ${data.phone_normalized || ""}`,
@@ -267,7 +275,10 @@ async function sendWeb3FormsLead(data) {
     timeline: data.timeline || data.purchase_timeline || "",
     comment: data.comment || data.question || "",
     project: data.project || "",
+    project_id: data.project_id || "",
+    project_name: data.project_name || "",
     residential_complex: data.residential_complex || "",
+    residential_complex_id: data.residential_complex_id || "",
     client_fixation_id: data.client_fixation_id || "",
     qualification_status: data.qualification?.status || "",
     qualification_score: String(data.qualification?.score || 0),
@@ -369,7 +380,10 @@ function saveLastLead(data) {
     client_fixation_id: data.client_fixation_id,
     lead_type: data.lead_type,
     form_id: data.form_id,
+    project_id: data.project_id,
+    project_name: data.project_name,
     residential_complex: data.residential_complex,
+    residential_complex_id: data.residential_complex_id,
     qualification: data.qualification,
     created_at: data.created_at
   };
@@ -382,7 +396,10 @@ function trackLeadEvent(data, result = {}) {
     event: "lead_submit",
     lead_type: data.lead_type,
     form_id: data.form_id,
+    project_id: data.project_id,
+    project_name: data.project_name,
     residential_complex: data.residential_complex,
+    residential_complex_id: data.residential_complex_id,
     client_fixation_id: data.client_fixation_id,
     qualification_status: data.qualification?.status || "",
     qualification_score: data.qualification?.score || 0,
@@ -433,7 +450,10 @@ function enhanceLeadForm(form) {
   addHiddenField(form, "lead_type", form.dataset.leadType);
   addHiddenField(form, "form_id", form.dataset.formId);
   addHiddenField(form, "project", form.dataset.project || SITE_CONFIG.project);
+  addHiddenField(form, "project_id", form.dataset.projectId || SITE_CONFIG.projectId);
+  addHiddenField(form, "project_name", form.dataset.projectName || SITE_CONFIG.projectName);
   addHiddenField(form, "residential_complex", form.dataset.complex || SITE_CONFIG.defaultComplex);
+  addHiddenField(form, "residential_complex_id", form.dataset.complexId);
   addConsent(form);
 
   form.addEventListener("submit", async (event) => {
