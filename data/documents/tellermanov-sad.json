@@ -1,0 +1,44 @@
+[
+  {
+    "id": "pd-36-001139",
+    "project_id": "tellermanov-sad",
+    "title": "Проектная декларация №36-001139",
+    "type": "project_declaration",
+    "number": "36-001139",
+    "date": "2026-06-26",
+    "source_name": "наш.дом.рф",
+    "source_url": "",
+    "local_file": "",
+    "description": "Основной документ с характеристиками объекта. Перед публикацией ссылки нужно проверить актуальный официальный источник.",
+    "is_verified": false,
+    "is_active": true
+  },
+  {
+    "id": "permit-36-04-13-2026",
+    "project_id": "tellermanov-sad",
+    "title": "Разрешение на строительство №36-04-13-2026",
+    "type": "building_permit",
+    "number": "36-04-13-2026",
+    "date": "2026-06-08",
+    "source_name": "Официальные документы объекта",
+    "source_url": "",
+    "local_file": "",
+    "description": "Разрешение на строительство дома на Просторной, 4А. Перед публикацией требуется проверить источник и формулировку.",
+    "is_verified": false,
+    "is_active": true
+  },
+  {
+    "id": "expertise-36-2-1-3-026088-2026",
+    "project_id": "tellermanov-sad",
+    "title": "Положительное заключение экспертизы №36-2-1-3-026088-2026",
+    "type": "expertise",
+    "number": "36-2-1-3-026088-2026",
+    "date": "2026-06-04",
+    "source_name": "Официальные документы объекта",
+    "source_url": "",
+    "local_file": "",
+    "description": "Заключение экспертизы по объекту. Перед публикацией требуется сверка с официальным документом.",
+    "is_verified": false,
+    "is_active": true
+  }
+]
