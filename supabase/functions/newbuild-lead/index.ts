@@ -8,16 +8,25 @@
 // TELEGRAM_BOT_TOKEN          optional
 // TELEGRAM_CHAT_ID            optional
 // ALLOWED_ORIGINS             optional, comma separated
+// RATE_LIMIT_PER_HOUR         optional, default 12
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
 type LeadPayload = Record<string, unknown>;
 
+type RateLimitResult = {
+  allowed: boolean;
+  fingerprint: string;
+  attemptCount: number;
+  limit: number;
+};
+
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
 const TELEGRAM_CHAT_ID = Deno.env.get("TELEGRAM_CHAT_ID") || "";
+const RATE_LIMIT_PER_HOUR = Number(Deno.env.get("RATE_LIMIT_PER_HOUR") || 12);
 const ALLOWED_ORIGINS = (Deno.env.get("ALLOWED_ORIGINS") || "https://tellermanovsad.ru,https://deputat36.github.io")
   .split(",")
   .map((origin) => origin.trim())
@@ -54,6 +63,76 @@ function normalizePhone(phone: string): string {
   return phone.replace(/[^\d+]/g, "");
 }
 
+function getClientIp(request: Request): string {
+  const forwardedFor = request.headers.get("x-forwarded-for") || "";
+  const realIp = request.headers.get("x-real-ip") || "";
+  const cfIp = request.headers.get("cf-connecting-ip") || "";
+  return (cfIp || realIp || forwardedFor.split(",")[0] || "unknown").trim();
+}
+
+async function sha256(value: string): Promise<string> {
+  const data = new TextEncoder().encode(value);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function getWindowStart(): string {
+  const date = new Date();
+  date.setUTCMinutes(0, 0, 0);
+  return date.toISOString();
+}
+
+async function checkRateLimit(request: Request, payload: LeadPayload): Promise<RateLimitResult> {
+  const clientIp = getClientIp(request);
+  const userAgent = request.headers.get("user-agent") || getString(payload, "user_agent") || "unknown";
+  const phoneNormalized = normalizePhone(getString(payload, "phone"));
+  const fingerprint = await sha256(`${clientIp}|${userAgent}|${phoneNormalized.slice(-4)}`);
+  const windowStart = getWindowStart();
+
+  const { data: existing, error: selectError } = await supabase
+    .from("newbuild_lead_rate_limits")
+    .select("id, attempt_count")
+    .eq("fingerprint", fingerprint)
+    .eq("window_start", windowStart)
+    .maybeSingle();
+
+  if (selectError) {
+    // Если таблица rate limit ещё не создана, не блокируем заявки, но возвращаем диагностический отпечаток.
+    return { allowed: true, fingerprint, attemptCount: 0, limit: RATE_LIMIT_PER_HOUR };
+  }
+
+  if (existing) {
+    const attemptCount = Number(existing.attempt_count || 0) + 1;
+
+    await supabase
+      .from("newbuild_lead_rate_limits")
+      .update({
+        attempt_count: attemptCount,
+        last_attempt_at: new Date().toISOString(),
+        last_payload: payload
+      })
+      .eq("id", existing.id);
+
+    return {
+      allowed: attemptCount <= RATE_LIMIT_PER_HOUR,
+      fingerprint,
+      attemptCount,
+      limit: RATE_LIMIT_PER_HOUR
+    };
+  }
+
+  await supabase.from("newbuild_lead_rate_limits").insert({
+    fingerprint,
+    window_start: windowStart,
+    attempt_count: 1,
+    first_attempt_at: new Date().toISOString(),
+    last_attempt_at: new Date().toISOString(),
+    last_payload: payload
+  });
+
+  return { allowed: true, fingerprint, attemptCount: 1, limit: RATE_LIMIT_PER_HOUR };
+}
+
 function validatePayload(payload: LeadPayload) {
   const errors: string[] = [];
   const phone = getString(payload, "phone");
@@ -78,7 +157,9 @@ function validatePayload(payload: LeadPayload) {
   return { errors, phoneNormalized, leadType };
 }
 
-function buildLeadRow(payload: LeadPayload, phoneNormalized: string, leadType: string) {
+function buildLeadRow(payload: LeadPayload, phoneNormalized: string, leadType: string, rateLimit: RateLimitResult) {
+  const spamCheck = typeof payload.spam_check === "object" && payload.spam_check !== null ? payload.spam_check as Record<string, unknown> : {};
+
   return {
     client_fixation_id: getString(payload, "client_fixation_id"),
     lead_type: leadType,
@@ -117,7 +198,13 @@ function buildLeadRow(payload: LeadPayload, phoneNormalized: string, leadType: s
 
     tracking: payload.tracking || {},
     qualification: payload.qualification || {},
-    spam_check: payload.spam_check || {},
+    spam_check: {
+      ...spamCheck,
+      rate_limit_fingerprint: rateLimit.fingerprint,
+      rate_limit_attempt_count: rateLimit.attemptCount,
+      rate_limit_per_hour: rateLimit.limit,
+      rate_limit_allowed: rateLimit.allowed
+    },
     raw_payload: payload,
 
     personal_data_consent: getString(payload, "personal_data_consent") === "yes",
@@ -186,6 +273,16 @@ serve(async (request) => {
     return jsonResponse({ success: false, error: "invalid_json" }, 400, origin);
   }
 
+  const rateLimit = await checkRateLimit(request, payload);
+
+  if (!rateLimit.allowed) {
+    return jsonResponse({
+      success: true,
+      blocked: true,
+      reason: "rate_limit"
+    }, 200, origin);
+  }
+
   const { errors, phoneNormalized, leadType } = validatePayload(payload);
 
   if (errors.includes("spam_detected")) {
@@ -196,7 +293,7 @@ serve(async (request) => {
     return jsonResponse({ success: false, errors }, 422, origin);
   }
 
-  const row = buildLeadRow(payload, phoneNormalized, leadType);
+  const row = buildLeadRow(payload, phoneNormalized, leadType, rateLimit);
 
   if (!row.client_fixation_id) {
     row.client_fixation_id = crypto.randomUUID();
