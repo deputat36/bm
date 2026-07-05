@@ -44,6 +44,7 @@
 - [x] Обновить `README.md` под новую цель проекта.
 - [x] Создать `docs/url-map.md` с полной картой старых и новых URL.
 - [x] Создать `docs/content-model.md` с моделью данных ЖК, застройщика, квартиры и заявки.
+- [x] Создать `docs/redirect-map.md` с картой будущих редиректов.
 
 ## 4. Этап 2 — структура портала без переноса контента
 
@@ -95,7 +96,7 @@
 
 Цель: перенести все страницы ЖК в `/zhk/tellermanov-sad/`.
 
-Статус: созданы черновые версии основных объектных страниц.
+Статус: черновые версии основных объектных страниц созданы.
 
 Задачи:
 
@@ -108,13 +109,14 @@
 - [x] Перенести `/hod-stroitelstva/` → `/zhk/tellermanov-sad/hod-stroitelstva/`.
 - [x] Перенести `/ipoteka/` → `/zhk/tellermanov-sad/ipoteka/`.
 - [x] Перенести `/faq/` → `/zhk/tellermanov-sad/faq/`.
-- [ ] Перенести `/zastroyschik/` → `/zhk/tellermanov-sad/zastroyschik/`.
-- [ ] Перенести `/infrastruktura/` → `/zhk/tellermanov-sad/infrastruktura/`.
-- [ ] Перенести `/contacts/` → `/zhk/tellermanov-sad/contacts/`.
-- [ ] Перенести `/prostornaya-4a/` → `/zhk/tellermanov-sad/prostornaya-4a/`.
-- [ ] Перенести объектные новости в `/zhk/tellermanov-sad/novosti/`.
+- [x] Перенести `/zastroyschik/` → `/zhk/tellermanov-sad/zastroyschik/`.
+- [x] Перенести `/infrastruktura/` → `/zhk/tellermanov-sad/infrastruktura/`.
+- [x] Перенести `/contacts/` → `/zhk/tellermanov-sad/contacts/`.
+- [x] Перенести `/prostornaya-4a/` → `/zhk/tellermanov-sad/prostornaya-4a/`.
+- [x] Перенести объектные новости в `/zhk/tellermanov-sad/novosti/`.
 - [x] Добавить базовые хлебные крошки на новых страницах.
 - [ ] Проверить относительные пути к CSS, JS и изображениям на всех новых страницах.
+- [ ] Снять `noindex` только после проверки и утверждения стратегии миграции.
 
 ## 7. Этап 5 — данные и повторно используемые блоки
 
@@ -136,7 +138,7 @@
 - [ ] Создать новые canonical для страниц портала.
 - [ ] Обновить `sitemap.xml`.
 - [ ] Проверить `robots.txt`.
-- [ ] Создать карту редиректов.
+- [x] Создать карту редиректов.
 - [ ] Проверить микроразметку Schema.org.
 - [ ] Добавить хлебные крошки Schema.org.
 - [ ] Подготовить страницы под низкочастотные запросы:
@@ -196,9 +198,8 @@
 
 ## 12. Ближайшие автономные задачи
 
-1. Создать оставшиеся объектные страницы: `zastroyschik`, `infrastruktura`, `contacts`, `prostornaya-4a`, `novosti`.
+1. Проверить относительные пути на новых страницах.
 2. Создать `/sravnenie/index.html`, если инструмент не блокирует запись.
-3. Проверить относительные пути на новых страницах.
-4. Подготовить черновик новой главной портала.
-5. Создать карту редиректов для старых URL.
-6. После проверки — решить, когда обновлять sitemap и canonical.
+3. Подготовить черновик новой главной портала.
+4. Проверить и унифицировать `lead_type`, `project`, `project_id`, `project_name` на формах.
+5. После проверки — решить, когда обновлять sitemap и canonical.
