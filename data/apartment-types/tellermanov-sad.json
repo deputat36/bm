@@ -1,0 +1,50 @@
+[
+  {
+    "project_id": "tellermanov-sad",
+    "type": "studio",
+    "title": "Студии",
+    "rooms": 0,
+    "count": 9,
+    "area_min": 27.71,
+    "area_max": 27.71,
+    "description": "Минимальный вход в новый дом. Подходит для первого жилья, покупки ребенку или инвестиционного сценария.",
+    "landing_url": "/zhk/tellermanov-sad/kvartiry/",
+    "is_active": true
+  },
+  {
+    "project_id": "tellermanov-sad",
+    "type": "one-room",
+    "title": "1-комнатные квартиры",
+    "rooms": 1,
+    "count": 17,
+    "area_min": 39.77,
+    "area_max": 41.65,
+    "description": "Формат для первого самостоятельного жилья, молодой семьи или покупки детям.",
+    "landing_url": "/zhk/tellermanov-sad/kvartiry/",
+    "is_active": true
+  },
+  {
+    "project_id": "tellermanov-sad",
+    "type": "two-room",
+    "title": "2-комнатные квартиры",
+    "rooms": 2,
+    "count": 35,
+    "area_min": 43.28,
+    "area_max": 56.93,
+    "description": "Самый массовый и универсальный формат дома для семьи, отдельной спальни или покупки с запасом площади.",
+    "landing_url": "/zhk/tellermanov-sad/kvartiry/",
+    "is_active": true
+  },
+  {
+    "project_id": "tellermanov-sad",
+    "type": "three-room",
+    "title": "3-комнатные квартиры",
+    "rooms": 3,
+    "count": 9,
+    "area_min": 63.76,
+    "area_max": 63.76,
+    "description": "Семейный формат с отдельными комнатами.",
+    "landing_url": "/zhk/tellermanov-sad/kvartiry/",
+    "is_active": true
+  }
+]
