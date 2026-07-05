@@ -21,6 +21,7 @@
 - [x] Текущая главная страница ориентирована на ЖК «Теллерманов сад».
 - [x] Текущая карта сайта использует домен `tellermanovsad.ru`.
 - [x] Форма заявок реализована в `assets/js/main.js`.
+- [x] В `assets/js/main.js` уже есть поддержка типов заявок, UTM, first/last touch, фиксации клиента и квалификации лида.
 
 Что нужно дополнительно проверить:
 
@@ -48,16 +49,17 @@
 
 Цель: подготовить папки и техническую основу, не меняя текущую публикацию.
 
-Статус: начато. Созданы черновые страницы с `noindex,follow`, чтобы они не мешали текущей индексации.
+Статус: базовый каркас создан. Новые страницы закрыты от индексации через `noindex,follow`, чтобы они не мешали текущей индексации.
 
 Задачи:
 
 - [x] Создать папку `/zhk/`.
 - [x] Создать папку `/zhk/tellermanov-sad/`.
 - [x] Создать временную техническую страницу `/zhk/index.html` со списком ЖК.
-- [x] Создать черновую карточку `/zhk/tellermanov-sad/index.html`.
+- [x] Создать расширенную черновую карточку `/zhk/tellermanov-sad/index.html`.
 - [x] Создать `/novostroyki/index.html` как каталог новостроек.
 - [x] Создать `/zastroyschiki/index.html`.
+- [x] Создать `/zastroyschiki/bm-group/index.html`.
 - [x] Создать `/spravochnik/index.html`.
 - [ ] Создать `/sravnenie/index.html`.
 
@@ -81,7 +83,8 @@
 
 Задачи:
 
-- [ ] Сохранить текущий `index.html` как основу `/zhk/tellermanov-sad/index.html`.
+- [x] Подготовить расширенную черновую страницу `/zhk/tellermanov-sad/index.html` на основе текущих данных ЖК.
+- [ ] Сохранить текущий `index.html` как полноценную копию `/zhk/tellermanov-sad/index.html` перед заменой главной.
 - [ ] Создать новый `index.html` портала.
 - [ ] Обновить шапку сайта под городской портал.
 - [ ] Добавить навигацию: Новостройки, ЖК, Ипотека, Новости, Справочник, Контакты.
@@ -92,19 +95,26 @@
 
 Цель: перенести все страницы ЖК в `/zhk/tellermanov-sad/`.
 
+Статус: созданы черновые версии основных объектных страниц.
+
 Задачи:
 
-- [ ] Перенести `/o-zhk/` → `/zhk/tellermanov-sad/o-zhk/`.
-- [ ] Перенести `/kvartiry/` → `/zhk/tellermanov-sad/kvartiry/`.
-- [ ] Перенести `/planirovki/` → `/zhk/tellermanov-sad/planirovki/`.
-- [ ] Перенести `/ceny/` → `/zhk/tellermanov-sad/ceny/`.
-- [ ] Перенести `/dokumenty/` → `/zhk/tellermanov-sad/dokumenty/`.
-- [ ] Перенести `/galereya/` → `/zhk/tellermanov-sad/galereya/`.
-- [ ] Перенести `/hod-stroitelstva/` → `/zhk/tellermanov-sad/hod-stroitelstva/`.
-- [ ] Перенести `/faq/` → `/zhk/tellermanov-sad/faq/`.
+- [x] Перенести `/o-zhk/` → `/zhk/tellermanov-sad/o-zhk/`.
+- [x] Перенести `/kvartiry/` → `/zhk/tellermanov-sad/kvartiry/`.
+- [x] Перенести `/planirovki/` → `/zhk/tellermanov-sad/planirovki/`.
+- [x] Перенести `/ceny/` → `/zhk/tellermanov-sad/ceny/`.
+- [x] Перенести `/dokumenty/` → `/zhk/tellermanov-sad/dokumenty/`.
+- [x] Перенести `/galereya/` → `/zhk/tellermanov-sad/galereya/`.
+- [x] Перенести `/hod-stroitelstva/` → `/zhk/tellermanov-sad/hod-stroitelstva/`.
+- [x] Перенести `/ipoteka/` → `/zhk/tellermanov-sad/ipoteka/`.
+- [x] Перенести `/faq/` → `/zhk/tellermanov-sad/faq/`.
+- [ ] Перенести `/zastroyschik/` → `/zhk/tellermanov-sad/zastroyschik/`.
+- [ ] Перенести `/infrastruktura/` → `/zhk/tellermanov-sad/infrastruktura/`.
+- [ ] Перенести `/contacts/` → `/zhk/tellermanov-sad/contacts/`.
+- [ ] Перенести `/prostornaya-4a/` → `/zhk/tellermanov-sad/prostornaya-4a/`.
 - [ ] Перенести объектные новости в `/zhk/tellermanov-sad/novosti/`.
-- [ ] Обновить хлебные крошки.
-- [ ] Проверить относительные пути к CSS, JS и изображениям.
+- [x] Добавить базовые хлебные крошки на новых страницах.
+- [ ] Проверить относительные пути к CSS, JS и изображениям на всех новых страницах.
 
 ## 7. Этап 5 — данные и повторно используемые блоки
 
@@ -112,10 +122,10 @@
 
 Задачи:
 
-- [ ] Создать `/data/projects/tellermanov-sad.json`.
-- [ ] Создать `/data/builders/bm-group.json`.
+- [x] Создать `/data/projects/tellermanov-sad.json`.
+- [x] Создать `/data/builders/bm-group.json`.
 - [ ] Вынести общие параметры сайта в JS-конфиг или JSON.
-- [ ] Унифицировать поля заявок.
+- [x] Проверить, что текущая форма уже поддерживает расширенные поля заявок.
 - [ ] Подготовить структуру для будущего добавления новых ЖК.
 
 ## 8. Этап 6 — SEO и индексация
@@ -141,12 +151,12 @@
 
 Задачи:
 
-- [ ] Разделить типы заявок: общий подбор / конкретный ЖК / ипотека / обратный звонок.
-- [ ] Сохранять `project_id` и `project_name`.
-- [ ] Сохранять `lead_type`.
-- [ ] Сохранять источник страницы.
-- [ ] Сохранять UTM-метки.
-- [ ] Сохранять код специалиста `realtor` / `realtor_id`.
+- [x] Использовать `lead_type` на новых формах: `portal_selection` и `project_consultation`.
+- [ ] Сохранять `project_id` и `project_name` в явном виде на всех формах.
+- [x] Сохранять `lead_type`.
+- [x] Сохранять источник страницы.
+- [x] Сохранять UTM-метки.
+- [x] Сохранять код специалиста `realtor` / `realtor_id`.
 - [ ] Подготовить переход с Web3Forms на более управляемый backend, если потребуется.
 
 ## 10. Этап 8 — контентное развитие
@@ -186,9 +196,9 @@
 
 ## 12. Ближайшие автономные задачи
 
-1. Создать `/sravnenie/index.html`.
-2. Создать `/data/projects/tellermanov-sad.json`.
-3. Создать `/data/builders/bm-group.json`.
-4. Улучшить черновую страницу `/zhk/tellermanov-sad/index.html` на основе текущей главной ЖК.
-5. Подготовить черновик новой главной портала.
-6. Проверить пути, адаптивность и форму заявки на новых страницах.
+1. Создать оставшиеся объектные страницы: `zastroyschik`, `infrastruktura`, `contacts`, `prostornaya-4a`, `novosti`.
+2. Создать `/sravnenie/index.html`, если инструмент не блокирует запись.
+3. Проверить относительные пути на новых страницах.
+4. Подготовить черновик новой главной портала.
+5. Создать карту редиректов для старых URL.
+6. После проверки — решить, когда обновлять sitemap и canonical.
