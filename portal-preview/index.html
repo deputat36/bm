@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Прототип визуального стиля — Новостройки Борисоглебска</title>
+  <meta name="description" content="Безопасный прототип визуального стиля городского портала Новостройки Борисоглебска: главная, карточки ЖК, посты и баннеры.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../assets/css/portal-design-system.css">
+</head>
+<body class="portal-style">
+  <header class="portal-topbar">
+    <div class="portal-container portal-topbar__inner">
+      <a class="portal-logo" href="./" aria-label="Новостройки Борисоглебска">
+        <span class="portal-logo__icon" aria-hidden="true"><span class="portal-logo__pin"></span></span>
+        <span class="portal-logo__text">
+          <span class="portal-logo__title">Новостройки Борисоглебска</span>
+          <span class="portal-logo__subtitle">городской каталог</span>
+        </span>
+      </a>
+      <nav class="portal-nav" aria-label="Основное меню прототипа">
+        <a href="#catalog">Новостройки</a>
+        <a href="#compare">Сравнение</a>
+        <a href="#mortgage">Ипотека</a>
+        <a href="#social">Соцсети</a>
+        <a class="portal-button" href="#lead">Подобрать квартиру</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="portal-hero">
+      <div class="portal-container portal-hero__grid">
+        <div>
+          <span class="portal-eyebrow">Независимый городской каталог</span>
+          <h1>Новостройки Борисоглебска</h1>
+          <p class="portal-lead">Квартиры, жилые комплексы, планировки, ипотека и новости строительства в одном понятном городском портале.</p>
+          <div class="portal-hero__actions">
+            <a class="portal-button" href="#catalog">Смотреть новостройки</a>
+            <a class="portal-button portal-button--secondary" href="#lead">Получить консультацию</a>
+          </div>
+          <div class="portal-stats" aria-label="Ключевые показатели портала">
+            <div class="portal-stat"><strong>ЖК</strong><span>карточки объектов в едином формате</span></div>
+            <div class="portal-stat"><strong>1–3</strong><span>комнатные квартиры и планировки</span></div>
+            <div class="portal-stat"><strong>24/7</strong><span>удобный городской справочник</span></div>
+          </div>
+        </div>
+
+        <form class="portal-search-panel" id="lead">
+          <div class="portal-search-panel__title">
+            <span>Быстрый подбор</span>
+            <span class="portal-badge portal-badge--green">без обязательств</span>
+          </div>
+          <div class="portal-filter-grid">
+            <label class="portal-field">Комнатность
+              <select name="rooms">
+                <option>Любая</option>
+                <option>Студия</option>
+                <option>1-комнатная</option>
+                <option>2-комнатная</option>
+                <option>3-комнатная</option>
+              </select>
+            </label>
+            <label class="portal-field">Способ покупки
+              <select name="purchase_type">
+                <option>Любой</option>
+                <option>Ипотека</option>
+                <option>Семейная ипотека</option>
+                <option>Материнский капитал</option>
+                <option>Наличные</option>
+              </select>
+            </label>
+            <label class="portal-field">Срок сдачи
+              <select name="deadline">
+                <option>Не важно</option>
+                <option>Дом сдан</option>
+                <option>2027</option>
+                <option>2028</option>
+              </select>
+            </label>
+            <label class="portal-field">Бюджет
+              <input name="budget" placeholder="Например, до 5 млн">
+            </label>
+          </div>
+          <button class="portal-button" type="button">Показать варианты</button>
+          <div class="portal-note portal-note--orange">Прототип формы. В рабочей версии заявка должна сохранять UTM-метки, страницу обращения, интересующий ЖК и тип заявки.</div>
+        </form>
+      </div>
+    </section>
+
+    <section class="portal-section portal-section--white" id="catalog">
+      <div class="portal-container">
+        <div class="portal-section__head">
+          <span class="portal-eyebrow">Карточки ЖК</span>
+          <h2>Каталог должен выглядеть как городской навигатор, а не как сайт одного объекта</h2>
+          <p class="portal-lead">Каждая карточка показывает статус, адрес, сроки, площади, условия покупки и аккуратную ссылку на консультацию.</p>
+        </div>
+
+        <div class="portal-grid portal-grid--2">
+          <article class="portal-card">
+            <div class="portal-card__visual"></div>
+            <div class="portal-card__content">
+              <div class="portal-card__meta">
+                <span class="portal-badge portal-badge--orange">Старт продаж</span>
+                <span class="portal-badge portal-badge--green">Ипотека</span>
+                <span class="portal-badge">Новостройка</span>
+              </div>
+              <h3>ЖК «Теллерманов сад»</h3>
+              <p>Борисоглебск, ул. Просторная, 4А. Информационная карточка объекта с характеристиками, планировками и условиями покупки.</p>
+              <div class="portal-param-grid">
+                <div class="portal-param"><span>Квартиры</span><strong>студии, 1–3 комн.</strong></div>
+                <div class="portal-param"><span>Этажность</span><strong>9 этажей</strong></div>
+                <div class="portal-param"><span>Площади</span><strong>27,71–63,76 м²</strong></div>
+                <div class="portal-param"><span>Срок</span><strong>I кв. 2028</strong></div>
+              </div>
+              <div class="portal-hero__actions">
+                <a class="portal-button" href="#">Подробнее о ЖК</a>
+                <a class="portal-button portal-button--secondary" href="#">Уточнить условия</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="portal-card">
+            <div class="portal-card__visual"></div>
+            <div class="portal-card__content">
+              <div class="portal-card__meta">
+                <span class="portal-badge">Анонс</span>
+                <span class="portal-badge">Цены уточняются</span>
+              </div>
+              <h3>Новый жилой дом</h3>
+              <p>Шаблон будущей карточки для других новостроек Борисоглебска. Данные добавляются только после проверки источников.</p>
+              <div class="portal-param-grid">
+                <div class="portal-param"><span>Адрес</span><strong>уточняется</strong></div>
+                <div class="portal-param"><span>Застройщик</span><strong>уточняется</strong></div>
+                <div class="portal-param"><span>Площади</span><strong>уточняются</strong></div>
+                <div class="portal-param"><span>Статус</span><strong>анонс</strong></div>
+              </div>
+              <div class="portal-note">Такой формат помогает добавлять объекты без ощущения, что портал принадлежит одному застройщику.</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="portal-section" id="compare">
+      <div class="portal-container">
+        <div class="portal-section__head">
+          <span class="portal-eyebrow">Компоненты</span>
+          <h2>Блоки для доверия и сравнения</h2>
+          <p class="portal-lead">Портал должен продавать через структуру: объяснять, сравнивать и снижать тревогу покупателя.</p>
+        </div>
+        <div class="portal-grid portal-grid--3">
+          <article class="portal-feature">
+            <div class="portal-feature__icon">1</div>
+            <h3>Сравнить ЖК</h3>
+            <p>Адрес, срок сдачи, этажность, планировки, застройщик, документы и условия покупки в одном формате.</p>
+          </article>
+          <article class="portal-feature">
+            <div class="portal-feature__icon">₽</div>
+            <h3>Разобраться с бюджетом</h3>
+            <p>Показывать цены только после подтверждения, а предварительные данные помечать аккуратно и честно.</p>
+          </article>
+          <article class="portal-feature" id="mortgage">
+            <div class="portal-feature__icon">✓</div>
+            <h3>Проверить ипотеку</h3>
+            <p>Обычная ипотека, семейная ипотека, материнский капитал и сертификат «Молодая семья» как отдельные сценарии.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="portal-section portal-section--white" id="social">
+      <div class="portal-container">
+        <div class="portal-section__head">
+          <span class="portal-eyebrow">ВК и Telegram</span>
+          <h2>Стиль постов и рекламных материалов</h2>
+          <p class="portal-lead">Визуалы должны быть спокойными: рубрика, крупный заголовок, одна акцентная плашка и понятный призыв.</p>
+        </div>
+        <div class="portal-grid portal-grid--3">
+          <div class="portal-social-preview">
+            <div class="portal-social-preview__top"><span>Новостройки</span><span>1080×1080</span></div>
+            <h3>Что известно о ЖК «Теллерманов сад»</h3>
+            <p>Адрес, планировки, сроки и условия покупки в одной карточке.</p>
+            <span class="portal-badge portal-badge--orange">Старт продаж</span>
+          </div>
+          <div class="portal-social-preview">
+            <div class="portal-social-preview__top"><span>Ипотека</span><span>1080×1350</span></div>
+            <h3>Семейная ипотека на новостройки</h3>
+            <p>Разбираем, кому подходит программа и что нужно уточнить до выбора квартиры.</p>
+            <span class="portal-badge portal-badge--green">Господдержка</span>
+          </div>
+          <div class="portal-social-preview">
+            <div class="portal-social-preview__top"><span>Справочник</span><span>1200×675</span></div>
+            <h3>Как проверить новостройку</h3>
+            <p>Проектная декларация, сроки, застройщик и документы перед покупкой.</p>
+            <span class="portal-badge">Полезно</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="portal-section">
+      <div class="portal-container">
+        <div class="portal-banner">
+          <div>
+            <span class="portal-eyebrow">Рекламный баннер</span>
+            <h2>Выбираете квартиру в новостройке?</h2>
+            <p class="portal-lead">Собрали новые дома Борисоглебска в одном удобном городском каталоге. Сравните ЖК, планировки, сроки и условия покупки.</p>
+            <div class="portal-hero__actions">
+              <a class="portal-button" href="#catalog">Перейти в каталог</a>
+              <a class="portal-button portal-button--secondary" href="#lead">Получить консультацию</a>
+            </div>
+          </div>
+          <div class="portal-banner__mock-card">
+            <span class="portal-badge portal-badge--orange">Каталог</span>
+            <h3>ЖК, квартиры, ипотека</h3>
+            <p>Единый стиль для баннеров, обложек ВК, рекламных постов и офлайн-листовок.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="portal-footer">
+    <div class="portal-container portal-footer__inner">
+      <div><strong>Новостройки Борисоглебска</strong><br>Городской каталог новых домов, квартир и планировок.</div>
+      <div>Прототип не заменяет текущий сайт. Информация справочная и требует проверки перед публикацией.</div>
+    </div>
+  </footer>
+</body>
+</html>
