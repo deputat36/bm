@@ -19,42 +19,117 @@
       <nav class="nav" aria-label="Основное меню">
         <a href="../novostroyki/">Новостройки</a>
         <a href="../zhk/">ЖК</a>
-        <a href="../ipoteka/">Ипотека</a>
-        <a href="../contacts/" class="button">Оставить заявку</a>
+        <a href="../zastroyschiki/">Застройщики</a>
+        <a href="../spravochnik/">Справочник</a>
+        <a href="#lead" class="button">Подобрать квартиру</a>
       </nav>
     </div>
   </header>
+
   <main>
     <div class="container breadcrumbs"><a href="../">Главная</a> / Новостройки</div>
+
     <section class="page-hero">
       <div class="container">
-        <span class="eyebrow">Каталог портала</span>
+        <span class="eyebrow">Каталог портала · раздел в подготовке</span>
         <h1>Новостройки Борисоглебска</h1>
-        <p class="lead">Здесь будет каталог новых домов и жилых комплексов Борисоглебска с фильтрами по адресу, сроку сдачи, типам квартир, застройщику и способам покупки.</p>
+        <p class="lead">Будущий каталог новых домов и жилых комплексов Борисоглебска с фильтрами по адресу, сроку сдачи, типам квартир, застройщику и способам покупки.</p>
         <div class="hero__actions">
           <a class="button" href="../zhk/tellermanov-sad/">Смотреть ЖК «Теллерманов сад»</a>
-          <a class="button button--ghost" href="../contacts/">Получить подборку</a>
+          <a class="button button--ghost" href="#lead">Получить подборку</a>
+        </div>
+        <div class="notice">Каталог пока закрыт от индексации. После заполнения объектов и проверки структуры его можно будет включить в sitemap.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section__head">
+          <h2>Актуальные объекты</h2>
+          <p>Первый объект в структуре портала — ЖК «Теллерманов сад». По мере появления новых новостроек каталог будет расширяться.</p>
+        </div>
+        <div class="grid grid--3">
+          <article class="card card--shadow">
+            <span class="eyebrow">Первый объект</span>
+            <h3>ЖК «Теллерманов сад»</h3>
+            <p>Новый дом на ул. Просторной, 4А. В опубликованном доме — 70 квартир от 27,71 до 63,76 м².</p>
+            <ul class="list">
+              <li>Класс: комфорт.</li>
+              <li>Этажность: 9 этажей.</li>
+              <li>Квартиры: студии, 1-, 2- и 3-комнатные.</li>
+              <li>Планируемая сдача: I квартал 2028 года.</li>
+            </ul>
+            <p><a class="button button--ghost" href="../zhk/tellermanov-sad/">Открыть карточку</a></p>
+          </article>
+          <article class="card">
+            <h3>Будущие карточки ЖК</h3>
+            <p>Для каждого объекта будет единая структура: о ЖК, квартиры, планировки, цены, документы, галерея, ход строительства и FAQ.</p>
+          </article>
+          <article class="card">
+            <h3>Фильтры каталога</h3>
+            <p>Планируемые фильтры: район, срок сдачи, тип квартиры, площадь, бюджет, застройщик и доступные способы покупки.</p>
+          </article>
         </div>
       </div>
     </section>
-    <section>
-      <div class="container grid grid--3">
-        <article class="card card--shadow">
-          <h3>ЖК «Теллерманов сад»</h3>
-          <p>Первый объект будущего каталога. Новый дом на Просторной, 4А.</p>
-          <p><a class="button button--ghost" href="../zhk/tellermanov-sad/">Открыть карточку</a></p>
-        </article>
-        <article class="card">
-          <h3>Фильтры</h3>
-          <p>В дальнейшем добавим фильтры по комнатности, площади, бюджету, сроку сдачи и ипотеке.</p>
-        </article>
-        <article class="card">
-          <h3>Подбор</h3>
-          <p>Покупатель сможет оставить заявку на подбор квартиры в новостройке.</p>
-        </article>
+
+    <section class="section--soft">
+      <div class="container">
+        <div class="section__head">
+          <h2>Как будет работать каталог</h2>
+          <p>Каталог должен помогать покупателю быстро понять рынок новостроек Борисоглебска и оставить заявку на подходящий вариант.</p>
+        </div>
+        <div class="grid grid--3">
+          <article class="card">
+            <h3>1. Выбор объекта</h3>
+            <p>Покупатель видит список новостроек, адреса, сроки, застройщиков и ключевые характеристики.</p>
+          </article>
+          <article class="card">
+            <h3>2. Изучение ЖК</h3>
+            <p>У каждого объекта есть отдельная карточка с планировками, документами, ипотекой и ходом строительства.</p>
+          </article>
+          <article class="card">
+            <h3>3. Заявка</h3>
+            <p>Форма сохраняет интересующий объект, страницу, UTM-метки и код специалиста из ссылки.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" id="lead">
+      <div class="container lead-panel">
+        <div>
+          <span class="eyebrow">Подбор новостройки</span>
+          <h2>Подобрать квартиру в новостройке Борисоглебска</h2>
+          <p class="lead">Оставьте заявку, если хотите получить подборку по новостройкам, ипотеке и доступным форматам квартир.</p>
+          <ul class="list">
+            <li>Подберем объект под бюджет и способ покупки.</li>
+            <li>Отдельно уточним семейную ипотеку, маткапитал и сертификаты.</li>
+            <li>Заявка не является бронью и не фиксирует цену.</li>
+          </ul>
+        </div>
+        <form class="form" data-lead-form data-lead-type="portal_selection" data-project="Портал Новостройки Борисоглебска" data-complex="" data-form-id="newbuilds_catalog_selection" data-success-message="Заявка на подбор новостройки отправлена. Специалист свяжется с вами и уточнит параметры поиска.">
+          <label>Имя<input name="name" required autocomplete="name" placeholder="Как к вам обращаться"></label>
+          <label>Телефон<input name="phone" required autocomplete="tel" placeholder="+7 ___ ___-__-__"></label>
+          <label>Что ищете<select name="interest" required>
+            <option value="">Выберите вариант</option>
+            <option>Студия</option>
+            <option>1-комнатная квартира</option>
+            <option>2-комнатная квартира</option>
+            <option>3-комнатная квартира</option>
+            <option>Любой вариант под бюджет</option>
+            <option>Ипотечная консультация</option>
+          </select></label>
+          <label>Бюджет или способ покупки<textarea name="comment" required placeholder="Например: бюджет, ипотека, маткапитал, продажа своей квартиры"></textarea></label>
+          <button class="button" type="submit">Получить подборку</button>
+          <div class="form__status" data-form-status></div>
+        </form>
       </div>
     </section>
   </main>
+
   <footer class="footer"><div class="container footer__inner"><div><strong>Новостройки Борисоглебска</strong></div><div>Черновой каталог. До готовности закрыт от индексации.</div></div></footer>
+
+  <script src="../assets/js/main.js"></script>
 </body>
 </html>
