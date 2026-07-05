@@ -137,6 +137,7 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 - `docs/migration-tellermanovsad.md` — план переноса текущего сайта ЖК в раздел портала;
 - `docs/development-roadmap.md` — этапы дальнейшей разработки;
 - `docs/leadgen-strategy.md` — стратегия лидогенерации, формы, UTM, квалификация, сценарии менеджера;
+- `docs/legal-safety-strategy.md` — юридически безопасное позиционирование портала, дисклеймеры, стоп-лист формулировок, шаблоны карточек ЖК, рекламы и постов;
 - `docs/supabase-leads.sql` — схема таблиц для хранения заявок и истории обработки в Supabase.
 
 ## Принципы разработки
