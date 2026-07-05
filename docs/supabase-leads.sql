@@ -119,6 +119,21 @@ create table if not exists public.newbuild_lead_events (
 create index if not exists newbuild_lead_events_lead_id_idx on public.newbuild_lead_events (lead_id, created_at desc);
 create index if not exists newbuild_lead_events_event_type_idx on public.newbuild_lead_events (event_type);
 
+create table if not exists public.newbuild_lead_rate_limits (
+  id uuid primary key default gen_random_uuid(),
+  fingerprint text not null,
+  window_start timestamptz not null,
+  attempt_count integer not null default 1,
+  first_attempt_at timestamptz not null default now(),
+  last_attempt_at timestamptz not null default now(),
+  last_payload jsonb not null default '{}'::jsonb,
+  constraint newbuild_lead_rate_limits_unique_window unique (fingerprint, window_start)
+);
+
+create index if not exists newbuild_lead_rate_limits_fingerprint_idx on public.newbuild_lead_rate_limits (fingerprint);
+create index if not exists newbuild_lead_rate_limits_window_start_idx on public.newbuild_lead_rate_limits (window_start desc);
+create index if not exists newbuild_lead_rate_limits_last_attempt_idx on public.newbuild_lead_rate_limits (last_attempt_at desc);
+
 create or replace function public.set_newbuild_leads_updated_at()
 returns trigger
 language plpgsql
@@ -135,10 +150,11 @@ before update on public.newbuild_leads
 for each row
 execute function public.set_newbuild_leads_updated_at();
 
--- RLS включаем сразу. Публичному сайту нельзя давать прямую запись в таблицу через anon key.
+-- RLS включаем сразу. Публичному сайту нельзя давать прямую запись в таблицы через anon key.
 -- Запись должна делать Edge Function с service role или серверный webhook.
 alter table public.newbuild_leads enable row level security;
 alter table public.newbuild_lead_events enable row level security;
+alter table public.newbuild_lead_rate_limits enable row level security;
 
 -- Пример политики для чтения внутри админки нужно адаптировать под реальную авторизацию.
 -- create policy "Managers can read leads"
@@ -185,7 +201,21 @@ alter table public.newbuild_lead_events enable row level security;
 --   payload->>'policy_url'
 -- );
 
--- Если таблица уже была создана до добавления полей антиспама, выполнить миграцию:
+-- Если таблица уже была создана до добавления полей антиспама и rate limit, выполнить миграцию:
 -- alter table public.newbuild_leads add column if not exists submit_time_seconds integer;
 -- alter table public.newbuild_leads add column if not exists spam_check jsonb not null default '{}'::jsonb;
 -- create index if not exists newbuild_leads_spam_check_gin_idx on public.newbuild_leads using gin (spam_check);
+-- create table if not exists public.newbuild_lead_rate_limits (
+--   id uuid primary key default gen_random_uuid(),
+--   fingerprint text not null,
+--   window_start timestamptz not null,
+--   attempt_count integer not null default 1,
+--   first_attempt_at timestamptz not null default now(),
+--   last_attempt_at timestamptz not null default now(),
+--   last_payload jsonb not null default '{}'::jsonb,
+--   constraint newbuild_lead_rate_limits_unique_window unique (fingerprint, window_start)
+-- );
+-- create index if not exists newbuild_lead_rate_limits_fingerprint_idx on public.newbuild_lead_rate_limits (fingerprint);
+-- create index if not exists newbuild_lead_rate_limits_window_start_idx on public.newbuild_lead_rate_limits (window_start desc);
+-- create index if not exists newbuild_lead_rate_limits_last_attempt_idx on public.newbuild_lead_rate_limits (last_attempt_at desc);
+-- alter table public.newbuild_lead_rate_limits enable row level security;
