@@ -93,6 +93,17 @@
   font-weight: 700;
 }
 
+.honeypot-field {
+  position: absolute !important;
+  left: -10000px !important;
+  top: auto !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 .lead-process {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -120,9 +131,45 @@
   color: var(--muted);
 }
 
+.thankyou-card {
+  max-width: 840px;
+  padding: 34px;
+  border-radius: var(--radius);
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.thankyou-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.thankyou-meta__item {
+  padding: 16px;
+  border-radius: var(--radius);
+  background: #fff8ef;
+  border: 1px solid var(--line);
+}
+
+.thankyou-meta__item span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.thankyou-meta__item strong {
+  color: var(--black);
+  font-size: 16px;
+}
+
 @media (max-width: 980px) {
   .leadgen-grid,
-  .lead-process {
+  .lead-process,
+  .thankyou-meta {
     grid-template-columns: 1fr;
   }
 }
@@ -132,7 +179,8 @@
     grid-template-columns: 1fr;
   }
 
-  .lead-form-card {
+  .lead-form-card,
+  .thankyou-card {
     padding: 20px;
   }
 }
