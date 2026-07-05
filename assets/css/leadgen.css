@@ -1,0 +1,138 @@
+.leadgen-hero {
+  background: linear-gradient(135deg, #fff8ef 0%, #ffffff 55%, #fff3f3 100%);
+}
+
+.leadgen-note {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  background: #fff;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.leadgen-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.lead-form-card {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+  padding: 26px;
+  border-radius: var(--radius);
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 16px 36px rgba(18, 18, 18, 0.08);
+}
+
+.lead-form-card__head {
+  display: grid;
+  gap: 10px;
+}
+
+.lead-form-card__head p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.lead-type-tag {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff3f3;
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.form--compact {
+  padding: 0;
+  box-shadow: none;
+  border: 0;
+}
+
+.form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.form__hint {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.consent-field {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+  align-items: start;
+  font-size: 12px !important;
+  line-height: 1.35;
+  color: var(--muted) !important;
+  font-weight: 400 !important;
+}
+
+.consent-field input {
+  width: 18px;
+  min-height: 18px;
+  margin: 0;
+}
+
+.consent-field a {
+  color: var(--red);
+  font-weight: 700;
+}
+
+.lead-process {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.lead-process__item {
+  padding: 20px;
+  border-radius: var(--radius);
+  background: #fff;
+  border: 1px solid var(--line);
+}
+
+.lead-process__item strong {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--red);
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.lead-process__item p {
+  margin: 0;
+  color: var(--muted);
+}
+
+@media (max-width: 980px) {
+  .leadgen-grid,
+  .lead-process {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .lead-form-card {
+    padding: 20px;
+  }
+}
