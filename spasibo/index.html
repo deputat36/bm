@@ -3,21 +3,124 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Заявка принята | Просторная 4А</title>
-  <meta name="description" content="Страница благодарности после отправки заявки по дому на Просторной 4А.">
+  <title>Заявка отправлена — Новостройки Борисоглебска</title>
+  <meta name="description" content="Спасибо за заявку по новостройкам Борисоглебска. Специалист свяжется с вами и уточнит детали обращения.">
   <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://tellermanovsad.ru/spasibo/">
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/leadgen.css">
 </head>
 <body>
-  <header class="topbar"><div class="container topbar__inner"><a class="brand" href="../index.html"><span class="brand__etagi"><span class="brand__mark"></span>этажи</span><span class="brand__divider"></span><img class="brand__bm" src="../assets/img/bm-group-logo.svg" alt="BM Group Development"></a><nav class="nav"><a href="../kvartiry/">Квартиры</a><a href="../ipoteka/">Ипотека</a><a href="../faq/">FAQ</a></nav></div></header>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="../" aria-label="Новостройки Борисоглебска">
+        <span class="brand__etagi">этажи</span>
+        <span class="brand__divider"></span>
+        <img class="brand__bm" src="../assets/img/bm-group-logo.svg" alt="BM Group Development">
+      </a>
+      <nav class="nav" aria-label="Основное меню">
+        <a href="../">Главная</a>
+        <a href="../zayavka/">Формы заявок</a>
+        <a href="../ipoteka/">Ипотека</a>
+        <a class="button" href="tel:+79038576909">Позвонить</a>
+      </nav>
+    </div>
+  </header>
+
   <main>
-    <section class="page-hero"><div class="container"><span class="eyebrow">Заявка</span><h1>Спасибо, заявка принята</h1><p class="lead">Специалист свяжется с вами, чтобы уточнить интересующий формат квартиры и вопросы по дому на Просторной 4А.</p><p><a class="button" href="../kvartiry/">Перейти к квартирам</a> <a class="button button--ghost" href="../novosti/">Читать материалы</a></p></div></section>
-    <section><div class="container"><div class="grid grid--3">
-      <article class="card"><h3>Планировки</h3><p>После появления подтверждённых схем можно будет подобрать подходящий вариант.</p></article>
-      <article class="card"><h3>Цены</h3><p>Стоимость и условия покупки будут добавлены только после подтверждения данных.</p></article>
-      <article class="card"><h3>Ипотека</h3><p>Можно заранее обсудить платёж, первоначальный взнос и покупку после продажи своей квартиры.</p></article>
-    </div></div></section>
+    <section class="page-hero leadgen-hero">
+      <div class="container">
+        <div class="thankyou-card">
+          <span class="eyebrow">Заявка отправлена</span>
+          <h1>Спасибо, обращение принято</h1>
+          <p class="lead" id="thankyou-message">Специалист свяжется с вами, уточнит детали и подскажет следующий шаг.</p>
+          <div class="thankyou-meta">
+            <div class="thankyou-meta__item"><span>Тип заявки</span><strong id="lead-type">Заявка</strong></div>
+            <div class="thankyou-meta__item"><span>Статус обработки</span><strong id="lead-status">Новая</strong></div>
+            <div class="thankyou-meta__item"><span>ID фиксации</span><strong id="lead-id">—</strong></div>
+          </div>
+          <div class="leadgen-note">Предварительная заявка не является бронью квартиры и не фиксирует цену. Все условия покупки, наличие квартир и документы нужно уточнять по подтверждённым данным.</div>
+          <div class="hero__actions">
+            <a class="button" href="../">Вернуться на главную</a>
+            <a class="button button--ghost" href="../zayavka/">Оставить ещё одну заявку</a>
+            <a class="button button--ghost" href="tel:+79038576909">Позвонить: 8 903 857-69-09</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section__head">
+          <h2>Что будет дальше</h2>
+          <p>Менеджер посмотрит параметры заявки: интересующий ЖК, комнатность, бюджет, способ покупки, рекламный источник и срочность обработки.</p>
+        </div>
+        <div class="grid grid--3">
+          <article class="card"><h3>1. Уточнение задачи</h3><p>Специалист уточнит, какая квартира или консультация вам нужна.</p></article>
+          <article class="card"><h3>2. Подбор или расчёт</h3><p>По заявке подготовят информацию по планировкам, ипотеке или списку ожидания.</p></article>
+          <article class="card"><h3>3. Следующий шаг</h3><p>После появления подтверждённых данных вам сообщат цены, условия и доступные варианты.</p></article>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer class="footer"><div class="container footer__inner"><div><strong>Просторная 4А</strong></div><div>Страница благодарности используется для аналитики заявок.</div></div></footer>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div><strong>Новостройки Борисоглебска</strong><br>Страница подтверждения заявки.</div>
+      <div>Не является официальным сайтом застройщика. Информация уточняется и обновляется.</div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const typeMap = {
+        complex_interest: "Заявка по ЖК",
+        mortgage: "Ипотека",
+        apartment_selection: "Подбор квартиры",
+        consultation: "Консультация",
+        callback: "Звонок",
+        waitlist: "Список ожидания",
+        general: "Заявка"
+      };
+      const statusMap = {
+        hot: "Срочная",
+        warm: "Тёплая",
+        cold: "В прогрев"
+      };
+      const messageMap = {
+        complex_interest: "Специалист уточнит интересующую квартиру, бюджет и способ покупки.",
+        mortgage: "Специалист уточнит первоначальный взнос, комфортный платёж и подходящие ипотечные программы.",
+        apartment_selection: "Специалист подберёт варианты по вашим параметрам и объяснит отличия.",
+        consultation: "Специалист подготовится к вопросу и свяжется с вами.",
+        callback: "Менеджер перезвонит в указанное время или при первой возможности.",
+        waitlist: "Мы зафиксировали интерес и сообщим о важных обновлениях по проекту."
+      };
+
+      const type = params.get("type") || "general";
+      const status = params.get("status") || "";
+      const id = params.get("id") || "";
+
+      document.getElementById("lead-type").textContent = typeMap[type] || "Заявка";
+      document.getElementById("lead-status").textContent = statusMap[status] || "Новая";
+      document.getElementById("lead-id").textContent = id || "—";
+      document.getElementById("thankyou-message").textContent = messageMap[type] || "Специалист свяжется с вами, уточнит детали и подскажет следующий шаг.";
+
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "lead_thankyou_view",
+        lead_type: type,
+        qualification_status: status,
+        client_fixation_id: id
+      });
+
+      if (typeof window.gtag === "function") {
+        window.gtag("event", "lead_thankyou_view", {
+          event_category: "lead",
+          event_label: type
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
