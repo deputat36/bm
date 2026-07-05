@@ -1,0 +1,79 @@
+{
+  "id": "tellermanov-sad",
+  "slug": "tellermanov-sad",
+  "name": "ЖК Теллерманов сад",
+  "short_name": "Теллерманов сад",
+  "alternative_names": [
+    "Дом на Просторной 4А",
+    "Новостройка на Просторной 4А",
+    "ЖК на Просторной 4А"
+  ],
+  "city": "Борисоглебск",
+  "region": "Воронежская область",
+  "address": "ул. Просторная, 4А",
+  "builder_id": "bm-group-chernozemye",
+  "builder_name": "СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ",
+  "status": "Строится",
+  "sales_status": "Продажи по карточке наш.дом.рф ещё не начались",
+  "class": "Комфорт",
+  "wall_material": "Кирпич / мелкоштучные каменные материалы",
+  "floors": 9,
+  "entrances": 1,
+  "apartments_total": 70,
+  "apartment_types": [
+    {
+      "type": "studio",
+      "title": "Студии",
+      "rooms": 0,
+      "count": 9,
+      "area_min": 27.71,
+      "area_max": 27.71
+    },
+    {
+      "type": "one-room",
+      "title": "1-комнатные",
+      "rooms": 1,
+      "count": 17,
+      "area_min": 39.77,
+      "area_max": 41.65
+    },
+    {
+      "type": "two-room",
+      "title": "2-комнатные",
+      "rooms": 2,
+      "count": 35,
+      "area_min": 43.28,
+      "area_max": 56.93
+    },
+    {
+      "type": "three-room",
+      "title": "3-комнатные",
+      "rooms": 3,
+      "count": 9,
+      "area_min": 63.76,
+      "area_max": 63.76
+    }
+  ],
+  "area_min": 27.71,
+  "area_max": 63.76,
+  "ceiling_height": 2.7,
+  "handover": "I квартал 2028",
+  "keys_until": "30.09.2028",
+  "project_declaration": "36-001139",
+  "nash_dom_rf_id": "72480",
+  "building_permit": "36-04-13-2026",
+  "building_permit_date": "2026-06-08",
+  "project_declaration_date": "2026-06-26",
+  "phone_display": "8 903 857-69-09",
+  "phone_href": "tel:+79038576909",
+  "lead_project": "ЖК Теллерманов сад",
+  "lead_project_id": "tellermanov-sad",
+  "lead_type": "project_consultation",
+  "is_featured": true,
+  "is_active": true,
+  "seo": {
+    "title": "ЖК Теллерманов сад Борисоглебск — квартиры на Просторной 4А",
+    "description": "ЖК Теллерманов сад / дом на Просторной 4А в Борисоглебске: квартиры, планировки, документы, ипотека и предварительные заявки.",
+    "h1": "ЖК Теллерманов сад"
+  }
+}
