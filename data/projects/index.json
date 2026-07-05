@@ -1,0 +1,21 @@
+[
+  {
+    "id": "tellermanov-sad",
+    "slug": "tellermanov-sad",
+    "name": "ЖК Теллерманов сад",
+    "city": "Борисоглебск",
+    "address": "ул. Просторная, 4А",
+    "builder_id": "bm-group-chernozemye",
+    "status": "Строится",
+    "sales_status": "Продажи по карточке наш.дом.рф ещё не начались",
+    "class": "Комфорт",
+    "apartments_total": 70,
+    "area_min": 27.71,
+    "area_max": 63.76,
+    "handover": "I квартал 2028",
+    "detail_url": "/zhk/tellermanov-sad/",
+    "data_file": "/data/projects/tellermanov-sad.json",
+    "is_featured": true,
+    "is_active": true
+  }
+]
