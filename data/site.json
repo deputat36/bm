@@ -1,0 +1,23 @@
+{
+  "id": "newbuilds-borisoglebsk",
+  "name": "Новостройки Борисоглебска",
+  "description": "Городской портал по новостройкам Борисоглебска.",
+  "current_domain": "https://tellermanovsad.ru/",
+  "future_domain": "",
+  "status": "Переход от сайта одного ЖК к городскому порталу",
+  "default_phone_display": "8 903 857-69-09",
+  "default_phone_href": "tel:+79038576909",
+  "privacy_url": "/privacy/",
+  "thank_you_url": "/spasibo/",
+  "draft_home_url": "/portal-preview/",
+  "main_sections": [
+    "/novostroyki/",
+    "/zhk/",
+    "/zastroyschiki/",
+    "/sravnenie/",
+    "/spravochnik/",
+    "/zayavka/",
+    "/contacts/"
+  ],
+  "disclaimer": "Портал не является официальным сайтом застройщика. Информация уточняется и обновляется."
+}
