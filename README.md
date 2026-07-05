@@ -164,7 +164,7 @@ https://tellermanovsad.ru/
 supabase/functions/newbuild-lead/index.ts
 ```
 
-Она принимает заявку, валидирует телефон и согласие, отсекает спам, пишет данные в `newbuild_leads`, создаёт событие в `newbuild_lead_events` и может отправлять уведомление в Telegram.
+Она принимает заявку, валидирует телефон и согласие, отсекает спам, применяет server-side rate limit, пишет данные в `newbuild_leads`, создаёт событие в `newbuild_lead_events`, фиксирует попытки в `newbuild_lead_rate_limits` и может отправлять уведомление в Telegram.
 
 Настройка находится в `assets/js/main.js`:
 
@@ -204,7 +204,9 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 - `docs/utm-playbook.md` — шаблоны UTM-ссылок для ВК, Telegram, офлайн-рекламы, QR и персональных ссылок специалистов;
 - `docs/manager-lead-handling.md` — инструкция менеджеру по обработке заявок, звонкам, статусам и безопасным формулировкам;
 - `docs/legal-safety-strategy.md` — юридически безопасное позиционирование портала, дисклеймеры, стоп-лист формулировок, шаблоны карточек ЖК, рекламы и постов;
-- `docs/supabase-leads.sql` — схема таблиц для хранения заявок и истории обработки в Supabase;
+- `docs/lead-rate-limit.md` — описание server-side rate limit для заявок;
+- `docs/lead-launch-checklist.md` — чек-лист проверки форм, UTM, аналитики, Supabase и менеджера перед запуском рекламы;
+- `docs/supabase-leads.sql` — схема таблиц для хранения заявок, истории обработки и rate limit в Supabase;
 - `docs/supabase-edge-function-leads.md` — инструкция по подключению Supabase Edge Function для заявок.
 
 ## Принципы разработки
@@ -224,7 +226,7 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 2. Создать новую главную страницу портала «Новостройки Борисоглебска».
 3. Подготовить `/sravnenie/`, если запись файла не блокируется инструментом.
 4. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
-5. Добавить server-side rate limit.
-6. Настроить Telegram-уведомления менеджерам.
-7. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
+5. Настроить Telegram-уведомления менеджерам.
+6. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
+7. Пройти `docs/lead-launch-checklist.md` перед запуском рекламы.
 8. Обновить sitemap и canonical только после проверки новой структуры.
