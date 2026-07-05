@@ -1,0 +1,60 @@
+[
+  {
+    "url": "/portal-preview/",
+    "title": "Новостройки Борисоглебска — черновик главной портала",
+    "page_type": "home_draft",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/novostroyki/",
+    "title": "Новостройки Борисоглебска",
+    "page_type": "catalog",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/",
+    "title": "Жилые комплексы Борисоглебска",
+    "page_type": "project_list",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/",
+    "title": "ЖК Теллерманов сад",
+    "page_type": "project",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zastroyschiki/",
+    "title": "Застройщики Борисоглебска",
+    "page_type": "builder_list",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zastroyschiki/bm-group/",
+    "title": "BM Group Development",
+    "page_type": "builder",
+    "builder_id": "bm-group-chernozemye",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/sravnenie/",
+    "title": "Сравнение новостроек Борисоглебска",
+    "page_type": "comparison",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/spravochnik/",
+    "title": "Справочник покупателя новостройки",
+    "page_type": "guide_index",
+    "robots": "noindex,follow",
+    "status": "draft"
+  }
+]
