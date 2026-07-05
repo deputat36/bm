@@ -10,6 +10,7 @@ const SITE_CONFIG = {
   phoneDisplay: "8 903 857-69-09",
   phoneHref: "tel:+79038576909",
   privacyPath: "/privacy/",
+  consentPath: "/personal-data-consent/",
   thankYouPath: "/spasibo/"
 };
 
@@ -197,6 +198,7 @@ function collectFormData(form) {
   data.marketing_consent = form.querySelector("input[name='marketing_consent']")?.checked ? "yes" : "no";
   data.consent_text = getConsentText(form);
   data.policy_url = new URL(SITE_CONFIG.privacyPath, window.location.origin).href;
+  data.consent_url = new URL(SITE_CONFIG.consentPath, window.location.origin).href;
   data.user_agent = navigator.userAgent;
   data.submit_time_seconds = submitTimeSeconds;
   data.spam_check = {
@@ -256,6 +258,8 @@ function leadToReadableText(data) {
     `Согласие на обработку данных: ${data.personal_data_consent || ""}`,
     `Согласие на новости/ожидание: ${data.marketing_consent || ""}`,
     `Текст согласия: ${data.consent_text || ""}`,
+    `Политика обработки данных: ${data.policy_url || ""}`,
+    `Страница согласия: ${data.consent_url || ""}`,
     `Дата: ${data.created_at || ""}`
   ].join("\n");
 }
@@ -289,6 +293,8 @@ async function sendWeb3FormsLead(data) {
     personal_data_consent: data.personal_data_consent || "yes",
     marketing_consent: data.marketing_consent || "no",
     consent_text: data.consent_text || "",
+    policy_url: data.policy_url || "",
+    consent_url: data.consent_url || "",
     submit_time_seconds: String(data.submit_time_seconds || 0),
     created_at: data.created_at || "",
     fields_json: JSON.stringify(data, null, 2),
@@ -370,7 +376,7 @@ function addConsent(form) {
   const label = document.createElement("label");
   label.className = "consent-field";
   label.setAttribute("data-consent-field", "");
-  label.innerHTML = `<input type="checkbox" name="consent" value="yes" required> <span>Согласен на обработку персональных данных для обработки заявки, обратной связи и фиксации обращения. Ознакомлен с <a href="${SITE_CONFIG.privacyPath}" target="_blank" rel="noopener">политикой обработки данных</a>. Заявка не является бронью квартиры и не фиксирует цену.</span>`;
+  label.innerHTML = `<input type="checkbox" name="consent" value="yes" required> <span>Согласен на обработку персональных данных для обработки заявки, обратной связи и фиксации обращения. Ознакомлен с <a href="${SITE_CONFIG.privacyPath}" target="_blank" rel="noopener">политикой обработки данных</a> и <a href="${SITE_CONFIG.consentPath}" target="_blank" rel="noopener">согласием на обработку персональных данных</a>. Заявка не является бронью квартиры и не фиксирует цену.</span>`;
 
   button.parentNode.insertBefore(label, button);
 }
