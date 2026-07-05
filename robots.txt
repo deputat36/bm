@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+
 Disallow: /tools/
 Disallow: /docs/
 Disallow: /data/
@@ -10,26 +11,11 @@ Disallow: /realtor/
 Disallow: /qr/
 Disallow: /start/
 Disallow: /zayavka/
-Disallow: /price/
-Disallow: /ipoteka-start/
 Disallow: /callback/
 Disallow: /spisok-ozhidaniya/
-Disallow: /kvartiry-ot-zastroyschika-borisoglebsk/
-Disallow: /1k/
-Disallow: /studiya/
-Disallow: /odnokomnatnye/
-Disallow: /dvuhkomnatnye/
-Disallow: /trehkomnatnye/
-Disallow: /matkapital/
-Disallow: /obmen/
-Disallow: /sertifikat/
-Disallow: /dlya-sebya/
-Disallow: /pervaya-kvartira/
-Disallow: /semeynaya-pokupka/
-Disallow: /detjam/
-Disallow: /planirovki-zayavka/
-Disallow: /konsultaciya/
-Disallow: /byudzhet/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /tmp/
 Disallow: /check/
 
-Sitemap: https://tellermanovsad.ru/sitemap.xml
+Sitemap: https://novostroyki-borisoglebsk.ru/sitemap.xml
