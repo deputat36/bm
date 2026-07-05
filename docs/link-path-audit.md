@@ -18,7 +18,7 @@
 /novostroyki/
 /zhk/
 /zastroyschiki/
-/spravочник/
+/spravochnik/
 /sravnenie/
 /portal-preview/
 ```
