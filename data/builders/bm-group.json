@@ -1,0 +1,19 @@
+{
+  "id": "bm-group-chernozemye",
+  "slug": "bm-group",
+  "name": "СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ",
+  "brand_name": "BM Group Development",
+  "city": "Борисоглебск",
+  "region": "Воронежская область",
+  "logo": "/assets/img/bm-group-logo.svg",
+  "description": "Карточка застройщика для портала Новостройки Борисоглебска. Используется для связи объекта ЖК Теллерманов сад с разделом застройщиков.",
+  "projects": [
+    "tellermanov-sad"
+  ],
+  "is_active": true,
+  "seo": {
+    "title": "BM Group Development — застройщик новостроек в Борисоглебске",
+    "description": "Информация о BM Group Development и связанных новостройках Борисоглебска на портале Новостройки Борисоглебска.",
+    "h1": "BM Group Development"
+  }
+}
