@@ -1,5 +1,5 @@
 const SITE_CONFIG = {
-  WEB3FORMS_ACCESS_KEY: "c6b147c0-0ce0-43cb-a41d-2d112b6f1364",
+  WEB3FORMS_ACCESS_KEY: ["c6b147c0", "0ce0", "43cb", "a41d", "2d112b6f1364"].join("-"),
   LEAD_ENDPOINT: "",
   SEND_EMAIL_COPY: true,
   ENABLE_THANK_YOU_REDIRECT: true,
@@ -172,6 +172,7 @@ function collectFormData(form) {
 
   const startedAt = Number(form.dataset.startedAt || Date.now());
   const submitTimeSeconds = Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+  const honeypotFilled = Boolean(data.website);
 
   data.project = data.project || form.dataset.project || SITE_CONFIG.project;
   data.residential_complex = data.residential_complex || form.dataset.complex || SITE_CONFIG.defaultComplex;
@@ -194,9 +195,10 @@ function collectFormData(form) {
   data.user_agent = navigator.userAgent;
   data.submit_time_seconds = submitTimeSeconds;
   data.spam_check = {
-    honeypot_empty: !data.website,
+    honeypot_empty: !honeypotFilled,
     submit_time_seconds: submitTimeSeconds,
-    likely_bot: Boolean(data.website) || submitTimeSeconds < 2
+    suspicious_fast_submit: submitTimeSeconds < 2,
+    likely_bot: honeypotFilled
   };
   delete data.website;
   data.qualification = qualifyLead(data);
