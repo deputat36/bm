@@ -107,13 +107,16 @@ https://tellermanovsad.ru/
 
 ```text
 /data/site.json
+/data/pages/index.json
 /data/projects/index.json
 /data/projects/tellermanov-sad.json
 /data/builders/index.json
 /data/builders/bm-group.json
+/data/apartment-types/tellermanov-sad.json
+/data/documents/tellermanov-sad.json
 ```
 
-Они нужны для будущих фильтров, сравнения объектов, карточек ЖК, карточек застройщиков и унификации заявок.
+Они нужны для будущих фильтров, сравнения объектов, карточек ЖК, карточек застройщиков, генерации sitemap и унификации заявок.
 
 ## Заявки и лидогенерация
 
@@ -198,6 +201,21 @@ lead_thankyou_view
 https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post&utm_campaign=prostornaya_start#jk
 ```
 
+## Микроразметка
+
+Добавлена заготовка:
+
+```text
+/assets/js/schema.js
+```
+
+Она предназначена для будущей генерации:
+
+- `BreadcrumbList` на основе блока `.breadcrumbs`;
+- `Residence` на основе data-атрибутов страницы ЖК.
+
+Правила подключения и проверки описаны в `docs/schema-strategy.md`.
+
 ## Документация
 
 Основная документация проекта находится в папке `docs`:
@@ -207,8 +225,10 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 - `docs/development-roadmap.md` — этапы дальнейшей разработки;
 - `docs/url-map.md` — карта старых и новых URL;
 - `docs/content-model.md` — модель данных портала: ЖК, застройщик, документы, медиа, статьи и заявки;
+- `docs/data-structure.md` — структура JSON-данных портала;
 - `docs/redirect-map.md` — карта будущих редиректов при миграции URL;
 - `docs/link-path-audit.md` — чек-лист относительных путей, форм, CSS/JS и тестовых заявок;
+- `docs/schema-strategy.md` — стратегия микроразметки JSON-LD;
 - `docs/leadgen-strategy.md` — стратегия лидогенерации, формы, UTM, квалификация, сценарии менеджера;
 - `docs/utm-playbook.md` — шаблоны UTM-ссылок для ВК, Telegram, офлайн-рекламы, QR и персональных ссылок специалистов;
 - `docs/manager-lead-handling.md` — инструкция менеджеру по обработке заявок, звонкам, статусам и безопасным формулировкам;
@@ -233,8 +253,9 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 
 1. Пройти `docs/link-path-audit.md` в браузере и отправить тестовые заявки.
 2. Решить, когда черновик `/portal-preview/` можно переносить в корневой `index.html`.
-3. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
-4. Настроить Telegram-уведомления менеджерам.
-5. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
-6. Пройти `docs/lead-launch-checklist.md` перед запуском рекламы.
-7. Обновить sitemap и canonical только после проверки новой структуры.
+3. Подключить `schema.js` к проверенным черновым страницам и проверить JSON-LD.
+4. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
+5. Настроить Telegram-уведомления менеджерам.
+6. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
+7. Пройти `docs/lead-launch-checklist.md` перед запуском рекламы.
+8. Обновить sitemap и canonical только после проверки новой структуры.
