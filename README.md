@@ -77,6 +77,7 @@ https://tellermanovsad.ru/
 Новые страницы создаются с `noindex,follow`, пока не завершена проверка и не обновлены canonical / sitemap.
 
 ```text
+/portal-preview/
 /novostroyki/
 /zhk/
 /zhk/tellermanov-sad/
@@ -94,6 +95,7 @@ https://tellermanovsad.ru/
 /zhk/tellermanov-sad/contacts/
 /zhk/tellermanov-sad/prostornaya-4a/
 /zhk/tellermanov-sad/novosti/
+/sravnenie/
 /zastroyschiki/
 /zastroyschiki/bm-group/
 /spravochnik/
@@ -101,10 +103,13 @@ https://tellermanovsad.ru/
 
 ## Структурированные данные
 
-Для подготовки будущего каталога добавлены первые JSON-профили:
+Для подготовки будущего каталога добавлены первые JSON-профили и индексные файлы:
 
 ```text
+/data/site.json
+/data/projects/index.json
 /data/projects/tellermanov-sad.json
+/data/builders/index.json
 /data/builders/bm-group.json
 ```
 
@@ -138,7 +143,10 @@ https://tellermanovsad.ru/
 - тип заявки;
 - ID формы;
 - ID фиксации клиента;
-- интересующий ЖК;
+- ID проекта `project_id`;
+- название проекта `project_name`;
+- интересующий ЖК `residential_complex`;
+- ID ЖК `residential_complex_id`;
 - комнатность, бюджет, способ покупки и сроки;
 - ипотечные параметры, если заявка ипотечная;
 - страницу отправки;
@@ -200,6 +208,7 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 - `docs/url-map.md` — карта старых и новых URL;
 - `docs/content-model.md` — модель данных портала: ЖК, застройщик, документы, медиа, статьи и заявки;
 - `docs/redirect-map.md` — карта будущих редиректов при миграции URL;
+- `docs/link-path-audit.md` — чек-лист относительных путей, форм, CSS/JS и тестовых заявок;
 - `docs/leadgen-strategy.md` — стратегия лидогенерации, формы, UTM, квалификация, сценарии менеджера;
 - `docs/utm-playbook.md` — шаблоны UTM-ссылок для ВК, Telegram, офлайн-рекламы, QR и персональных ссылок специалистов;
 - `docs/manager-lead-handling.md` — инструкция менеджеру по обработке заявок, звонкам, статусам и безопасным формулировкам;
@@ -222,11 +231,10 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 
 ## Ближайшие задачи
 
-1. Проверить относительные пути на новых страницах `/zhk/tellermanov-sad/`.
-2. Создать новую главную страницу портала «Новостройки Борисоглебска».
-3. Подготовить `/sravnenie/`, если запись файла не блокируется инструментом.
-4. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
-5. Настроить Telegram-уведомления менеджерам.
-6. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
-7. Пройти `docs/lead-launch-checklist.md` перед запуском рекламы.
-8. Обновить sitemap и canonical только после проверки новой структуры.
+1. Пройти `docs/link-path-audit.md` в браузере и отправить тестовые заявки.
+2. Решить, когда черновик `/portal-preview/` можно переносить в корневой `index.html`.
+3. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
+4. Настроить Telegram-уведомления менеджерам.
+5. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
+6. Пройти `docs/lead-launch-checklist.md` перед запуском рекламы.
+7. Обновить sitemap и canonical только после проверки новой структуры.
