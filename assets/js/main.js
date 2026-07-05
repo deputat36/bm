@@ -2,11 +2,13 @@ const SITE_CONFIG = {
   WEB3FORMS_ACCESS_KEY: "c6b147c0-0ce0-43cb-a41d-2d112b6f1364",
   LEAD_ENDPOINT: "",
   SEND_EMAIL_COPY: true,
+  ENABLE_THANK_YOU_REDIRECT: true,
   project: "Портал Новостройки Борисоглебска",
   defaultComplex: "ЖК Теллерманов сад",
   phoneDisplay: "8 903 857-69-09",
   phoneHref: "tel:+79038576909",
-  privacyPath: "/privacy/"
+  privacyPath: "/privacy/",
+  thankYouPath: "/spasibo/"
 };
 
 const TRACKING_KEYS = [
@@ -33,6 +35,7 @@ const TRACKING_KEYS = [
 const TRACKING_STORAGE_KEY = "newbuildsBorisoglebskTracking";
 const LEGACY_TRACKING_STORAGE_KEY = "prostornayaTracking";
 const DRAFT_STORAGE_KEY = "newbuildsBorisoglebskLeadsDraft";
+const LAST_LEAD_STORAGE_KEY = "newbuildsBorisoglebskLastLead";
 
 function safeJsonParse(value, fallback) {
   try {
@@ -167,6 +170,9 @@ function collectFormData(form) {
     data[key] = String(value).trim();
   });
 
+  const startedAt = Number(form.dataset.startedAt || Date.now());
+  const submitTimeSeconds = Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+
   data.project = data.project || form.dataset.project || SITE_CONFIG.project;
   data.residential_complex = data.residential_complex || form.dataset.complex || SITE_CONFIG.defaultComplex;
   data.lead_type = data.lead_type || form.dataset.leadType || "general";
@@ -186,15 +192,16 @@ function collectFormData(form) {
   data.consent_text = getConsentText(form);
   data.policy_url = new URL(SITE_CONFIG.privacyPath, window.location.origin).href;
   data.user_agent = navigator.userAgent;
+  data.submit_time_seconds = submitTimeSeconds;
+  data.spam_check = {
+    honeypot_empty: !data.website,
+    submit_time_seconds: submitTimeSeconds,
+    likely_bot: Boolean(data.website) || submitTimeSeconds < 2
+  };
+  delete data.website;
   data.qualification = qualifyLead(data);
 
   return data;
-}
-
-function formatFieldValue(value) {
-  if (value === null || value === undefined) return "";
-  if (typeof value === "object") return JSON.stringify(value, null, 2);
-  return String(value);
 }
 
 function leadToReadableText(data) {
@@ -219,6 +226,7 @@ function leadToReadableText(data) {
     `Комментарий: ${data.comment || data.question || ""}`,
     `Квалификация: ${qualification.status || ""}, ${qualification.score || 0} баллов, ${qualification.priority || ""}`,
     `Причины квалификации: ${(qualification.reasons || []).join(", ")}`,
+    `Время заполнения формы: ${data.submit_time_seconds || 0} сек.`,
     `Форма: ${data.form_id || ""}`,
     `Страница: ${data.page_url || data.source || ""}`,
     `Заголовок страницы: ${data.page_title || ""}`,
@@ -268,6 +276,7 @@ async function sendWeb3FormsLead(data) {
     personal_data_consent: data.personal_data_consent || "yes",
     marketing_consent: data.marketing_consent || "no",
     consent_text: data.consent_text || "",
+    submit_time_seconds: String(data.submit_time_seconds || 0),
     created_at: data.created_at || "",
     fields_json: JSON.stringify(data, null, 2),
     message: leadToReadableText(data)
@@ -298,6 +307,10 @@ async function sendCustomLead(data) {
 async function sendLead(data) {
   const tasks = [];
 
+  if (data.spam_check?.likely_bot) {
+    return { blocked: true };
+  }
+
   if (SITE_CONFIG.LEAD_ENDPOINT) tasks.push(sendCustomLead(data));
   if (SITE_CONFIG.WEB3FORMS_ACCESS_KEY && SITE_CONFIG.SEND_EMAIL_COPY) tasks.push(sendWeb3FormsLead(data));
 
@@ -324,6 +337,17 @@ function addHiddenField(form, name, value) {
   form.prepend(input);
 }
 
+function addHoneypot(form) {
+  if (form.querySelector("[data-honeypot-field]")) return;
+
+  const field = document.createElement("label");
+  field.className = "honeypot-field";
+  field.setAttribute("data-honeypot-field", "");
+  field.setAttribute("aria-hidden", "true");
+  field.innerHTML = `Сайт<input name="website" tabindex="-1" autocomplete="off" placeholder="Не заполняйте это поле">`;
+  form.prepend(field);
+}
+
 function addConsent(form) {
   if (form.querySelector("[data-consent-field]")) return;
 
@@ -338,8 +362,72 @@ function addConsent(form) {
   button.parentNode.insertBefore(label, button);
 }
 
+function saveLastLead(data) {
+  const safeLead = {
+    client_fixation_id: data.client_fixation_id,
+    lead_type: data.lead_type,
+    form_id: data.form_id,
+    residential_complex: data.residential_complex,
+    qualification: data.qualification,
+    created_at: data.created_at
+  };
+
+  localStorage.setItem(LAST_LEAD_STORAGE_KEY, JSON.stringify(safeLead));
+}
+
+function trackLeadEvent(data, result = {}) {
+  const eventPayload = {
+    event: "lead_submit",
+    lead_type: data.lead_type,
+    form_id: data.form_id,
+    residential_complex: data.residential_complex,
+    client_fixation_id: data.client_fixation_id,
+    qualification_status: data.qualification?.status || "",
+    qualification_score: data.qualification?.score || 0,
+    blocked: Boolean(result.blocked),
+    offline: Boolean(result.offline)
+  };
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(eventPayload);
+
+  if (typeof window.gtag === "function") {
+    window.gtag("event", "lead_submit", {
+      event_category: "lead",
+      event_label: data.lead_type,
+      form_id: data.form_id,
+      value: data.qualification?.score || 0
+    });
+  }
+
+  if (typeof window.ym === "function") {
+    const counters = window.Ya?._metrika?.counters || {};
+    Object.keys(counters).forEach((counterId) => {
+      window.ym(counterId, "reachGoal", "lead_submit", eventPayload);
+    });
+  }
+
+  window.dispatchEvent(new CustomEvent("newbuildLeadSubmit", { detail: eventPayload }));
+}
+
+function buildThankYouUrl(data) {
+  const url = new URL(SITE_CONFIG.thankYouPath, window.location.origin);
+  url.searchParams.set("type", data.lead_type || "general");
+  url.searchParams.set("id", data.client_fixation_id || "");
+  url.searchParams.set("status", data.qualification?.status || "");
+  return url.toString();
+}
+
+function shouldRedirectAfterSuccess(form, result) {
+  if (result?.blocked || result?.offline) return false;
+  if (form.dataset.redirectSuccess === "false") return false;
+  return SITE_CONFIG.ENABLE_THANK_YOU_REDIRECT || form.dataset.redirectSuccess === "true";
+}
+
 function enhanceLeadForm(form) {
   getTrackingData();
+  form.dataset.startedAt = String(Date.now());
+  addHoneypot(form);
   addHiddenField(form, "lead_type", form.dataset.leadType);
   addHiddenField(form, "form_id", form.dataset.formId);
   addHiddenField(form, "project", form.dataset.project || SITE_CONFIG.project);
@@ -364,8 +452,21 @@ function enhanceLeadForm(form) {
     }
 
     try {
-      const result = await sendLead(collectFormData(form));
+      const data = collectFormData(form);
+      const result = await sendLead(data);
+      saveLastLead(data);
+      trackLeadEvent(data, result);
       form.reset();
+      form.dataset.startedAt = String(Date.now());
+
+      if (result.blocked) {
+        return;
+      }
+
+      if (shouldRedirectAfterSuccess(form, result)) {
+        window.location.href = buildThankYouUrl(data);
+        return;
+      }
 
       if (status) {
         status.innerHTML = result.offline
