@@ -72,6 +72,44 @@ https://tellermanovsad.ru/
 /privacy/
 ```
 
+## Уже добавленная черновая структура портала
+
+Новые страницы создаются с `noindex,follow`, пока не завершена проверка и не обновлены canonical / sitemap.
+
+```text
+/novostroyki/
+/zhk/
+/zhk/tellermanov-sad/
+/zhk/tellermanov-sad/o-zhk/
+/zhk/tellermanov-sad/kvartiry/
+/zhk/tellermanov-sad/planirovki/
+/zhk/tellermanov-sad/ceny/
+/zhk/tellermanov-sad/dokumenty/
+/zhk/tellermanov-sad/galereya/
+/zhk/tellermanov-sad/zastroyschik/
+/zhk/tellermanov-sad/infrastruktura/
+/zhk/tellermanov-sad/ipoteka/
+/zhk/tellermanov-sad/hod-stroitelstva/
+/zhk/tellermanov-sad/faq/
+/zhk/tellermanov-sad/contacts/
+/zhk/tellermanov-sad/prostornaya-4a/
+/zhk/tellermanov-sad/novosti/
+/zastroyschiki/
+/zastroyschiki/bm-group/
+/spravochnik/
+```
+
+## Структурированные данные
+
+Для подготовки будущего каталога добавлены первые JSON-профили:
+
+```text
+/data/projects/tellermanov-sad.json
+/data/builders/bm-group.json
+```
+
+Они нужны для будущих фильтров, сравнения объектов, карточек ЖК, карточек застройщиков и унификации заявок.
+
 ## Заявки и лидогенерация
 
 Основная страница форм:
@@ -89,7 +127,9 @@ https://tellermanovsad.ru/
 - `apartment_selection` — подбор квартиры;
 - `consultation` — консультация специалиста;
 - `callback` — заказ звонка;
-- `waitlist` — список ожидания.
+- `waitlist` — список ожидания;
+- `portal_selection` — заявка на подбор новостройки из каталога;
+- `project_consultation` — заявка со страницы конкретного ЖК внутри портала.
 
 Форма собирает:
 
@@ -157,6 +197,9 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 - `docs/portal-architecture.md` — архитектура будущего портала;
 - `docs/migration-tellermanovsad.md` — план переноса текущего сайта ЖК в раздел портала;
 - `docs/development-roadmap.md` — этапы дальнейшей разработки;
+- `docs/url-map.md` — карта старых и новых URL;
+- `docs/content-model.md` — модель данных портала: ЖК, застройщик, документы, медиа, статьи и заявки;
+- `docs/redirect-map.md` — карта будущих редиректов при миграции URL;
 - `docs/leadgen-strategy.md` — стратегия лидогенерации, формы, UTM, квалификация, сценарии менеджера;
 - `docs/utm-playbook.md` — шаблоны UTM-ссылок для ВК, Telegram, офлайн-рекламы, QR и персональных ссылок специалистов;
 - `docs/manager-lead-handling.md` — инструкция менеджеру по обработке заявок, звонкам, статусам и безопасным формулировкам;
@@ -177,13 +220,11 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 
 ## Ближайшие задачи
 
-1. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
-2. Добавить server-side rate limit.
-3. Настроить Telegram-уведомления менеджерам.
-4. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
-5. Зафиксировать полную карту URL портала.
-6. Создать модель данных ЖК и застройщика.
-7. Подготовить структуру `/zhk/tellermanov-sad/`.
-8. Перенести текущий лендинг ЖК в новый раздел.
-9. Создать новую главную страницу портала «Новостройки Борисоглебска».
-10. Обновить sitemap и canonical только после проверки новой структуры.
+1. Проверить относительные пути на новых страницах `/zhk/tellermanov-sad/`.
+2. Создать новую главную страницу портала «Новостройки Борисоглебска».
+3. Подготовить `/sravnenie/`, если запись файла не блокируется инструментом.
+4. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
+5. Добавить server-side rate limit.
+6. Настроить Telegram-уведомления менеджерам.
+7. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
+8. Обновить sitemap и canonical только после проверки новой структуры.
