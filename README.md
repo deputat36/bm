@@ -222,6 +222,7 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 
 - `docs/portal-architecture.md` — архитектура будущего портала;
 - `docs/migration-tellermanovsad.md` — план переноса текущего сайта ЖК в раздел портала;
+- `docs/portal-homepage-migration.md` — порядок безопасного переноса `/portal-preview/` в корневой `index.html`;
 - `docs/development-roadmap.md` — этапы дальнейшей разработки;
 - `docs/url-map.md` — карта старых и новых URL;
 - `docs/content-model.md` — модель данных портала: ЖК, застройщик, документы, медиа, статьи и заявки;
@@ -252,7 +253,7 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 ## Ближайшие задачи
 
 1. Пройти `docs/link-path-audit.md` в браузере и отправить тестовые заявки.
-2. Решить, когда черновик `/portal-preview/` можно переносить в корневой `index.html`.
+2. Пройти `docs/portal-homepage-migration.md` перед переносом `/portal-preview/` в корневой `index.html`.
 3. Подключить `schema.js` к проверенным черновым страницам и проверить JSON-LD.
 4. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
 5. Настроить Telegram-уведомления менеджерам.
