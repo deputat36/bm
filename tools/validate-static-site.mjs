@@ -11,10 +11,17 @@ const DRAFT_PREFIXES = [
   "spravochnik/",
   "sravnenie/"
 ];
+const ALLOWED_VERIFICATION_STATUSES = new Set([
+  "confirmed",
+  "partially_confirmed",
+  "requires_check",
+  "do_not_publish"
+]);
 
 const results = {
   checkedHtmlFiles: 0,
   checkedLocalReferences: 0,
+  checkedJsonFiles: 0,
   errors: [],
   warnings: []
 };
@@ -36,6 +43,18 @@ function walk(dir, files = []) {
 
 function toPosix(value) {
   return value.split(path.sep).join("/");
+}
+
+function fromRoot(...parts) {
+  return path.join(ROOT, ...parts);
+}
+
+function addError(message) {
+  results.errors.push(message);
+}
+
+function addWarning(message) {
+  results.warnings.push(message);
 }
 
 function isExternalReference(value) {
@@ -75,6 +94,23 @@ function read(file) {
   return fs.readFileSync(file, "utf8");
 }
 
+function readJson(relativePath) {
+  const file = fromRoot(relativePath);
+  if (!fs.existsSync(file)) {
+    addError(`${relativePath}: JSON file does not exist`);
+    return null;
+  }
+
+  results.checkedJsonFiles += 1;
+
+  try {
+    return JSON.parse(read(file));
+  } catch (error) {
+    addError(`${relativePath}: invalid JSON: ${error.message}`);
+    return null;
+  }
+}
+
 function getLocalReferences(html) {
   const refs = [];
   const attrRegex = /\s(?:href|src)=["']([^"']+)["']/gi;
@@ -103,7 +139,7 @@ function validateDraftRobots(relativePath, html) {
   if (!shouldBeNoindex) return;
 
   if (!/<meta\s+name=["']robots["']\s+content=["']noindex,follow["']/i.test(html)) {
-    results.errors.push(`${relativePath}: draft page must include <meta name="robots" content="noindex,follow">`);
+    addError(`${relativePath}: draft page must include <meta name="robots" content="noindex,follow">`);
   }
 }
 
@@ -117,19 +153,19 @@ function validateLeadForms(relativePath, html) {
 
     requiredDataAttributes.forEach((attribute) => {
       if (!getAttribute(form, attribute)) {
-        results.errors.push(`${relativePath}: lead form #${humanIndex} missing ${attribute}`);
+        addError(`${relativePath}: lead form #${humanIndex} missing ${attribute}`);
       }
     });
 
     recommendedDataAttributes.forEach((attribute) => {
       if (!getAttribute(form, attribute)) {
-        results.warnings.push(`${relativePath}: lead form #${humanIndex} missing ${attribute}; main.js will use SITE_CONFIG fallback`);
+        addWarning(`${relativePath}: lead form #${humanIndex} missing ${attribute}; main.js will use SITE_CONFIG fallback`);
       }
     });
 
     const leadType = getAttribute(form, "data-lead-type");
     if (leadType === "project_consultation" && !getAttribute(form, "data-complex-id")) {
-      results.errors.push(`${relativePath}: project_consultation form #${humanIndex} missing data-complex-id`);
+      addError(`${relativePath}: project_consultation form #${humanIndex} missing data-complex-id`);
     }
   });
 }
@@ -145,7 +181,7 @@ function validateLocalReferences(file, relativePath, html) {
 
     if (!existsReference(target)) {
       const normalizedTarget = toPosix(path.relative(ROOT, target));
-      results.errors.push(`${relativePath}: broken local reference "${reference}" -> ${normalizedTarget}`);
+      addError(`${relativePath}: broken local reference "${reference}" -> ${normalizedTarget}`);
     }
   });
 }
@@ -160,12 +196,115 @@ function validateHtmlFile(file) {
   validateLocalReferences(file, relativePath, html);
 }
 
+function validateVerificationStatus(relativePath, entity) {
+  if (!entity || typeof entity !== "object") {
+    addError(`${relativePath}: expected object with verification metadata`);
+    return;
+  }
+
+  if (!entity.verification_status) {
+    addError(`${relativePath}: missing verification_status`);
+  } else if (!ALLOWED_VERIFICATION_STATUSES.has(entity.verification_status)) {
+    addError(`${relativePath}: unsupported verification_status "${entity.verification_status}"`);
+  }
+
+  if (typeof entity.is_public_ready !== "boolean") {
+    addError(`${relativePath}: is_public_ready must be boolean`);
+  }
+
+  if (!entity.last_checked_at) {
+    addWarning(`${relativePath}: missing last_checked_at`);
+  }
+
+  if (entity.is_public_ready === true && entity.verification_status !== "confirmed") {
+    addError(`${relativePath}: public-ready object must have verification_status="confirmed"`);
+  }
+}
+
+function resolveRepositoryPath(value) {
+  if (!value) return "";
+  return value.startsWith("/") ? value.slice(1) : value;
+}
+
+function validateProjectIndex() {
+  const indexPath = "data/projects/index.json";
+  const projects = readJson(indexPath);
+  if (!projects) return;
+
+  if (!Array.isArray(projects)) {
+    addError(`${indexPath}: expected array`);
+    return;
+  }
+
+  projects.forEach((project, index) => {
+    const label = `${indexPath}#${index + 1}:${project?.id || "unknown"}`;
+    validateVerificationStatus(label, project);
+
+    const dataFile = resolveRepositoryPath(project.data_file);
+    if (!dataFile) {
+      addError(`${label}: missing data_file`);
+      return;
+    }
+
+    if (!fs.existsSync(fromRoot(dataFile))) {
+      addError(`${label}: data_file does not exist: ${project.data_file}`);
+      return;
+    }
+
+    const detail = readJson(dataFile);
+    if (!detail) return;
+
+    validateVerificationStatus(dataFile, detail);
+
+    ["id", "slug", "verification_status", "is_public_ready"].forEach((field) => {
+      if (project[field] !== detail[field]) {
+        addError(`${label}: field ${field} does not match ${dataFile}`);
+      }
+    });
+  });
+}
+
+function validateResearchRegister() {
+  const registerPath = "data/research/newbuilds-borisoglebsk-2018.json";
+  const register = readJson(registerPath);
+  if (!register) return;
+
+  if (!register.publication_rules) {
+    addError(`${registerPath}: missing publication_rules`);
+  }
+
+  const sections = [
+    "confirmed_projects",
+    "requires_check_projects",
+    "do_not_publish_projects"
+  ];
+
+  sections.forEach((section) => {
+    const items = register[section];
+    if (!Array.isArray(items)) {
+      addError(`${registerPath}: ${section} must be array`);
+      return;
+    }
+
+    items.forEach((item, index) => {
+      validateVerificationStatus(`${registerPath}:${section}#${index + 1}:${item?.id || "unknown"}`, item);
+    });
+  });
+}
+
+function validateDataFiles() {
+  validateProjectIndex();
+  validateResearchRegister();
+}
+
 function main() {
   const htmlFiles = walk(ROOT);
   htmlFiles.forEach(validateHtmlFile);
+  validateDataFiles();
 
   console.log(`Checked HTML files: ${results.checkedHtmlFiles}`);
   console.log(`Checked local references: ${results.checkedLocalReferences}`);
+  console.log(`Checked JSON files: ${results.checkedJsonFiles}`);
 
   if (results.warnings.length) {
     console.log("\nWarnings:");
