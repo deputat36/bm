@@ -113,10 +113,30 @@ https://tellermanovsad.ru/
 /data/builders/index.json
 /data/builders/bm-group.json
 /data/apartment-types/tellermanov-sad.json
+/data/layouts/tellermanov-sad.json
 /data/documents/tellermanov-sad.json
 ```
 
 Они нужны для будущих фильтров, сравнения объектов, карточек ЖК, карточек застройщиков, генерации sitemap и унификации заявок.
+
+## Проверки качества
+
+Добавлены проверки без внешних зависимостей:
+
+```bash
+npm run validate
+npm run validate:json
+```
+
+`validate` проверяет HTML, локальные ссылки, `noindex` на черновиках и базовые атрибуты форм. `validate:json` проверяет синтаксис JSON-файлов в папке `data`.
+
+GitHub Actions workflow находится здесь:
+
+```text
+.github/workflows/validate-static-site.yml
+```
+
+Он запускается вручную и на pull request.
 
 ## Заявки и лидогенерация
 
@@ -227,8 +247,10 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 - `docs/url-map.md` — карта старых и новых URL;
 - `docs/content-model.md` — модель данных портала: ЖК, застройщик, документы, медиа, статьи и заявки;
 - `docs/data-structure.md` — структура JSON-данных портала;
+- `docs/data-quality-rules.md` — правила качества JSON-данных;
 - `docs/redirect-map.md` — карта будущих редиректов при миграции URL;
 - `docs/link-path-audit.md` — чек-лист относительных путей, форм, CSS/JS и тестовых заявок;
+- `docs/static-validation.md` — инструкция по статической проверке HTML и JSON;
 - `docs/schema-strategy.md` — стратегия микроразметки JSON-LD;
 - `docs/leadgen-strategy.md` — стратегия лидогенерации, формы, UTM, квалификация, сценарии менеджера;
 - `docs/utm-playbook.md` — шаблоны UTM-ссылок для ВК, Telegram, офлайн-рекламы, QR и персональных ссылок специалистов;
@@ -253,10 +275,11 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 ## Ближайшие задачи
 
 1. Пройти `docs/link-path-audit.md` в браузере и отправить тестовые заявки.
-2. Пройти `docs/portal-homepage-migration.md` перед переносом `/portal-preview/` в корневой `index.html`.
-3. Подключить `schema.js` к проверенным черновым страницам и проверить JSON-LD.
-4. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
-5. Настроить Telegram-уведомления менеджерам.
-6. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
-7. Пройти `docs/lead-launch-checklist.md` перед запуском рекламы.
-8. Обновить sitemap и canonical только после проверки новой структуры.
+2. Запустить `npm run validate` и `npm run validate:json`.
+3. Пройти `docs/portal-homepage-migration.md` перед переносом `/portal-preview/` в корневой `index.html`.
+4. Подключить `schema.js` к проверенным черновым страницам и проверить JSON-LD.
+5. Развернуть `newbuild-lead` в Supabase и вставить URL функции в `LEAD_ENDPOINT`.
+6. Настроить Telegram-уведомления менеджерам.
+7. Настроить цели в Яндекс.Метрике / GA4 по событиям `lead_submit` и `lead_thankyou_view`.
+8. Пройти `docs/lead-launch-checklist.md` перед запуском рекламы.
+9. Обновить sitemap и canonical только после проверки новой структуры.
