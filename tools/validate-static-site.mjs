@@ -57,6 +57,18 @@ function addWarning(message) {
   results.warnings.push(message);
 }
 
+function isDraftPath(relativePath) {
+  return DRAFT_PREFIXES.some((prefix) => relativePath.startsWith(prefix));
+}
+
+function addLeadFormMetadataProblem(relativePath, message) {
+  if (isDraftPath(relativePath)) {
+    addError(message);
+  } else {
+    addWarning(`${message}; legacy published page should be upgraded before migration`);
+  }
+}
+
 function isExternalReference(value) {
   return (
     !value ||
@@ -135,8 +147,7 @@ function getAttribute(tag, name) {
 }
 
 function validateDraftRobots(relativePath, html) {
-  const shouldBeNoindex = DRAFT_PREFIXES.some((prefix) => relativePath.startsWith(prefix));
-  if (!shouldBeNoindex) return;
+  if (!isDraftPath(relativePath)) return;
 
   if (!/<meta\s+name=["']robots["']\s+content=["']noindex,follow["']/i.test(html)) {
     addError(`${relativePath}: draft page must include <meta name="robots" content="noindex,follow">`);
@@ -153,7 +164,7 @@ function validateLeadForms(relativePath, html) {
 
     requiredDataAttributes.forEach((attribute) => {
       if (!getAttribute(form, attribute)) {
-        addError(`${relativePath}: lead form #${humanIndex} missing ${attribute}`);
+        addLeadFormMetadataProblem(relativePath, `${relativePath}: lead form #${humanIndex} missing ${attribute}`);
       }
     });
 
@@ -165,7 +176,7 @@ function validateLeadForms(relativePath, html) {
 
     const leadType = getAttribute(form, "data-lead-type");
     if (leadType === "project_consultation" && !getAttribute(form, "data-complex-id")) {
-      addError(`${relativePath}: project_consultation form #${humanIndex} missing data-complex-id`);
+      addLeadFormMetadataProblem(relativePath, `${relativePath}: project_consultation form #${humanIndex} missing data-complex-id`);
     }
   });
 }
