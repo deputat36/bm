@@ -65,6 +65,29 @@ function buildResidenceSchema() {
   };
 }
 
+function buildOrganizationSchema() {
+  const organizationName = document.body.dataset.schemaOrganization;
+  if (!organizationName) return null;
+
+  const sameAs = (document.body.dataset.schemaSameAs || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: organizationName,
+    url: document.body.dataset.schemaOrganizationUrl || window.location.href
+  };
+
+  if (sameAs.length) {
+    schema.sameAs = sameAs;
+  }
+
+  return schema;
+}
+
 function buildWebSiteSchema() {
   const siteName = document.body.dataset.schemaWebsite;
   if (!siteName) return null;
@@ -88,3 +111,6 @@ if (breadcrumbSchema) createJsonLdScript(breadcrumbSchema);
 
 const residenceSchema = buildResidenceSchema();
 if (residenceSchema) createJsonLdScript(residenceSchema);
+
+const organizationSchema = buildOrganizationSchema();
+if (organizationSchema) createJsonLdScript(organizationSchema);
