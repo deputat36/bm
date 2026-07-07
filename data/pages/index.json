@@ -14,6 +14,13 @@
     "status": "draft"
   },
   {
+    "url": "/novostroyki/kvartiry-v-novostroykah/",
+    "title": "Квартиры в новостройках Борисоглебска",
+    "page_type": "commercial_landing",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
     "url": "/zhk/",
     "title": "Жилые комплексы Борисоглебска",
     "page_type": "project_list",
@@ -175,6 +182,13 @@
     "url": "/spravochnik/",
     "title": "Справочник покупателя новостройки",
     "page_type": "guide_index",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/spravochnik/proverka-dokumentov-novostroyki/",
+    "title": "Как проверить документы новостройки",
+    "page_type": "guide_article",
     "robots": "noindex,follow",
     "status": "draft"
   }
