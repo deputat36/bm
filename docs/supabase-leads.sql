@@ -72,6 +72,8 @@ create table if not exists public.newbuild_leads (
       'consultation',
       'callback',
       'waitlist',
+      'portal_selection',
+      'project_consultation',
       'general'
     )
   ),
@@ -219,3 +221,19 @@ alter table public.newbuild_lead_rate_limits enable row level security;
 -- create index if not exists newbuild_lead_rate_limits_window_start_idx on public.newbuild_lead_rate_limits (window_start desc);
 -- create index if not exists newbuild_lead_rate_limits_last_attempt_idx on public.newbuild_lead_rate_limits (last_attempt_at desc);
 -- alter table public.newbuild_lead_rate_limits enable row level security;
+
+-- Если таблица уже создана до добавления портальных типов заявок, обновить CHECK-ограничение:
+-- alter table public.newbuild_leads drop constraint if exists newbuild_leads_lead_type_check;
+-- alter table public.newbuild_leads add constraint newbuild_leads_lead_type_check check (
+--   lead_type in (
+--     'complex_interest',
+--     'mortgage',
+--     'apartment_selection',
+--     'consultation',
+--     'callback',
+--     'waitlist',
+--     'portal_selection',
+--     'project_consultation',
+--     'general'
+--   )
+-- );
