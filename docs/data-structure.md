@@ -16,6 +16,7 @@
 /data/builders/index.json
 /data/builders/bm-group.json
 /data/apartment-types/tellermanov-sad.json
+/data/layouts/tellermanov-sad.json
 /data/documents/tellermanov-sad.json
 ```
 
@@ -147,7 +148,38 @@ is_active
 /data/apartment-types/tellermanov-sad.json
 ```
 
-## 10. documents/{project}.json
+## 10. layouts/{project}.json
+
+Черновые или подтвержденные планировки объекта:
+
+```text
+id
+project_id
+apartment_type
+title
+rooms
+area
+area_min
+area_max
+count
+image
+schema_image
+description
+advantages
+limitations
+is_verified
+is_active
+```
+
+Сейчас создан:
+
+```text
+/data/layouts/tellermanov-sad.json
+```
+
+Важно: если `is_verified = false`, такую планировку нельзя публиковать как официальную. Её можно использовать только как внутреннюю заготовку для структуры сайта.
+
+## 11. documents/{project}.json
 
 Реестр документов объекта:
 
@@ -168,7 +200,7 @@ is_active
 
 Важно: `is_verified = false` означает, что перед публикацией ссылки или документа требуется ручная сверка с официальным источником.
 
-## 11. Правила обновления данных
+## 12. Правила обновления данных
 
 1. Не менять площади, сроки, номера документов и статусы без проверки источника.
 2. Если данные предварительные, явно указывать это в описании или статусе.
@@ -176,3 +208,4 @@ is_active
 4. Для нового застройщика сначала добавлять `builders/{slug}.json`, затем запись в `builders/index.json`.
 5. Все страницы, которые ещё не готовы к индексации, должны иметь `robots = noindex,follow` в `pages/index.json` и meta robots в HTML.
 6. Перед включением страницы в sitemap её статус должен быть переведён в `published`.
+7. Нельзя использовать неподтвержденные планировки, схемы и изображения как официальные материалы.
