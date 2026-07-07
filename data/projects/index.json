@@ -1,25 +1,43 @@
-[
-  {
-    "id": "tellermanov-sad",
-    "slug": "tellermanov-sad",
-    "name": "ЖК Теллерманов сад",
-    "city": "Борисоглебск",
-    "address": "ул. Просторная, 4А",
-    "builder_id": "bm-group-chernozemye",
-    "status": "Строится",
-    "sales_status": "Продажи по карточке наш.дом.рф ещё не начались",
-    "class": "Комфорт",
-    "apartments_total": 70,
-    "area_min": 27.71,
-    "area_max": 63.76,
-    "handover": "I квартал 2028",
-    "detail_url": "/zhk/tellermanov-sad/",
-    "data_file": "/data/projects/tellermanov-sad.json",
-    "verification_status": "partially_confirmed",
-    "is_public_ready": false,
-    "last_checked_at": "2026-07-05",
-    "verification_note": "Перед выводом в публичные витрины, sitemap и рекламные материалы нужно повторно сверить актуальную карточку ЕИСЖС / наш.дом.рф и проектную декларацию.",
-    "is_featured": true,
-    "is_active": true
-  }
-]
+{
+  "schema_version": 1,
+  "updated_at": "2026-07-07",
+  "description": "Индекс объектов для каталога «Новостройки Борисоглебска». Используется как легкий список для каталога, главной страницы и будущего сравнения.",
+  "project": {
+    "id": "newbuilds-borisoglebsk",
+    "name": "Новостройки Борисоглебска"
+  },
+  "items": [
+    {
+      "id": "tellermanov-sad",
+      "slug": "tellermanov-sad",
+      "name": "ЖК Теллерманов сад",
+      "short_name": "Теллерманов сад",
+      "city": "Борисоглебск",
+      "region": "Воронежская область",
+      "address": "ул. Просторная, 4А",
+      "builder_id": "bm-group-chernozemye",
+      "builder_name": "СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ",
+      "status": "Строится",
+      "sales_status": "Продажи по карточке наш.дом.рф ещё не начались",
+      "class": "Комфорт",
+      "apartments_total": 70,
+      "area_min": 27.71,
+      "area_max": 63.76,
+      "handover": "I квартал 2028",
+      "apartment_type_titles": [
+        "Студии",
+        "1-комнатные",
+        "2-комнатные",
+        "3-комнатные"
+      ],
+      "detail_url": "/zhk/tellermanov-sad/",
+      "data_file": "/data/projects/tellermanov-sad.json",
+      "verification_status": "partially_confirmed",
+      "is_public_ready": false,
+      "last_checked_at": "2026-07-05",
+      "verification_note": "Перед выводом в публичные витрины, sitemap и рекламные материалы нужно повторно сверить актуальную карточку ЕИСЖС / наш.дом.рф и проектную декларацию.",
+      "is_featured": true,
+      "is_active": true
+    }
+  ]
+}
