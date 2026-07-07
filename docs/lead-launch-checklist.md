@@ -71,10 +71,39 @@ lead_thankyou_view
 
 Где проверять:
 
-- консоль браузера / dataLayer;
+- консоль браузера / `dataLayer`;
 - Яндекс.Метрика после установки счётчика;
 - GA4 после установки тега;
 - рекламные кабинеты после настройки целей.
+
+В событии `lead_submit` проверить минимум:
+
+- `lead_type`;
+- `form_id`;
+- `project_id`;
+- `residential_complex_id`;
+- `client_fixation_id`;
+- `qualification_status`;
+- `qualification_score`.
+
+После расширения события проверить дополнительно:
+
+- `utm_source`;
+- `utm_medium`;
+- `utm_campaign`;
+- `utm_content`;
+- `realtor`;
+- `realtor_id`;
+- `manager`;
+- `page_url`;
+- `referrer`.
+
+Подробные документы:
+
+```text
+docs/analytics-goals.md
+docs/analytics-event-payload-plan.md
+```
 
 ## 5. Проверка Supabase
 
