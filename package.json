@@ -1,0 +1,9 @@
+{
+  "name": "novostroyki-borisoglebsk",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node tools/validate-static-site.mjs"
+  }
+}
