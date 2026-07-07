@@ -14,6 +14,13 @@
     "status": "draft"
   },
   {
+    "url": "/novostroyki/studii/",
+    "title": "Студии в новостройках Борисоглебска",
+    "page_type": "commercial_landing",
+    "robots": "noindex,follow",
+    "status": "planned"
+  },
+  {
     "url": "/spravochnik/proverka-dokumentov-novostroyki/",
     "title": "Как проверить документы новостройки",
     "page_type": "guide_article",
@@ -28,8 +35,22 @@
     "status": "draft"
   },
   {
+    "url": "/spravochnik/razreshenie-na-stroitelstvo/",
+    "title": "Разрешение на строительство новостройки",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
     "url": "/spravochnik/kak-vybrat-planirovku/",
     "title": "Как выбрать планировку квартиры в новостройке",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/spravochnik/kak-kupit-kvartiru-v-novostroyke/",
+    "title": "Как купить квартиру в новостройке",
     "page_type": "guide_article",
     "robots": "noindex,follow",
     "status": "draft"
