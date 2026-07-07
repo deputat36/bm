@@ -1,17 +1,27 @@
-[
-  {
-    "id": "bm-group-chernozemye",
-    "slug": "bm-group",
-    "name": "СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ",
-    "brand_name": "BM Group Development",
-    "city": "Борисоглебск",
-    "region": "Воронежская область",
-    "logo": "/assets/img/bm-group-logo.svg",
-    "projects": [
-      "tellermanov-sad"
-    ],
-    "detail_url": "/zastroyschiki/bm-group/",
-    "data_file": "/data/builders/bm-group.json",
-    "is_active": true
-  }
-]
+{
+  "schema_version": 1,
+  "updated_at": "2026-07-07",
+  "description": "Индекс застройщиков для портала «Новостройки Борисоглебска». Используется для раздела застройщиков, карточек объектов и будущей фильтрации каталога.",
+  "project": {
+    "id": "newbuilds-borisoglebsk",
+    "name": "Новостройки Борисоглебска"
+  },
+  "items": [
+    {
+      "id": "bm-group-chernozemye",
+      "slug": "bm-group",
+      "name": "СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ",
+      "brand_name": "BM Group Development",
+      "city": "Борисоглебск",
+      "region": "Воронежская область",
+      "logo": "/assets/img/bm-group-logo.svg",
+      "projects": [
+        "tellermanov-sad"
+      ],
+      "projects_count": 1,
+      "detail_url": "/zastroyschiki/bm-group/",
+      "data_file": "/data/builders/bm-group.json",
+      "is_active": true
+    }
+  ]
+}
