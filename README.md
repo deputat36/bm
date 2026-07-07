@@ -79,6 +79,7 @@ https://tellermanovsad.ru/
 ```text
 /portal-preview/
 /novostroyki/
+/novostroyki/kvartiry-v-novostroykah/
 /zhk/
 /zhk/tellermanov-sad/
 /zhk/tellermanov-sad/o-zhk/
@@ -99,6 +100,7 @@ https://tellermanovsad.ru/
 /zastroyschiki/
 /zastroyschiki/bm-group/
 /spravochnik/
+/spravochnik/proverka-dokumentov-novostroyki/
 ```
 
 ## Структурированные данные
@@ -244,10 +246,12 @@ https://tellermanovsad.ru/zayavka/?realtor=ivanova&utm_source=vk&utm_medium=post
 - `docs/migration-tellermanovsad.md` — план переноса текущего сайта ЖК в раздел портала;
 - `docs/portal-homepage-migration.md` — порядок безопасного переноса `/portal-preview/` в корневой `index.html`;
 - `docs/development-roadmap.md` — этапы дальнейшей разработки;
+- `docs/roadmap-quality-update.md` — дополнение к roadmap по контролю качества;
 - `docs/url-map.md` — карта старых и новых URL;
 - `docs/content-model.md` — модель данных портала: ЖК, застройщик, документы, медиа, статьи и заявки;
 - `docs/data-structure.md` — структура JSON-данных портала;
 - `docs/data-quality-rules.md` — правила качества JSON-данных;
+- `docs/seo-low-frequency-pages.md` — стратегия низкочастотных SEO-страниц;
 - `docs/redirect-map.md` — карта будущих редиректов при миграции URL;
 - `docs/link-path-audit.md` — чек-лист относительных путей, форм, CSS/JS и тестовых заявок;
 - `docs/static-validation.md` — инструкция по статической проверке HTML и JSON;
