@@ -20,11 +20,19 @@
 
 | Новый URL | Назначение |
 |---|---|
+| `/guides/` | раздел информационных материалов |
+| `/guides/kak-vybrat-kvartiru-v-novostroyke/` | заготовка guide-страницы |
+| `/guides/kak-sravnit-novostroyki/` | заготовка guide-страницы |
+| `/guides/kak-vybrat-planirovku/` | заготовка guide-страницы |
 | `/zhk/tellermanov-sad/galereya/` | галерея ЖК в новой структуре |
 | `/zhk/tellermanov-sad/hod-stroitelstva/` | ход строительства ЖК |
 | `/zhk/tellermanov-sad/faq/` | FAQ по ЖК |
 | `/zhk/tellermanov-sad/zastroyschik/` | сведения о застройщике по ЖК |
 | `/zhk/tellermanov-sad/infrastruktura/` | инфраструктура и локация ЖК |
+
+## Добавлено в sitemap
+
+В `sitemap.xml` добавлены городские хабы, основные дочерние страницы ЖК, `/zhk/tellermanov-sad/galereya/`, `/guides/` и три стартовые guide-страницы.
 
 ## Нужно проверить вручную перед merge
 
