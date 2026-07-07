@@ -112,17 +112,18 @@ function validateLeadForms(relativePath, html) {
 
   forms.forEach((form, index) => {
     const humanIndex = index + 1;
-    const requiredDataAttributes = [
-      "data-lead-type",
-      "data-form-id",
-      "data-project",
-      "data-project-id",
-      "data-project-name"
-    ];
+    const requiredDataAttributes = ["data-lead-type", "data-form-id"];
+    const recommendedDataAttributes = ["data-project", "data-project-id", "data-project-name"];
 
     requiredDataAttributes.forEach((attribute) => {
       if (!getAttribute(form, attribute)) {
         results.errors.push(`${relativePath}: lead form #${humanIndex} missing ${attribute}`);
+      }
+    });
+
+    recommendedDataAttributes.forEach((attribute) => {
+      if (!getAttribute(form, attribute)) {
+        results.warnings.push(`${relativePath}: lead form #${humanIndex} missing ${attribute}; main.js will use SITE_CONFIG fallback`);
       }
     });
 
