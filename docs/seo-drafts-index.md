@@ -10,7 +10,7 @@
 /data/pages/seo-drafts.json
 ```
 
-хранит отдельный список SEO-страниц, которые уже созданы в структуре сайта, но пока не готовы к индексации.
+хранит отдельный список SEO-страниц, которые уже созданы или запланированы, но пока не готовы к индексации.
 
 Это нужно, чтобы:
 
@@ -21,12 +21,22 @@
 
 ## 2. Текущий список
 
+Созданные черновики:
+
 ```text
 /novostroyki/kvartiry-v-novostroykah/
 /novostroyki/semejnaya-ipoteka/
 /spravochnik/proverka-dokumentov-novostroyki/
 /spravochnik/proektnaya-deklaratsiya/
+/spravochnik/razreshenie-na-stroitelstvo/
 /spravochnik/kak-vybrat-planirovku/
+/spravochnik/kak-kupit-kvartiru-v-novostroyke/
+```
+
+Запланировано, но HTML-файл пока не создан:
+
+```text
+/novostroyki/studii/
 ```
 
 ## 3. Правила статуса
@@ -37,6 +47,15 @@
 {
   "robots": "noindex,follow",
   "status": "draft"
+}
+```
+
+Для страниц, которые внесены в план, но HTML-файл пока не создан:
+
+```json
+{
+  "robots": "noindex,follow",
+  "status": "planned"
 }
 ```
 
