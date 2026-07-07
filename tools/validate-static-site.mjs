@@ -26,6 +26,17 @@ const ALLOWED_REDIRECT_TYPES = new Set([
   "html_redirect",
   "server_301"
 ]);
+const ALLOWED_LEAD_TYPES = new Set([
+  "complex_interest",
+  "mortgage",
+  "apartment_selection",
+  "consultation",
+  "callback",
+  "waitlist",
+  "portal_selection",
+  "project_consultation",
+  "general"
+]);
 const PAGE_TYPES_REQUIRING_PROJECT_ID = new Set([
   "project",
   "project_about",
@@ -45,12 +56,15 @@ const PAGE_TYPES_REQUIRING_PROJECT_ID = new Set([
   "project_news_article"
 ]);
 
+const leadTypesUsedInForms = new Set();
+
 const results = {
   checkedHtmlFiles: 0,
   checkedLocalReferences: 0,
   checkedJsonFiles: 0,
   checkedIndexedPages: 0,
   checkedLegacyRedirects: 0,
+  checkedLeadTypes: 0,
   errors: [],
   warnings: []
 };
@@ -208,6 +222,13 @@ function validateLeadForms(relativePath, html) {
     });
 
     const leadType = getAttribute(form, "data-lead-type");
+    if (leadType) {
+      leadTypesUsedInForms.add(leadType);
+      if (!ALLOWED_LEAD_TYPES.has(leadType)) {
+        addLeadFormMetadataProblem(relativePath, `${relativePath}: lead form #${humanIndex} uses unsupported data-lead-type="${leadType}"`);
+      }
+    }
+
     if (leadType === "project_consultation" && !getAttribute(form, "data-complex-id")) {
       addLeadFormMetadataProblem(relativePath, `${relativePath}: project_consultation form #${humanIndex} missing data-complex-id`);
     }
@@ -454,6 +475,38 @@ function validateLegacyRedirects() {
   });
 }
 
+function findMissingLeadTypes(filePath, expectedTypes) {
+  const file = fromRoot(filePath);
+  if (!fs.existsSync(file)) {
+    return expectedTypes;
+  }
+
+  const content = read(file);
+  return expectedTypes.filter((leadType) => !content.includes(`'${leadType}'`) && !content.includes(`"${leadType}"`));
+}
+
+function validateLeadTypeCompatibility() {
+  const expectedTypes = Array.from(ALLOWED_LEAD_TYPES);
+  const formTypes = Array.from(leadTypesUsedInForms).sort();
+  results.checkedLeadTypes = formTypes.length;
+
+  formTypes.forEach((leadType) => {
+    if (!ALLOWED_LEAD_TYPES.has(leadType)) {
+      addError(`Lead type compatibility: unsupported form lead_type "${leadType}"`);
+    }
+  });
+
+  const missingInSql = findMissingLeadTypes("docs/supabase-leads.sql", expectedTypes);
+  if (missingInSql.length) {
+    addError(`docs/supabase-leads.sql: missing allowed lead_type values: ${missingInSql.join(", ")}`);
+  }
+
+  const missingInEdgeFunction = findMissingLeadTypes("supabase/functions/newbuild-lead/index.ts", expectedTypes);
+  if (missingInEdgeFunction.length) {
+    addWarning(`supabase/functions/newbuild-lead/index.ts: missing lead_type values: ${missingInEdgeFunction.join(", ")}. Fix before enabling LEAD_ENDPOINT.`);
+  }
+}
+
 function validateDataFiles() {
   validateProjectIndex();
   validateResearchRegister();
@@ -465,12 +518,14 @@ function main() {
   const htmlFiles = walk(ROOT);
   htmlFiles.forEach(validateHtmlFile);
   validateDataFiles();
+  validateLeadTypeCompatibility();
 
   console.log(`Checked HTML files: ${results.checkedHtmlFiles}`);
   console.log(`Checked local references: ${results.checkedLocalReferences}`);
   console.log(`Checked JSON files: ${results.checkedJsonFiles}`);
   console.log(`Checked indexed pages: ${results.checkedIndexedPages}`);
   console.log(`Checked legacy redirects: ${results.checkedLegacyRedirects}`);
+  console.log(`Checked lead types: ${results.checkedLeadTypes}`);
 
   if (results.warnings.length) {
     console.log("\nWarnings:");
