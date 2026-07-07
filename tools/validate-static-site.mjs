@@ -33,7 +33,8 @@ const PAGE_TYPES_REQUIRING_PROJECT_ID = new Set([
   "project_faq",
   "project_contacts",
   "project_address_landing",
-  "project_news"
+  "project_news",
+  "project_news_article"
 ]);
 
 const results = {
