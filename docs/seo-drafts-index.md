@@ -31,6 +31,7 @@
 /spravochnik/razreshenie-na-stroitelstvo/
 /spravochnik/kak-vybrat-planirovku/
 /spravochnik/kak-kupit-kvartiru-v-novostroyke/
+/spravochnik/chto-proverit-pered-pokupkoj/
 ```
 
 Запланировано, но HTML-файл пока не создан:
