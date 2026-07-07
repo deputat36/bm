@@ -9,9 +9,11 @@
 | `/o-zhk/` | `/zhk/tellermanov-sad/` | старая страница заменена страницей переноса с `noindex` и canonical |
 | `/kvartiry/` | `/zhk/tellermanov-sad/kvartiry/` | старая страница заменена страницей переноса с `noindex` и canonical |
 | `/dokumenty/` | `/zhk/tellermanov-sad/dokumenty/` | старая страница заменена страницей переноса с `noindex` и canonical |
+| `/galereya/` | `/zhk/tellermanov-sad/galereya/` | старая страница заменена страницей переноса с `noindex` и canonical |
 | `/zastroyschik/` | `/zhk/tellermanov-sad/zastroyschik/` | старая страница заменена страницей переноса с `noindex` и canonical |
 | `/infrastruktura/` | `/zhk/tellermanov-sad/infrastruktura/` | старая страница заменена страницей переноса с `noindex` и canonical |
 | `/hod-stroitelstva/` | `/zhk/tellermanov-sad/hod-stroitelstva/` | старая страница заменена страницей переноса с `noindex` и canonical |
+| `/proektnaya-deklaratsiya-36-001139/` | `/zhk/tellermanov-sad/dokumenty/` | старая страница заменена страницей переноса с `noindex` и canonical |
 | `/prostornaya-4a/` | `/zhk/tellermanov-sad/` | старая страница заменена страницей переноса с `noindex` и canonical |
 | `/novostroyka-borisoglebsk/` | `/novostroyki/` | старая страница заменена страницей переноса с `noindex` и canonical |
 | `/kvartiry-ot-zastroyschika-borisoglebsk/` | `/kvartiry-v-novostroykakh/` | старая страница заменена страницей переноса с `noindex` и canonical |
@@ -33,13 +35,6 @@
 ## Добавлено в sitemap
 
 В `sitemap.xml` добавлены городские хабы, основные дочерние страницы ЖК, `/zhk/tellermanov-sad/galereya/`, `/guides/` и три стартовые guide-страницы.
-
-## Нужно проверить вручную перед merge
-
-| Старый URL | Целевой URL | Причина |
-|---|---|---|
-| `/galereya/` | `/zhk/tellermanov-sad/galereya/` | инструмент заблокировал обновление файла, страницу нужно повторно обработать |
-| `/proektnaya-deklaratsiya-36-001139/` | `/zhk/tellermanov-sad/dokumenty/` | инструмент заблокировал обновление файла, страницу нужно повторно обработать |
 
 ## Рекомендация для настоящего запуска
 
