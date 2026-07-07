@@ -9,154 +9,16 @@
   <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="container topbar__inner">
-      <a class="brand" href="../portal-preview/" aria-label="Новостройки Борисоглебска">
-        <span class="brand__etagi">этажи</span>
-        <span class="brand__divider"></span>
-        <strong>Новостройки Борисоглебска</strong>
-      </a>
-      <nav class="nav" aria-label="Основное меню">
-        <a href="../novostroyki/">Новостройки</a>
-        <a href="../zhk/">ЖК</a>
-        <a href="../zastroyschiki/">Застройщики</a>
-        <a href="../sravnenie/">Сравнение</a>
-        <a href="../spravochnik/">Справочник</a>
-        <a href="#lead" class="button">Подобрать квартиру</a>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <div class="container breadcrumbs"><a href="../portal-preview/">Главная портала</a> / Сравнение</div>
-
-    <section class="page-hero">
-      <div class="container">
-        <span class="eyebrow">Раздел портала · в подготовке</span>
-        <h1>Сравнение новостроек Борисоглебска</h1>
-        <p class="lead">Здесь будет единая таблица для сравнения новых домов и жилых комплексов: адрес, статус строительства, застройщик, сроки, документы, квартирография и доступные способы покупки.</p>
-        <div class="hero__actions">
-          <a class="button" href="../zhk/tellermanov-sad/">Смотреть ЖК «Теллерманов сад»</a>
-          <a class="button button--ghost" href="#lead">Получить консультацию</a>
-        </div>
-        <div class="notice">Раздел закрыт от индексации до завершения проверки объектов. Цены, наличие квартир и специальные условия нельзя публиковать как факт без актуального подтверждения.</div>
-      </div>
-    </section>
-
-    <section>
-      <div class="container">
-        <div class="section__head">
-          <h2>Текущая таблица сравнения</h2>
-          <p>Пока в структуре портала детально заполнен один объект. Остальные дома добавляются только после проверки публичных источников, проектных деклараций и документов.</p>
-        </div>
-
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Объект</th>
-              <th>Адрес и статус</th>
-              <th>Застройщик</th>
-              <th>Сроки</th>
-              <th>Квартирография</th>
-              <th>Документы и проверка</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>ЖК «Теллерманов сад»</strong><br><a href="../zhk/tellermanov-sad/">Открыть карточку</a></td>
-              <td>ул. Просторная, 4А<br>Статус: строится</td>
-              <td>СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ</td>
-              <td>Планируемая сдача: I квартал 2028 года<br>Передача ключей: до 30.09.2028</td>
-              <td>70 квартир: студии, 1-, 2- и 3-комнатные<br>Площади: от 27,71 до 63,76 м²</td>
-              <td>Проектная декларация №36-001139<br>Карточка наш.дом.рф: ID 72480<br><strong>Статус данных:</strong> частично подтверждено. Перед публикацией, sitemap и рекламой нужна повторная сверка с ЕИСЖС.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="section--soft">
-      <div class="container">
-        <div class="section__head">
-          <h2>Что сравниваем по каждому дому</h2>
-          <p>Единые параметры нужны, чтобы каталог выглядел как независимый городской портал, а не как страница одного застройщика.</p>
-        </div>
-        <div class="grid grid--3">
-          <article class="card">
-            <h3>1. Объект и адрес</h3>
-            <p>Название, альтернативные названия, точный адрес, район, статус строительства, количество домов или очередей.</p>
-          </article>
-          <article class="card">
-            <h3>2. Застройщик и документы</h3>
-            <p>Юридическое лицо, проектная декларация, разрешение на строительство, карточка ЕИСЖС, дата последней проверки.</p>
-          </article>
-          <article class="card">
-            <h3>3. Квартиры и покупка</h3>
-            <p>Количество квартир, комнатность, диапазон площадей, ориентиры по ипотеке и способам покупки без обещаний цены или наличия.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="container">
-        <div class="section__head">
-          <h2>Статусы проверки данных</h2>
-          <p>Для портала важно разделять подтвержденные сведения, частично подтвержденные сведения и рабочие гипотезы.</p>
-        </div>
-        <div class="grid grid--3">
-          <article class="card card--shadow">
-            <span class="eyebrow">Можно публиковать</span>
-            <h3>Подтверждено</h3>
-            <p>Есть проектная декларация, карточка ЕИСЖС, разрешение или другой официальный публичный документ. Указана дата проверки.</p>
-          </article>
-          <article class="card">
-            <span class="eyebrow">Осторожно</span>
-            <h3>Частично подтверждено</h3>
-            <p>Есть публичные упоминания или отдельные документы, но не хватает характеристик, сроков, квартирографии или актуальной сверки.</p>
-          </article>
-          <article class="card">
-            <span class="eyebrow">Не публиковать как факт</span>
-            <h3>Требует проверки</h3>
-            <p>Информация есть только в рабочих заметках, объявлениях, устных источниках или неполных материалах. На сайт не выводить до подтверждения.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="cta" id="lead">
-      <div class="container lead-panel">
-        <div>
-          <span class="eyebrow">Подбор и сравнение</span>
-          <h2>Помочь сравнить новостройки?</h2>
-          <p class="lead">Оставьте заявку, и специалист уточнит параметры: комнатность, бюджет, срок покупки, ипотеку, материнский капитал или сертификаты.</p>
-          <ul class="list">
-            <li>Заявка является обращением за консультацией.</li>
-            <li>Она не является бронью квартиры и не фиксирует стоимость.</li>
-            <li>Условия покупки и наличие квартир нужно уточнять перед решением.</li>
-          </ul>
-        </div>
-        <form class="form" data-lead-form data-lead-type="portal_selection" data-project="Портал Новостройки Борисоглебска" data-project-id="portal" data-project-name="Новостройки Борисоглебска" data-complex="" data-form-id="newbuilds_compare_selection" data-success-message="Заявка на сравнение новостроек отправлена. Специалист свяжется с вами и уточнит параметры.">
-          <label>Имя<input name="name" required autocomplete="name" placeholder="Как к вам обращаться"></label>
-          <label>Телефон<input name="phone" required autocomplete="tel" placeholder="+7 ___ ___-__-__"></label>
-          <label>Что важно сравнить<select name="interest" required>
-            <option value="">Выберите вариант</option>
-            <option>Срок сдачи</option>
-            <option>Планировки и площади</option>
-            <option>Ипотека и семейная ипотека</option>
-            <option>Документы и застройщик</option>
-            <option>Подбор квартиры под бюджет</option>
-          </select></label>
-          <label>Комментарий<textarea name="comment" required placeholder="Например: нужна 2-комнатная, семейная ипотека, покупка в этом году"></textarea></label>
-          <button class="button" type="submit">Получить сравнение</button>
-          <div class="form__status" data-form-status></div>
-        </form>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer"><div class="container footer__inner"><div><strong>Новостройки Борисоглебска</strong></div><div>Черновой раздел. До готовности закрыт от индексации.</div></div></footer>
-
-  <script src="../assets/js/main.js"></script>
+<header class="topbar"><div class="container topbar__inner"><a class="brand" href="../portal-preview/" aria-label="Новостройки Борисоглебска"><span class="brand__etagi">этажи</span><span class="brand__divider"></span><strong>Новостройки Борисоглебска</strong></a><nav class="nav" aria-label="Основное меню"><a href="../novostroyki/">Новостройки</a><a href="../zhk/">ЖК</a><a href="../zastroyschiki/">Застройщики</a><a href="../sravnenie/">Сравнение</a><a href="../spravochnik/">Справочник</a><a href="#lead" class="button">Получить консультацию</a></nav></div></header>
+<main>
+  <div class="container breadcrumbs"><a href="../portal-preview/">Главная портала</a> / Сравнение</div>
+  <section class="page-hero"><div class="container"><span class="eyebrow">Раздел портала · в подготовке</span><h1>Сравнение новостроек Борисоглебска</h1><p class="lead">Здесь будет единая таблица для сравнения новых домов и жилых комплексов: адрес, статус строительства, застройщик, сроки, документы, квартирография и доступные способы покупки.</p><div class="hero__actions"><a class="button" href="../zhk/tellermanov-sad/">Смотреть ЖК «Теллерманов сад»</a><a class="button button--ghost" href="#lead">Получить консультацию</a></div><div class="notice">Раздел закрыт от индексации до завершения проверки объектов. Цены, наличие квартир и специальные условия нельзя публиковать как факт без актуального подтверждения.</div></div></section>
+  <section><div class="container"><div class="section__head"><h2>Текущая таблица сравнения</h2><p>Пока в структуре портала детально заполнен один объект. Остальные дома добавляются только после проверки публичных источников, проектных деклараций и документов.</p></div><table class="table"><thead><tr><th>Объект</th><th>Адрес и статус</th><th>Застройщик</th><th>Сроки</th><th>Квартирография</th><th>Документы и проверка</th></tr></thead><tbody><tr><td><strong>ЖК «Теллерманов сад»</strong><br><a href="../zhk/tellermanov-sad/">Открыть карточку</a></td><td>ул. Просторная, 4А<br>Статус: строится</td><td>СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ</td><td>Планируемая сдача: I квартал 2028 года<br>Передача ключей: до 30.09.2028</td><td>70 квартир: студии, 1-, 2- и 3-комнатные<br>Площади: от 27,71 до 63,76 м²</td><td>Проектная декларация №36-001139<br>Карточка наш.дом.рф: ID 72480<br><strong>Статус данных:</strong> частично подтверждено. Перед публикацией, sitemap и рекламой нужна повторная сверка с ЕИСЖС.</td></tr></tbody></table></div></section>
+  <section class="section--soft"><div class="container"><div class="section__head"><h2>Что сравниваем по каждому дому</h2><p>Единые параметры нужны, чтобы каталог выглядел как независимый городской портал, а не как страница одного застройщика.</p></div><div class="grid grid--3"><article class="card"><h3>1. Объект и адрес</h3><p>Название, альтернативные названия, точный адрес, район, статус строительства, количество домов или очередей.</p></article><article class="card"><h3>2. Застройщик и документы</h3><p>Юридическое лицо, проектная декларация, разрешение на строительство, карточка ЕИСЖС, дата последней проверки.</p></article><article class="card"><h3>3. Квартиры и покупка</h3><p>Количество квартир, комнатность, диапазон площадей, ориентиры по ипотеке и способам покупки без обещаний цены или наличия.</p></article></div></div></section>
+  <section><div class="container"><div class="section__head"><h2>Статусы проверки данных</h2><p>Для портала важно разделять подтвержденные сведения, частично подтвержденные сведения и рабочие гипотезы.</p></div><div class="grid grid--3"><article class="card card--shadow"><span class="eyebrow">Можно публиковать</span><h3>Подтверждено</h3><p>Есть проектная декларация, карточка ЕИСЖС, разрешение или другой публичный документ. Указана дата проверки.</p></article><article class="card"><span class="eyebrow">Осторожно</span><h3>Частично подтверждено</h3><p>Есть публичные упоминания или отдельные документы, но не хватает характеристик, сроков, квартирографии или актуальной сверки.</p></article><article class="card"><span class="eyebrow">Не публиковать как факт</span><h3>Требует проверки</h3><p>Информация есть только в рабочих заметках, объявлениях, устных источниках или неполных материалах. На сайт не выводить до подтверждения.</p></article></div></div></section>
+  <section class="cta" id="lead"><div class="container lead-panel"><div><span class="eyebrow">Консультация и сравнение</span><h2>Помочь сравнить новостройки?</h2><p class="lead">Оставьте контакты, и специалист уточнит параметры: комнатность, бюджет, срок покупки, ипотеку, материнский капитал или сертификаты.</p><ul class="list"><li>Обращение является запросом на консультацию.</li><li>Оно не является бронью квартиры, офертой или фиксацией стоимости.</li><li>Условия покупки и наличие квартир нужно уточнять перед решением.</li></ul></div><form class="form" data-lead-form data-lead-type="portal_selection" data-project="Портал Новостройки Борисоглебска" data-project-id="portal" data-project-name="Новостройки Борисоглебска" data-complex="" data-form-id="newbuilds_compare_selection" data-success-message="Обращение на сравнение новостроек отправлено. Специалист свяжется с вами и уточнит параметры."><label>Имя<input name="name" required autocomplete="name" placeholder="Как к вам обращаться"></label><label>Телефон<input name="phone" required autocomplete="tel" placeholder="+7 ___ ___-__-__"></label><label>Что важно сравнить<select name="interest" required><option value="">Выберите вариант</option><option>Срок сдачи</option><option>Планировки и площади</option><option>Ипотека и семейная ипотека</option><option>Документы и застройщик</option><option>Подбор квартиры под бюджет</option></select></label><label>Комментарий<textarea name="comment" required placeholder="Например: нужна 2-комнатная, семейная ипотека, покупка в этом году"></textarea></label><button class="button" type="submit">Получить консультацию</button><div class="form__status" data-form-status></div></form></div></section>
+</main>
+<footer class="footer"><div class="container footer__inner"><div><strong>Новостройки Борисоглебска</strong><br>Черновой раздел. До готовности закрыт от индексации.</div><div>Информация носит справочный характер. <a href="../legal/">Правовая информация</a> · <a href="../sources/">Источники</a> · <a href="../privacy/">Политика данных</a></div></div></footer>
+<script src="../assets/js/main.js"></script>
 </body>
 </html>
