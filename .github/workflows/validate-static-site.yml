@@ -19,3 +19,6 @@ jobs:
 
       - name: Validate HTML links and lead forms
         run: npm run validate
+
+      - name: Validate JSON data
+        run: npm run validate:json
