@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "validate": "node tools/validate-static-site.mjs",
-    "validate:json": "node tools/validate-json.mjs"
+    "validate:json": "node tools/validate-json.mjs",
+    "urls:inventory": "node tools/build-url-inventory.mjs"
   }
 }
