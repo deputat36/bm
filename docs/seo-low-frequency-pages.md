@@ -28,6 +28,7 @@
 /spravochnik/razreshenie-na-stroitelstvo/
 /spravochnik/kak-vybrat-planirovku/
 /spravochnik/kak-kupit-kvartiru-v-novostroyke/
+/spravochnik/chto-proverit-pered-pokupkoj/
 ```
 
 ## 4. Запланированные, но ещё не созданные страницы
@@ -91,7 +92,7 @@
 
 ## 9. Ближайшие страницы для добавления
 
-1. `/spravochnik/chto-proverit-pered-pokupkoj/`
-2. `/novostroyki/studii/`
-3. `/novostroyki/dvuhkomnatnye/`
-4. `/novostroyki/materinskij-kapital/`
+1. `/novostroyki/studii/`
+2. `/novostroyki/dvuhkomnatnye/`
+3. `/novostroyki/materinskij-kapital/`
+4. `/spravochnik/razreshenie-na-stroitelstvo/` — расширить после юридической проверки.
