@@ -17,11 +17,30 @@ const ALLOWED_VERIFICATION_STATUSES = new Set([
   "requires_check",
   "do_not_publish"
 ]);
+const ALLOWED_PAGE_STATUSES = new Set(["draft", "ready", "published", "archived"]);
+const PAGE_TYPES_REQUIRING_PROJECT_ID = new Set([
+  "project",
+  "project_about",
+  "project_apartments",
+  "project_layouts",
+  "project_prices",
+  "project_documents",
+  "project_gallery",
+  "project_builder",
+  "project_infrastructure",
+  "project_mortgage",
+  "project_construction_progress",
+  "project_faq",
+  "project_contacts",
+  "project_address_landing",
+  "project_news"
+]);
 
 const results = {
   checkedHtmlFiles: 0,
   checkedLocalReferences: 0,
   checkedJsonFiles: 0,
+  checkedIndexedPages: 0,
   errors: [],
   warnings: []
 };
@@ -146,10 +165,14 @@ function getAttribute(tag, name) {
   return match ? match[1].trim() : "";
 }
 
+function htmlHasNoindexFollow(html) {
+  return /<meta\s+name=["']robots["']\s+content=["']noindex,follow["']/i.test(html);
+}
+
 function validateDraftRobots(relativePath, html) {
   if (!isDraftPath(relativePath)) return;
 
-  if (!/<meta\s+name=["']robots["']\s+content=["']noindex,follow["']/i.test(html)) {
+  if (!htmlHasNoindexFollow(html)) {
     addError(`${relativePath}: draft page must include <meta name="robots" content="noindex,follow">`);
   }
 }
@@ -237,6 +260,11 @@ function resolveRepositoryPath(value) {
   return value.startsWith("/") ? value.slice(1) : value;
 }
 
+function resolvePageFile(url) {
+  const cleanUrl = String(url || "").replace(/^\/+/, "").replace(/\/+$/, "");
+  return cleanUrl ? `${cleanUrl}/index.html` : "index.html";
+}
+
 function validateProjectIndex() {
   const indexPath = "data/projects/index.json";
   const projects = readJson(indexPath);
@@ -303,9 +331,67 @@ function validateResearchRegister() {
   });
 }
 
+function validatePageIndex() {
+  const indexPath = "data/pages/index.json";
+  const pages = readJson(indexPath);
+  if (!pages) return;
+
+  if (!Array.isArray(pages)) {
+    addError(`${indexPath}: expected array`);
+    return;
+  }
+
+  const seenUrls = new Set();
+
+  pages.forEach((page, index) => {
+    const label = `${indexPath}#${index + 1}:${page?.url || "unknown"}`;
+    results.checkedIndexedPages += 1;
+
+    if (!page.url || !String(page.url).startsWith("/")) {
+      addError(`${label}: url must start with /`);
+      return;
+    }
+
+    if (seenUrls.has(page.url)) {
+      addError(`${label}: duplicate url`);
+    }
+    seenUrls.add(page.url);
+
+    if (!page.title) addError(`${label}: missing title`);
+    if (!page.page_type) addError(`${label}: missing page_type`);
+
+    if (!page.status || !ALLOWED_PAGE_STATUSES.has(page.status)) {
+      addError(`${label}: unsupported status "${page.status || ""}"`);
+    }
+
+    if (PAGE_TYPES_REQUIRING_PROJECT_ID.has(page.page_type) && !page.project_id) {
+      addError(`${label}: missing project_id for project page type`);
+    }
+
+    if (page.status === "archived") return;
+
+    const pageFile = resolvePageFile(page.url);
+    const pagePath = fromRoot(pageFile);
+    if (!fs.existsSync(pagePath)) {
+      addError(`${label}: indexed page file does not exist: ${pageFile}`);
+      return;
+    }
+
+    const html = read(pagePath);
+    if (page.robots === "noindex,follow" && !htmlHasNoindexFollow(html)) {
+      addError(`${label}: page index says noindex,follow, but ${pageFile} has no matching meta robots`);
+    }
+
+    if (page.status === "published" && page.robots === "noindex,follow") {
+      addError(`${label}: published page must not have robots=noindex,follow`);
+    }
+  });
+}
+
 function validateDataFiles() {
   validateProjectIndex();
   validateResearchRegister();
+  validatePageIndex();
 }
 
 function main() {
@@ -316,6 +402,7 @@ function main() {
   console.log(`Checked HTML files: ${results.checkedHtmlFiles}`);
   console.log(`Checked local references: ${results.checkedLocalReferences}`);
   console.log(`Checked JSON files: ${results.checkedJsonFiles}`);
+  console.log(`Checked indexed pages: ${results.checkedIndexedPages}`);
 
   if (results.warnings.length) {
     console.log("\nWarnings:");
