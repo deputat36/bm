@@ -8,14 +8,27 @@
 
 Страницы создаются как черновики с `noindex,follow`. В sitemap их можно добавлять только после проверки текста, данных, юридической безопасности и форм.
 
-## 2. Уже добавленные черновики
+## 2. Индекс SEO-черновиков
+
+Для SEO-черновиков добавлен отдельный индекс:
+
+```text
+/data/pages/seo-drafts.json
+```
+
+Он нужен, чтобы не перегружать основной `data/pages/index.json` и отдельно контролировать страницы, которые ещё не готовы к sitemap.
+
+## 3. Уже добавленные черновики
 
 ```text
 /novostroyki/kvartiry-v-novostroykah/
+/novostroyki/semejnaya-ipoteka/
 /spravochnik/proverka-dokumentov-novostroyki/
+/spravochnik/proektnaya-deklaratsiya/
+/spravochnik/kak-vybrat-planirovku/
 ```
 
-## 3. Коммерческие страницы
+## 4. Коммерческие страницы
 
 Приоритетные коммерческие страницы:
 
@@ -32,7 +45,7 @@
 
 Эти страницы должны вести к каталогу, карточкам ЖК и форме подбора, а не обещать наличие квартир или фиксированные цены без подтверждения.
 
-## 4. Информационные страницы
+## 5. Информационные страницы
 
 Приоритетные справочные страницы:
 
@@ -45,17 +58,17 @@
 /spravochnik/chto-proverit-pered-pokupkoj/
 ```
 
-## 5. Правила публикации
+## 6. Правила публикации
 
 1. До проверки каждая страница должна иметь `noindex,follow`.
-2. В `data/pages/index.json` статус должен быть `draft`.
+2. В индексе страниц статус должен быть `draft`.
 3. Нельзя публиковать неподтвержденные цены как факт.
 4. Нельзя называть страницу официальной страницей ЖК или застройщика.
 5. В тексте должен быть дисклеймер, если материал справочный.
 6. На коммерческих страницах форма заявки не должна называться бронью.
 7. Перед переводом в `published` нужно пройти `npm run validate` и `npm run validate:json`.
 
-## 6. Структура страницы
+## 7. Структура страницы
 
 Рекомендуемая структура:
 
@@ -66,10 +79,10 @@
 5. Юридически безопасная форма заявки.
 6. Дисклеймер по статусу данных.
 
-## 7. Ближайшие страницы для добавления
+## 8. Ближайшие страницы для добавления
 
-1. `/spravochnik/proektnaya-deklaratsiya/`
-2. `/spravochnik/kak-vybrat-planirovku/`
-3. `/novostroyki/semejnaya-ipoteka/`
-4. `/novostroyki/studii/`
-5. `/novostroyki/dvuhkomnatnye/`
+1. `/spravochnik/razreshenie-na-stroitelstvo/`
+2. `/spravochnik/kak-kupit-kvartiru-v-novostroyke/`
+3. `/novostroyki/studii/`
+4. `/novostroyki/dvuhkomnatnye/`
+5. `/novostroyki/materinskij-kapital/`
