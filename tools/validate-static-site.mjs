@@ -18,6 +18,14 @@ const ALLOWED_VERIFICATION_STATUSES = new Set([
   "do_not_publish"
 ]);
 const ALLOWED_PAGE_STATUSES = new Set(["draft", "ready", "published", "archived"]);
+const ALLOWED_REDIRECT_STATUSES = new Set(["planned", "requires_decision", "ready", "active", "archived"]);
+const ALLOWED_REDIRECT_TYPES = new Set([
+  "301_after_migration",
+  "html_or_301_after_audit",
+  "decision_required",
+  "html_redirect",
+  "server_301"
+]);
 const PAGE_TYPES_REQUIRING_PROJECT_ID = new Set([
   "project",
   "project_about",
@@ -42,6 +50,7 @@ const results = {
   checkedLocalReferences: 0,
   checkedJsonFiles: 0,
   checkedIndexedPages: 0,
+  checkedLegacyRedirects: 0,
   errors: [],
   warnings: []
 };
@@ -389,10 +398,67 @@ function validatePageIndex() {
   });
 }
 
+function validateLegacyRedirects() {
+  const redirectPath = "data/pages/legacy-redirects.json";
+  const redirects = readJson(redirectPath);
+  if (!redirects) return;
+
+  if (!Array.isArray(redirects)) {
+    addError(`${redirectPath}: expected array`);
+    return;
+  }
+
+  const seenSources = new Set();
+
+  redirects.forEach((redirect, index) => {
+    const label = `${redirectPath}#${index + 1}:${redirect?.source_url || "unknown"}`;
+    results.checkedLegacyRedirects += 1;
+
+    if (!redirect.source_url || !String(redirect.source_url).startsWith("/")) {
+      addError(`${label}: source_url must start with /`);
+      return;
+    }
+
+    if (!redirect.target_url || !String(redirect.target_url).startsWith("/")) {
+      addError(`${label}: target_url must start with /`);
+      return;
+    }
+
+    if (redirect.source_url === redirect.target_url) {
+      addError(`${label}: source_url and target_url must be different`);
+    }
+
+    if (seenSources.has(redirect.source_url)) {
+      addError(`${label}: duplicate source_url`);
+    }
+    seenSources.add(redirect.source_url);
+
+    if (!redirect.redirect_type || !ALLOWED_REDIRECT_TYPES.has(redirect.redirect_type)) {
+      addError(`${label}: unsupported redirect_type "${redirect.redirect_type || ""}"`);
+    }
+
+    if (!redirect.status || !ALLOWED_REDIRECT_STATUSES.has(redirect.status)) {
+      addError(`${label}: unsupported status "${redirect.status || ""}"`);
+    }
+
+    ["source_url", "target_url"].forEach((field) => {
+      const file = resolvePageFile(redirect[field]);
+      if (!fs.existsSync(fromRoot(file))) {
+        addError(`${label}: ${field} file does not exist: ${file}`);
+      }
+    });
+
+    if (redirect.status === "active" && !["html_redirect", "server_301"].includes(redirect.redirect_type)) {
+      addError(`${label}: active redirect must use html_redirect or server_301`);
+    }
+  });
+}
+
 function validateDataFiles() {
   validateProjectIndex();
   validateResearchRegister();
   validatePageIndex();
+  validateLegacyRedirects();
 }
 
 function main() {
@@ -404,6 +470,7 @@ function main() {
   console.log(`Checked local references: ${results.checkedLocalReferences}`);
   console.log(`Checked JSON files: ${results.checkedJsonFiles}`);
   console.log(`Checked indexed pages: ${results.checkedIndexedPages}`);
+  console.log(`Checked legacy redirects: ${results.checkedLegacyRedirects}`);
 
   if (results.warnings.length) {
     console.log("\nWarnings:");
