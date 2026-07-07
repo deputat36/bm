@@ -1,0 +1,37 @@
+[
+  {
+    "url": "/novostroyki/kvartiry-v-novostroykah/",
+    "title": "Квартиры в новостройках Борисоглебска",
+    "page_type": "commercial_landing",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/novostroyki/semejnaya-ipoteka/",
+    "title": "Семейная ипотека на новостройку в Борисоглебске",
+    "page_type": "mortgage_landing",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/spravochnik/proverka-dokumentov-novostroyki/",
+    "title": "Как проверить документы новостройки",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/spravochnik/proektnaya-deklaratsiya/",
+    "title": "Проектная декларация новостройки",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/spravochnik/kak-vybrat-planirovku/",
+    "title": "Как выбрать планировку квартиры в новостройке",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "draft"
+  }
+]
