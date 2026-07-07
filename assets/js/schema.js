@@ -103,6 +103,32 @@ function buildWebSiteSchema() {
   };
 }
 
+function buildItemListSchema() {
+  const listName = document.body.dataset.schemaItemList;
+  if (!listName) return null;
+
+  const cards = Array.from(document.querySelectorAll("[data-schema-list-item]"));
+  if (!cards.length) return null;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: listName,
+    itemListElement: cards.map((card, index) => {
+      const link = card.querySelector("a[href]");
+      const name = card.dataset.schemaItemName || card.querySelector("h2, h3")?.textContent?.trim() || link?.textContent?.trim() || `Объект ${index + 1}`;
+      const url = card.dataset.schemaItemUrl || link?.getAttribute("href") || window.location.href;
+
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        name,
+        url: new URL(url, window.location.href).href
+      };
+    })
+  };
+}
+
 const websiteSchema = buildWebSiteSchema();
 if (websiteSchema) createJsonLdScript(websiteSchema);
 
@@ -114,3 +140,6 @@ if (residenceSchema) createJsonLdScript(residenceSchema);
 
 const organizationSchema = buildOrganizationSchema();
 if (organizationSchema) createJsonLdScript(organizationSchema);
+
+const itemListSchema = buildItemListSchema();
+if (itemListSchema) createJsonLdScript(itemListSchema);
