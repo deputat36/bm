@@ -15,6 +15,10 @@
     "handover": "I квартал 2028",
     "detail_url": "/zhk/tellermanov-sad/",
     "data_file": "/data/projects/tellermanov-sad.json",
+    "verification_status": "partially_confirmed",
+    "is_public_ready": false,
+    "last_checked_at": "2026-07-05",
+    "verification_note": "Перед выводом в публичные витрины, sitemap и рекламные материалы нужно повторно сверить актуальную карточку ЕИСЖС / наш.дом.рф и проектную декларацию.",
     "is_featured": true,
     "is_active": true
   }
