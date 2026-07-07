@@ -65,6 +65,24 @@ function buildResidenceSchema() {
   };
 }
 
+function buildWebSiteSchema() {
+  const siteName = document.body.dataset.schemaWebsite;
+  if (!siteName) return null;
+
+  const description = document.body.dataset.schemaDescription || document.querySelector('meta[name="description"]')?.getAttribute("content") || "";
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteName,
+    url: document.body.dataset.schemaWebsiteUrl || window.location.origin + "/",
+    description
+  };
+}
+
+const websiteSchema = buildWebSiteSchema();
+if (websiteSchema) createJsonLdScript(websiteSchema);
+
 const breadcrumbSchema = buildBreadcrumbList();
 if (breadcrumbSchema) createJsonLdScript(breadcrumbSchema);
 
