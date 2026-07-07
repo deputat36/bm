@@ -25,10 +25,20 @@
 /novostroyki/semejnaya-ipoteka/
 /spravochnik/proverka-dokumentov-novostroyki/
 /spravochnik/proektnaya-deklaratsiya/
+/spravochnik/razreshenie-na-stroitelstvo/
 /spravochnik/kak-vybrat-planirovku/
+/spravochnik/kak-kupit-kvartiru-v-novostroyke/
 ```
 
-## 4. Коммерческие страницы
+## 4. Запланированные, но ещё не созданные страницы
+
+```text
+/novostroyki/studii/
+```
+
+Страница по студиям добавлена в `/data/pages/seo-drafts.json` со статусом `planned`, потому что создание HTML-файла дважды было заблокировано инструментом.
+
+## 5. Коммерческие страницы
 
 Приоритетные коммерческие страницы:
 
@@ -45,7 +55,7 @@
 
 Эти страницы должны вести к каталогу, карточкам ЖК и форме подбора, а не обещать наличие квартир или фиксированные цены без подтверждения.
 
-## 5. Информационные страницы
+## 6. Информационные страницы
 
 Приоритетные справочные страницы:
 
@@ -58,7 +68,7 @@
 /spravochnik/chto-proverit-pered-pokupkoj/
 ```
 
-## 6. Правила публикации
+## 7. Правила публикации
 
 1. До проверки каждая страница должна иметь `noindex,follow`.
 2. В индексе страниц статус должен быть `draft`.
@@ -68,7 +78,7 @@
 6. На коммерческих страницах форма заявки не должна называться бронью.
 7. Перед переводом в `published` нужно пройти `npm run validate` и `npm run validate:json`.
 
-## 7. Структура страницы
+## 8. Структура страницы
 
 Рекомендуемая структура:
 
@@ -79,10 +89,9 @@
 5. Юридически безопасная форма заявки.
 6. Дисклеймер по статусу данных.
 
-## 8. Ближайшие страницы для добавления
+## 9. Ближайшие страницы для добавления
 
-1. `/spravochnik/razreshenie-na-stroitelstvo/`
-2. `/spravochnik/kak-kupit-kvartiru-v-novostroyke/`
-3. `/novostroyki/studii/`
-4. `/novostroyki/dvuhkomnatnye/`
-5. `/novostroyki/materinskij-kapital/`
+1. `/spravochnik/chto-proverit-pered-pokupkoj/`
+2. `/novostroyki/studii/`
+3. `/novostroyki/dvuhkomnatnye/`
+4. `/novostroyki/materinskij-kapital/`
