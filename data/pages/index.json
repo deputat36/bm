@@ -29,6 +29,119 @@
     "status": "draft"
   },
   {
+    "url": "/zhk/tellermanov-sad/o-zhk/",
+    "title": "О ЖК Теллерманов сад",
+    "page_type": "project_about",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/kvartiry/",
+    "title": "Квартиры в ЖК Теллерманов сад",
+    "page_type": "project_apartments",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/planirovki/",
+    "title": "Планировки ЖК Теллерманов сад",
+    "page_type": "project_layouts",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/ceny/",
+    "title": "Цены ЖК Теллерманов сад",
+    "page_type": "project_prices",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/dokumenty/",
+    "title": "Документы ЖК Теллерманов сад",
+    "page_type": "project_documents",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/galereya/",
+    "title": "Галерея ЖК Теллерманов сад",
+    "page_type": "project_gallery",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/zastroyschik/",
+    "title": "Застройщик ЖК Теллерманов сад",
+    "page_type": "project_builder",
+    "project_id": "tellermanov-sad",
+    "builder_id": "bm-group-chernozemye",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/infrastruktura/",
+    "title": "Инфраструктура ЖК Теллерманов сад",
+    "page_type": "project_infrastructure",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/ipoteka/",
+    "title": "Ипотека ЖК Теллерманов сад",
+    "page_type": "project_mortgage",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/hod-stroitelstva/",
+    "title": "Ход строительства ЖК Теллерманов сад",
+    "page_type": "project_construction_progress",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/faq/",
+    "title": "FAQ ЖК Теллерманов сад",
+    "page_type": "project_faq",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/contacts/",
+    "title": "Контакты и заявка ЖК Теллерманов сад",
+    "page_type": "project_contacts",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/prostornaya-4a/",
+    "title": "Дом на Просторной 4А",
+    "page_type": "project_address_landing",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
+    "url": "/zhk/tellermanov-sad/novosti/",
+    "title": "Новости ЖК Теллерманов сад",
+    "page_type": "project_news",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "draft"
+  },
+  {
     "url": "/zastroyschiki/",
     "title": "Застройщики Борисоглебска",
     "page_type": "builder_list",
