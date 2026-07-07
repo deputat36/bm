@@ -1,0 +1,107 @@
+[
+  {
+    "source_url": "/o-zhk/",
+    "target_url": "/zhk/tellermanov-sad/o-zhk/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Старую страницу оставить рабочей до готовности нового раздела ЖК."
+  },
+  {
+    "source_url": "/kvartiry/",
+    "target_url": "/zhk/tellermanov-sad/kvartiry/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Сохраняет спрос по квартирам ЖК и переводит его в объектный раздел портала."
+  },
+  {
+    "source_url": "/planirovki/",
+    "target_url": "/zhk/tellermanov-sad/planirovki/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Редирект включать только после переноса графических материалов и проверки планировок."
+  },
+  {
+    "source_url": "/ceny/",
+    "target_url": "/zhk/tellermanov-sad/ceny/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Цены публиковать только после подтверждения источника, даты обновления и юридически безопасной формулировки."
+  },
+  {
+    "source_url": "/dokumenty/",
+    "target_url": "/zhk/tellermanov-sad/dokumenty/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Перед редиректом проверить ссылки на документы и актуальность номеров."
+  },
+  {
+    "source_url": "/galereya/",
+    "target_url": "/zhk/tellermanov-sad/galereya/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Перед редиректом перенести изображения, подписи и alt-тексты."
+  },
+  {
+    "source_url": "/zastroyschik/",
+    "target_url": "/zhk/tellermanov-sad/zastroyschik/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Объектная страница застройщика отличается от общей карточки /zastroyschiki/bm-group/."
+  },
+  {
+    "source_url": "/infrastruktura/",
+    "target_url": "/zhk/tellermanov-sad/infrastruktura/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Перед редиректом проверить расстояния, объекты рядом и безопасные формулировки."
+  },
+  {
+    "source_url": "/hod-stroitelstva/",
+    "target_url": "/zhk/tellermanov-sad/hod-stroitelstva/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Перед редиректом перенести фото и хронологию обновлений."
+  },
+  {
+    "source_url": "/prostornaya-4a/",
+    "target_url": "/zhk/tellermanov-sad/prostornaya-4a/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Адресная посадочная страница должна сохранить спрос по Просторной 4А."
+  },
+  {
+    "source_url": "/novosti/chto-izvestno-o-zhk-tellermanov-sad/",
+    "target_url": "/zhk/tellermanov-sad/novosti/chto-izvestno-o-zhk-tellermanov-sad/",
+    "redirect_type": "301_after_migration",
+    "status": "planned",
+    "notes": "Редирект включать после проверки даты, текста новости и внутренней перелинковки."
+  },
+  {
+    "source_url": "/kvartiry-ot-zastroyschika-borisoglebsk/",
+    "target_url": "/zhk/tellermanov-sad/kvartiry/",
+    "redirect_type": "html_or_301_after_audit",
+    "status": "requires_decision",
+    "notes": "URL закрыт от индексации и не должен использоваться в новой навигации. Перед редиректом проверить внешние рекламные ссылки."
+  },
+  {
+    "source_url": "/ipoteka/",
+    "target_url": "/zhk/tellermanov-sad/ipoteka/",
+    "redirect_type": "decision_required",
+    "status": "requires_decision",
+    "notes": "Нужно решить, останется ли /ipoteka/ общей страницей портала или будет перенесена в объектный раздел."
+  },
+  {
+    "source_url": "/faq/",
+    "target_url": "/zhk/tellermanov-sad/faq/",
+    "redirect_type": "decision_required",
+    "status": "requires_decision",
+    "notes": "Нужно решить, будет ли /faq/ общим FAQ портала или объектным FAQ ЖК."
+  },
+  {
+    "source_url": "/contacts/",
+    "target_url": "/zhk/tellermanov-sad/contacts/",
+    "redirect_type": "decision_required",
+    "status": "requires_decision",
+    "notes": "Нужно решить, будет ли /contacts/ общей заявкой портала или объектной формой ЖК."
+  }
+]
