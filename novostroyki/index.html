@@ -7,6 +7,7 @@
   <title>Новостройки Борисоглебска — каталог в разработке</title>
   <meta name="description" content="Будущий каталог новостроек Борисоглебска: жилые комплексы, новые дома, квартиры, сроки сдачи и способы покупки.">
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/catalog-render.css">
 </head>
 <body>
   <header class="topbar">
@@ -50,7 +51,7 @@
           <h2>Актуальные объекты</h2>
           <p>Первый объект в структуре портала — ЖК «Теллерманов сад». По мере появления публично подтвержденных новостроек каталог будет расширяться.</p>
         </div>
-        <div class="grid grid--3">
+        <div class="grid grid--3" data-catalog-projects>
           <article class="card card--shadow">
             <span class="eyebrow">Первый объект</span>
             <h3>ЖК «Теллерманов сад»</h3>
@@ -133,6 +134,8 @@
 
   <footer class="footer"><div class="container footer__inner"><div><strong>Новостройки Борисоглебска</strong></div><div>Черновой каталог. До готовности закрыт от индексации.</div></div></footer>
 
+  <script src="../assets/js/catalog-data.js"></script>
+  <script src="../assets/js/catalog-render.js"></script>
   <script src="../assets/js/main.js"></script>
 </body>
 </html>
