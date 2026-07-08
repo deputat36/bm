@@ -1,0 +1,43 @@
+[
+  {
+    "id": "prostornaya-4a",
+    "slug": "prostornaya-4a",
+    "name": "Просторная 4А",
+    "display_name": "Дом на Просторной 4А",
+    "legacy_name": "ЖК Теллерманов сад",
+    "city": "Борисоглебск",
+    "address": "ул. Просторная, 4А",
+    "detail_url": "/catalog/prostornaya-4a/",
+    "legacy_url": "/zhk/tellermanov-sad/",
+    "status": "Данные частично подготовлены",
+    "verification_status": "partially_confirmed",
+    "is_public_ready": false,
+    "is_active": true
+  },
+  {
+    "id": "aerodromnaya-18g",
+    "slug": "aerodromnaya-18g",
+    "name": "Аэродромная 18Г",
+    "display_name": "Дом на Аэродромной 18Г",
+    "city": "Борисоглебск",
+    "address": "Аэродромная 18Г",
+    "detail_url": "/catalog/aerodromnaya-18g/",
+    "status": "Данные уточняются",
+    "verification_status": "draft",
+    "is_public_ready": false,
+    "is_active": true
+  },
+  {
+    "id": "sennaya-76",
+    "slug": "sennaya-76",
+    "name": "Сенная 76",
+    "display_name": "Дом на Сенной 76",
+    "city": "Борисоглебск",
+    "address": "Сенная 76",
+    "detail_url": "/catalog/sennaya-76/",
+    "status": "Данные уточняются",
+    "verification_status": "draft",
+    "is_public_ready": false,
+    "is_active": true
+  }
+]
