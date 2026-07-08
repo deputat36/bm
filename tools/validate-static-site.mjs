@@ -65,6 +65,7 @@ const results = {
   checkedIndexedPages: 0,
   checkedLegacyRedirects: 0,
   checkedLeadTypes: 0,
+  checkedSitemapUrls: 0,
   errors: [],
   warnings: []
 };
@@ -191,6 +192,17 @@ function getAttribute(tag, name) {
 
 function htmlHasNoindexFollow(html) {
   return /<meta\s+name=["']robots["']\s+content=["']noindex,follow["']/i.test(html);
+}
+
+function htmlHasNoindex(html) {
+  return /<meta\s+name=["']robots["']\s+content=["'][^"']*noindex[^"']*["']/i.test(html);
+}
+
+function normalizePathname(value) {
+  if (!value) return "/";
+  const withSlash = value.startsWith("/") ? value : `/${value}`;
+  if (withSlash === "/") return "/";
+  return withSlash.endsWith("/") ? withSlash : `${withSlash}/`;
 }
 
 function validateDraftRobots(relativePath, html) {
@@ -507,6 +519,85 @@ function validateLeadTypeCompatibility() {
   }
 }
 
+function extractSitemapLocs(xml) {
+  const locs = [];
+  const regex = /<loc>\s*([^<]+?)\s*<\/loc>/gi;
+  let match;
+
+  while ((match = regex.exec(xml))) {
+    locs.push(match[1].trim());
+  }
+
+  return locs;
+}
+
+function validateSitemap() {
+  const sitemapPath = "sitemap.xml";
+  const sitemapFile = fromRoot(sitemapPath);
+  if (!fs.existsSync(sitemapFile)) {
+    addWarning(`${sitemapPath}: file does not exist`);
+    return;
+  }
+
+  const pages = readJson("data/pages/index.json") || [];
+  const pageByUrl = new Map(
+    Array.isArray(pages)
+      ? pages.map((page) => [normalizePathname(page.url), page])
+      : []
+  );
+  const seenLocs = new Set();
+  const xml = read(sitemapFile);
+  const locs = extractSitemapLocs(xml);
+
+  if (!locs.length) {
+    addWarning(`${sitemapPath}: no <loc> entries found`);
+  }
+
+  locs.forEach((loc) => {
+    results.checkedSitemapUrls += 1;
+
+    if (seenLocs.has(loc)) {
+      addWarning(`${sitemapPath}: duplicate loc ${loc}`);
+    }
+    seenLocs.add(loc);
+
+    let parsed;
+    try {
+      parsed = new URL(loc);
+    } catch (error) {
+      addWarning(`${sitemapPath}: invalid loc URL "${loc}"`);
+      return;
+    }
+
+    const pathname = normalizePathname(parsed.pathname);
+    const relativePath = pathname.replace(/^\/+/, "");
+    const indexedPage = pageByUrl.get(pathname);
+
+    if (isDraftPath(relativePath)) {
+      addWarning(`${sitemapPath}: draft portal URL must not be in current sitemap: ${pathname}`);
+    }
+
+    if (indexedPage) {
+      if (indexedPage.status !== "published") {
+        addWarning(`${sitemapPath}: ${pathname} is listed but data/pages/index.json status=${indexedPage.status}`);
+      }
+
+      if (indexedPage.robots === "noindex,follow" || indexedPage.robots === "noindex, follow") {
+        addWarning(`${sitemapPath}: ${pathname} is listed but data/pages/index.json robots=${indexedPage.robots}`);
+      }
+    }
+
+    const pageFile = resolvePageFile(pathname);
+    const pagePath = fromRoot(pageFile);
+    if (fs.existsSync(pagePath)) {
+      const html = read(pagePath);
+      if (htmlHasNoindex(html)) {
+        addWarning(`${sitemapPath}: ${pathname} is listed but ${pageFile} contains noindex`);
+      }
+    }
+  });
+}
+
 function validateDataFiles() {
   validateProjectIndex();
   validateResearchRegister();
@@ -519,6 +610,7 @@ function main() {
   htmlFiles.forEach(validateHtmlFile);
   validateDataFiles();
   validateLeadTypeCompatibility();
+  validateSitemap();
 
   console.log(`Checked HTML files: ${results.checkedHtmlFiles}`);
   console.log(`Checked local references: ${results.checkedLocalReferences}`);
@@ -526,6 +618,7 @@ function main() {
   console.log(`Checked indexed pages: ${results.checkedIndexedPages}`);
   console.log(`Checked legacy redirects: ${results.checkedLegacyRedirects}`);
   console.log(`Checked lead types: ${results.checkedLeadTypes}`);
+  console.log(`Checked sitemap URLs: ${results.checkedSitemapUrls}`);
 
   if (results.warnings.length) {
     console.log("\nWarnings:");
