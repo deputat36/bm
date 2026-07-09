@@ -1,0 +1,39 @@
+{
+  "id": "aerodromnaya-18g",
+  "slug": "aerodromnaya-18g",
+  "name": "Аэродромная 18Г",
+  "display_name": "Дом на Аэродромной 18Г",
+  "city": "Борисоглебск",
+  "address": "ул. Аэродромная, 18Г",
+  "developer_id": null,
+  "status": "Данные уточняются",
+  "sales_status": "Данные уточняются",
+  "class": null,
+  "floors": null,
+  "apartments_total": null,
+  "area_min": null,
+  "area_max": null,
+  "handover": null,
+  "keys_deadline": null,
+  "detail_url": "/catalog/aerodromnaya-18g/",
+  "verification_status": "draft",
+  "is_public_ready": false,
+  "is_featured": true,
+  "is_active": true,
+  "last_checked_at": "2026-07-09",
+  "verification_note": "Черновой профиль объекта. Перед публикацией нужно найти и сверить публичные источники: застройщик, документы, статус, сроки, характеристики, квартирография.",
+  "publication_rules": {
+    "robots": "noindex,follow",
+    "can_be_in_sitemap": false,
+    "can_show_prices": false,
+    "can_show_layouts_as_official": false,
+    "safe_label": "Данные уточняются"
+  },
+  "needed_sources": [
+    "карточка объекта или дома в публичном источнике",
+    "документы застройщика, если доступны",
+    "разрешение на строительство, если объект строится",
+    "проектная декларация, если объект продаётся по ДДУ",
+    "фотографии и материалы, разрешённые к публикации"
+  ]
+}
