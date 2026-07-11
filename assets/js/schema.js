@@ -143,3 +143,10 @@ if (organizationSchema) createJsonLdScript(organizationSchema);
 
 const itemListSchema = buildItemListSchema();
 if (itemListSchema) createJsonLdScript(itemListSchema);
+
+const schemaScriptUrl = document.currentScript?.src || "";
+if (schemaScriptUrl && document.querySelector("form[data-lead-form] select[name='residential_complex']")) {
+  const priorityLeadsScript = document.createElement("script");
+  priorityLeadsScript.src = new URL("priority-leads.js", schemaScriptUrl).href;
+  document.head.appendChild(priorityLeadsScript);
+}
