@@ -1,10 +1,48 @@
 [
   {
+    "url": "/",
+    "title": "Новостройки Борисоглебска — каталог новых домов и квартир",
+    "page_type": "home",
+    "robots": "index,follow",
+    "status": "published"
+  },
+  {
+    "url": "/catalog/",
+    "title": "Каталог новостроек Борисоглебска",
+    "page_type": "catalog",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/catalog/prostornaya-4a/",
+    "title": "Просторная 4А — квартиры и заявка на консультацию",
+    "page_type": "project",
+    "project_id": "tellermanov-sad",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/catalog/aerodromnaya-18g/",
+    "title": "Аэродромная 18Г — заявка и информация по новостройке",
+    "page_type": "project",
+    "project_id": "aerodromnaya-18g",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/catalog/sennaya-76/",
+    "title": "Сенная 76 — заявка и информация по новостройке",
+    "page_type": "project",
+    "project_id": "sennaya-76",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
     "url": "/portal-preview/",
     "title": "Новостройки Борисоглебска — черновик главной портала",
     "page_type": "home_draft",
     "robots": "noindex,follow",
-    "status": "draft"
+    "status": "archived"
   },
   {
     "url": "/novostroyki/",
