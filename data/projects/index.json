@@ -42,10 +42,10 @@
     "handover": null,
     "detail_url": "/catalog/aerodromnaya-18g/",
     "data_file": "/data/projects/aerodromnaya-18g.json",
-    "verification_status": "draft",
+    "verification_status": "requires_check",
     "is_public_ready": false,
-    "last_checked_at": "2026-07-09",
-    "verification_note": "Черновой объект каталога. Нельзя публиковать цены, планировки, застройщика и сроки как подтверждённые без источников.",
+    "last_checked_at": "2026-07-11",
+    "verification_note": "Объект требует проверки. Нельзя публиковать цены, планировки, застройщика и сроки как подтверждённые без источников.",
     "is_featured": true,
     "is_active": true
   },
@@ -66,10 +66,10 @@
     "handover": null,
     "detail_url": "/catalog/sennaya-76/",
     "data_file": "/data/projects/sennaya-76.json",
-    "verification_status": "draft",
+    "verification_status": "requires_check",
     "is_public_ready": false,
-    "last_checked_at": "2026-07-09",
-    "verification_note": "Черновой объект каталога. Нельзя публиковать цены, планировки, застройщика и сроки как подтверждённые без источников.",
+    "last_checked_at": "2026-07-11",
+    "verification_note": "Объект требует проверки. Нельзя публиковать цены, планировки, застройщика и сроки как подтверждённые без источников.",
     "is_featured": true,
     "is_active": true
   }
