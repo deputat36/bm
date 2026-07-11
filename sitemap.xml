@@ -1,29 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://tellermanovsad.ru/</loc><lastmod>2026-07-05</lastmod><priority>1.0</priority></url>
-<url><loc>https://tellermanovsad.ru/about/</loc><lastmod>2026-07-05</lastmod><priority>0.5</priority></url>
-<url><loc>https://tellermanovsad.ru/sources/</loc><lastmod>2026-07-05</lastmod><priority>0.5</priority></url>
-<url><loc>https://tellermanovsad.ru/zayavka/</loc><lastmod>2026-07-05</lastmod><priority>0.95</priority></url>
-<url><loc>https://tellermanovsad.ru/o-zhk/</loc><lastmod>2026-06-29</lastmod><priority>0.95</priority></url>
-<url><loc>https://tellermanovsad.ru/kvartiry/</loc><lastmod>2026-06-29</lastmod><priority>0.9</priority></url>
-<url><loc>https://tellermanovsad.ru/planirovki/</loc><lastmod>2026-06-29</lastmod><priority>0.9</priority></url>
-<url><loc>https://tellermanovsad.ru/ceny/</loc><lastmod>2026-06-29</lastmod><priority>0.9</priority></url>
-<url><loc>https://tellermanovsad.ru/dokumenty/</loc><lastmod>2026-06-29</lastmod><priority>0.9</priority></url>
-<url><loc>https://tellermanovsad.ru/proektnaya-deklaratsiya-36-001139/</loc><lastmod>2026-06-29</lastmod><priority>0.85</priority></url>
-<url><loc>https://tellermanovsad.ru/galereya/</loc><lastmod>2026-06-29</lastmod><priority>0.9</priority></url>
-<url><loc>https://tellermanovsad.ru/zastroyschik/</loc><lastmod>2026-06-29</lastmod><priority>0.8</priority></url>
-<url><loc>https://tellermanovsad.ru/infrastruktura/</loc><lastmod>2026-06-29</lastmod><priority>0.8</priority></url>
-<url><loc>https://tellermanovsad.ru/ipoteka/</loc><lastmod>2026-06-29</lastmod><priority>0.85</priority></url>
-<url><loc>https://tellermanovsad.ru/hod-stroitelstva/</loc><lastmod>2026-06-29</lastmod><priority>0.8</priority></url>
-<url><loc>https://tellermanovsad.ru/novosti/</loc><lastmod>2026-06-29</lastmod><priority>0.75</priority></url>
-<url><loc>https://tellermanovsad.ru/novosti/chto-izvestno-o-zhk-tellermanov-sad/</loc><lastmod>2026-06-29</lastmod><priority>0.75</priority></url>
-<url><loc>https://tellermanovsad.ru/novosti/kak-podgotovitsya-k-pokupke-kvartiry-v-novostroyke/</loc><lastmod>2026-06-29</lastmod><priority>0.75</priority></url>
-<url><loc>https://tellermanovsad.ru/novosti/kak-proverit-novostroyku-po-proektnoy-deklaratsii/</loc><lastmod>2026-06-29</lastmod><priority>0.75</priority></url>
-<url><loc>https://tellermanovsad.ru/novosti/ipoteka-i-gospodderzhka-dlya-novostroyki/</loc><lastmod>2026-06-29</lastmod><priority>0.75</priority></url>
-<url><loc>https://tellermanovsad.ru/faq/</loc><lastmod>2026-06-29</lastmod><priority>0.75</priority></url>
-<url><loc>https://tellermanovsad.ru/contacts/</loc><lastmod>2026-06-29</lastmod><priority>0.95</priority></url>
-<url><loc>https://tellermanovsad.ru/novostroyka-borisoglebsk/</loc><lastmod>2026-06-29</lastmod><priority>0.85</priority></url>
-<url><loc>https://tellermanovsad.ru/prostornaya-4a/</loc><lastmod>2026-06-29</lastmod><priority>0.8</priority></url>
-<url><loc>https://tellermanovsad.ru/karta-sayta/</loc><lastmod>2026-07-05</lastmod><priority>0.6</priority></url>
-<url><loc>https://tellermanovsad.ru/privacy/</loc><lastmod>2026-06-29</lastmod><priority>0.3</priority></url>
+  <url>
+    <loc>https://novostroyki-borisoglebsk.ru/</loc>
+    <lastmod>2026-07-11</lastmod>
+    <priority>1.0</priority>
+  </url>
 </urlset>
