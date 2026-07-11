@@ -32,4 +32,4 @@ Disallow: /konsultaciya/
 Disallow: /byudzhet/
 Disallow: /check/
 
-Sitemap: https://tellermanovsad.ru/sitemap.xml
+Sitemap: https://novostroyki-borisoglebsk.ru/sitemap.xml
