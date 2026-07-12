@@ -17,6 +17,7 @@ on:
       - "data/pages/**"
       - "data/projects/**"
       - "data/research/**"
+      - "docs/portal/LEGAL_RULES.md"
       - "tools/**"
       - "sitemap.xml"
       - "robots.txt"
@@ -37,6 +38,7 @@ on:
       - "data/pages/**"
       - "data/projects/**"
       - "data/research/**"
+      - "docs/portal/LEGAL_RULES.md"
       - "tools/**"
       - "sitemap.xml"
       - "robots.txt"
@@ -71,6 +73,7 @@ jobs:
           node --check tools/validate-priority-projects.mjs
           node --check tools/validate-reference-projects.mjs
           node --check tools/validate-portal-lead-forms.mjs
+          node --check tools/validate-legal-copy.mjs
           node --check tools/audit-portal-branding.mjs
 
       - name: Validate priority lead projects
@@ -81,6 +84,9 @@ jobs:
 
       - name: Validate reference catalog
         run: npm run validate:reference
+
+      - name: Validate legal copy
+        run: npm run validate:legal
 
       - name: Audit portal branding
         run: npm run audit:branding
