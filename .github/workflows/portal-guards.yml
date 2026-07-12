@@ -1,0 +1,56 @@
+name: Portal guards
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "catalog/**"
+      - "assets/js/**"
+      - "data/projects/**"
+      - "data/research/**"
+      - "tools/**"
+      - "package.json"
+      - ".github/workflows/portal-guards.yml"
+  pull_request:
+    paths:
+      - "catalog/**"
+      - "assets/js/**"
+      - "data/projects/**"
+      - "data/research/**"
+      - "tools/**"
+      - "package.json"
+      - ".github/workflows/portal-guards.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-portal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/reference-catalog.js
+          node --check tools/validate-priority-projects.mjs
+          node --check tools/validate-reference-projects.mjs
+          node --check tools/audit-portal-branding.mjs
+
+      - name: Validate priority lead projects
+        run: npm run validate:priority
+
+      - name: Validate reference catalog
+        run: npm run validate:reference
+
+      - name: Audit portal branding
+        run: npm run audit:branding
