@@ -9,6 +9,7 @@
     "validate:priority": "node tools/validate-priority-projects.mjs",
     "validate:reference": "node tools/validate-reference-projects.mjs",
     "validate:leads": "node tools/validate-portal-lead-forms.mjs",
+    "validate:legal": "node tools/validate-legal-copy.mjs",
     "audit:branding": "node tools/audit-portal-branding.mjs",
     "urls:inventory": "node tools/build-url-inventory.mjs",
     "sitemap:preview": "node tools/build-sitemap-preview.mjs"
