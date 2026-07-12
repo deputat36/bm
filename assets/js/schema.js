@@ -129,6 +129,13 @@ function buildItemListSchema() {
   };
 }
 
+function loadPortalScript(baseUrl, fileName) {
+  const script = document.createElement("script");
+  script.src = new URL(fileName, baseUrl).href;
+  script.async = true;
+  document.head.appendChild(script);
+}
+
 const websiteSchema = buildWebSiteSchema();
 if (websiteSchema) createJsonLdScript(websiteSchema);
 
@@ -145,8 +152,12 @@ const itemListSchema = buildItemListSchema();
 if (itemListSchema) createJsonLdScript(itemListSchema);
 
 const schemaScriptUrl = document.currentScript?.src || "";
-if (schemaScriptUrl && document.querySelector("form[data-lead-form] select[name='residential_complex']")) {
-  const priorityLeadsScript = document.createElement("script");
-  priorityLeadsScript.src = new URL("priority-leads.js", schemaScriptUrl).href;
-  document.head.appendChild(priorityLeadsScript);
+const portalLeadForm = document.querySelector("form[data-lead-form]");
+
+if (schemaScriptUrl && portalLeadForm?.querySelector("select[name='residential_complex']")) {
+  loadPortalScript(schemaScriptUrl, "priority-leads.js");
+}
+
+if (schemaScriptUrl && portalLeadForm) {
+  loadPortalScript(schemaScriptUrl, "mobile-lead-bar.js");
 }
