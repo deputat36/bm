@@ -70,9 +70,11 @@
   "verification_note": "Данные внесены в рабочую карточку проекта. Перед снятием noindex, включением в sitemap, публичной рекламой и выводом как полностью подтвержденных нужно повторно сверить актуальную карточку ЕИСЖС / наш.дом.рф и проектную декларацию.",
   "phone_display": "8 903 857-69-09",
   "phone_href": "tel:+79038576909",
+  "commercial_role": "priority_lead",
   "lead_project": "ЖК Теллерманов сад",
   "lead_project_id": "tellermanov-sad",
   "lead_type": "project_consultation",
+  "lead_form_id": "catalog_prostornaya_4a_priority_lead",
   "is_featured": true,
   "is_active": true,
   "seo": {
