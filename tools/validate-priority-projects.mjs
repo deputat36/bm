@@ -77,11 +77,23 @@ function validateProject(project, projectIndex) {
   const data = dataPath ? readJson(dataPath) : null;
 
   if (data) {
-    ["id", "commercial_role", "lead_type", "lead_form_id", "verification_status", "is_public_ready"].forEach((field) => {
+    ["id", "verification_status", "is_public_ready"].forEach((field) => {
       if (data[field] !== project[field]) {
         errors.push(`${label}: ${field} does not match ${dataPath}`);
       }
     });
+
+    if (data.commercial_role && data.commercial_role !== project.commercial_role) {
+      errors.push(`${label}: commercial_role does not match ${dataPath}`);
+    }
+
+    if (data.lead_type && data.lead_type !== project.lead_type) {
+      errors.push(`${label}: lead_type does not match ${dataPath}`);
+    }
+
+    if (data.lead_form_id && data.lead_form_id !== project.lead_form_id) {
+      errors.push(`${label}: lead_form_id does not match ${dataPath}`);
+    }
   }
 
   const htmlPath = pageFile(project.page_url);
