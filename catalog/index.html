@@ -25,8 +25,8 @@
       <div class="container">
         <span class="eyebrow">Городской каталог</span>
         <h1>Новостройки Борисоглебска</h1>
-        <p class="lead">Наиболее подробно развиваем страницы Просторной 4А, Аэродромной 18Г и Сенной 76. По этим объектам можно оставить отдельную заявку. Остальные новостройки будут представлены как справочный каталог.</p>
-        <div class="hero__actions"><a class="button" href="#priority">Приоритетные объекты</a><a class="button button--ghost" href="#lead">Получить подборку</a><a class="button button--ghost" href="tel:+79038576909">8 903 857-69-09</a></div>
+        <p class="lead">Наиболее подробно развиваем страницы Просторной 4А, Аэродромной 18Г и Сенной 76. По этим объектам можно оставить отдельную заявку. Остальные новостройки представлены как проверяемый справочный каталог.</p>
+        <div class="hero__actions"><a class="button" href="#priority">Приоритетные объекты</a><a class="button button--ghost" href="#reference">Другие новостройки</a><a class="button button--ghost" href="#lead">Получить подборку</a><a class="button button--ghost" href="tel:+79038576909">8 903 857-69-09</a></div>
         <div class="notice">Цена, наличие квартир и условия покупки уточняются перед консультацией. Заявка не является бронью и не фиксирует стоимость.</div>
       </div>
     </section>
@@ -42,14 +42,13 @@
       </div>
     </section>
 
-    <section class="section--soft">
+    <section class="section--soft" id="reference">
       <div class="container">
-        <div class="section__head"><span class="eyebrow">Справочная часть</span><h2>Другие новостройки города</h2><p>Остальные новые дома Борисоглебска будут добавляться в общий каталог с адресом, статусом, застройщиком, годом строительства и ссылками на источники. Отдельные лидогенерационные страницы для них создаются только при появлении подтверждённого спроса и данных.</p></div>
-        <div class="grid grid--3">
-          <article class="card"><h3>Построенные дома</h3><p>Объекты последних лет с базовыми характеристиками и историей ввода в эксплуатацию.</p></article>
-          <article class="card"><h3>Строящиеся объекты</h3><p>Дома с подтверждёнными документами, сроками и актуальным статусом строительства.</p></article>
-          <article class="card"><h3>Планируемые проекты</h3><p>Только безопасные справочные карточки с пометкой «данные уточняются» до появления источников.</p></article>
+        <div class="section__head"><span class="eyebrow">Справочная часть</span><h2>Другие новостройки города</h2><p>Здесь автоматически выводятся только объекты с подтверждённым адресом, статусом и хотя бы одним публичным источником. Для них используется общая форма подбора без отдельной продающей страницы.</p></div>
+        <div class="grid grid--3" data-reference-catalog data-source="../data/research/reference-projects.json" aria-live="polite">
+          <article class="card"><h3>Загрузка справочного каталога</h3><p>Проверяем доступные карточки объектов.</p></article>
         </div>
+        <div class="notice">Неподтверждённые адреса и характеристики не выводятся. Новая карточка появляется только после проверки источников и прохождения внутренней валидации.</div>
       </div>
     </section>
 
@@ -73,6 +72,7 @@
 
   <footer class="footer"><div class="container footer__inner"><div><strong>Новостройки Борисоглебска</strong><br>Городской каталог новых домов и квартир.</div><div>Не является официальным сайтом застройщика. Информация уточняется по публичным источникам. <a href="../privacy/">Политика данных</a> · <a href="../contacts/">Контакты</a></div></div></footer>
   <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/reference-catalog.js"></script>
   <script src="../assets/js/schema.js"></script>
 </body>
 </html>
