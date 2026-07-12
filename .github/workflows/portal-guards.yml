@@ -74,6 +74,7 @@ jobs:
           node --check tools/validate-reference-projects.mjs
           node --check tools/validate-portal-lead-forms.mjs
           node --check tools/validate-legal-copy.mjs
+          node --check tools/validate-portal-links.mjs
           node --check tools/audit-portal-branding.mjs
 
       - name: Validate priority lead projects
@@ -87,6 +88,9 @@ jobs:
 
       - name: Validate legal copy
         run: npm run validate:legal
+
+      - name: Validate core portal links
+        run: npm run validate:links
 
       - name: Audit portal branding
         run: npm run audit:branding
