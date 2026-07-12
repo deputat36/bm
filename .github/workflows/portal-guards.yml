@@ -12,6 +12,7 @@ on:
       - "contacts/**"
       - "ipoteka/**"
       - "spasibo/**"
+      - "assets/css/**"
       - "assets/js/**"
       - "data/pages/**"
       - "data/projects/**"
@@ -31,6 +32,7 @@ on:
       - "contacts/**"
       - "ipoteka/**"
       - "spasibo/**"
+      - "assets/css/**"
       - "assets/js/**"
       - "data/pages/**"
       - "data/projects/**"
@@ -65,6 +67,7 @@ jobs:
           node --check assets/js/schema.js
           node --check assets/js/priority-leads.js
           node --check assets/js/reference-catalog.js
+          node --check assets/js/mobile-lead-bar.js
           node --check tools/validate-priority-projects.mjs
           node --check tools/validate-reference-projects.mjs
           node --check tools/validate-portal-lead-forms.mjs
