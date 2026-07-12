@@ -4,20 +4,40 @@ on:
   push:
     branches: [main]
     paths:
+      - "index.html"
       - "catalog/**"
+      - "developers/**"
+      - "guides/**"
+      - "news/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "spasibo/**"
       - "assets/js/**"
+      - "data/pages/**"
       - "data/projects/**"
       - "data/research/**"
       - "tools/**"
+      - "sitemap.xml"
+      - "robots.txt"
       - "package.json"
       - ".github/workflows/portal-guards.yml"
   pull_request:
     paths:
+      - "index.html"
       - "catalog/**"
+      - "developers/**"
+      - "guides/**"
+      - "news/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "spasibo/**"
       - "assets/js/**"
+      - "data/pages/**"
       - "data/projects/**"
       - "data/research/**"
       - "tools/**"
+      - "sitemap.xml"
+      - "robots.txt"
       - "package.json"
       - ".github/workflows/portal-guards.yml"
   workflow_dispatch:
@@ -41,13 +61,20 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
+          node --check assets/js/main.js
+          node --check assets/js/schema.js
+          node --check assets/js/priority-leads.js
           node --check assets/js/reference-catalog.js
           node --check tools/validate-priority-projects.mjs
           node --check tools/validate-reference-projects.mjs
+          node --check tools/validate-portal-lead-forms.mjs
           node --check tools/audit-portal-branding.mjs
 
       - name: Validate priority lead projects
         run: npm run validate:priority
+
+      - name: Validate portal lead forms
+        run: npm run validate:leads
 
       - name: Validate reference catalog
         run: npm run validate:reference
