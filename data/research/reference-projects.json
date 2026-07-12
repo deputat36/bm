@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-12",
+  "catalog_role": "reference_catalog",
+  "purpose": "Справочный реестр остальных новостроек Борисоглебска, кроме трёх приоритетных лидогенерационных объектов.",
+  "publication_rules": {
+    "required_commercial_role": "reference_catalog",
+    "required_verification_status": "confirmed",
+    "required_is_public_ready": true,
+    "minimum_source_count": 1,
+    "allow_separate_object_lead_form": false,
+    "general_lead_url": "/catalog/#lead",
+    "unverified_objects_must_not_render": true
+  },
+  "projects": [],
+  "research_queue": [
+    {
+      "id": "built-houses-2018-plus",
+      "title": "Построенные многоквартирные дома Борисоглебска с 2018 года",
+      "status": "in_progress",
+      "required_sources": [
+        "разрешение на ввод объекта в эксплуатацию",
+        "официальная карточка дома или застройщика",
+        "публичный документ администрации или ЕИСЖС"
+      ]
+    },
+    {
+      "id": "under-construction-projects",
+      "title": "Другие строящиеся многоквартирные дома Борисоглебска",
+      "status": "in_progress",
+      "required_sources": [
+        "разрешение на строительство",
+        "проектная декларация, если применимо",
+        "карточка ЕИСЖС или иной первичный публичный источник"
+      ]
+    },
+    {
+      "id": "planned-public-projects",
+      "title": "Планируемые проекты с публичным подтверждением",
+      "status": "todo",
+      "required_sources": [
+        "официально опубликованный документ",
+        "публичное сообщение застройщика или администрации",
+        "документ с адресом и статусом проекта"
+      ]
+    }
+  ],
+  "empty_state": {
+    "title": "Справочный реестр наполняется",
+    "text": "Объекты появятся здесь после проверки адреса, статуса, застройщика и первичных публичных источников."
+  }
+}
