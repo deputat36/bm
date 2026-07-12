@@ -7,6 +7,7 @@
     "validate": "node tools/validate-static-site.mjs",
     "validate:json": "node tools/validate-json.mjs",
     "validate:priority": "node tools/validate-priority-projects.mjs",
+    "audit:branding": "node tools/audit-portal-branding.mjs",
     "urls:inventory": "node tools/build-url-inventory.mjs",
     "sitemap:preview": "node tools/build-sitemap-preview.mjs"
   }
