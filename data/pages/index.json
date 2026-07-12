@@ -38,6 +38,41 @@
     "status": "ready"
   },
   {
+    "url": "/developers/",
+    "title": "Застройщики Борисоглебска — справочный раздел",
+    "page_type": "builder_list",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/ipoteka/",
+    "title": "Ипотека на новостройку в Борисоглебске",
+    "page_type": "mortgage_landing",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/guides/",
+    "title": "Справочник покупателя новостройки в Борисоглебске",
+    "page_type": "guide_index",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/news/",
+    "title": "Новости новостроек Борисоглебска",
+    "page_type": "news_index",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/contacts/",
+    "title": "Консультация по новостройкам Борисоглебска",
+    "page_type": "contacts",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
     "url": "/portal-preview/",
     "title": "Новостройки Борисоглебска — черновик главной портала",
     "page_type": "home_draft",
