@@ -41,6 +41,7 @@ on:
       - "data/projects/**"
       - "data/research/**"
       - "data/migration/**"
+      - "data/media/**"
       - "docs/portal/**"
       - "tools/**"
       - "sitemap.xml"
@@ -86,6 +87,7 @@ on:
       - "data/projects/**"
       - "data/research/**"
       - "data/migration/**"
+      - "data/media/**"
       - "docs/portal/**"
       - "tools/**"
       - "sitemap.xml"
@@ -118,6 +120,7 @@ jobs:
           node --check assets/js/priority-leads.js
           node --check assets/js/reference-catalog.js
           node --check assets/js/mobile-lead-bar.js
+          node --check assets/js/gallery.js
           node --check tools/validate-priority-projects.mjs
           node --check tools/validate-reference-projects.mjs
           node --check tools/validate-portal-lead-forms.mjs
@@ -125,6 +128,7 @@ jobs:
           node --check tools/validate-portal-links.mjs
           node --check tools/validate-legacy-routes.mjs
           node --check tools/validate-trust-pages.mjs
+          node --check tools/validate-media-inventory.mjs
           node --check tools/audit-portal-branding.mjs
 
       - name: Validate priority lead projects
@@ -147,6 +151,9 @@ jobs:
 
       - name: Validate legacy migration routes
         run: npm run validate:legacy
+
+      - name: Validate media inventory
+        run: npm run validate:media
 
       - name: Audit portal branding
         run: npm run audit:branding
