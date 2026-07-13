@@ -18,6 +18,7 @@
     "detail_url": "/zhk/tellermanov-sad/",
     "portal_detail_url": "/catalog/prostornaya-4a/",
     "data_file": "/data/projects/tellermanov-sad.json",
+    "verification_file": "/data/verification/prostornaya-4a.json",
     "commercial_role": "priority_lead",
     "lead_type": "project_consultation",
     "lead_form_id": "catalog_prostornaya_4a_priority_lead",
