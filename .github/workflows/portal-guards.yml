@@ -124,6 +124,7 @@ jobs:
           node --check tools/validate-legal-copy.mjs
           node --check tools/validate-portal-links.mjs
           node --check tools/validate-legacy-routes.mjs
+          node --check tools/validate-trust-pages.mjs
           node --check tools/audit-portal-branding.mjs
 
       - name: Validate priority lead projects
@@ -137,6 +138,9 @@ jobs:
 
       - name: Validate legal copy
         run: npm run validate:legal
+
+      - name: Validate trust pages
+        run: npm run validate:trust
 
       - name: Validate core portal links
         run: npm run validate:links
