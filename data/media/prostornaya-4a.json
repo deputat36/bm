@@ -1,0 +1,148 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-13",
+  "project_id": "prostornaya-4a",
+  "purpose": "Инвентаризация унаследованных визуальных материалов до подтверждения источника, актуальности и права публикации.",
+  "publication_policy": {
+    "default_verification_status": "requires_check",
+    "default_rights_status": "unknown",
+    "legacy_assets_must_not_be_auto_published": true,
+    "public_rendering_requires": [
+      "verification_status=confirmed",
+      "rights_status=cleared",
+      "is_public_ready=true",
+      "source_reference заполнен",
+      "allowed_usage содержит хотя бы один публичный сценарий"
+    ]
+  },
+  "assets": [
+    {
+      "id": "prostornaya-render-001",
+      "file": "assets/img/gallery/Borisoglebsk_001.jpg",
+      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_001.b64",
+      "media_type": "architectural_render",
+      "title": "Вид сверху и парковка",
+      "alt": "Визуализация жилого проекта с видом сверху и парковочной зоной",
+      "verification_status": "requires_check",
+      "rights_status": "unknown",
+      "source_reference": "",
+      "source_date": "",
+      "is_public_ready": false,
+      "allowed_usage": [],
+      "review_notes": [
+        "Установить автора или правообладателя материала.",
+        "Подтвердить, что изображение относится к актуальной версии проекта Просторная 4А.",
+        "Сверить изображённое благоустройство с актуальными документами."
+      ]
+    },
+    {
+      "id": "prostornaya-render-002",
+      "file": "assets/img/gallery/Borisoglebsk_002.jpg",
+      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_002.b64",
+      "media_type": "architectural_render",
+      "title": "Общий вид комплекса",
+      "alt": "Общая визуализация жилого проекта на Просторной 4А",
+      "verification_status": "requires_check",
+      "rights_status": "unknown",
+      "source_reference": "",
+      "source_date": "",
+      "is_public_ready": false,
+      "allowed_usage": [],
+      "review_notes": [
+        "Установить автора или правообладателя материала.",
+        "Подтвердить соответствие актуальному проектному решению.",
+        "Не использовать как обещание фактического внешнего вида."
+      ]
+    },
+    {
+      "id": "prostornaya-render-003",
+      "file": "assets/img/gallery/Borisoglebsk_003.jpg",
+      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_003.b64",
+      "media_type": "architectural_render",
+      "title": "Фронтальный фасад",
+      "alt": "Предварительная визуализация фронтального фасада жилого дома",
+      "verification_status": "requires_check",
+      "rights_status": "unknown",
+      "source_reference": "",
+      "source_date": "",
+      "is_public_ready": false,
+      "allowed_usage": [],
+      "review_notes": [
+        "Установить источник и право публикации.",
+        "Сверить фасад с актуальной проектной документацией."
+      ]
+    },
+    {
+      "id": "prostornaya-render-004",
+      "file": "assets/img/gallery/Borisoglebsk_004.jpg",
+      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_004.b64",
+      "media_type": "architectural_render",
+      "title": "Аэровид комплекса",
+      "alt": "Предварительная визуализация домов и территории с высоты",
+      "verification_status": "requires_check",
+      "rights_status": "unknown",
+      "source_reference": "",
+      "source_date": "",
+      "is_public_ready": false,
+      "allowed_usage": [],
+      "review_notes": [
+        "Проверить, какие корпуса и элементы относятся к опубликованному объекту.",
+        "Не публиковать без подтверждения состава проекта."
+      ]
+    },
+    {
+      "id": "prostornaya-render-005",
+      "file": "assets/img/gallery/Borisoglebsk_005.jpg",
+      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_005.b64",
+      "media_type": "architectural_render",
+      "title": "Фасад и двор",
+      "alt": "Предварительная визуализация фасада и дворовой территории",
+      "verification_status": "requires_check",
+      "rights_status": "unknown",
+      "source_reference": "",
+      "source_date": "",
+      "is_public_ready": false,
+      "allowed_usage": [],
+      "review_notes": [
+        "Проверить источник, актуальность и право публикации.",
+        "Сверить элементы двора и благоустройства с документами."
+      ]
+    },
+    {
+      "id": "prostornaya-render-006",
+      "file": "assets/img/gallery/Borisoglebsk_006.jpg",
+      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_006.b64",
+      "media_type": "architectural_render",
+      "title": "Дворовая перспектива",
+      "alt": "Предварительная визуализация дворовой территории жилого проекта",
+      "verification_status": "requires_check",
+      "rights_status": "unknown",
+      "source_reference": "",
+      "source_date": "",
+      "is_public_ready": false,
+      "allowed_usage": [],
+      "review_notes": [
+        "Установить правообладателя.",
+        "Проверить соответствие актуальной версии благоустройства."
+      ]
+    },
+    {
+      "id": "prostornaya-render-007",
+      "file": "assets/img/gallery/Borisoglebsk_007.jpg",
+      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_007.b64",
+      "media_type": "architectural_render",
+      "title": "Вид сверху на территорию",
+      "alt": "Предварительная визуализация территории жилого проекта с высоты",
+      "verification_status": "requires_check",
+      "rights_status": "unknown",
+      "source_reference": "",
+      "source_date": "",
+      "is_public_ready": false,
+      "allowed_usage": [],
+      "review_notes": [
+        "Проверить источник и дату создания материала.",
+        "Подтвердить состав территории и относимость к объекту."
+      ]
+    }
+  ]
+}
