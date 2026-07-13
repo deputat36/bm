@@ -14,6 +14,7 @@
     "validate:legacy": "node tools/validate-legacy-routes.mjs",
     "audit:branding": "node tools/audit-portal-branding.mjs",
     "urls:inventory": "node tools/build-url-inventory.mjs",
-    "sitemap:preview": "node tools/build-sitemap-preview.mjs"
+    "sitemap:preview": "node tools/build-sitemap-preview.mjs",
+    "redirects:preview": "node tools/build-redirect-preview.mjs"
   }
 }
