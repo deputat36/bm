@@ -13,7 +13,12 @@ const PORTAL_PATHS = [
   "news/index.html",
   "contacts/index.html",
   "ipoteka/index.html",
-  "spasibo/index.html"
+  "spasibo/index.html",
+  "about/index.html",
+  "sources/index.html",
+  "legal/index.html",
+  "privacy/index.html",
+  "personal-data-consent/index.html"
 ];
 
 const FORBIDDEN_PATTERNS = [
