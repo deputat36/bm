@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "updated_at": "2026-07-13",
   "project_id": "prostornaya-4a",
   "purpose": "Инвентаризация унаследованных визуальных материалов до подтверждения источника, актуальности и права публикации.",
@@ -19,7 +19,6 @@
     {
       "id": "prostornaya-render-001",
       "file": "assets/img/gallery/Borisoglebsk_001.jpg",
-      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_001.b64",
       "media_type": "architectural_render",
       "title": "Вид сверху и парковка",
       "alt": "Визуализация жилого проекта с видом сверху и парковочной зоной",
@@ -38,7 +37,6 @@
     {
       "id": "prostornaya-render-002",
       "file": "assets/img/gallery/Borisoglebsk_002.jpg",
-      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_002.b64",
       "media_type": "architectural_render",
       "title": "Общий вид комплекса",
       "alt": "Общая визуализация жилого проекта на Просторной 4А",
@@ -57,7 +55,6 @@
     {
       "id": "prostornaya-render-003",
       "file": "assets/img/gallery/Borisoglebsk_003.jpg",
-      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_003.b64",
       "media_type": "architectural_render",
       "title": "Фронтальный фасад",
       "alt": "Предварительная визуализация фронтального фасада жилого дома",
@@ -75,7 +72,6 @@
     {
       "id": "prostornaya-render-004",
       "file": "assets/img/gallery/Borisoglebsk_004.jpg",
-      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_004.b64",
       "media_type": "architectural_render",
       "title": "Аэровид комплекса",
       "alt": "Предварительная визуализация домов и территории с высоты",
@@ -93,7 +89,6 @@
     {
       "id": "prostornaya-render-005",
       "file": "assets/img/gallery/Borisoglebsk_005.jpg",
-      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_005.b64",
       "media_type": "architectural_render",
       "title": "Фасад и двор",
       "alt": "Предварительная визуализация фасада и дворовой территории",
@@ -111,7 +106,6 @@
     {
       "id": "prostornaya-render-006",
       "file": "assets/img/gallery/Borisoglebsk_006.jpg",
-      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_006.b64",
       "media_type": "architectural_render",
       "title": "Дворовая перспектива",
       "alt": "Предварительная визуализация дворовой территории жилого проекта",
@@ -129,7 +123,6 @@
     {
       "id": "prostornaya-render-007",
       "file": "assets/img/gallery/Borisoglebsk_007.jpg",
-      "fallback_file": "assets/img/gallery-b64/Borisoglebsk_007.b64",
       "media_type": "architectural_render",
       "title": "Вид сверху на территорию",
       "alt": "Предварительная визуализация территории жилого проекта с высоты",
