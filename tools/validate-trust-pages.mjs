@@ -9,7 +9,8 @@ const PAGES = [
   { file: "sources/index.html", url: "/sources/", requiresDraftNotice: false },
   { file: "legal/index.html", url: "/legal/", requiresDraftNotice: true },
   { file: "privacy/index.html", url: "/privacy/", requiresDraftNotice: true },
-  { file: "personal-data-consent/index.html", url: "/personal-data-consent/", requiresDraftNotice: true }
+  { file: "personal-data-consent/index.html", url: "/personal-data-consent/", requiresDraftNotice: true },
+  { file: "advertising/index.html", url: "/advertising/", requiresDraftNotice: true }
 ];
 
 const errors = [];
@@ -50,7 +51,8 @@ for (const page of PAGES) {
   }
 
   if (page.requiresDraftNotice) {
-    if (!lower.includes("рабоч") || !lower.includes("юрист")) {
+    const hasLegalReviewNotice = lower.includes("юрист") || lower.includes("юрид");
+    if (!lower.includes("рабоч") || !hasLegalReviewNotice) {
       errors.push(`${page.file}: требуется явная пометка о рабочей редакции и юридической проверке`);
     }
   }
