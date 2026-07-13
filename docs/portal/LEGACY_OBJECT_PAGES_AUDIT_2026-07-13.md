@@ -6,18 +6,20 @@
 
 ## Цель
 
-Старый сайт содержал отдельные страницы одного объекта. Новый портал использует единую карточку:
+Старый сайт содержал несколько конкурирующих страниц одного объекта. Новый портал использует единую карточку:
 
 ```text
 /catalog/prostornaya-4a/
 ```
 
-Задача аудита — убрать конкурирующие версии контента, старый брендинг и устаревшие формы, не включая преждевременные серверные редиректы.
+Задача аудита — убрать дубли контента, старый брендинг и устаревшие формы, не включая преждевременные серверные редиректы.
 
 ## Обработано во второй очереди
 
 | Старый URL | Решение сейчас | Целевой URL |
 |---|---|---|
+| `/prostornaya-4a/` | transition_page | `/catalog/prostornaya-4a/` |
+| `/zhk/tellermanov-sad/` | transition_page | `/catalog/prostornaya-4a/` |
 | `/o-zhk/` | transition_page | `/catalog/prostornaya-4a/` |
 | `/kvartiry/` | transition_page | `/catalog/prostornaya-4a/` |
 | `/planirovki/` | transition_page | `/catalog/prostornaya-4a/` |
@@ -35,6 +37,12 @@ noindex,follow
 нет автоматического перенаправления
 ```
 
+## Критические исправления
+
+`/prostornaya-4a/` ранее содержал canonical домена `tellermanovsad.ru` и не имел `noindex`. Теперь он закрыт от индексации и ведёт на портальную карточку.
+
+`/zhk/tellermanov-sad/` ранее дублировал карточку объекта, содержал старую навигацию и отдельную форму `tellermanov_sad_portal_page`. Дублирующая форма удалена, чтобы все обращения по объекту проходили через `catalog_prostornaya_4a_priority_lead`.
+
 ## Почему страницы объединяются
 
 Старые URL дробили один объект на несколько тонких страниц и создавали риски:
@@ -50,7 +58,7 @@ noindex,follow
 
 ## Статус будущего редиректа
 
-Все пять маршрутов зарегистрированы в:
+Все семь маршрутов зарегистрированы в:
 
 ```text
 data/migration/legacy-routes.json
@@ -76,8 +84,6 @@ redirect_ready: false
 ## Остались на аудит
 
 ```text
-/prostornaya-4a/
-/zhk/tellermanov-sad/
 /galereya/
 /infrastruktura/
 /hod-stroitelstva/
