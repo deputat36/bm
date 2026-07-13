@@ -154,7 +154,134 @@ function neutralizeLegacyLeadFallback() {
   });
 }
 
+function createDryRunLeadId() {
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  const randomPart = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `NB-TEST-${date}-${randomPart}`;
+}
+
+function enableLeadDryRunMode() {
+  const params = new URLSearchParams(window.location.search);
+  const isEnabled = params.get("lead_test") === "dry-run" && params.get("test_ack") === "1";
+  const forms = Array.from(document.querySelectorAll("form[data-lead-form]"));
+
+  if (!isEnabled || !forms.length) return false;
+
+  const storageKey = "newbuildsBorisoglebskLeadDryRuns";
+  const lastLeadStorageKey = "newbuildsBorisoglebskLastLead";
+  window.__NEWBUILD_LEAD_TEST_MODE__ = true;
+  document.body.dataset.leadTestMode = "dry-run";
+
+  const banner = document.createElement("div");
+  banner.setAttribute("role", "status");
+  banner.setAttribute("aria-live", "assertive");
+  banner.style.cssText = "position:sticky;top:0;z-index:10000;padding:12px 16px;background:#7f1d1d;color:#fff;text-align:center;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,.25)";
+  banner.innerHTML = 'ТЕСТОВЫЙ РЕЖИМ — данные не отправляются. <button type="button" data-disable-lead-test style="margin-left:10px;padding:6px 10px;border:0;border-radius:6px;cursor:pointer">Выключить тест</button>';
+  document.body.prepend(banner);
+
+  banner.querySelector("[data-disable-lead-test]")?.addEventListener("click", () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("lead_test");
+    url.searchParams.delete("test_ack");
+    window.location.href = url.toString();
+  });
+
+  forms.forEach((form) => {
+    form.dataset.leadTestMode = "dry-run";
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      const status = form.querySelector("[data-form-status]");
+      const button = form.querySelector("button[type='submit']");
+      const originalText = button?.textContent || "";
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = "Проверяем...";
+      }
+      form.setAttribute("aria-busy", "true");
+
+      const payload = {};
+      new FormData(form).forEach((value, key) => {
+        payload[key] = String(value).trim();
+      });
+
+      payload.lead_type = payload.lead_type || form.dataset.leadType || "general";
+      payload.form_id = payload.form_id || form.dataset.formId || "dry_run_form";
+      payload.project_id = payload.project_id || form.dataset.projectId || "newbuilds-borisoglebsk";
+      payload.project_name = payload.project_name || form.dataset.projectName || "Новостройки Борисоглебска";
+      payload.residential_complex = payload.residential_complex || form.dataset.complex || "Общий подбор новостройки";
+      payload.residential_complex_id = payload.residential_complex_id || form.dataset.complexId || "all-newbuilds";
+      payload.client_fixation_id = createDryRunLeadId();
+      payload.created_at = new Date().toISOString();
+      payload.page_url = window.location.href;
+      payload.page_title = document.title;
+      payload.dry_run = true;
+      payload.delivery_status = "not_sent";
+
+      let records = [];
+      try {
+        records = JSON.parse(sessionStorage.getItem(storageKey) || "[]");
+      } catch (error) {
+        records = [];
+      }
+      records.push(payload);
+      sessionStorage.setItem(storageKey, JSON.stringify(records.slice(-20)));
+      localStorage.setItem(lastLeadStorageKey, JSON.stringify({
+        client_fixation_id: payload.client_fixation_id,
+        lead_type: payload.lead_type,
+        form_id: payload.form_id,
+        project_id: payload.project_id,
+        project_name: payload.project_name,
+        residential_complex: payload.residential_complex,
+        residential_complex_id: payload.residential_complex_id,
+        qualification: { status: "test", score: 0, priority: "не отправлено" },
+        created_at: payload.created_at,
+        dry_run: true
+      }));
+
+      window.dispatchEvent(new CustomEvent("newbuildLeadDryRun", { detail: payload }));
+      form.reset();
+
+      if (status) {
+        status.textContent = `Тест пройден локально. Данные не отправлены. ID: ${payload.client_fixation_id}`;
+        status.classList.add("is-visible");
+      }
+
+      window.setTimeout(() => {
+        const shouldRedirect = form.dataset.redirectSuccess !== "false";
+        if (shouldRedirect) {
+          const thankYouUrl = new URL("/spasibo/", window.location.origin);
+          thankYouUrl.searchParams.set("type", payload.lead_type);
+          thankYouUrl.searchParams.set("id", payload.client_fixation_id);
+          thankYouUrl.searchParams.set("status", "test");
+          thankYouUrl.searchParams.set("dry_run", "1");
+          window.location.href = thankYouUrl.toString();
+          return;
+        }
+
+        if (button) {
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+        form.setAttribute("aria-busy", "false");
+        status?.focus({ preventScroll: true });
+      }, 250);
+    }, true);
+  });
+
+  return true;
+}
+
 neutralizeLegacyLeadFallback();
+enableLeadDryRunMode();
 
 const websiteSchema = buildWebSiteSchema();
 if (websiteSchema) createJsonLdScript(websiteSchema);
