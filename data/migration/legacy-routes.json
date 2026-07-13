@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.5",
+  "schema_version": "1.6",
   "updated_at": "2026-07-13",
   "scope": "phase_1_to_4_legacy_pages",
   "purpose": "Реестр старых страниц, которые остаются в noindex до переноса полезного содержания и выпуска подтвержденных серверных редиректов.",
@@ -258,6 +258,18 @@
       "redirect_phase": 4,
       "redirect_ready": false,
       "blocking_reason": "Старая страница содержала несколько форм с устаревшей привязкой к одному ЖК; новая единая форма должна пройти контролируемый тест доставки."
+    },
+    {
+      "source_url": "/zastroyschiki/bm-group/",
+      "source_file": "zastroyschiki/bm-group/index.html",
+      "target_url": "/developers/bm-group/",
+      "target_file": "developers/bm-group/index.html",
+      "target_href": "../../developers/bm-group/",
+      "status": "transition_page",
+      "migration_action": "redirect",
+      "redirect_phase": 4,
+      "redirect_ready": false,
+      "blocking_reason": "Новая карточка юридического лица закрыта от индексации до повторной проверки документов и реквизитов."
     }
   ]
 }
