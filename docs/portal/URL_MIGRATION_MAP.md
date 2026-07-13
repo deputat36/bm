@@ -84,6 +84,8 @@ blocking_reason
 
 | Старый URL | Целевой URL | Статус |
 |---|---|---|
+| `/prostornaya-4a/` | `/catalog/prostornaya-4a/` | transition_page |
+| `/zhk/tellermanov-sad/` | `/catalog/prostornaya-4a/` | transition_page |
 | `/o-zhk/` | `/catalog/prostornaya-4a/` | transition_page |
 | `/kvartiry/` | `/catalog/prostornaya-4a/` | transition_page |
 | `/planirovki/` | `/catalog/prostornaya-4a/` | transition_page |
@@ -101,6 +103,11 @@ canonical старого домена
 ```
 
 На каждой странице есть явный переход в карточку Просторной 4А. Все маршруты имеют `redirect_phase: 2` и `redirect_ready: false`.
+
+Особенно важные исправления:
+
+- `/prostornaya-4a/` больше не содержит canonical `tellermanovsad.ru`;
+- `/zhk/tellermanov-sad/` больше не содержит дублирующую форму `tellermanov_sad_portal_page`.
 
 Подробности зафиксированы в:
 
@@ -127,8 +134,6 @@ docs/portal/LEGACY_OBJECT_PAGES_AUDIT_2026-07-13.md
 
 | Старый URL | Предварительное решение |
 |---|---|
-| `/prostornaya-4a/` | перенести в `/catalog/prostornaya-4a/` |
-| `/zhk/tellermanov-sad/` | перенести в `/catalog/prostornaya-4a/` |
 | `/galereya/` | проверить самостоятельную ценность изображений |
 | `/infrastruktura/` | оценить сохранение как информационного материала |
 | `/hod-stroitelstva/` | оценить отдельный журнал или блок карточки |
