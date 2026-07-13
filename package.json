@@ -15,6 +15,7 @@
     "validate:dry-run": "node tools/validate-lead-dry-run.mjs",
     "validate:legal": "node tools/validate-legal-copy.mjs",
     "validate:links": "node tools/validate-portal-links.mjs",
+    "validate:html-sitemap": "node tools/validate-html-sitemap.mjs",
     "validate:legacy": "node tools/validate-legacy-routes.mjs",
     "validate:trust": "node tools/validate-trust-pages.mjs",
     "validate:media": "node tools/validate-media-inventory.mjs",
