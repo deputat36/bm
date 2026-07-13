@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.3",
+  "schema_version": "1.4",
   "updated_at": "2026-07-13",
   "scope": "phase_1_to_3_legacy_pages",
   "purpose": "Реестр старых страниц, которые остаются в noindex до переноса полезного содержания и выпуска подтвержденных серверных редиректов.",
@@ -143,10 +143,10 @@
       "target_href": "../catalog/prostornaya-4a/",
       "status": "transition_page",
       "migration_action": "retain_content",
-      "content_migration_status": "pending",
+      "content_migration_status": "migrated",
       "redirect_phase": 2,
       "redirect_ready": false,
-      "blocking_reason": "Документные реквизиты нужно повторно сверить и перенести в карточку объекта до редиректа."
+      "blocking_reason": "Полезные реквизиты перенесены в карточку объекта; остается повторная сверка первичных документов, формы и платформы редиректа."
     },
     {
       "source_url": "/prostornaya-4a/",
@@ -229,10 +229,10 @@
       "target_href": "../catalog/prostornaya-4a/",
       "status": "transition_page",
       "migration_action": "retain_content",
-      "content_migration_status": "pending",
+      "content_migration_status": "migrated",
       "redirect_phase": 3,
       "redirect_ready": false,
-      "blocking_reason": "Реквизиты и даты документа нужно повторно сверить с первичным источником и перенести в карточку объекта."
+      "blocking_reason": "Рабочие реквизиты перенесены в карточку объекта; требуется повторная сверка первичного источника и платформы редиректа."
     },
     {
       "source_url": "/faq/",
@@ -242,10 +242,10 @@
       "target_href": "../catalog/prostornaya-4a/",
       "status": "transition_page",
       "migration_action": "retain_content",
-      "content_migration_status": "pending",
+      "content_migration_status": "migrated",
       "redirect_phase": 3,
       "redirect_ready": false,
-      "blocking_reason": "Вопросы нужно разделить на общие материалы справочника и ответы по конкретному объекту после проверки данных."
+      "blocking_reason": "Безопасные ответы перенесены в карточку объекта; остается финальная проверка данных и решение по общим материалам справочника."
     }
   ]
 }
