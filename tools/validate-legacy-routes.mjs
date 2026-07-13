@@ -60,6 +60,10 @@ if (!registry || !Array.isArray(registry.routes) || !registry.routes.length) {
       errors.push(`${label}: неподдерживаемый status=${route.status}`);
     }
 
+    if (!Number.isInteger(route.redirect_phase) || route.redirect_phase < 1) {
+      errors.push(`${label}: redirect_phase должен быть положительным целым числом`);
+    }
+
     const sourceHtml = read(route.source_file);
     read(route.target_file);
 
@@ -80,6 +84,14 @@ if (!registry || !Array.isArray(registry.routes) || !registry.routes.length) {
 
       if (/brand__etagi|brand__bm|bm-group-logo/i.test(sourceHtml)) {
         errors.push(`${label}: найден старый брендинг переходного контура`);
+      }
+
+      if (/data-lead-form/i.test(sourceHtml)) {
+        errors.push(`${label}: на переходной странице обнаружена устаревшая лид-форма`);
+      }
+
+      if (/http-equiv=["']refresh["']/i.test(sourceHtml) || /window\.location|location\.replace/i.test(sourceHtml)) {
+        errors.push(`${label}: автоматическое перенаправление запрещено до ручного выпуска редиректа`);
       }
     }
 
