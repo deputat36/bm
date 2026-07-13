@@ -135,6 +135,7 @@ jobs:
           node --check tools/validate-portal-lead-forms.mjs
           node --check tools/validate-active-form-scope.mjs
           node --check tools/validate-form-accessibility.mjs
+          node --check tools/validate-lead-dry-run.mjs
           node --check tools/validate-legal-copy.mjs
           node --check tools/validate-portal-links.mjs
           node --check tools/validate-legacy-routes.mjs
@@ -154,6 +155,9 @@ jobs:
 
       - name: Validate lead form accessibility
         run: npm run validate:a11y
+
+      - name: Validate lead dry-run mode
+        run: npm run validate:dry-run
 
       - name: Validate reference catalog
         run: npm run validate:reference
