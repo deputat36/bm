@@ -4,10 +4,12 @@ import path from "node:path";
 const ROOT = process.cwd();
 const PAGE_INDEX_PATH = "data/pages/index.json";
 const MAIN_SCRIPT_PATH = "assets/js/main.js";
+const SCHEMA_SCRIPT_PATH = "assets/js/schema.js";
 const errors = [];
 
 const ACTIVE_STATUSES = new Set(["ready", "published"]);
 const LEGACY_SINGLE_PROJECT_COMPLEX = "ЖК Теллерманов сад";
+const NEUTRAL_COMPLEX = "Общий подбор новостройки";
 
 function read(relativePath) {
   const fullPath = path.join(ROOT, relativePath);
@@ -46,6 +48,7 @@ function getAttribute(tag, name) {
 
 const pages = readJson(PAGE_INDEX_PATH);
 const mainScript = read(MAIN_SCRIPT_PATH);
+const schemaScript = read(SCHEMA_SCRIPT_PATH);
 const formIds = new Map();
 let checkedPages = 0;
 let checkedForms = 0;
@@ -97,6 +100,10 @@ if (!Array.isArray(pages)) {
     if (forms.length > 0 && !html.includes("assets/js/main.js")) {
       errors.push(`${file}: активная страница с формой не подключает main.js`);
     }
+
+    if (forms.length > 0 && !html.includes("assets/js/schema.js")) {
+      errors.push(`${file}: активная страница с формой не подключает schema.js с runtime-защитой`);
+    }
   }
 }
 
@@ -107,6 +114,23 @@ if (mainScript) {
 
   if (!mainScript.includes("form.dataset.complex || SITE_CONFIG.defaultComplex")) {
     errors.push(`${MAIN_SCRIPT_PATH}: изменилась логика резервного объекта; требуется повторный аудит форм`);
+  }
+}
+
+if (schemaScript) {
+  const requiredGuardFragments = [
+    "function neutralizeLegacyLeadFallback()",
+    `const neutralComplex = "${NEUTRAL_COMPLEX}"`,
+    `const legacyComplex = "${LEGACY_SINGLE_PROJECT_COMPLEX}"`,
+    "SITE_CONFIG.defaultComplex = neutralComplex",
+    "complexField.value = neutralComplex",
+    "neutralizeLegacyLeadFallback();"
+  ];
+
+  for (const fragment of requiredGuardFragments) {
+    if (!schemaScript.includes(fragment)) {
+      errors.push(`${SCHEMA_SCRIPT_PATH}: отсутствует runtime-защита резервного объекта — ${fragment}`);
+    }
   }
 }
 
