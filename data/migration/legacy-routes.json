@@ -1,7 +1,7 @@
 {
-  "schema_version": "1.4",
+  "schema_version": "1.5",
   "updated_at": "2026-07-13",
-  "scope": "phase_1_to_3_legacy_pages",
+  "scope": "phase_1_to_4_legacy_pages",
   "purpose": "Реестр старых страниц, которые остаются в noindex до переноса полезного содержания и выпуска подтвержденных серверных редиректов.",
   "rules": {
     "source_must_exist": true,
@@ -246,6 +246,18 @@
       "redirect_phase": 3,
       "redirect_ready": false,
       "blocking_reason": "Безопасные ответы перенесены в карточку объекта; остается финальная проверка данных и решение по общим материалам справочника."
+    },
+    {
+      "source_url": "/zayavka/",
+      "source_file": "zayavka/index.html",
+      "target_url": "/contacts/",
+      "target_file": "contacts/index.html",
+      "target_href": "../contacts/",
+      "status": "transition_page",
+      "migration_action": "redirect",
+      "redirect_phase": 4,
+      "redirect_ready": false,
+      "blocking_reason": "Старая страница содержала несколько форм с устаревшей привязкой к одному ЖК; новая единая форма должна пройти контролируемый тест доставки."
     }
   ]
 }
