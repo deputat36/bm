@@ -9,6 +9,7 @@ const PORTAL_PATHS = [
   "catalog/aerodromnaya-18g/index.html",
   "catalog/sennaya-76/index.html",
   "developers/index.html",
+  "developers/bm-group/index.html",
   "guides/index.html",
   "news/index.html",
   "contacts/index.html",
@@ -18,7 +19,9 @@ const PORTAL_PATHS = [
   "sources/index.html",
   "legal/index.html",
   "privacy/index.html",
-  "personal-data-consent/index.html"
+  "personal-data-consent/index.html",
+  "advertising/index.html",
+  "karta-sayta/index.html"
 ];
 
 const FORBIDDEN_PATTERNS = [
