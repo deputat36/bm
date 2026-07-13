@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-13",
+  "scope": "phase_1_gateway_pages",
+  "purpose": "Реестр переходных страниц старой структуры, которые должны оставаться в noindex до внедрения подтвержденных редиректов.",
+  "rules": {
+    "source_must_exist": true,
+    "target_must_exist": true,
+    "source_robots": "noindex,follow",
+    "source_must_not_be_in_sitemap": true,
+    "old_domain_canonical_forbidden": true,
+    "old_branding_forbidden": true,
+    "redirects_require_manual_release": true
+  },
+  "routes": [
+    {
+      "source_url": "/portal-preview/",
+      "source_file": "portal-preview/index.html",
+      "target_url": "/",
+      "target_file": "index.html",
+      "target_href": "../",
+      "status": "transition_page",
+      "redirect_phase": 1,
+      "redirect_ready": false,
+      "blocking_reason": "Архивный черновик заменен рабочей главной, но серверный редирект еще не внедрен."
+    },
+    {
+      "source_url": "/novostroyki/",
+      "source_file": "novostroyki/index.html",
+      "target_url": "/catalog/",
+      "target_file": "catalog/index.html",
+      "target_href": "../catalog/",
+      "status": "transition_page",
+      "redirect_phase": 1,
+      "redirect_ready": false,
+      "blocking_reason": "Новый каталог пока остается в noindex до финальной проверки данных и форм."
+    },
+    {
+      "source_url": "/zhk/",
+      "source_file": "zhk/index.html",
+      "target_url": "/catalog/",
+      "target_file": "catalog/index.html",
+      "target_href": "../catalog/",
+      "status": "transition_page",
+      "redirect_phase": 1,
+      "redirect_ready": false,
+      "blocking_reason": "Старый список ЖК заменяется единым городским каталогом."
+    },
+    {
+      "source_url": "/zastroyschiki/",
+      "source_file": "zastroyschiki/index.html",
+      "target_url": "/developers/",
+      "target_file": "developers/index.html",
+      "target_href": "../developers/",
+      "status": "transition_page",
+      "redirect_phase": 1,
+      "redirect_ready": false,
+      "blocking_reason": "Новый раздел застройщиков пока проходит наполнение и проверку."
+    },
+    {
+      "source_url": "/spravochnik/",
+      "source_file": "spravochnik/index.html",
+      "target_url": "/guides/",
+      "target_file": "guides/index.html",
+      "target_href": "../guides/",
+      "status": "transition_page",
+      "redirect_phase": 1,
+      "redirect_ready": false,
+      "blocking_reason": "Новый справочник пока закрыт от индексации до подготовки материалов."
+    },
+    {
+      "source_url": "/novosti/",
+      "source_file": "novosti/index.html",
+      "target_url": "/news/",
+      "target_file": "news/index.html",
+      "target_href": "../news/",
+      "status": "transition_page",
+      "redirect_phase": 1,
+      "redirect_ready": false,
+      "blocking_reason": "Старый объектный раздел новостей заменяется нейтральным разделом портала."
+    }
+  ]
+}
