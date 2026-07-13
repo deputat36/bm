@@ -48,6 +48,7 @@ on:
       - "data/verification/**"
       - "docs/portal/**"
       - "tools/**"
+      - "scripts/**"
       - "sitemap.xml"
       - "robots.txt"
       - "package.json"
@@ -98,6 +99,7 @@ on:
       - "data/verification/**"
       - "docs/portal/**"
       - "tools/**"
+      - "scripts/**"
       - "sitemap.xml"
       - "robots.txt"
       - "package.json"
@@ -143,6 +145,13 @@ jobs:
           node --check tools/validate-media-inventory.mjs
           node --check tools/validate-project-verification.mjs
           node --check tools/audit-portal-branding.mjs
+          node --check scripts/check-site.js
+
+      - name: Capture static site diagnostics
+        continue-on-error: true
+        run: |
+          mkdir -p ci-logs
+          node scripts/check-site.js > ci-logs/static-site.txt 2>&1
 
       - name: Validate priority lead projects
         run: npm run validate:priority
@@ -166,7 +175,13 @@ jobs:
         run: npm run validate:verification
 
       - name: Validate legal copy
-        run: npm run validate:legal
+        shell: bash
+        run: |
+          mkdir -p ci-logs
+          set +e
+          npm run validate:legal 2>&1 | tee ci-logs/legal-copy.txt
+          status=${PIPESTATUS[0]}
+          exit $status
 
       - name: Validate trust pages
         run: npm run validate:trust
@@ -182,3 +197,12 @@ jobs:
 
       - name: Audit portal branding
         run: npm run audit:branding
+
+      - name: Upload CI diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-ci-diagnostics
+          path: ci-logs
+          if-no-files-found: ignore
+          retention-days: 3
