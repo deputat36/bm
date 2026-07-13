@@ -132,6 +132,7 @@ jobs:
           node --check tools/validate-priority-projects.mjs
           node --check tools/validate-reference-projects.mjs
           node --check tools/validate-portal-lead-forms.mjs
+          node --check tools/validate-active-form-scope.mjs
           node --check tools/validate-legal-copy.mjs
           node --check tools/validate-portal-links.mjs
           node --check tools/validate-legacy-routes.mjs
@@ -145,6 +146,9 @@ jobs:
 
       - name: Validate portal lead forms
         run: npm run validate:leads
+
+      - name: Validate active lead form scope
+        run: npm run validate:form-scope
 
       - name: Validate reference catalog
         run: npm run validate:reference
