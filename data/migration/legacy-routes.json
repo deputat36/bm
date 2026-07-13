@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "updated_at": "2026-07-13",
   "scope": "phase_1_and_2_transition_pages",
   "purpose": "Реестр переходных страниц старой структуры, которые должны оставаться в noindex до внедрения подтвержденных серверных редиректов.",
@@ -134,6 +134,28 @@
       "redirect_phase": 2,
       "redirect_ready": false,
       "blocking_reason": "Документы нужно повторно сверить с первичными источниками перед объединением URL."
+    },
+    {
+      "source_url": "/prostornaya-4a/",
+      "source_file": "prostornaya-4a/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "redirect_phase": 2,
+      "redirect_ready": false,
+      "blocking_reason": "Старый адресный URL имел canonical прежнего домена и должен оставаться закрытым до выпуска серверного редиректа."
+    },
+    {
+      "source_url": "/zhk/tellermanov-sad/",
+      "source_file": "zhk/tellermanov-sad/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "redirect_phase": 2,
+      "redirect_ready": false,
+      "blocking_reason": "Дублирующая карточка содержала отдельную форму и старую навигацию; целевая карточка должна пройти финальную проверку."
     }
   ]
 }
