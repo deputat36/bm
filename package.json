@@ -11,6 +11,7 @@
     "validate:verification": "node tools/validate-project-verification.mjs",
     "validate:leads": "node tools/validate-portal-lead-forms.mjs",
     "validate:form-scope": "node tools/validate-active-form-scope.mjs",
+    "validate:a11y": "node tools/validate-form-accessibility.mjs",
     "validate:legal": "node tools/validate-legal-copy.mjs",
     "validate:links": "node tools/validate-portal-links.mjs",
     "validate:legacy": "node tools/validate-legacy-routes.mjs",
