@@ -12,6 +12,7 @@
     "validate:legal": "node tools/validate-legal-copy.mjs",
     "validate:links": "node tools/validate-portal-links.mjs",
     "validate:legacy": "node tools/validate-legacy-routes.mjs",
+    "validate:trust": "node tools/validate-trust-pages.mjs",
     "audit:branding": "node tools/audit-portal-branding.mjs",
     "urls:inventory": "node tools/build-url-inventory.mjs",
     "sitemap:preview": "node tools/build-sitemap-preview.mjs",
