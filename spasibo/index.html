@@ -22,8 +22,8 @@
     <section class="page-hero leadgen-hero">
       <div class="container">
         <div class="thankyou-card">
-          <span class="eyebrow">Заявка отправлена</span>
-          <h1>Спасибо, обращение принято</h1>
+          <span class="eyebrow" id="thankyou-eyebrow">Заявка отправлена</span>
+          <h1 id="thankyou-title">Спасибо, обращение принято</h1>
           <p class="lead" id="thankyou-message">Специалист свяжется с вами, уточнит детали и подскажет следующий шаг.</p>
           <div class="thankyou-meta">
             <div class="thankyou-meta__item"><span>Тип заявки</span><strong id="lead-type">Заявка</strong></div>
@@ -31,15 +31,15 @@
             <div class="thankyou-meta__item"><span>Статус обработки</span><strong id="lead-status">Новая</strong></div>
             <div class="thankyou-meta__item"><span>ID фиксации</span><strong id="lead-id">—</strong></div>
           </div>
-          <div class="leadgen-note">Предварительная заявка не является бронью квартиры и не фиксирует цену. Актуальные условия, наличие и документы уточняются по подтверждённым данным.</div>
-          <div class="hero__actions"><a class="button" href="../catalog/">Вернуться в каталог</a><a class="button button--ghost" href="../#lead">Оставить ещё одну заявку</a><a class="button button--ghost" href="tel:+79038576909">Позвонить: 8 903 857-69-09</a></div>
+          <div class="leadgen-note" id="thankyou-note">Предварительная заявка не является бронью квартиры и не фиксирует цену. Актуальные условия, наличие и документы уточняются по подтверждённым данным.</div>
+          <div class="hero__actions"><a class="button" href="../catalog/">Вернуться в каталог</a><a class="button button--ghost" id="repeat-test-link" href="../#lead">Оставить ещё одну заявку</a><a class="button button--ghost" href="tel:+79038576909">Позвонить: 8 903 857-69-09</a></div>
         </div>
       </div>
     </section>
 
     <section>
       <div class="container">
-        <div class="section__head"><h2>Что будет дальше</h2><p>Менеджер увидит объект, параметры заявки, бюджет, способ покупки, рекламный источник и срочность обработки.</p></div>
+        <div class="section__head"><h2>Что будет дальше</h2><p id="next-step-description">Менеджер увидит объект, параметры заявки, бюджет, способ покупки, рекламный источник и срочность обработки.</p></div>
         <div class="grid grid--3"><article class="card"><h3>1. Уточнение задачи</h3><p>Специалист уточнит, какая квартира или информация вам нужна.</p></article><article class="card"><h3>2. Проверка данных</h3><p>По объекту подготовят актуальные сведения о ценах, планировках, документах или ипотеке.</p></article><article class="card"><h3>3. Следующий шаг</h3><p>После проверки вам сообщат доступные варианты и предложат удобный сценарий покупки.</p></article></div>
       </div>
     </section>
@@ -61,7 +61,7 @@
         waitlist: "Список ожидания",
         general: "Заявка"
       };
-      const statusMap = { hot: "Срочная", warm: "Тёплая", cold: "В прогрев" };
+      const statusMap = { hot: "Срочная", warm: "Тёплая", cold: "В прогрев", test: "Тест" };
       const messageMap = {
         project_consultation: "Заявка по выбранному объекту принята. Специалист проверит информацию и свяжется с вами.",
         portal_selection: "Специалист уточнит параметры и поможет сравнить подходящие новостройки.",
@@ -76,6 +76,7 @@
       const type = params.get("type") || "general";
       const status = params.get("status") || "";
       const id = params.get("id") || "";
+      const isDryRun = params.get("dry_run") === "1";
       let lastLead = {};
       try { lastLead = JSON.parse(localStorage.getItem("newbuildsBorisoglebskLastLead") || "{}"); } catch (error) { lastLead = {}; }
       const objectName = lastLead.residential_complex || lastLead.project_name || "Новостройки Борисоглебска";
@@ -85,6 +86,18 @@
       document.getElementById("lead-status").textContent = statusMap[status] || "Новая";
       document.getElementById("lead-id").textContent = id || lastLead.client_fixation_id || "—";
       document.getElementById("thankyou-message").textContent = messageMap[type] || "Специалист свяжется с вами, уточнит детали и подскажет следующий шаг.";
+
+      if (isDryRun) {
+        document.body.dataset.leadTestMode = "dry-run";
+        document.getElementById("thankyou-eyebrow").textContent = "Тестовый режим";
+        document.getElementById("thankyou-title").textContent = "Тестовая заявка обработана локально";
+        document.getElementById("thankyou-message").textContent = "Данные не отправлялись в Web3Forms, CRM, email или аналитику. Проверены валидация, системные ID, локальная фиксация и переход на страницу результата.";
+        document.getElementById("thankyou-note").textContent = "Это технический dry-run. ID начинается с NB-TEST и не должен обрабатываться как обращение клиента.";
+        document.getElementById("next-step-description").textContent = "Вернитесь к форме в тестовом режиме и проверьте следующий объект, мобильное отображение или другой сценарий заполнения.";
+        document.getElementById("repeat-test-link").href = "../contacts/?lead_test=dry-run&test_ack=1#lead";
+        document.getElementById("repeat-test-link").textContent = "Повторить тест";
+        return;
+      }
 
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({ event: "lead_thankyou_view", lead_type: type, residential_complex: objectName, qualification_status: status, client_fixation_id: id });
