@@ -45,6 +45,7 @@ on:
       - "data/research/**"
       - "data/migration/**"
       - "data/media/**"
+      - "data/verification/**"
       - "docs/portal/**"
       - "tools/**"
       - "sitemap.xml"
@@ -94,6 +95,7 @@ on:
       - "data/research/**"
       - "data/migration/**"
       - "data/media/**"
+      - "data/verification/**"
       - "docs/portal/**"
       - "tools/**"
       - "sitemap.xml"
@@ -135,6 +137,7 @@ jobs:
           node --check tools/validate-legacy-routes.mjs
           node --check tools/validate-trust-pages.mjs
           node --check tools/validate-media-inventory.mjs
+          node --check tools/validate-project-verification.mjs
           node --check tools/audit-portal-branding.mjs
 
       - name: Validate priority lead projects
@@ -145,6 +148,9 @@ jobs:
 
       - name: Validate reference catalog
         run: npm run validate:reference
+
+      - name: Validate project verification register
+        run: npm run validate:verification
 
       - name: Validate legal copy
         run: npm run validate:legal
