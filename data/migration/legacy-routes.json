@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "updated_at": "2026-07-13",
-  "scope": "phase_1_gateway_pages",
-  "purpose": "Реестр переходных страниц старой структуры, которые должны оставаться в noindex до внедрения подтвержденных редиректов.",
+  "scope": "phase_1_and_2_transition_pages",
+  "purpose": "Реестр переходных страниц старой структуры, которые должны оставаться в noindex до внедрения подтвержденных серверных редиректов.",
   "rules": {
     "source_must_exist": true,
     "target_must_exist": true,
@@ -10,6 +10,7 @@
     "source_must_not_be_in_sitemap": true,
     "old_domain_canonical_forbidden": true,
     "old_branding_forbidden": true,
+    "legacy_lead_forms_forbidden": true,
     "redirects_require_manual_release": true
   },
   "routes": [
@@ -78,6 +79,61 @@
       "redirect_phase": 1,
       "redirect_ready": false,
       "blocking_reason": "Старый объектный раздел новостей заменяется нейтральным разделом портала."
+    },
+    {
+      "source_url": "/o-zhk/",
+      "source_file": "o-zhk/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "redirect_phase": 2,
+      "redirect_ready": false,
+      "blocking_reason": "Карточка объекта остается в noindex до повторной проверки данных и формы."
+    },
+    {
+      "source_url": "/kvartiry/",
+      "source_file": "kvartiry/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "redirect_phase": 2,
+      "redirect_ready": false,
+      "blocking_reason": "Информация о квартирах объединена с карточкой объекта; требуется финальная проверка перед редиректом."
+    },
+    {
+      "source_url": "/planirovki/",
+      "source_file": "planirovki/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "redirect_phase": 2,
+      "redirect_ready": false,
+      "blocking_reason": "Графические материалы и параметры должны быть подтверждены до выпуска редиректа."
+    },
+    {
+      "source_url": "/ceny/",
+      "source_file": "ceny/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "redirect_phase": 2,
+      "redirect_ready": false,
+      "blocking_reason": "Цены и наличие требуют отдельного актуального подтверждения."
+    },
+    {
+      "source_url": "/dokumenty/",
+      "source_file": "dokumenty/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "redirect_phase": 2,
+      "redirect_ready": false,
+      "blocking_reason": "Документы нужно повторно сверить с первичными источниками перед объединением URL."
     }
   ]
 }
