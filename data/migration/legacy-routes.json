@@ -1,7 +1,7 @@
 {
-  "schema_version": "1.6",
+  "schema_version": "1.7",
   "updated_at": "2026-07-13",
-  "scope": "phase_1_to_4_legacy_pages",
+  "scope": "phase_1_to_5_legacy_pages",
   "purpose": "Реестр старых страниц, которые остаются в noindex до переноса полезного содержания и выпуска подтвержденных серверных редиректов.",
   "rules": {
     "source_must_exist": true,
@@ -270,6 +270,45 @@
       "redirect_phase": 4,
       "redirect_ready": false,
       "blocking_reason": "Новая карточка юридического лица закрыта от индексации до повторной проверки документов и реквизитов."
+    },
+    {
+      "source_url": "/spravochnik/proverka-dokumentov-novostroyki/",
+      "source_file": "spravochnik/proverka-dokumentov-novostroyki/index.html",
+      "target_url": "/guides/proverka-dokumentov-novostroyki/",
+      "target_file": "guides/proverka-dokumentov-novostroyki/index.html",
+      "target_href": "../../guides/proverka-dokumentov-novostroyki/",
+      "status": "transition_page",
+      "migration_action": "retain_content",
+      "content_migration_status": "migrated",
+      "redirect_phase": 5,
+      "redirect_ready": false,
+      "blocking_reason": "Полезное содержание перенесено и расширено; целевая статья пока остаётся noindex до редакционной и юридической проверки."
+    },
+    {
+      "source_url": "/spravochnik/proektnaya-deklaratsiya/",
+      "source_file": "spravochnik/proektnaya-deklaratsiya/index.html",
+      "target_url": "/guides/proektnaya-deklaratsiya/",
+      "target_file": "guides/proektnaya-deklaratsiya/index.html",
+      "target_href": "../../guides/proektnaya-deklaratsiya/",
+      "status": "transition_page",
+      "migration_action": "retain_content",
+      "content_migration_status": "migrated",
+      "redirect_phase": 5,
+      "redirect_ready": false,
+      "blocking_reason": "Полезное содержание перенесено и расширено; целевая статья пока остаётся noindex до редакционной и юридической проверки."
+    },
+    {
+      "source_url": "/spravochnik/kak-vybrat-planirovku/",
+      "source_file": "spravochnik/kak-vybrat-planirovku/index.html",
+      "target_url": "/guides/kak-vybrat-planirovku/",
+      "target_file": "guides/kak-vybrat-planirovku/index.html",
+      "target_href": "../../guides/kak-vybrat-planirovku/",
+      "status": "transition_page",
+      "migration_action": "retain_content",
+      "content_migration_status": "migrated",
+      "redirect_phase": 5,
+      "redirect_ready": false,
+      "blocking_reason": "Полезное содержание перенесено и расширено; целевая статья пока остаётся noindex до редакционной проверки."
     }
   ]
 }
