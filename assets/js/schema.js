@@ -136,6 +136,26 @@ function loadPortalScript(baseUrl, fileName) {
   document.head.appendChild(script);
 }
 
+function neutralizeLegacyLeadFallback() {
+  const neutralComplex = "Общий подбор новостройки";
+  const legacyComplex = "ЖК Теллерманов сад";
+
+  if (typeof SITE_CONFIG !== "undefined" && SITE_CONFIG) {
+    SITE_CONFIG.defaultComplex = neutralComplex;
+  }
+
+  document.querySelectorAll("form[data-lead-form]").forEach((form) => {
+    if (form.dataset.complex) return;
+
+    const complexField = form.querySelector("[name='residential_complex']");
+    if (complexField && complexField.value === legacyComplex) {
+      complexField.value = neutralComplex;
+    }
+  });
+}
+
+neutralizeLegacyLeadFallback();
+
 const websiteSchema = buildWebSiteSchema();
 if (websiteSchema) createJsonLdScript(websiteSchema);
 
