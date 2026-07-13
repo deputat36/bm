@@ -40,7 +40,8 @@ const LEGACY_PREFIXES = [
   "/infrastruktura/",
   "/hod-stroitelstva/",
   "/proektnaya-deklaratsiya-36-001139/",
-  "/faq/"
+  "/faq/",
+  "/zayavka/"
 ];
 
 const errors = [];
