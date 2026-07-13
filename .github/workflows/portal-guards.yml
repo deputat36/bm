@@ -48,10 +48,12 @@ on:
       - "data/verification/**"
       - "docs/portal/**"
       - "tools/**"
+      - "scripts/**"
       - "sitemap.xml"
       - "robots.txt"
       - "package.json"
       - ".github/workflows/portal-guards.yml"
+      - ".github/workflows/validate.yml"
   pull_request:
     paths:
       - "index.html"
@@ -98,10 +100,12 @@ on:
       - "data/verification/**"
       - "docs/portal/**"
       - "tools/**"
+      - "scripts/**"
       - "sitemap.xml"
       - "robots.txt"
       - "package.json"
       - ".github/workflows/portal-guards.yml"
+      - ".github/workflows/validate.yml"
   workflow_dispatch:
 
 permissions:
@@ -143,6 +147,7 @@ jobs:
           node --check tools/validate-media-inventory.mjs
           node --check tools/validate-project-verification.mjs
           node --check tools/audit-portal-branding.mjs
+          node --check scripts/check-site.js
 
       - name: Validate priority lead projects
         run: npm run validate:priority

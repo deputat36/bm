@@ -67,6 +67,27 @@
     "status": "ready"
   },
   {
+    "url": "/guides/proverka-dokumentov-novostroyki/",
+    "title": "Как проверить документы новостройки",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/guides/proektnaya-deklaratsiya/",
+    "title": "Как читать проектную декларацию новостройки",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/guides/kak-vybrat-planirovku/",
+    "title": "Как выбрать планировку квартиры в новостройке",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
     "url": "/news/",
     "title": "Новости новостроек Борисоглебска",
     "page_type": "news_index",
