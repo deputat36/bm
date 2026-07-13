@@ -45,6 +45,14 @@
     "status": "ready"
   },
   {
+    "url": "/developers/bm-group/",
+    "title": "СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ — справочная карточка",
+    "page_type": "builder",
+    "builder_id": "bm-group-chernozemye",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
     "url": "/ipoteka/",
     "title": "Ипотека на новостройку в Борисоглебске",
     "page_type": "mortgage_landing",
@@ -69,6 +77,69 @@
     "url": "/contacts/",
     "title": "Консультация по новостройкам Борисоглебска",
     "page_type": "contacts",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/about/",
+    "title": "О портале Новостройки Борисоглебска",
+    "page_type": "portal_about",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/sources/",
+    "title": "Источники информации — Новостройки Борисоглебска",
+    "page_type": "source_policy",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/legal/",
+    "title": "Правовая информация — Новостройки Борисоглебска",
+    "page_type": "legal_policy",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/privacy/",
+    "title": "Политика обработки персональных данных",
+    "page_type": "privacy_policy",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/personal-data-consent/",
+    "title": "Согласие на обработку персональных данных",
+    "page_type": "consent_policy",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/advertising/",
+    "title": "Реклама на портале — Новостройки Борисоглебска",
+    "page_type": "advertising_policy",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/karta-sayta/",
+    "title": "Карта сайта — Новостройки Борисоглебска",
+    "page_type": "html_sitemap",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/spasibo/",
+    "title": "Заявка отправлена — Новостройки Борисоглебска",
+    "page_type": "thank_you",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/zayavka/",
+    "title": "Заявки перенесены — Новостройки Борисоглебска",
+    "page_type": "legacy_transition",
     "robots": "noindex,follow",
     "status": "ready"
   },
