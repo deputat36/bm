@@ -12,12 +12,20 @@ on:
       - "contacts/**"
       - "ipoteka/**"
       - "spasibo/**"
+      - "portal-preview/**"
+      - "novostroyki/**"
+      - "zhk/**"
+      - "zastroyschiki/**"
+      - "spravochnik/**"
+      - "novosti/**"
       - "assets/css/**"
       - "assets/js/**"
       - "data/pages/**"
       - "data/projects/**"
       - "data/research/**"
+      - "data/migration/**"
       - "docs/portal/LEGAL_RULES.md"
+      - "docs/portal/URL_MIGRATION_MAP.md"
       - "tools/**"
       - "sitemap.xml"
       - "robots.txt"
@@ -33,12 +41,20 @@ on:
       - "contacts/**"
       - "ipoteka/**"
       - "spasibo/**"
+      - "portal-preview/**"
+      - "novostroyki/**"
+      - "zhk/**"
+      - "zastroyschiki/**"
+      - "spravochnik/**"
+      - "novosti/**"
       - "assets/css/**"
       - "assets/js/**"
       - "data/pages/**"
       - "data/projects/**"
       - "data/research/**"
+      - "data/migration/**"
       - "docs/portal/LEGAL_RULES.md"
+      - "docs/portal/URL_MIGRATION_MAP.md"
       - "tools/**"
       - "sitemap.xml"
       - "robots.txt"
@@ -75,6 +91,7 @@ jobs:
           node --check tools/validate-portal-lead-forms.mjs
           node --check tools/validate-legal-copy.mjs
           node --check tools/validate-portal-links.mjs
+          node --check tools/validate-legacy-routes.mjs
           node --check tools/audit-portal-branding.mjs
 
       - name: Validate priority lead projects
@@ -91,6 +108,9 @@ jobs:
 
       - name: Validate core portal links
         run: npm run validate:links
+
+      - name: Validate legacy migration routes
+        run: npm run validate:legacy
 
       - name: Audit portal branding
         run: npm run audit:branding
