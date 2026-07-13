@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "updated_at": "2026-07-13",
-  "scope": "phase_1_and_2_transition_pages",
-  "purpose": "Реестр переходных страниц старой структуры, которые должны оставаться в noindex до внедрения подтвержденных серверных редиректов.",
+  "scope": "phase_1_to_3_legacy_pages",
+  "purpose": "Реестр старых страниц, которые остаются в noindex до переноса полезного содержания и выпуска подтвержденных серверных редиректов.",
   "rules": {
     "source_must_exist": true,
     "target_must_exist": true,
@@ -11,6 +11,7 @@
     "old_domain_canonical_forbidden": true,
     "old_branding_forbidden": true,
     "legacy_lead_forms_forbidden": true,
+    "migration_action_required": true,
     "redirects_require_manual_release": true
   },
   "routes": [
@@ -21,6 +22,7 @@
       "target_file": "index.html",
       "target_href": "../",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 1,
       "redirect_ready": false,
       "blocking_reason": "Архивный черновик заменен рабочей главной, но серверный редирект еще не внедрен."
@@ -32,6 +34,7 @@
       "target_file": "catalog/index.html",
       "target_href": "../catalog/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 1,
       "redirect_ready": false,
       "blocking_reason": "Новый каталог пока остается в noindex до финальной проверки данных и форм."
@@ -43,6 +46,7 @@
       "target_file": "catalog/index.html",
       "target_href": "../catalog/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 1,
       "redirect_ready": false,
       "blocking_reason": "Старый список ЖК заменяется единым городским каталогом."
@@ -54,6 +58,7 @@
       "target_file": "developers/index.html",
       "target_href": "../developers/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 1,
       "redirect_ready": false,
       "blocking_reason": "Новый раздел застройщиков пока проходит наполнение и проверку."
@@ -65,6 +70,7 @@
       "target_file": "guides/index.html",
       "target_href": "../guides/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 1,
       "redirect_ready": false,
       "blocking_reason": "Новый справочник пока закрыт от индексации до подготовки материалов."
@@ -76,6 +82,7 @@
       "target_file": "news/index.html",
       "target_href": "../news/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 1,
       "redirect_ready": false,
       "blocking_reason": "Старый объектный раздел новостей заменяется нейтральным разделом портала."
@@ -87,6 +94,7 @@
       "target_file": "catalog/prostornaya-4a/index.html",
       "target_href": "../catalog/prostornaya-4a/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 2,
       "redirect_ready": false,
       "blocking_reason": "Карточка объекта остается в noindex до повторной проверки данных и формы."
@@ -98,6 +106,7 @@
       "target_file": "catalog/prostornaya-4a/index.html",
       "target_href": "../catalog/prostornaya-4a/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 2,
       "redirect_ready": false,
       "blocking_reason": "Информация о квартирах объединена с карточкой объекта; требуется финальная проверка перед редиректом."
@@ -109,6 +118,7 @@
       "target_file": "catalog/prostornaya-4a/index.html",
       "target_href": "../catalog/prostornaya-4a/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 2,
       "redirect_ready": false,
       "blocking_reason": "Графические материалы и параметры должны быть подтверждены до выпуска редиректа."
@@ -120,6 +130,7 @@
       "target_file": "catalog/prostornaya-4a/index.html",
       "target_href": "../catalog/prostornaya-4a/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 2,
       "redirect_ready": false,
       "blocking_reason": "Цены и наличие требуют отдельного актуального подтверждения."
@@ -131,9 +142,11 @@
       "target_file": "catalog/prostornaya-4a/index.html",
       "target_href": "../catalog/prostornaya-4a/",
       "status": "transition_page",
+      "migration_action": "retain_content",
+      "content_migration_status": "pending",
       "redirect_phase": 2,
       "redirect_ready": false,
-      "blocking_reason": "Документы нужно повторно сверить с первичными источниками перед объединением URL."
+      "blocking_reason": "Документные реквизиты нужно повторно сверить и перенести в карточку объекта до редиректа."
     },
     {
       "source_url": "/prostornaya-4a/",
@@ -142,9 +155,10 @@
       "target_file": "catalog/prostornaya-4a/index.html",
       "target_href": "../catalog/prostornaya-4a/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 2,
       "redirect_ready": false,
-      "blocking_reason": "Старый адресный URL имел canonical прежнего домена и должен оставаться закрытым до выпуска серверного редиректа."
+      "blocking_reason": "Старый адресный URL должен оставаться закрытым до выпуска серверного редиректа."
     },
     {
       "source_url": "/zhk/tellermanov-sad/",
@@ -153,9 +167,85 @@
       "target_file": "catalog/prostornaya-4a/index.html",
       "target_href": "../../catalog/prostornaya-4a/",
       "status": "transition_page",
+      "migration_action": "redirect",
       "redirect_phase": 2,
       "redirect_ready": false,
-      "blocking_reason": "Дублирующая карточка содержала отдельную форму и старую навигацию; целевая карточка должна пройти финальную проверку."
+      "blocking_reason": "Дублирующая карточка и отдельная форма удалены; целевая карточка должна пройти финальную проверку."
+    },
+    {
+      "source_url": "/galereya/",
+      "source_file": "galereya/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "migration_action": "retain_content",
+      "content_migration_status": "pending",
+      "redirect_phase": 3,
+      "redirect_ready": false,
+      "blocking_reason": "Рендеры нужно проверить по источнику, актуальности и праву публикации перед переносом."
+    },
+    {
+      "source_url": "/infrastruktura/",
+      "source_file": "infrastruktura/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "migration_action": "retire",
+      "redirect_phase": 3,
+      "redirect_ready": false,
+      "blocking_reason": "Старая страница не содержала проверенных расстояний, маршрутов или самостоятельного полезного содержания."
+    },
+    {
+      "source_url": "/hod-stroitelstva/",
+      "source_file": "hod-stroitelstva/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "migration_action": "retire",
+      "redirect_phase": 3,
+      "redirect_ready": false,
+      "blocking_reason": "Старая страница не содержала датированных фотоотчетов; будущие обновления будут частью карточки и новостей."
+    },
+    {
+      "source_url": "/zastroyschik/",
+      "source_file": "zastroyschik/index.html",
+      "target_url": "/developers/",
+      "target_file": "developers/index.html",
+      "target_href": "../developers/",
+      "status": "transition_page",
+      "migration_action": "redirect",
+      "redirect_phase": 3,
+      "redirect_ready": false,
+      "blocking_reason": "Отдельная карточка юридического лица еще не создана и требует проверки документов."
+    },
+    {
+      "source_url": "/proektnaya-deklaratsiya-36-001139/",
+      "source_file": "proektnaya-deklaratsiya-36-001139/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "migration_action": "retain_content",
+      "content_migration_status": "pending",
+      "redirect_phase": 3,
+      "redirect_ready": false,
+      "blocking_reason": "Реквизиты и даты документа нужно повторно сверить с первичным источником и перенести в карточку объекта."
+    },
+    {
+      "source_url": "/faq/",
+      "source_file": "faq/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "migration_action": "retain_content",
+      "content_migration_status": "pending",
+      "redirect_phase": 3,
+      "redirect_ready": false,
+      "blocking_reason": "Вопросы нужно разделить на общие материалы справочника и ответы по конкретному объекту после проверки данных."
     }
   ]
 }
