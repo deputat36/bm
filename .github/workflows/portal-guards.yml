@@ -128,11 +128,13 @@ jobs:
           node --check assets/js/priority-leads.js
           node --check assets/js/reference-catalog.js
           node --check assets/js/mobile-lead-bar.js
+          node --check assets/js/form-accessibility.js
           node --check assets/js/gallery.js
           node --check tools/validate-priority-projects.mjs
           node --check tools/validate-reference-projects.mjs
           node --check tools/validate-portal-lead-forms.mjs
           node --check tools/validate-active-form-scope.mjs
+          node --check tools/validate-form-accessibility.mjs
           node --check tools/validate-legal-copy.mjs
           node --check tools/validate-portal-links.mjs
           node --check tools/validate-legacy-routes.mjs
@@ -149,6 +151,9 @@ jobs:
 
       - name: Validate active lead form scope
         run: npm run validate:form-scope
+
+      - name: Validate lead form accessibility
+        run: npm run validate:a11y
 
       - name: Validate reference catalog
         run: npm run validate:reference
