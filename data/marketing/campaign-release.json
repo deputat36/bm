@@ -24,7 +24,8 @@
     "aerodromnaya_18g_telegram_interest",
     "sennaya_76_vk_interest",
     "sennaya_76_telegram_interest",
-    "portal_vk_mortgage"
+    "portal_vk_mortgage",
+    "portal_telegram_mortgage"
   ],
   "publication": {
     "links_published": false,
