@@ -115,7 +115,13 @@ form_role
 lead_type
 residential_complex_id
 qualification_status
+blocked
+offline
 ```
+
+`blocked` позволяет исключить заявки, остановленные honeypot-защитой.
+
+`offline` позволяет отдельно видеть обращения, которые были сохранены локально из-за отсутствия настроенного канала доставки.
 
 Событие не содержит:
 
@@ -134,19 +140,22 @@ qualification_status
 Правильное использование:
 
 ```text
-общее число заявок → lead_submit
-разрез primary/detailed → lead_submit_classified
+общее число заявок → lead_submit с blocked=false
+разрез primary/detailed → lead_submit_classified с blocked=false
 ```
+
+Статус `offline=true` нужно показывать отдельно от подтверждённо доставленных обращений.
 
 Пример отчёта:
 
 | Метрика | Событие | Фильтр |
 |---|---|---|
-| Все заявки | `lead_submit` | без фильтра роли |
-| Заявки с коротких форм | `lead_submit_classified` | `form_role=primary` |
-| Заявки с подробных форм | `lead_submit_classified` | `form_role=detailed` |
+| Все незаблокированные отправки | `lead_submit` | `blocked=false` |
+| Заявки с коротких форм | `lead_submit_classified` | `form_role=primary`, `blocked=false` |
+| Заявки с подробных форм | `lead_submit_classified` | `form_role=detailed`, `blocked=false` |
+| Локально сохранённые обращения | `lead_submit_classified` | `offline=true`, `blocked=false` |
 | Конверсия просмотра в старт | `lead_form_view` → `lead_form_start` | по `form_role` |
-| Конверсия старта в отправку | `lead_form_start` → `lead_submit_classified` | по `form_role` |
+| Конверсия старта в отправку | `lead_form_start` → `lead_submit_classified` | по `form_role`, `blocked=false` |
 
 ## Страница благодарности
 
@@ -183,6 +192,8 @@ lead_postsubmit_action
 оставляет новую заявку
 звонит
 ```
+
+Заблокированная или локально сохранённая заявка не перенаправляется на обычную страницу благодарности существующей логикой формы.
 
 ## Dry-run
 
@@ -228,6 +239,8 @@ Guard проверяет:
 - порядок форм;
 - автоматическое добавление `form_role`;
 - состав `lead_submit_classified`;
+- наличие `blocked` и `offline`;
+- нормализацию этих признаков в boolean;
 - отсутствие персональных данных в событии;
 - отсутствие аналитических событий в dry-run.
 
