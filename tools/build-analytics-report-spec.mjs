@@ -43,6 +43,7 @@ const rows = (registry.events || []).map((event) => ({
   count_filter: event.count_filter,
   required_fields: event.required_fields || [],
   optional_fields: event.optional_fields || [],
+  restricted_technical_id: Boolean(event.contains_restricted_technical_id),
   source_file: event.source_file,
   purpose: event.purpose,
   additive: !(event.must_not_add_to || []).length
@@ -55,11 +56,11 @@ if (!rows.length) {
 
 function renderMarkdown() {
   const lines = [
-    "| Событие | Этап | Роль метрики | Правило подсчёта | Фильтр | Обязательные поля |",
-    "|---|---|---|---|---|---|"
+    "| Событие | Этап | Роль метрики | Правило подсчёта | Фильтр | Ограниченный ID | Обязательные поля |",
+    "|---|---|---|---|---|---|---|"
   ];
   rows.forEach((row) => {
-    lines.push(`| ${row.event_id} | ${row.stage} | ${row.metric_role} | ${row.count_rule} | ${row.count_filter} | ${row.required_fields.join(", ")} |`);
+    lines.push(`| ${row.event_id} | ${row.stage} | ${row.metric_role} | ${row.count_rule} | ${row.count_filter} | ${row.restricted_technical_id ? "да" : "нет"} | ${row.required_fields.join(", ")} |`);
   });
   return lines.join("\n");
 }
@@ -73,6 +74,7 @@ function renderCsv() {
     "count_filter",
     "required_fields",
     "optional_fields",
+    "restricted_technical_id",
     "source_file",
     "purpose",
     "additive"
