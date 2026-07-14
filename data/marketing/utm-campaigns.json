@@ -100,7 +100,7 @@
       "id": "aerodromnaya_18g_telegram_interest",
       "status": "active",
       "object_id": "aerodromnaya-18g",
-      "landing_path": "/catalog/aerodромnaya-18g/",
+      "landing_path": "/catalog/aerodromnaya-18g/",
       "expected_form_id": "catalog_aerodromnaya_18g_quick_consultation",
       "expected_lead_type": "project_consultation",
       "utm_source": "telegram",
