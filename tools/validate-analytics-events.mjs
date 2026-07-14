@@ -67,9 +67,18 @@ if (!registry || !Array.isArray(registry.events)) {
   }
 
   const prohibited = new Set(Array.isArray(rules.prohibited_fields) ? rules.prohibited_fields : []);
-  ["name", "phone", "budget", "comment", "client_fixation_id"].forEach((field) => {
+  ["name", "phone", "budget", "comment", "user_agent"].forEach((field) => {
     if (!prohibited.has(field)) errors.push(`${REGISTRY_PATH}: prohibited_fields missing ${field}`);
   });
+
+  const restricted = new Set(Array.isArray(rules.restricted_technical_fields) ? rules.restricted_technical_fields : []);
+  const restrictedAllowedEvents = new Set(Array.isArray(rules.restricted_field_allowed_events) ? rules.restricted_field_allowed_events : []);
+  if (!restricted.has("client_fixation_id")) {
+    errors.push(`${REGISTRY_PATH}: client_fixation_id must be a restricted technical field`);
+  }
+  if (!restrictedAllowedEvents.has("lead_submit") || restrictedAllowedEvents.size !== 1) {
+    errors.push(`${REGISTRY_PATH}: restricted technical fields may be allowed only for lead_submit`);
+  }
 
   for (const event of registry.events) {
     const id = requireText(event, "id", "event");
@@ -90,12 +99,21 @@ if (!registry || !Array.isArray(registry.events)) {
 
     const requiredFields = Array.isArray(event.required_fields) ? event.required_fields : [];
     const optionalFields = Array.isArray(event.optional_fields) ? event.optional_fields : [];
+    const allFields = [...requiredFields, ...optionalFields];
     if (!requiredFields.includes("event")) errors.push(`${label}: required_fields must include event`);
 
-    [...requiredFields, ...optionalFields].forEach((field) => {
+    allFields.forEach((field) => {
       if (!FIELD_PATTERN.test(field)) errors.push(`${label}: invalid field ${field}`);
       if (prohibited.has(field)) errors.push(`${label}: analytics field is prohibited: ${field}`);
+      if (restricted.has(field) && !restrictedAllowedEvents.has(id)) {
+        errors.push(`${label}: restricted technical field is not allowed: ${field}`);
+      }
     });
+
+    const hasRestrictedField = allFields.some((field) => restricted.has(field));
+    if (event.contains_restricted_technical_id !== hasRestrictedField) {
+      errors.push(`${label}: contains_restricted_technical_id does not match declared fields`);
+    }
 
     const source = sourceFile ? read(sourceFile) : "";
     const fragments = Array.isArray(event.implementation_fragments) ? event.implementation_fragments : [];
@@ -118,6 +136,9 @@ const classified = registry?.events?.find((event) => event.id === "lead_submit_c
 if (submit?.metric_role !== "canonical_conversion" || submit?.count_filter !== "blocked=false") {
   errors.push("lead_submit: invalid canonical counting rule");
 }
+if (!submit?.optional_fields?.includes("client_fixation_id") || submit?.contains_restricted_technical_id !== true) {
+  errors.push("lead_submit: restricted client_fixation_id declaration is missing");
+}
 if (classified?.metric_role !== "classification_dimension" || classified?.count_filter !== "blocked=false") {
   errors.push("lead_submit_classified: invalid classification counting rule");
 }
@@ -127,6 +148,9 @@ if (!classified?.must_not_add_to?.includes("lead_submit")) {
 ["form_role", "blocked", "offline"].forEach((field) => {
   if (!classified?.required_fields?.includes(field)) errors.push(`lead_submit_classified: missing required field ${field}`);
 });
+if (classified?.contains_restricted_technical_id !== false) {
+  errors.push("lead_submit_classified: restricted technical ID must be absent");
+}
 
 console.log(`Checked analytics events: ${checked}`);
 if (errors.length) {
