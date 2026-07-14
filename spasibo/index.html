@@ -111,6 +111,7 @@
       }
 
       function sendPostSubmitEvent(action, context) {
+        if (isDryRun) return;
         const payload = {
           event: "lead_postsubmit_action",
           action,
