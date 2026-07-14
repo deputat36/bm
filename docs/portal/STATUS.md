@@ -62,7 +62,7 @@
 
 ### Конверсионный путь
 
-На главной и страницах трёх объектов работают два сценария:
+На главной, в каталоге и на страницах трёх объектов работают два сценария:
 
 ```text
 короткая форма → первый разговор
@@ -77,9 +77,41 @@
 объект или главный вопрос
 ```
 
-Бюджет, способ покупки, срок и комментарий остаются в подробных формах.
+Бюджет, способ покупки, срок, комнатность и комментарий остаются в подробных формах, когда это применимо.
 
 Мобильная панель ведёт к форме, отмеченной `data-primary-lead`.
+
+### Каталог
+
+На первом экране `/catalog/` добавлена короткая форма:
+
+```text
+catalog_quick_selection
+```
+
+Она запрашивает имя, телефон и интересующий объект.
+
+Подробная форма:
+
+```text
+catalog_priority_selection
+```
+
+сохранена ниже для посетителей, готовых указать комнатность, бюджет и способ покупки.
+
+Карточки приоритетных объектов ведут к коротким формам:
+
+```text
+/catalog/prostornaya-4a/#quick-lead
+/catalog/aerodromnaya-18g/#quick-lead
+/catalog/sennaya-76/#quick-lead
+```
+
+Документ:
+
+```text
+docs/portal/CATALOG_CONVERSION_PATH.md
+```
 
 ### Страницы объектов
 
@@ -125,6 +157,7 @@
 ```text
 homepage_quick_selection
 homepage_priority_selection
+catalog_quick_selection
 catalog_priority_selection
 catalog_prostornaya_4a_quick_consultation
 catalog_prostornaya_4a_priority_lead
@@ -187,7 +220,7 @@ lead_postsubmit_action
 
 ### Страница благодарности
 
-Страница `/spasibo/` больше не использует последнюю локальную запись без проверки.
+Страница `/spasibo/` не использует последнюю локальную запись без проверки.
 
 Порядок атрибуции:
 
@@ -350,17 +383,25 @@ npm run utm:links -- --format=json
 npm run audit:branding
 ```
 
-`npm run validate` дополнительно запускает `tools/validate-thankyou-context.mjs`.
+`npm run validate` дополнительно запускает:
 
-Он проверяет:
+```text
+tools/validate-thankyou-context.mjs
+tools/validate-catalog-conversion.mjs
+```
+
+Проверяется:
 
 - совпадение ID перед использованием локальной записи;
-- закрытый список объектов;
-- same-origin referrer;
-- отсутствие прямого вывода объекта из query string;
+- закрытый список объектов и same-origin referrer;
 - отсутствие технического ID заявки в аналитике страницы благодарности;
 - отключение post-submit аналитики в dry-run;
-- синтаксис встроенного JavaScript.
+- наличие короткой и подробной форм каталога;
+- отсутствие лишних полей до первого разговора;
+- порядок форм;
+- мобильный приоритет;
+- переход карточек к коротким формам объектов;
+- разметка CTA и синтаксис JavaScript.
 
 ## Открытые риски
 
@@ -382,7 +423,7 @@ npm run audit:branding
 5. Продолжить сбор первичных источников по Аэродромной 18Г и Сенной 76.
 6. Проверить происхождение и права на визуализации.
 7. Подготовить фактические рекламные ссылки и QR-коды.
-8. После начала трафика сравнивать короткие и подробные формы по полной воронке.
+8. После начала трафика сравнивать короткие и подробные формы главной, каталога и страниц объектов.
 9. Определить платформу размещения и правила серверных редиректов.
 10. Принять решение по Web3Forms, Supabase Edge Function или другому endpoint.
 
@@ -390,6 +431,7 @@ npm run audit:branding
 
 ```text
 docs/development-roadmap.md
+docs/portal/CATALOG_CONVERSION_PATH.md
 docs/portal/PROJECT_PAGE_CONVERSION_AUDIT.md
 docs/portal/PROJECT_TRUST_AND_FAQ.md
 docs/portal/MORTGAGE_OBJECT_CONTEXT.md
