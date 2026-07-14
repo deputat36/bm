@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-14",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "specification_only_no_live_data",
+  "purpose": "Отдельная спецификация интереса к телефонному контакту без приравнивания клика к состоявшемуся звонку или заявке.",
+  "source": {
+    "event_registry": "data/analytics/events.json",
+    "funnel_report": "data/analytics/funnel-report.json",
+    "qa_matrix": "data/qa/form-scenarios.json",
+    "event": "lead_cta_click",
+    "action_filter": "phone"
+  },
+  "rules": {
+    "click_is_not_confirmed_call": true,
+    "click_is_not_lead_submission": true,
+    "call_duration_unknown": true,
+    "call_answered_unknown": true,
+    "unique_caller_unknown": true,
+    "personal_data_forbidden": true,
+    "business_phone_number_not_exported": true,
+    "ratio_zero_denominator_result": null,
+    "reporting_timezone": "Europe/Moscow",
+    "required_link_attributes": [
+      "data-track-action",
+      "data-track-placement"
+    ],
+    "project_link_requires_object_id": true,
+    "allowed_dimensions": [
+      "page_path",
+      "placement",
+      "object_id"
+    ],
+    "prohibited_dimensions": [
+      "phone",
+      "phone_normalized",
+      "name",
+      "email",
+      "client_fixation_id",
+      "call_duration",
+      "call_status"
+    ]
+  },
+  "metrics": [
+    {
+      "id": "phone_cta_clicks",
+      "name": "Клики по номеру телефона",
+      "type": "count",
+      "unit": "count",
+      "source_event": "lead_cta_click",
+      "filter": "action=phone",
+      "dimensions": [
+        "page_path",
+        "placement",
+        "object_id"
+      ],
+      "purpose": "Количество кликов по размеченным ссылкам tel:. Не подтверждает факт звонка, соединения или разговора."
+    },
+    {
+      "id": "phone_cta_share",
+      "name": "Доля телефонных действий среди CTA",
+      "type": "ratio",
+      "unit": "percent",
+      "numerator_metric": "phone_cta_clicks",
+      "denominator_metric": "cta_clicks",
+      "zero_denominator_result": null,
+      "dimensions": [
+        "page_path",
+        "placement",
+        "object_id"
+      ],
+      "purpose": "Доля кликов по номеру среди всех размеченных CTA в сопоставимом разрезе."
+    }
+  ],
+  "views": [
+    {
+      "id": "phone_overview",
+      "title": "Общий интерес к звонку",
+      "metrics": [
+        "phone_cta_clicks",
+        "phone_cta_share"
+      ],
+      "dimensions": []
+    },
+    {
+      "id": "phone_by_placement",
+      "title": "Телефонные действия по размещению",
+      "metrics": [
+        "phone_cta_clicks",
+        "phone_cta_share"
+      ],
+      "dimensions": [
+        "page_path",
+        "placement"
+      ]
+    },
+    {
+      "id": "phone_by_object",
+      "title": "Телефонные действия по объекту",
+      "metrics": [
+        "phone_cta_clicks",
+        "phone_cta_share"
+      ],
+      "dimensions": [
+        "object_id",
+        "placement"
+      ]
+    }
+  ]
+}
