@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "validate": "node tools/validate-static-site.mjs && node tools/validate-thankyou-context.mjs && node tools/validate-catalog-conversion.mjs && node tools/validate-homepage-object-cta.mjs && node tools/validate-contacts-conversion.mjs && node tools/validate-mortgage-conversion.mjs && node tools/validate-form-role-analytics.mjs && node tools/validate-analytics-events.mjs && node tools/validate-analytics-debug-mode.mjs && node tools/validate-form-qa-scenarios.mjs && node tools/validate-form-qa-results.mjs && node tools/validate-campaign-release.mjs && node tools/validate-campaign-publications.mjs && node tools/validate-project-readiness-report.mjs && node tools/validate-source-collection.mjs && node tools/validate-launch-gates.mjs",
+    "validate": "node tools/validate-static-site.mjs && node tools/validate-thankyou-context.mjs && node tools/validate-catalog-conversion.mjs && node tools/validate-homepage-object-cta.mjs && node tools/validate-contacts-conversion.mjs && node tools/validate-mortgage-conversion.mjs && node tools/validate-contextual-conversion.mjs && node tools/validate-form-role-analytics.mjs && node tools/validate-analytics-events.mjs && node tools/validate-analytics-debug-mode.mjs && node tools/validate-form-qa-scenarios.mjs && node tools/validate-form-qa-results.mjs && node tools/validate-campaign-release.mjs && node tools/validate-campaign-publications.mjs && node tools/validate-project-readiness-report.mjs && node tools/validate-source-collection.mjs && node tools/validate-launch-gates.mjs",
     "validate:json": "node tools/validate-json.mjs",
     "validate:priority": "node tools/validate-priority-projects.mjs",
     "validate:reference": "node tools/validate-reference-projects.mjs",
@@ -17,6 +17,7 @@
     "validate:catalog-conversion": "node tools/validate-catalog-conversion.mjs",
     "validate:contacts-conversion": "node tools/validate-contacts-conversion.mjs",
     "validate:mortgage-conversion": "node tools/validate-mortgage-conversion.mjs",
+    "validate:contextual-conversion": "node tools/validate-contextual-conversion.mjs",
     "validate:form-roles": "node tools/validate-form-role-analytics.mjs",
     "validate:analytics": "node tools/validate-analytics-events.mjs",
     "validate:analytics-debug": "node tools/validate-analytics-debug-mode.mjs",
