@@ -51,6 +51,36 @@ https://novostroyki-borisoglebsk.ru/catalog/prostornaya-4a/?utm_source=vk&utm_me
 https://novostroyki-borisoglebsk.ru/catalog/?utm_source=telegram&utm_medium=social&utm_campaign=portal_catalog&utm_content=catalog_post
 ```
 
+## Генератор готовых ссылок
+
+Генератор читает реестр и собирает URL без ручного копирования параметров:
+
+```bash
+npm run utm:links
+```
+
+По умолчанию выводится Markdown-таблица только с активными кампаниями.
+
+JSON для интеграции с другим инструментом:
+
+```bash
+npm run utm:links -- --format=json
+```
+
+CSV для таблицы или передачи сотрудникам:
+
+```bash
+npm run utm:links -- --format=csv
+```
+
+Вывод кампаний любого статуса:
+
+```bash
+npm run utm:links -- --format=json --status=all
+```
+
+Генератор не изменяет реестр и не публикует ссылки автоматически. В Portal guards выполняется контрольная генерация JSON, чтобы поломка формата обнаруживалась до объединения изменений.
+
 ## Действующие направления
 
 | Объект или задача | Каналы | Посадочная страница | Целевая форма |
@@ -85,6 +115,7 @@ sales_note
 
 ```bash
 npm run validate:utm
+npm run utm:links -- --format=json
 npm run validate:leads
 npm run validate:form-scope
 ```
