@@ -1,0 +1,48 @@
+name: One-time neutralize default complex
+
+on:
+  push:
+    branches:
+      - fix/neutral-default-complex-20260714
+    paths:
+      - ".github/workflows/one-time-neutralize-default-complex.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch-main-script:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/neutral-default-complex-20260714
+          fetch-depth: 0
+
+      - name: Replace legacy fallback exactly once
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("assets/js/main.js")
+          content = path.read_text(encoding="utf-8")
+          old = '  defaultComplex: "ЖК Теллерманов сад",'
+          new = '  defaultComplex: "Общий подбор новостройки",'
+          count = content.count(old)
+          if count != 1:
+              raise SystemExit(f"Expected exactly one legacy defaultComplex, found {count}")
+          path.write_text(content.replace(old, new, 1), encoding="utf-8")
+          PY
+
+      - name: Commit patched main.js
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/js/main.js
+          git diff --cached --quiet && exit 0
+          git commit -m "Нейтрализовать резервную привязку лидов"
+          git push origin HEAD:fix/neutral-default-complex-20260714
