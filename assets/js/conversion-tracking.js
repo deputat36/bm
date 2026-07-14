@@ -141,7 +141,9 @@
       form_role: formRole,
       lead_type: detail.lead_type || "",
       residential_complex_id: detail.residential_complex_id || "",
-      qualification_status: detail.qualification_status || ""
+      qualification_status: detail.qualification_status || "",
+      blocked: Boolean(detail.blocked),
+      offline: Boolean(detail.offline)
     });
   });
 
