@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-14",
+  "portal_id": "newbuilds-borisoglebsk",
+  "release_id": "portal_campaign_links_2026_07_14",
+  "purpose": "Журнал только фактически выполненных рекламных размещений. Отсутствие записи означает, что кампания подготовлена, но не опубликована.",
+  "rules": {
+    "store_only_actual_publications": true,
+    "missing_record_means_not_published": true,
+    "publication_id_must_be_unique": true,
+    "campaign_must_exist_in_release": true,
+    "channel_must_match_campaign": true,
+    "published_record_requires_external_url": true,
+    "published_record_requires_timestamp": true,
+    "published_record_requires_evidence": true,
+    "personal_data_forbidden": true,
+    "test_parameters_forbidden": true
+  },
+  "publications": []
+}
