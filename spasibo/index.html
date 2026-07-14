@@ -29,6 +29,7 @@
             <div class="thankyou-meta__item"><span>Тип заявки</span><strong id="lead-type">Заявка</strong></div>
             <div class="thankyou-meta__item"><span>Объект</span><strong id="lead-object">Новостройки Борисоглебска</strong></div>
             <div class="thankyou-meta__item"><span>Форма</span><strong id="lead-form">Не определена</strong></div>
+            <div class="thankyou-meta__item"><span>Сценарий</span><strong id="lead-form-role">Не определён</strong></div>
             <div class="thankyou-meta__item"><span>Статус обработки</span><strong id="lead-status">Новая</strong></div>
             <div class="thankyou-meta__item"><span>ID фиксации</span><strong id="lead-id">—</strong></div>
           </div>
@@ -68,6 +69,7 @@
         general: "Заявка"
       };
       const statusMap = { hot: "Срочная", warm: "Тёплая", cold: "В прогрев", test: "Тест" };
+      const roleMap = { primary: "Короткая форма", detailed: "Подробная форма" };
       const messageMap = {
         project_consultation: "Заявка по выбранному объекту принята. Специалист проверит информацию и свяжется с вами.",
         portal_selection: "Специалист уточнит параметры и поможет сравнить подходящие новостройки.",
@@ -117,6 +119,7 @@
           action,
           lead_type: context.type,
           form_id: context.formId,
+          form_role: context.formRole,
           residential_complex_id: context.objectId,
           attribution_source: context.source
         };
@@ -126,7 +129,8 @@
           window.gtag("event", "lead_postsubmit_action", {
             event_category: "lead",
             event_label: action,
-            form_id: context.formId || ""
+            form_id: context.formId || "",
+            form_role: context.formRole || ""
           });
         }
       }
@@ -147,12 +151,14 @@
       const objectData = objectMap[objectId] || null;
       const objectName = objectData?.name || "Новостройки Борисоглебска";
       const formId = matchesStoredLead ? String(lastLead.form_id || "") : "";
+      const formRole = matchesStoredLead && roleMap[lastLead.form_role] ? lastLead.form_role : "";
       const attributionSource = matchesStoredLead ? "matched_local_record" : objectId ? "same_origin_referrer" : "generic";
-      const context = { type, formId, objectId, source: attributionSource };
+      const context = { type, formId, formRole, objectId, source: attributionSource };
 
       document.getElementById("lead-type").textContent = typeMap[type] || "Заявка";
       document.getElementById("lead-object").textContent = objectName;
       document.getElementById("lead-form").textContent = formId || "Не определена";
+      document.getElementById("lead-form-role").textContent = roleMap[formRole] || "Не определён";
       document.getElementById("lead-status").textContent = statusMap[status] || "Новая";
       document.getElementById("lead-id").textContent = queryId || "—";
       document.getElementById("thankyou-message").textContent = messageMap[type] || "Специалист свяжется с вами, уточнит детали и подскажет следующий шаг.";
@@ -175,7 +181,7 @@
         document.getElementById("thankyou-message").textContent = "Данные не отправлялись в Web3Forms, CRM, email или аналитику. Проверены валидация, системные ID, локальная фиксация и переход на страницу результата.";
         document.getElementById("thankyou-note").textContent = "Это технический dry-run. ID начинается с NB-TEST и не должен обрабатываться как обращение клиента.";
         document.getElementById("next-step-description").textContent = "Вернитесь к форме в тестовом режиме и проверьте следующий объект, мобильное отображение или другой сценарий заполнения.";
-        document.getElementById("repeat-test-link").href = "../contacts/?lead_test=dry-run&test_ack=1#lead";
+        document.getElementById("repeat-test-link").href = "../contacts/?lead_test=dry-run&test_ack=1#quick-lead";
         document.getElementById("repeat-test-link").textContent = "Повторить тест";
         return;
       }
@@ -185,6 +191,7 @@
         event: "lead_thankyou_view",
         lead_type: type,
         form_id: formId,
+        form_role: formRole,
         residential_complex: objectName,
         residential_complex_id: objectId,
         qualification_status: status,
@@ -195,7 +202,8 @@
         window.gtag("event", "lead_thankyou_view", {
           event_category: "lead",
           event_label: type,
-          form_id: formId || ""
+          form_id: formId || "",
+          form_role: formRole || ""
         });
       }
     })();
