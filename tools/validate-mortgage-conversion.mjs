@@ -34,6 +34,7 @@ function hasField(form, fieldName) {
 
 const html = read("ipoteka/index.html");
 const priorityScript = read("assets/js/priority-leads.js");
+const conversionScript = read("assets/js/conversion-tracking.js");
 const quickFormId = "portal_mortgage_quick_consultation";
 const detailedFormId = "portal_mortgage_consultation";
 const quickForm = findForm(html, quickFormId);
@@ -94,7 +95,7 @@ if (quickPosition < 0 || detailedPosition < 0 || quickPosition > detailedPositio
 
 [
   'params.get("object")',
-  "document.querySelectorAll(\"form[data-lead-form]\")",
+  'document.querySelectorAll("form[data-lead-form]")',
   "residential_complex_id",
   "updateRequestedObjectNote"
 ].forEach((fragment) => {
@@ -102,6 +103,20 @@ if (quickPosition < 0 || detailedPosition < 0 || quickPosition > detailedPositio
     errors.push(`assets/js/priority-leads.js: missing object context fragment ${fragment}`);
   }
 });
+
+[
+  'const MORTGAGE_PRIMARY_ANCHOR = "quick-lead"',
+  'params.set("object", objectId)',
+  '#${MORTGAGE_PRIMARY_ANCHOR}'
+].forEach((fragment) => {
+  if (!conversionScript.includes(fragment)) {
+    errors.push(`assets/js/conversion-tracking.js: missing primary mortgage link fragment ${fragment}`);
+  }
+});
+
+if (conversionScript.includes("params.toString()}#lead")) {
+  errors.push("assets/js/conversion-tracking.js: object mortgage CTA must not target the detailed #lead form");
+}
 
 if (!html.includes("../assets/js/main.js") || !html.includes("../assets/js/schema.js")) {
   errors.push("ipoteka/index.html: lead scripts are not connected");
