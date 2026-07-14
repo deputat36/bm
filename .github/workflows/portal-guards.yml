@@ -198,7 +198,7 @@ jobs:
 
       - name: Generate UTM links preview
         run: |
-          npm run utm:links -- --format=json > /tmp/utm-links.json
+          node tools/build-utm-links.mjs --format=json > /tmp/utm-links.json
           node -e 'const fs=require("fs"); const rows=JSON.parse(fs.readFileSync("/tmp/utm-links.json","utf8")); if(!Array.isArray(rows)||rows.length===0) process.exit(1); console.log(`Generated UTM links: ${rows.length}`);'
 
       - name: Audit portal branding
