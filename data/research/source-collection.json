@@ -1,0 +1,412 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-14",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "collection_required",
+  "purpose": "Единая очередь первичных источников и доказательств прав для карточек объектов. Наличие задачи не подтверждает характеристику объекта.",
+  "rules": {
+    "accepted_requires_https_reference": true,
+    "accepted_requires_verified_at": true,
+    "accepted_requires_evidence_note": true,
+    "secondary_sources_cannot_confirm_critical_claims": true,
+    "volatile_claims_require_current_recheck": true,
+    "media_publication_requires_rights_evidence": true,
+    "missing_task_blocks_public_readiness": true
+  },
+  "projects": [
+    {
+      "project_id": "tellermanov-sad",
+      "portal_slug": "prostornaya-4a",
+      "display_name": "Дом на Просторной 4А",
+      "page_url": "/catalog/prostornaya-4a/",
+      "collection_status": "blocked",
+      "tasks": [
+        {
+          "id": "prostornaya_4a_eiszh_project_card",
+          "source_type": "eiszh_project_card",
+          "title": "Карточка объекта в ЕИСЖС / наш.дом.рф",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {
+            "object_id": "72480"
+          },
+          "acceptance_criteria": [
+            "Сохранена точная публичная HTTPS-ссылка на карточку объекта, а не на поиск или главную страницу.",
+            "На карточке совпадает идентификатор объекта 72480.",
+            "Зафиксирована дата повторной проверки изменяемых сведений."
+          ],
+          "blocks_claims": [
+            "address",
+            "builder_name",
+            "status",
+            "sales_status",
+            "class",
+            "wall_material",
+            "floors",
+            "apartments_total",
+            "handover",
+            "nash_dom_rf_id"
+          ],
+          "notes": "До принятия источника перечисленные характеристики остаются рабочей копией."
+        },
+        {
+          "id": "prostornaya_4a_project_declaration",
+          "source_type": "project_declaration",
+          "title": "Актуальная проектная декларация",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {
+            "document_number": "36-001139",
+            "known_document_date": "2026-06-26"
+          },
+          "acceptance_criteria": [
+            "Сохранена HTTPS-ссылка на актуальную редакцию документа или официальный файл.",
+            "Номер документа совпадает с 36-001139.",
+            "Проверены дата редакции и связь документа с адресом объекта."
+          ],
+          "blocks_claims": [
+            "address",
+            "builder_name",
+            "class",
+            "wall_material",
+            "floors",
+            "entrances",
+            "apartments_total",
+            "area_min",
+            "area_max",
+            "ceiling_height",
+            "handover",
+            "keys_until",
+            "project_declaration",
+            "project_declaration_date",
+            "apartment_types"
+          ],
+          "notes": "Номер без ссылки и даты проверки не считается подтверждённым источником."
+        },
+        {
+          "id": "prostornaya_4a_building_permit",
+          "source_type": "building_permit",
+          "title": "Разрешение на строительство",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {
+            "document_number": "36-04-13-2026",
+            "known_document_date": "2026-06-08"
+          },
+          "acceptance_criteria": [
+            "Сохранена официальная HTTPS-ссылка или официальный файл разрешения.",
+            "Проверены номер, дата, срок действия и объект строительства.",
+            "Подтверждена связь документа с карточкой объекта и юридическим лицом."
+          ],
+          "blocks_claims": [
+            "status",
+            "builder_name",
+            "building_permit",
+            "building_permit_date"
+          ],
+          "notes": "Сведения из пересказа или скриншота без происхождения не принимаются."
+        },
+        {
+          "id": "prostornaya_4a_media_rights",
+          "source_type": "media_rights",
+          "title": "Происхождение и права на визуализации",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "rights_evidence_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {
+            "inventory_items": 7
+          },
+          "acceptance_criteria": [
+            "Для каждого из семи материалов установлен источник.",
+            "Получено явное разрешение на публикацию или подтверждена лицензия.",
+            "Зафиксированы допустимые каналы использования и необходимость указания правообладателя."
+          ],
+          "blocks_claims": [
+            "gallery",
+            "hero_image",
+            "renderings",
+            "advertising_creatives"
+          ],
+          "notes": "До принятия доказательств allowed_usage должен оставаться пустым."
+        }
+      ]
+    },
+    {
+      "project_id": "aerodromnaya-18g",
+      "portal_slug": "aerodromnaya-18g",
+      "display_name": "Дом на Аэродромной 18Г",
+      "page_url": "/catalog/aerodromnaya-18g/",
+      "collection_status": "blocked",
+      "tasks": [
+        {
+          "id": "aerodromnaya_18g_public_registry",
+          "source_type": "public_object_registry",
+          "title": "Карточка объекта или дома в публичном реестре",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {},
+          "acceptance_criteria": [
+            "Найдена точная карточка по адресу, кадастровой или разрешительной привязке.",
+            "Сохранена публичная HTTPS-ссылка.",
+            "Исключено совпадение с другим домом или вторичным объявлением."
+          ],
+          "blocks_claims": [
+            "address",
+            "status",
+            "floors",
+            "apartments_total",
+            "handover"
+          ],
+          "notes": "Агрегатор или объявление продавца может использоваться только как поисковая подсказка."
+        },
+        {
+          "id": "aerodromnaya_18g_developer_entity",
+          "source_type": "developer_legal_entity",
+          "title": "Юридическое лицо застройщика или правообладателя",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {},
+          "acceptance_criteria": [
+            "Юридическое лицо связано с объектом первичным документом или официальным реестром.",
+            "Сохранены точное наименование и проверяемая ссылка.",
+            "Не используется предположение по бренду, телефону или похожему адресу."
+          ],
+          "blocks_claims": [
+            "developer_id",
+            "builder_name",
+            "sales_contact_role"
+          ],
+          "notes": "До принятия задачи developer_id остаётся null."
+        },
+        {
+          "id": "aerodromnaya_18g_building_permit",
+          "source_type": "building_permit",
+          "title": "Разрешение на строительство или документ о статусе работ",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {},
+          "acceptance_criteria": [
+            "Документ относится к точному адресу или земельному участку.",
+            "Проверены номер, дата, срок действия и заявитель.",
+            "Сохранена официальная ссылка или файл с понятным происхождением."
+          ],
+          "blocks_claims": [
+            "status",
+            "building_permit",
+            "building_permit_date",
+            "developer_id"
+          ],
+          "notes": "Если объект не является строящейся новостройкой, задача закрывается только с доказательством статуса."
+        },
+        {
+          "id": "aerodromnaya_18g_project_declaration",
+          "source_type": "project_declaration",
+          "title": "Проектная декларация или подтверждение неприменимости ДДУ",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {},
+          "acceptance_criteria": [
+            "Найдена актуальная декларация, если продажи ведутся по ДДУ.",
+            "Если декларация неприменима, сохранён первичный источник, объясняющий правовой статус объекта.",
+            "Не делается вывод только по отсутствию документа в поиске."
+          ],
+          "blocks_claims": [
+            "sales_status",
+            "apartments_total",
+            "area_min",
+            "area_max",
+            "handover",
+            "layouts"
+          ],
+          "notes": "До проверки нельзя описывать схему продажи и сроки как подтверждённые."
+        },
+        {
+          "id": "aerodromnaya_18g_media_rights",
+          "source_type": "media_rights",
+          "title": "Официальные фотографии, планы и права на публикацию",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "rights_evidence_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {},
+          "acceptance_criteria": [
+            "Установлен автор или правообладатель каждого материала.",
+            "Получено разрешение либо подтверждена лицензия.",
+            "Планы и рендеры связаны именно с этим объектом."
+          ],
+          "blocks_claims": [
+            "gallery",
+            "layouts",
+            "renderings",
+            "advertising_creatives"
+          ],
+          "notes": "Фотографии из объявлений нельзя переносить без подтверждения прав."
+        }
+      ]
+    },
+    {
+      "project_id": "sennaya-76",
+      "portal_slug": "sennaya-76",
+      "display_name": "Дом на Сенной 76",
+      "page_url": "/catalog/sennaya-76/",
+      "collection_status": "blocked",
+      "tasks": [
+        {
+          "id": "sennaya_76_public_registry",
+          "source_type": "public_object_registry",
+          "title": "Карточка объекта или дома в публичном реестре",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {},
+          "acceptance_criteria": [
+            "Найдена точная карточка по адресу, кадастровой или разрешительной привязке.",
+            "Сохранена публичная HTTPS-ссылка.",
+            "Исключено совпадение с другим домом или вторичным объявлением."
+          ],
+          "blocks_claims": [
+            "address",
+            "status",
+            "floors",
+            "apartments_total",
+            "handover"
+          ],
+          "notes": "Агрегатор или объявление продавца может использоваться только как поисковая подсказка."
+        },
+        {
+          "id": "sennaya_76_developer_entity",
+          "source_type": "developer_legal_entity",
+          "title": "Юридическое лицо застройщика или правообладателя",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {},
+          "acceptance_criteria": [
+            "Юридическое лицо связано с объектом первичным документом или официальным реестром.",
+            "Сохранены точное наименование и проверяемая ссылка.",
+            "Не используется предположение по бренду, телефону или похожему адресу."
+          ],
+          "blocks_claims": [
+            "developer_id",
+            "builder_name",
+            "sales_contact_role"
+          ],
+          "notes": "До принятия задачи developer_id остаётся null."
+        },
+        {
+          "id": "sennaya_76_building_permit",
+          "source_type": "building_permit",
+          "title": "Разрешение на строительство или документ о статусе работ",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {},
+          "acceptance_criteria": [
+            "Документ относится к точному адресу или земельному участку.",
+            "Проверены номер, дата, срок действия и заявитель.",
+            "Сохранена официальная ссылка или файл с понятным происхождением."
+          ],
+          "blocks_claims": [
+            "status",
+            "building_permit",
+            "building_permit_date",
+            "developer_id"
+          ],
+          "notes": "Если объект не является строящейся новостройкой, задача закрывается только с доказательством статуса."
+        },
+        {
+          "id": "sennaya_76_project_declaration",
+          "source_type": "project_declaration",
+          "title": "Проектная декларация или подтверждение неприменимости ДДУ",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "primary_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {},
+          "acceptance_criteria": [
+            "Найдена актуальная декларация, если продажи ведутся по ДДУ.",
+            "Если декларация неприменима, сохранён первичный источник, объясняющий правовой статус объекта.",
+            "Не делается вывод только по отсутствию документа в поиске."
+          ],
+          "blocks_claims": [
+            "sales_status",
+            "apartments_total",
+            "area_min",
+            "area_max",
+            "handover",
+            "layouts"
+          ],
+          "notes": "До проверки нельзя описывать схему продажи и сроки как подтверждённые."
+        },
+        {
+          "id": "sennaya_76_media_rights",
+          "source_type": "media_rights",
+          "title": "Официальные фотографии, планы и права на публикацию",
+          "priority": "critical",
+          "status": "missing",
+          "authority": "rights_evidence_required",
+          "reference": "",
+          "verified_at": null,
+          "evidence_note": "",
+          "expected_identifiers": {},
+          "acceptance_criteria": [
+            "Установлен автор или правообладатель каждого материала.",
+            "Получено разрешение либо подтверждена лицензия.",
+            "Планы и рендеры связаны именно с этим объектом."
+          ],
+          "blocks_claims": [
+            "gallery",
+            "layouts",
+            "renderings",
+            "advertising_creatives"
+          ],
+          "notes": "Фотографии из объявлений нельзя переносить без подтверждения прав."
+        }
+      ]
+    }
+  ]
+}
