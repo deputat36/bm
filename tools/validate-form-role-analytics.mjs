@@ -141,7 +141,7 @@ const classifiedBlock = classifiedStart >= 0 && classifiedEnd > classifiedStart
   ? conversionScript.slice(classifiedStart, classifiedEnd + 3)
   : "";
 
-["form_id", "form_role", "lead_type", "residential_complex_id", "qualification_status"].forEach((field) => {
+["form_id", "form_role", "lead_type", "residential_complex_id", "qualification_status", "blocked", "offline"].forEach((field) => {
   if (classifiedBlock && !classifiedBlock.includes(field)) {
     errors.push(`lead_submit_classified: missing field ${field}`);
   }
@@ -152,6 +152,14 @@ const classifiedBlock = classifiedStart >= 0 && classifiedEnd > classifiedStart
     errors.push(`lead_submit_classified: must not contain personal or detailed field ${field}`);
   }
 });
+
+if (!classifiedBlock.includes("Boolean(detail.blocked)")) {
+  errors.push("lead_submit_classified: blocked must be normalized to boolean");
+}
+
+if (!classifiedBlock.includes("Boolean(detail.offline)")) {
+  errors.push("lead_submit_classified: offline must be normalized to boolean");
+}
 
 const dryRunStart = conversionScript.indexOf('window.addEventListener("newbuildLeadDryRun"');
 const observerStart = conversionScript.indexOf('if ("IntersectionObserver"', dryRunStart);
