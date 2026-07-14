@@ -144,6 +144,7 @@ jobs:
           node --check tools/validate-catalog-conversion.mjs
           node --check tools/validate-contacts-conversion.mjs
           node --check tools/validate-mortgage-conversion.mjs
+          node --check tools/validate-form-role-analytics.mjs
           node --check tools/validate-thankyou-context.mjs
           node --check tools/validate-active-form-scope.mjs
           node --check tools/validate-form-accessibility.mjs
@@ -177,6 +178,9 @@ jobs:
 
       - name: Validate mortgage conversion
         run: npm run validate:mortgage-conversion
+
+      - name: Validate form role analytics
+        run: npm run validate:form-roles
 
       - name: Validate thank-you attribution
         run: npm run validate:thankyou
