@@ -6,7 +6,7 @@ const SITE_CONFIG = {
   project: "Портал Новостройки Борисоглебска",
   projectId: "newbuilds-borisoglebsk",
   projectName: "Новостройки Борисоглебска",
-  defaultComplex: "ЖК Теллерманов сад",
+  defaultComplex: "Общий подбор новостройки",
   phoneDisplay: "8 903 857-69-09",
   phoneHref: "tel:+79038576909",
   privacyPath: "/privacy/",
