@@ -153,7 +153,9 @@ jobs:
           node --check tools/validate-analytics-events.mjs
           node --check tools/validate-analytics-debug-mode.mjs
           node --check tools/validate-form-qa-scenarios.mjs
+          node --check tools/validate-form-qa-results.mjs
           node --check tools/build-form-qa-links.mjs
+          node --check tools/build-form-qa-report.mjs
           node --check tools/build-analytics-report-spec.mjs
           node --check tools/validate-thankyou-context.mjs
           node --check tools/validate-active-form-scope.mjs
@@ -200,6 +202,9 @@ jobs:
 
       - name: Validate form QA matrix
         run: npm run validate:form-qa
+
+      - name: Validate form QA results
+        run: npm run validate:form-qa-results
 
       - name: Validate thank-you attribution
         run: npm run validate:thankyou
@@ -254,6 +259,11 @@ jobs:
         run: |
           node tools/build-form-qa-links.mjs --format=json > /tmp/form-qa-links.json
           node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/form-qa-links.json","utf8")); if(!Array.isArray(data.scenarios)||data.scenarios.length!==14) process.exit(1); const primary=data.scenarios.filter((item)=>item.form_role==="primary").length; const detailed=data.scenarios.filter((item)=>item.form_role==="detailed").length; if(primary!==7||detailed!==7) process.exit(1); console.log(`Generated QA scenarios: ${data.scenarios.length}`);'
+
+      - name: Generate form QA result report
+        run: |
+          node tools/build-form-qa-report.mjs --format=json > /tmp/form-qa-report.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/form-qa-report.json","utf8")); if(!Array.isArray(data.slots)||data.summary?.total_slots!==42||data.slots.length!==42) process.exit(1); const counts=Object.values(data.summary.by_status||{}).reduce((sum,value)=>sum+value,0); if(counts!==42) process.exit(1); console.log(`Generated QA result slots: ${data.slots.length}; recorded: ${data.summary.recorded_results}`);'
 
       - name: Audit portal branding
         run: npm run audit:branding
