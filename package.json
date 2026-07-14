@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "validate": "node tools/validate-static-site.mjs",
+    "validate": "node tools/validate-static-site.mjs && node tools/validate-thankyou-context.mjs",
     "validate:json": "node tools/validate-json.mjs",
     "validate:priority": "node tools/validate-priority-projects.mjs",
     "validate:reference": "node tools/validate-reference-projects.mjs",
