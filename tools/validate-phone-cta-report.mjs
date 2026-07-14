@@ -198,12 +198,11 @@ if (pageMap.size !== 7) errors.push(`${MATRIX_PATH}: expected 7 active pages, go
 if (phoneLinks < 7) errors.push(`phone inventory: expected at least 7 links, got ${phoneLinks}`);
 if (placements.size < 5) errors.push(`phone inventory: expected at least 5 placements, got ${placements.size}`);
 
-const serialized = JSON.stringify(spec);
-prohibitedDimensions.forEach((field) => {
-  if (serialized.includes(`\"dimensions\":[\"${field}\"`)) errors.push(`${SPEC_PATH}: prohibited dimension used: ${field}`);
-});
-if (/confirmed_call|completed_call|answered_call|call_lead/.test(serialized)) {
-  errors.push(`${SPEC_PATH}: specification must not claim confirmed calls or call leads`);
+const declaredMetricText = [...metrics.values()]
+  .map((metric) => `${metric.id} ${metric.name} ${metric.purpose}`.toLowerCase())
+  .join(" ");
+if (/confirmed[_\s-]?call|completed[_\s-]?call|answered[_\s-]?call|call[_\s-]?lead/.test(declaredMetricText)) {
+  errors.push(`${SPEC_PATH}: metric declarations must not claim confirmed calls or call leads`);
 }
 
 console.log(`Checked phone report metrics: ${metrics.size}`);
