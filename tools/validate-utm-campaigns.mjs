@@ -14,6 +14,7 @@ const ALLOWED_OBJECT_IDS = new Set([
 ]);
 const SAFE_UTM_VALUE = /^[a-z0-9][a-z0-9_-]*$/;
 const LEGACY_PATTERN = /tellermanov|теллерманов|tellermanovsad\.ru/i;
+const NEUTRAL_COMPLEX = "Общий подбор новостройки";
 const errors = [];
 
 function read(relativePath) {
@@ -54,12 +55,46 @@ function requireText(item, field, label) {
   return value;
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function findFormTag(html, formId) {
+  const pattern = new RegExp(`<form\\b[^>]*data-form-id=["']${escapeRegExp(formId)}["'][^>]*>`, "i");
+  return html.match(pattern)?.[0] || "";
+}
+
+function getAttribute(tag, name) {
+  const pattern = new RegExp(`${escapeRegExp(name)}=["']([^"']*)["']`, "i");
+  return tag.match(pattern)?.[1]?.trim() || "";
+}
+
+function findPrimaryLeadBlock(html) {
+  const markerIndex = html.indexOf("data-primary-lead");
+  if (markerIndex < 0) return "";
+
+  const tagStart = html.lastIndexOf("<", markerIndex);
+  if (tagStart < 0) return "";
+
+  const openingMatch = html.slice(tagStart).match(/^<([a-z0-9-]+)\b[^>]*>/i);
+  if (!openingMatch) return "";
+
+  const tagName = openingMatch[1];
+  const contentStart = tagStart + openingMatch[0].length;
+  const closeTag = `</${tagName}>`;
+  const closeIndex = html.indexOf(closeTag, contentStart);
+  if (closeIndex < 0) return "";
+
+  return html.slice(tagStart, closeIndex + closeTag.length);
+}
+
 const registry = readJson(REGISTRY_PATH);
 const pages = readJson(PAGE_INDEX_PATH);
 const activePages = new Map();
 const seenIds = new Set();
 const seenSignatures = new Set();
 let activeCampaigns = 0;
+let primaryCampaigns = 0;
 
 if (Array.isArray(pages)) {
   for (const page of pages) {
@@ -77,6 +112,10 @@ if (!registry || !Array.isArray(registry.campaigns) || registry.campaigns.length
 } else {
   if (registry.portal_id !== "newbuilds-borisoglebsk") {
     errors.push(`${REGISTRY_PATH}: portal_id должен быть newbuilds-borisoglebsk`);
+  }
+
+  if (registry.rules?.active_campaign_uses_primary_form !== true) {
+    errors.push(`${REGISTRY_PATH}: rules.active_campaign_uses_primary_form должен быть true`);
   }
 
   for (const [index, campaign] of registry.campaigns.entries()) {
@@ -118,7 +157,7 @@ if (!registry || !Array.isArray(registry.campaigns) || registry.campaigns.length
       utm_content: utmContent
     })) {
       if (value && !SAFE_UTM_VALUE.test(value)) {
-        errors.push(`${label}: ${field} должен содержать только строчные латинские буквы, цифры, дефис и подчёркивание`);
+        errors.push(`${label}: ${field} должен содержать только строчные латинские буквы, цифры, дефис и подчёркивания`);
       }
     }
 
@@ -144,18 +183,42 @@ if (!registry || !Array.isArray(registry.campaigns) || registry.campaigns.length
     const html = read(pageFile);
     if (!html) continue;
 
-    if (!html.includes(`data-form-id="${formId}"`) && !html.includes(`data-form-id='${formId}'`)) {
+    const formTag = findFormTag(html, formId);
+    if (!formTag) {
       errors.push(`${label}: на ${pageFile} не найдена форма ${formId}`);
+      continue;
     }
 
-    if (!html.includes(`data-lead-type="${leadType}"`) && !html.includes(`data-lead-type='${leadType}'`)) {
-      errors.push(`${label}: на ${pageFile} не найден lead_type=${leadType}`);
+    const actualLeadType = getAttribute(formTag, "data-lead-type");
+    if (actualLeadType !== leadType) {
+      errors.push(`${label}: форма ${formId} использует lead_type=${actualLeadType || "missing"}, ожидался ${leadType}`);
+    }
+
+    const primaryLeadBlock = findPrimaryLeadBlock(html);
+    if (!primaryLeadBlock) {
+      errors.push(`${label}: на ${pageFile} не найден контейнер data-primary-lead`);
+    } else if (!primaryLeadBlock.includes(`data-form-id="${formId}"`) && !primaryLeadBlock.includes(`data-form-id='${formId}'`)) {
+      errors.push(`${label}: активная кампания должна вести к первичной короткой форме, но ${formId} не находится внутри data-primary-lead`);
+    } else {
+      primaryCampaigns += 1;
+    }
+
+    const formObjectId = getAttribute(formTag, "data-complex-id");
+    const formComplex = getAttribute(formTag, "data-complex");
+
+    if (objectId === "all-newbuilds") {
+      if (formComplex !== NEUTRAL_COMPLEX) {
+        errors.push(`${label}: общая кампания должна использовать data-complex="${NEUTRAL_COMPLEX}"`);
+      }
+    } else if (formObjectId !== objectId) {
+      errors.push(`${label}: форма ${formId} должна использовать data-complex-id=${objectId}, найдено ${formObjectId || "missing"}`);
     }
   }
 }
 
 console.log(`Checked UTM campaigns: ${registry?.campaigns?.length || 0}`);
 console.log(`Active UTM campaigns: ${activeCampaigns}`);
+console.log(`Active campaigns using primary forms: ${primaryCampaigns}`);
 
 if (errors.length) {
   console.error("\nUTM campaign validation errors:");

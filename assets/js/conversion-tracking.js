@@ -2,6 +2,7 @@
   const forms = Array.from(document.querySelectorAll("form[data-lead-form]"));
   const startedForms = new WeakSet();
   const viewedForms = new WeakSet();
+  const MORTGAGE_PRIMARY_ANCHOR = "quick-lead";
 
   function compactPayload(values) {
     return Object.fromEntries(
@@ -47,7 +48,7 @@
       const params = new URLSearchParams(queryPart);
       params.set("object", objectId);
 
-      link.setAttribute("href", `${relativePath}?${params.toString()}#lead`);
+      link.setAttribute("href", `${relativePath}?${params.toString()}#${MORTGAGE_PRIMARY_ANCHOR}`);
     });
   }
 

@@ -33,6 +33,7 @@ function toRow(campaign) {
     landing_path: campaign.landing_path,
     expected_form_id: campaign.expected_form_id,
     expected_lead_type: campaign.expected_lead_type,
+    entry_point: "primary_short_form",
     url: buildUrl(campaign),
     goal: campaign.goal,
     sales_note: campaign.sales_note
@@ -51,6 +52,7 @@ function renderCsv(rows) {
     "landing_path",
     "expected_form_id",
     "expected_lead_type",
+    "entry_point",
     "url",
     "goal",
     "sales_note"
@@ -64,13 +66,13 @@ function renderCsv(rows) {
 
 function renderMarkdown(rows) {
   const lines = [
-    "| ID | Объект | Канал | Посадочная страница | Готовая ссылка | Цель |",
-    "|---|---|---|---|---|---|"
+    "| ID | Объект | Канал | Посадочная страница | Целевая форма | Готовая ссылка | Цель |",
+    "|---|---|---|---|---|---|---|"
   ];
 
   for (const row of rows) {
     const channel = `${new URL(row.url).searchParams.get("utm_source")} / ${new URL(row.url).searchParams.get("utm_medium")}`;
-    lines.push(`| ${row.id} | ${row.object_id} | ${channel} | ${row.landing_path} | ${row.url} | ${row.goal} |`);
+    lines.push(`| ${row.id} | ${row.object_id} | ${channel} | ${row.landing_path} | ${row.expected_form_id} | ${row.url} | ${row.goal} |`);
   }
 
   return lines.join("\n");
