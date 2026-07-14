@@ -1,0 +1,56 @@
+name: Phone CTA guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "data/analytics/**"
+      - "data/qa/**"
+      - "tools/validate-phone-cta-report.mjs"
+      - "tools/build-phone-cta-report.mjs"
+      - ".github/workflows/phone-cta-guard.yml"
+  pull_request:
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "data/analytics/**"
+      - "data/qa/**"
+      - "tools/validate-phone-cta-report.mjs"
+      - "tools/build-phone-cta-report.mjs"
+      - ".github/workflows/phone-cta-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-phone-cta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-phone-cta-report.mjs
+          node --check tools/build-phone-cta-report.mjs
+
+      - name: Validate phone CTA report
+        run: node tools/validate-phone-cta-report.mjs
+
+      - name: Generate phone CTA inventory
+        run: |
+          node tools/build-phone-cta-report.mjs --format=json > /tmp/phone-cta-report.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/phone-cta-report.json","utf8")); if(data.status!=="specification_only_no_live_data"||!Array.isArray(data.metrics)||data.metrics.length!==2||!Array.isArray(data.views)||data.views.length!==3||data.summary?.phone_links<7||data.summary?.pages!==7||data.summary?.placements<5) process.exit(1); console.log(`Phone CTA links: ${data.summary.phone_links}; pages: ${data.summary.pages}; placements: ${data.summary.placements}`);'
