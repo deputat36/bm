@@ -11,6 +11,8 @@
     "validate:verification": "node tools/validate-project-verification.mjs",
     "validate:leads": "node tools/validate-portal-lead-forms.mjs",
     "validate:homepage-cta": "node tools/validate-homepage-object-cta.mjs",
+    "validate:catalog-conversion": "node tools/validate-catalog-conversion.mjs",
+    "validate:thankyou": "node tools/validate-thankyou-context.mjs",
     "validate:form-scope": "node tools/validate-active-form-scope.mjs",
     "validate:a11y": "node tools/validate-form-accessibility.mjs",
     "validate:dry-run": "node tools/validate-lead-dry-run.mjs",
