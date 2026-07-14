@@ -110,9 +110,10 @@ if (debugLoadIndex < 0 || trackingLoadIndex < 0 || debugLoadIndex > trackingLoad
 });
 
 [
+  "newbuildsBorisoglebskAnalyticsDebugEvents",
+  "const MAX_EVENTS = 100",
   "window.__NEWBUILD_ANALYTICS_DEBUG_MODE__",
-  "window.recordPortalAnalyticsDebugEvent",
-  "external analytics"
+  "window.recordPortalAnalyticsDebugEvent"
 ].forEach((fragment) => {
   if (!debugSource.includes(fragment)) errors.push(`${DEBUG_SCRIPT_PATH}: missing debug fragment ${fragment}`);
 });
