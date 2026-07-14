@@ -152,6 +152,8 @@
       lead_type: detail.lead_type || "",
       residential_complex_id: detail.residential_complex_id || "",
       qualification_status: detail.qualification_status || "",
+      lead_source: detail.lead_source || "",
+      placement: detail.placement || "",
       blocked: Boolean(detail.blocked),
       offline: Boolean(detail.offline)
     });
@@ -173,6 +175,8 @@
         residential_complex_id: detail.residential_complex_id || "",
         qualification_status: "test",
         qualification_score: 0,
+        lead_source: detail.lead_source || "",
+        placement: detail.placement || "",
         blocked: false,
         offline: true,
         simulated: true
@@ -183,6 +187,8 @@
         lead_type: detail.lead_type || "",
         residential_complex_id: detail.residential_complex_id || "",
         qualification_status: "test",
+        lead_source: detail.lead_source || "",
+        placement: detail.placement || "",
         blocked: false,
         offline: true,
         simulated: true
