@@ -48,6 +48,7 @@ on:
       - "data/verification/**"
       - "data/marketing/**"
       - "data/analytics/**"
+      - "data/qa/**"
       - "docs/portal/**"
       - "tools/**"
       - "scripts/**"
@@ -102,6 +103,7 @@ on:
       - "data/verification/**"
       - "data/marketing/**"
       - "data/analytics/**"
+      - "data/qa/**"
       - "docs/portal/**"
       - "tools/**"
       - "scripts/**"
@@ -150,6 +152,8 @@ jobs:
           node --check tools/validate-form-role-analytics.mjs
           node --check tools/validate-analytics-events.mjs
           node --check tools/validate-analytics-debug-mode.mjs
+          node --check tools/validate-form-qa-scenarios.mjs
+          node --check tools/build-form-qa-links.mjs
           node --check tools/build-analytics-report-spec.mjs
           node --check tools/validate-thankyou-context.mjs
           node --check tools/validate-active-form-scope.mjs
@@ -193,6 +197,9 @@ jobs:
 
       - name: Validate local analytics debug
         run: npm run validate:analytics-debug
+
+      - name: Validate form QA matrix
+        run: npm run validate:form-qa
 
       - name: Validate thank-you attribution
         run: npm run validate:thankyou
@@ -242,6 +249,11 @@ jobs:
         run: |
           node tools/build-analytics-report-spec.mjs --format=json > /tmp/analytics-spec.json
           node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/analytics-spec.json","utf8")); if(!Array.isArray(data.events)||data.events.length!==7) process.exit(1); console.log(`Generated analytics events: ${data.events.length}`);'
+
+      - name: Generate form QA links
+        run: |
+          node tools/build-form-qa-links.mjs --format=json > /tmp/form-qa-links.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/form-qa-links.json","utf8")); if(!Array.isArray(data.scenarios)||data.scenarios.length!==14) process.exit(1); const primary=data.scenarios.filter((item)=>item.form_role==="primary").length; const detailed=data.scenarios.filter((item)=>item.form_role==="detailed").length; if(primary!==7||detailed!==7) process.exit(1); console.log(`Generated QA scenarios: ${data.scenarios.length}`);'
 
       - name: Audit portal branding
         run: npm run audit:branding
