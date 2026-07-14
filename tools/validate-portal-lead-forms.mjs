@@ -13,6 +13,12 @@ const PRIORITY_OPTIONS = [
 const EXPECTED_FORMS = [
   {
     file: "index.html",
+    formId: "homepage_quick_selection",
+    leadType: "portal_selection",
+    kind: "selection"
+  },
+  {
+    file: "index.html",
     formId: "homepage_priority_selection",
     leadType: "portal_selection",
     kind: "selection"
@@ -178,6 +184,36 @@ for (const expected of EXPECTED_FORMS) {
   } else {
     validateProjectForm(expected, formTag);
   }
+}
+
+const homepage = read("index.html");
+const schemaScript = read("assets/js/schema.js");
+const conversionScript = read("assets/js/conversion-tracking.js");
+const mobileLeadBarScript = read("assets/js/mobile-lead-bar.js");
+
+[
+  'id="quick-lead"',
+  "data-primary-lead",
+  'data-track-action="quick_selection"',
+  'data-track-placement="hero"'
+].forEach((fragment) => {
+  if (!homepage.includes(fragment)) {
+    errors.push(`index.html: missing homepage conversion fragment ${fragment}`);
+  }
+});
+
+if (!schemaScript.includes('loadPortalScript(schemaScriptUrl, "conversion-tracking.js")')) {
+  errors.push("assets/js/schema.js: conversion-tracking.js is not loaded for lead pages");
+}
+
+["lead_cta_click", "lead_form_view", "lead_form_start"].forEach((eventName) => {
+  if (!conversionScript.includes(`"${eventName}"`)) {
+    errors.push(`assets/js/conversion-tracking.js: missing event ${eventName}`);
+  }
+});
+
+if (!mobileLeadBarScript.includes('form.closest("[data-primary-lead]")')) {
+  errors.push("assets/js/mobile-lead-bar.js: mobile CTA does not prioritize the short lead form");
 }
 
 console.log(`Checked portal lead forms: ${EXPECTED_FORMS.length}`);

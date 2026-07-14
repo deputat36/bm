@@ -11,7 +11,7 @@
     document.head.appendChild(stylesheet);
   }
 
-  const leadSection = form.closest("#lead") || document.getElementById("lead") || form;
+  const leadSection = form.closest("[data-primary-lead]") || form.closest("#lead") || document.getElementById("lead") || form;
   if (!leadSection.id) leadSection.id = "lead";
 
   const complexName = form.dataset.complex || "новостройке";

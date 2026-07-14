@@ -308,4 +308,5 @@ if (schemaScriptUrl && portalLeadForm?.querySelector("select[name='residential_c
 if (schemaScriptUrl && portalLeadForm) {
   loadPortalScript(schemaScriptUrl, "mobile-lead-bar.js");
   loadPortalScript(schemaScriptUrl, "form-accessibility.js");
+  loadPortalScript(schemaScriptUrl, "conversion-tracking.js");
 }
