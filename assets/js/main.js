@@ -191,6 +191,8 @@ function collectFormData(form) {
   data.page_title = document.title;
   data.referrer = document.referrer;
   data.tracking = getTrackingData();
+  data.lead_source = data.lead_source || data.tracking?.current?.lead_source || "";
+  data.placement = data.placement || data.tracking?.current?.placement || "";
   data.created_at = new Date().toISOString();
   data.client_fixation_id = createClientFixationId();
   data.client_fixation_basis = "Заявка с формы сайта с сохранением страницы, времени, формы, согласия и рекламных меток.";
@@ -243,6 +245,8 @@ function leadToReadableText(data) {
     `Страница: ${data.page_url || data.source || ""}`,
     `Заголовок страницы: ${data.page_title || ""}`,
     `Источник перехода: ${data.referrer || ""}`,
+    `Внутренний источник: ${data.lead_source || ""}`,
+    `Размещение перехода: ${data.placement || ""}`,
     `Первое касание: ${firstTouch.page_url || ""}`,
     `Последнее касание: ${lastTouch.page_url || ""}`,
     `utm_source: ${current.utm_source || ""}`,
@@ -289,6 +293,8 @@ async function sendWeb3FormsLead(data) {
     page_url: data.page_url || "",
     page_title: data.page_title || "",
     referrer: data.referrer || "",
+    lead_source: data.lead_source || "",
+    placement: data.placement || "",
     tracking: JSON.stringify(data.tracking || {}),
     personal_data_consent: data.personal_data_consent || "yes",
     marketing_consent: data.marketing_consent || "no",
@@ -409,6 +415,8 @@ function trackLeadEvent(data, result = {}) {
     client_fixation_id: data.client_fixation_id,
     qualification_status: data.qualification?.status || "",
     qualification_score: data.qualification?.score || 0,
+    lead_source: data.lead_source || "",
+    placement: data.placement || "",
     blocked: Boolean(result.blocked),
     offline: Boolean(result.offline)
   };
@@ -421,6 +429,8 @@ function trackLeadEvent(data, result = {}) {
       event_category: "lead",
       event_label: data.lead_type,
       form_id: data.form_id,
+      lead_source: data.lead_source || "",
+      placement: data.placement || "",
       value: data.qualification?.score || 0
     });
   }

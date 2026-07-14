@@ -150,6 +150,7 @@ jobs:
           node --check tools/validate-contacts-conversion.mjs
           node --check tools/validate-mortgage-conversion.mjs
           node --check tools/validate-contextual-conversion.mjs
+          node --check tools/validate-lead-source-output.mjs
           node --check tools/validate-form-role-analytics.mjs
           node --check tools/validate-analytics-events.mjs
           node --check tools/validate-analytics-debug-mode.mjs
@@ -194,6 +195,9 @@ jobs:
 
       - name: Validate contextual conversion paths
         run: npm run validate:contextual-conversion
+
+      - name: Validate lead source output
+        run: npm run validate:lead-source-output
 
       - name: Validate form role analytics
         run: npm run validate:form-roles

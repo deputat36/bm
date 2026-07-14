@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "updated_at": "2026-07-14",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Единый словарь событий, измерений и правил подсчёта конверсионной воронки портала.",
@@ -106,11 +106,13 @@
         "event: \"lead_submit\"",
         "form_id: data.form_id",
         "client_fixation_id: data.client_fixation_id",
+        "lead_source: data.lead_source",
+        "placement: data.placement",
         "blocked: Boolean(result.blocked)",
         "offline: Boolean(result.offline)"
       ],
       "required_fields": ["event", "form_id", "lead_type", "blocked", "offline"],
-      "optional_fields": ["project_id", "project_name", "residential_complex", "residential_complex_id", "client_fixation_id", "qualification_status", "qualification_score"],
+      "optional_fields": ["project_id", "project_name", "residential_complex", "residential_complex_id", "client_fixation_id", "qualification_status", "qualification_score", "lead_source", "placement"],
       "count_rule": "count_canonical_submissions",
       "count_filter": "blocked=false",
       "contains_personal_data": false,
@@ -126,11 +128,13 @@
       "implementation_fragments": [
         "sendConversionEvent(\"lead_submit_classified\"",
         "form_role: formRole",
+        "lead_source: detail.lead_source",
+        "placement: detail.placement",
         "blocked: Boolean(detail.blocked)",
         "offline: Boolean(detail.offline)"
       ],
       "required_fields": ["event", "form_id", "form_role", "lead_type", "blocked", "offline"],
-      "optional_fields": ["residential_complex_id", "qualification_status"],
+      "optional_fields": ["residential_complex_id", "qualification_status", "lead_source", "placement"],
       "count_rule": "segment_canonical_submissions_only",
       "count_filter": "blocked=false",
       "must_not_add_to": ["lead_submit"],
