@@ -137,6 +137,7 @@ jobs:
           node --check assets/js/reference-catalog.js
           node --check assets/js/mobile-lead-bar.js
           node --check assets/js/conversion-tracking.js
+          node --check assets/js/analytics-debug.js
           node --check assets/js/form-accessibility.js
           node --check assets/js/gallery.js
           node --check tools/validate-priority-projects.mjs
@@ -148,6 +149,7 @@ jobs:
           node --check tools/validate-mortgage-conversion.mjs
           node --check tools/validate-form-role-analytics.mjs
           node --check tools/validate-analytics-events.mjs
+          node --check tools/validate-analytics-debug-mode.mjs
           node --check tools/build-analytics-report-spec.mjs
           node --check tools/validate-thankyou-context.mjs
           node --check tools/validate-active-form-scope.mjs
@@ -188,6 +190,9 @@ jobs:
 
       - name: Validate analytics event registry
         run: npm run validate:analytics
+
+      - name: Validate local analytics debug
+        run: npm run validate:analytics-debug
 
       - name: Validate thank-you attribution
         run: npm run validate:thankyou
