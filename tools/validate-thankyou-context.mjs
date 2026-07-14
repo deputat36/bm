@@ -26,8 +26,10 @@ const requiredFragments = [
   'event: "lead_thankyou_view"',
   'event: "lead_postsubmit_action"',
   "attribution_source",
-  "if (isDryRun) return;",
-  'href = "../contacts/?lead_test=dry-run&test_ack=1#quick-lead"'
+  "if (isDryRun && !isAnalyticsDebug) return;",
+  'href = isAnalyticsDebug',
+  'lead_test=dry-run&analytics_test=debug&test_ack=1#quick-lead',
+  '<script src="../assets/js/analytics-debug.js"></script>'
 ];
 
 requiredFragments.forEach((fragment) => {
@@ -54,14 +56,14 @@ if (html.includes("lastLead.form_role ||")) {
   errors.push("spasibo/index.html: form role must not be taken from unmatched localStorage data");
 }
 
-const thankYouEventStart = html.indexOf('event: "lead_thankyou_view"');
-const thankYouEventEnd = thankYouEventStart >= 0 ? html.indexOf("if (typeof window.gtag", thankYouEventStart) : -1;
-const thankYouEventBlock = thankYouEventStart >= 0 && thankYouEventEnd > thankYouEventStart
-  ? html.slice(thankYouEventStart, thankYouEventEnd)
+const thankYouPayloadStart = html.indexOf("const thankYouPayload = {");
+const dryRunStart = html.indexOf("if (isDryRun) {", thankYouPayloadStart);
+const thankYouEventBlock = thankYouPayloadStart >= 0 && dryRunStart > thankYouPayloadStart
+  ? html.slice(thankYouPayloadStart, dryRunStart)
   : "";
 
 if (!thankYouEventBlock) {
-  errors.push("spasibo/index.html: lead_thankyou_view event block not found");
+  errors.push("spasibo/index.html: lead_thankyou_view payload block not found");
 } else {
   if (thankYouEventBlock.includes("client_fixation_id")) {
     errors.push("spasibo/index.html: thank-you analytics must not include client_fixation_id");
@@ -72,7 +74,7 @@ if (!thankYouEventBlock) {
 }
 
 const postSubmitStart = html.indexOf('event: "lead_postsubmit_action"');
-const postSubmitEnd = postSubmitStart >= 0 ? html.indexOf("window.dataLayer", postSubmitStart) : -1;
+const postSubmitEnd = postSubmitStart >= 0 ? html.indexOf("emitAnalyticsEvent(payload", postSubmitStart) : -1;
 const postSubmitBlock = postSubmitStart >= 0 && postSubmitEnd > postSubmitStart
   ? html.slice(postSubmitStart, postSubmitEnd)
   : "";
@@ -90,10 +92,9 @@ if (!postSubmitBlock) {
   });
 }
 
-const dryRunStart = html.indexOf("if (isDryRun) {");
-const realAnalyticsStart = html.indexOf("window.dataLayer = window.dataLayer || [];", dryRunStart);
-const dryRunBlock = dryRunStart >= 0 && realAnalyticsStart > dryRunStart
-  ? html.slice(dryRunStart, realAnalyticsStart)
+const normalThankYouStart = html.indexOf("emitAnalyticsEvent(thankYouPayload, {", dryRunStart);
+const dryRunBlock = dryRunStart >= 0 && normalThankYouStart > dryRunStart
+  ? html.slice(dryRunStart, normalThankYouStart)
   : "";
 
 if (!dryRunBlock) {
@@ -102,9 +103,25 @@ if (!dryRunBlock) {
   if (!dryRunBlock.includes("#quick-lead")) {
     errors.push("spasibo/index.html: dry-run repeat link must return to the short contacts form");
   }
-  if (dryRunBlock.includes("dataLayer.push") || dryRunBlock.includes('gtag("event"')) {
-    errors.push("spasibo/index.html: dry-run block must not create analytics events");
+  if (!dryRunBlock.includes("if (isAnalyticsDebug) emitAnalyticsEvent(thankYouPayload);")) {
+    errors.push("spasibo/index.html: local debug must simulate thank-you view inside dry-run");
   }
+  if (!dryRunBlock.includes("return;")) {
+    errors.push("spasibo/index.html: dry-run must return before normal analytics");
+  }
+  if (dryRunBlock.includes("dataLayer.push") || dryRunBlock.includes('gtag("event"')) {
+    errors.push("spasibo/index.html: dry-run block must not call external analytics directly");
+  }
+}
+
+const emitStart = html.indexOf("function emitAnalyticsEvent");
+const emitEnd = html.indexOf("function sendPostSubmitEvent", emitStart);
+const emitBlock = emitStart >= 0 && emitEnd > emitStart ? html.slice(emitStart, emitEnd) : "";
+if (!emitBlock.includes("if (isAnalyticsDebug)")) {
+  errors.push("spasibo/index.html: analytics emitter must handle local debug");
+}
+if (emitBlock.indexOf("return;") > emitBlock.indexOf("window.dataLayer")) {
+  errors.push("spasibo/index.html: debug emitter must return before dataLayer");
 }
 
 const inlineScripts = Array.from(html.matchAll(/<script>([\s\S]*?)<\/script>/gi));
@@ -120,7 +137,7 @@ if (!inlineScripts.length) {
   });
 }
 
-console.log("Checked thank-you attribution, form roles and post-submit analytics.");
+console.log("Checked thank-you attribution, form roles, local debug and post-submit analytics.");
 
 if (errors.length) {
   console.error("\nThank-you attribution validation errors:");

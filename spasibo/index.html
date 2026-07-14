@@ -54,6 +54,7 @@
 
   <footer class="footer"><div class="container footer__inner"><div><strong>Новостройки Борисоглебска</strong><br>Страница подтверждения заявки.</div><div>Не является официальным сайтом застройщика. Информация уточняется и обновляется.</div></div></footer>
 
+  <script src="../assets/js/analytics-debug.js"></script>
   <script>
     (function () {
       const params = new URLSearchParams(window.location.search);
@@ -112,8 +113,21 @@
         }
       }
 
+      function emitAnalyticsEvent(payload, gtagParameters = {}) {
+        if (isAnalyticsDebug) {
+          window.recordPortalAnalyticsDebugEvent?.({ ...payload, simulated: isDryRun });
+          return;
+        }
+
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push(payload);
+        if (typeof window.gtag === "function") {
+          window.gtag("event", payload.event, gtagParameters);
+        }
+      }
+
       function sendPostSubmitEvent(action, context) {
-        if (isDryRun) return;
+        if (isDryRun && !isAnalyticsDebug) return;
         const payload = {
           event: "lead_postsubmit_action",
           action,
@@ -123,22 +137,19 @@
           residential_complex_id: context.objectId,
           attribution_source: context.source
         };
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push(payload);
-        if (typeof window.gtag === "function") {
-          window.gtag("event", "lead_postsubmit_action", {
-            event_category: "lead",
-            event_label: action,
-            form_id: context.formId || "",
-            form_role: context.formRole || ""
-          });
-        }
+        emitAnalyticsEvent(payload, {
+          event_category: "lead",
+          event_label: action,
+          form_id: context.formId || "",
+          form_role: context.formRole || ""
+        });
       }
 
       const queryId = params.get("id") || "";
       const rawType = params.get("type") || "general";
       const rawStatus = params.get("status") || "";
       const isDryRun = params.get("dry_run") === "1";
+      const isAnalyticsDebug = window.__NEWBUILD_ANALYTICS_DEBUG_MODE__ === true;
       const lastLead = readLastLead();
       const matchesStoredLead = Boolean(queryId && lastLead.client_fixation_id === queryId);
       const storedType = matchesStoredLead && typeMap[lastLead.lead_type] ? lastLead.lead_type : "";
@@ -174,20 +185,7 @@
         link.addEventListener("click", () => sendPostSubmitEvent(link.dataset.postsubmitAction || "unknown", context));
       });
 
-      if (isDryRun) {
-        document.body.dataset.leadTestMode = "dry-run";
-        document.getElementById("thankyou-eyebrow").textContent = "Тестовый режим";
-        document.getElementById("thankyou-title").textContent = "Тестовая заявка обработана локально";
-        document.getElementById("thankyou-message").textContent = "Данные не отправлялись в Web3Forms, CRM, email или аналитику. Проверены валидация, системные ID, локальная фиксация и переход на страницу результата.";
-        document.getElementById("thankyou-note").textContent = "Это технический dry-run. ID начинается с NB-TEST и не должен обрабатываться как обращение клиента.";
-        document.getElementById("next-step-description").textContent = "Вернитесь к форме в тестовом режиме и проверьте следующий объект, мобильное отображение или другой сценарий заполнения.";
-        document.getElementById("repeat-test-link").href = "../contacts/?lead_test=dry-run&test_ack=1#quick-lead";
-        document.getElementById("repeat-test-link").textContent = "Повторить тест";
-        return;
-      }
-
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
+      const thankYouPayload = {
         event: "lead_thankyou_view",
         lead_type: type,
         form_id: formId,
@@ -196,16 +194,29 @@
         residential_complex_id: objectId,
         qualification_status: status,
         attribution_source: attributionSource
-      });
+      };
 
-      if (typeof window.gtag === "function") {
-        window.gtag("event", "lead_thankyou_view", {
-          event_category: "lead",
-          event_label: type,
-          form_id: formId || "",
-          form_role: formRole || ""
-        });
+      if (isDryRun) {
+        document.body.dataset.leadTestMode = "dry-run";
+        document.getElementById("thankyou-eyebrow").textContent = "Тестовый режим";
+        document.getElementById("thankyou-title").textContent = "Тестовая заявка обработана локально";
+        document.getElementById("thankyou-message").textContent = "Данные не отправлялись в Web3Forms, CRM, email или аналитику. Проверены валидация, системные ID, локальная фиксация и переход на страницу результата.";
+        document.getElementById("thankyou-note").textContent = "Это технический dry-run. ID начинается с NB-TEST и не должен обрабатываться как обращение клиента.";
+        document.getElementById("next-step-description").textContent = "Вернитесь к форме в тестовом режиме и проверьте следующий объект, мобильное отображение или другой сценарий заполнения.";
+        document.getElementById("repeat-test-link").href = isAnalyticsDebug
+          ? "../contacts/?lead_test=dry-run&analytics_test=debug&test_ack=1#quick-lead"
+          : "../contacts/?lead_test=dry-run&test_ack=1#quick-lead";
+        document.getElementById("repeat-test-link").textContent = "Повторить тест";
+        if (isAnalyticsDebug) emitAnalyticsEvent(thankYouPayload);
+        return;
       }
+
+      emitAnalyticsEvent(thankYouPayload, {
+        event_category: "lead",
+        event_label: type,
+        form_id: formId || "",
+        form_role: formRole || ""
+      });
     })();
   </script>
 </body>

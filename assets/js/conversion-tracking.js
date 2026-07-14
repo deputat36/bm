@@ -12,6 +12,10 @@
     );
   }
 
+  function isAnalyticsDebugMode() {
+    return window.__NEWBUILD_ANALYTICS_DEBUG_MODE__ === true;
+  }
+
   function getFormRole(form) {
     if (!form) return "";
     const explicitRole = String(form.dataset.formRole || "").trim();
@@ -61,6 +65,12 @@
       page_path: window.location.pathname,
       ...details
     });
+
+    if (isAnalyticsDebugMode()) {
+      window.recordPortalAnalyticsDebugEvent?.(payload);
+      window.dispatchEvent(new CustomEvent("portalConversionEvent", { detail: payload }));
+      return;
+    }
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(payload);
@@ -152,6 +162,32 @@
     const form = findFormById(detail.form_id);
     const formRole = ensureFormRole(form);
     updateStoredLeadRole(detail, formRole);
+
+    if (isAnalyticsDebugMode()) {
+      sendConversionEvent("lead_submit", {
+        form_id: detail.form_id || "",
+        lead_type: detail.lead_type || "",
+        project_id: detail.project_id || "",
+        project_name: detail.project_name || "",
+        residential_complex: detail.residential_complex || "",
+        residential_complex_id: detail.residential_complex_id || "",
+        qualification_status: "test",
+        qualification_score: 0,
+        blocked: false,
+        offline: true,
+        simulated: true
+      });
+      sendConversionEvent("lead_submit_classified", {
+        form_id: detail.form_id || "",
+        form_role: formRole,
+        lead_type: detail.lead_type || "",
+        residential_complex_id: detail.residential_complex_id || "",
+        qualification_status: "test",
+        blocked: false,
+        offline: true,
+        simulated: true
+      });
+    }
   });
 
   if ("IntersectionObserver" in window) {

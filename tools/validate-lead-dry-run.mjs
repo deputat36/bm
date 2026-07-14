@@ -51,7 +51,9 @@ const requiredSchemaFragments = [
   'newbuildLeadDryRun',
   'NB-TEST-',
   'ТЕСТОВЫЙ РЕЖИМ — данные не отправляются',
-  'thankYouUrl.searchParams.set("dry_run", "1")'
+  'thankYouUrl.searchParams.set("dry_run", "1")',
+  'thankYouUrl.searchParams.set("analytics_test", "debug")',
+  'thankYouUrl.searchParams.set("lead_test", "dry-run")'
 ];
 
 for (const fragment of requiredSchemaFragments) {
@@ -71,6 +73,8 @@ const requiredThankYouFragments = [
   'Данные не отправлялись в Web3Forms, CRM, email или аналитику',
   'ID начинается с NB-TEST',
   'lead_test=dry-run&test_ack=1',
+  'lead_test=dry-run&analytics_test=debug&test_ack=1',
+  'if (isAnalyticsDebug) emitAnalyticsEvent(thankYouPayload);',
   'return;'
 ];
 
@@ -80,10 +84,18 @@ for (const fragment of requiredThankYouFragments) {
   }
 }
 
-const dryRunBlockIndex = thankYou.indexOf("if (isDryRun)");
-const analyticsIndex = thankYou.indexOf("window.dataLayer");
-if (dryRunBlockIndex === -1 || analyticsIndex === -1 || dryRunBlockIndex > analyticsIndex) {
-  errors.push(`${THANK_YOU_PATH}: dry-run должен завершаться до вызова аналитики`);
+const dryRunBlockIndex = thankYou.indexOf("if (isDryRun) {");
+const normalAnalyticsIndex = thankYou.indexOf("emitAnalyticsEvent(thankYouPayload, {", dryRunBlockIndex);
+if (dryRunBlockIndex === -1 || normalAnalyticsIndex === -1 || dryRunBlockIndex > normalAnalyticsIndex) {
+  errors.push(`${THANK_YOU_PATH}: dry-run должен завершаться до обычной аналитики`);
+} else {
+  const dryRunBlock = thankYou.slice(dryRunBlockIndex, normalAnalyticsIndex);
+  if (!dryRunBlock.includes("return;")) {
+    errors.push(`${THANK_YOU_PATH}: dry-run должен завершаться return до обычной аналитики`);
+  }
+  if (dryRunBlock.includes("dataLayer.push") || dryRunBlock.includes('gtag("event"')) {
+    errors.push(`${THANK_YOU_PATH}: dry-run не должен напрямую вызывать внешнюю аналитику`);
+  }
 }
 
 let checkedPages = 0;
@@ -118,7 +130,7 @@ if (!Array.isArray(pages)) {
       errors.push(`${file}: main.js должен загружаться раньше schema.js для безопасного dry-run`);
     }
 
-    if (html.includes("lead_test=dry-run") || html.includes("test_ack=1")) {
+    if (html.includes("lead_test=dry-run") || html.includes("analytics_test=debug") || html.includes("test_ack=1")) {
       errors.push(`${file}: тестовый режим не должен быть включён ссылкой в публичном контенте`);
     }
   }

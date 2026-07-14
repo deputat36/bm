@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "updated_at": "2026-07-14",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Единый словарь событий, измерений и правил подсчёта конверсионной воронки портала.",
@@ -22,7 +22,17 @@
       "user_agent"
     ],
     "restricted_technical_fields": ["client_fixation_id"],
-    "restricted_field_allowed_events": ["lead_submit"]
+    "restricted_field_allowed_events": ["lead_submit"],
+    "local_debug_mode": {
+      "analytics_test": "debug",
+      "lead_test": "dry-run",
+      "test_ack": "1",
+      "requires_all_parameters": true,
+      "storage_key": "newbuildsBorisoglebskAnalyticsDebugEvents",
+      "maximum_events": 100,
+      "external_analytics_suppressed": true,
+      "personal_and_restricted_fields_removed": true
+    }
   },
   "events": [
     {
@@ -157,7 +167,7 @@
         "event: \"lead_postsubmit_action\"",
         "action,",
         "form_role: context.formRole",
-        "if (isDryRun) return;"
+        "if (isDryRun && !isAnalyticsDebug) return;"
       ],
       "required_fields": ["event", "action", "lead_type", "form_id", "form_role", "attribution_source"],
       "optional_fields": ["residential_complex_id"],
