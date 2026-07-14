@@ -1,0 +1,161 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-14",
+  "portal_id": "newbuilds-borisoglebsk",
+  "purpose": "Единый словарь событий, измерений и правил подсчёта конверсионной воронки портала.",
+  "rules": {
+    "canonical_submission_event": "lead_submit",
+    "classified_submission_event": "lead_submit_classified",
+    "classified_event_is_not_additive": true,
+    "default_valid_submission_filter": "blocked=false",
+    "offline_submissions_report_separately": true,
+    "dry_run_events_forbidden": true,
+    "personal_data_in_analytics_forbidden": true,
+    "prohibited_fields": [
+      "name",
+      "phone",
+      "phone_normalized",
+      "budget",
+      "comment",
+      "question",
+      "consent_text",
+      "client_fixation_id",
+      "user_agent"
+    ]
+  },
+  "events": [
+    {
+      "id": "lead_cta_click",
+      "status": "active",
+      "stage": "cta",
+      "metric_role": "interaction",
+      "purpose": "Показывает, какие призывы к действию и размещения приводят пользователя к следующему шагу.",
+      "source_file": "assets/js/conversion-tracking.js",
+      "implementation_fragments": [
+        "sendConversionEvent(\"lead_cta_click\"",
+        "action: target.dataset.trackAction",
+        "placement: target.dataset.trackPlacement",
+        "object_id: target.dataset.trackObject",
+        "link_url: target.getAttribute"
+      ],
+      "required_fields": ["event", "page_path", "action"],
+      "optional_fields": ["placement", "object_id", "link_url"],
+      "count_rule": "count_events",
+      "count_filter": "none",
+      "contains_personal_data": false
+    },
+    {
+      "id": "lead_form_view",
+      "status": "active",
+      "stage": "form_view",
+      "metric_role": "funnel_stage",
+      "purpose": "Фиксирует видимость формы и используется как знаменатель конверсии просмотра в начало заполнения.",
+      "source_file": "assets/js/conversion-tracking.js",
+      "implementation_fragments": [
+        "sendConversionEvent(\"lead_form_view\"",
+        "form_role: getFormRole(form)",
+        "form_id: form?.dataset.formId",
+        "lead_type: form?.dataset.leadType"
+      ],
+      "required_fields": ["event", "page_path", "form_id", "form_role", "lead_type"],
+      "optional_fields": ["residential_complex", "residential_complex_id"],
+      "count_rule": "count_first_view_per_form_per_page_load",
+      "count_filter": "none",
+      "contains_personal_data": false
+    },
+    {
+      "id": "lead_form_start",
+      "status": "active",
+      "stage": "form_start",
+      "metric_role": "funnel_stage",
+      "purpose": "Фиксирует первое взаимодействие пользователя с конкретной формой.",
+      "source_file": "assets/js/conversion-tracking.js",
+      "implementation_fragments": [
+        "sendConversionEvent(\"lead_form_start\"",
+        "form_role: getFormRole(form)",
+        "startedForms.add(form)"
+      ],
+      "required_fields": ["event", "page_path", "form_id", "form_role", "lead_type"],
+      "optional_fields": ["residential_complex", "residential_complex_id"],
+      "count_rule": "count_first_start_per_form_per_page_load",
+      "count_filter": "none",
+      "contains_personal_data": false
+    },
+    {
+      "id": "lead_submit",
+      "status": "active",
+      "stage": "submit",
+      "metric_role": "canonical_conversion",
+      "purpose": "Единственное каноническое событие общего количества отправок форм.",
+      "source_file": "assets/js/main.js",
+      "implementation_fragments": [
+        "event: \"lead_submit\"",
+        "form_id: data.form_id",
+        "blocked: Boolean(result.blocked)",
+        "offline: Boolean(result.offline)"
+      ],
+      "required_fields": ["event", "form_id", "lead_type", "blocked", "offline"],
+      "optional_fields": ["project_id", "project_name", "residential_complex", "residential_complex_id", "qualification_status", "qualification_score"],
+      "count_rule": "count_canonical_submissions",
+      "count_filter": "blocked=false",
+      "contains_personal_data": false
+    },
+    {
+      "id": "lead_submit_classified",
+      "status": "active",
+      "stage": "submit",
+      "metric_role": "classification_dimension",
+      "purpose": "Даёт разрез отправок по роли primary/detailed и не является дополнительной заявкой.",
+      "source_file": "assets/js/conversion-tracking.js",
+      "implementation_fragments": [
+        "sendConversionEvent(\"lead_submit_classified\"",
+        "form_role: formRole",
+        "blocked: Boolean(detail.blocked)",
+        "offline: Boolean(detail.offline)"
+      ],
+      "required_fields": ["event", "form_id", "form_role", "lead_type", "blocked", "offline"],
+      "optional_fields": ["residential_complex_id", "qualification_status"],
+      "count_rule": "segment_canonical_submissions_only",
+      "count_filter": "blocked=false",
+      "must_not_add_to": ["lead_submit"],
+      "contains_personal_data": false
+    },
+    {
+      "id": "lead_thankyou_view",
+      "status": "active",
+      "stage": "thankyou",
+      "metric_role": "delivery_confirmation_view",
+      "purpose": "Фиксирует открытие страницы результата после успешного перехода.",
+      "source_file": "spasibo/index.html",
+      "implementation_fragments": [
+        "event: \"lead_thankyou_view\"",
+        "form_role: formRole",
+        "attribution_source: attributionSource"
+      ],
+      "required_fields": ["event", "lead_type", "form_id", "form_role", "attribution_source"],
+      "optional_fields": ["residential_complex", "residential_complex_id", "qualification_status"],
+      "count_rule": "count_thankyou_views",
+      "count_filter": "dry_run=false",
+      "contains_personal_data": false
+    },
+    {
+      "id": "lead_postsubmit_action",
+      "status": "active",
+      "stage": "post_submit",
+      "metric_role": "outcome_interaction",
+      "purpose": "Фиксирует действие пользователя после отправки: возврат к объекту, каталог, новая заявка или звонок.",
+      "source_file": "spasibo/index.html",
+      "implementation_fragments": [
+        "event: \"lead_postsubmit_action\"",
+        "action,",
+        "form_role: context.formRole",
+        "if (isDryRun) return;"
+      ],
+      "required_fields": ["event", "action", "lead_type", "form_id", "form_role", "attribution_source"],
+      "optional_fields": ["residential_complex_id"],
+      "count_rule": "count_actions",
+      "count_filter": "dry_run=false",
+      "contains_personal_data": false
+    }
+  ]
+}
