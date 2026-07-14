@@ -14,7 +14,7 @@
   <header class="topbar">
     <div class="container topbar__inner">
       <a class="brand" href="../" aria-label="Новостройки Борисоглебска"><strong>Новостройки Борисоглебска</strong></a>
-      <nav class="nav" aria-label="Основное меню"><a href="../">Главная</a><a href="../catalog/">Каталог</a><a href="../ipoteka/">Ипотека</a><a class="button" href="tel:+79038576909">Позвонить</a></nav>
+      <nav class="nav" aria-label="Основное меню"><a href="../">Главная</a><a href="../catalog/">Каталог</a><a href="../ipoteka/">Ипотека</a><a class="button" href="tel:+79038576909" data-postsubmit-action="phone_header">Позвонить</a></nav>
     </div>
   </header>
 
@@ -28,18 +28,24 @@
           <div class="thankyou-meta">
             <div class="thankyou-meta__item"><span>Тип заявки</span><strong id="lead-type">Заявка</strong></div>
             <div class="thankyou-meta__item"><span>Объект</span><strong id="lead-object">Новостройки Борисоглебска</strong></div>
+            <div class="thankyou-meta__item"><span>Форма</span><strong id="lead-form">Не определена</strong></div>
             <div class="thankyou-meta__item"><span>Статус обработки</span><strong id="lead-status">Новая</strong></div>
             <div class="thankyou-meta__item"><span>ID фиксации</span><strong id="lead-id">—</strong></div>
           </div>
           <div class="leadgen-note" id="thankyou-note">Предварительная заявка не является бронью квартиры и не фиксирует цену. Актуальные условия, наличие и документы уточняются по подтверждённым данным.</div>
-          <div class="hero__actions"><a class="button" href="../catalog/">Вернуться в каталог</a><a class="button button--ghost" id="repeat-test-link" href="../#lead">Оставить ещё одну заявку</a><a class="button button--ghost" href="tel:+79038576909">Позвонить: 8 903 857-69-09</a></div>
+          <div class="hero__actions">
+            <a class="button" id="object-return-link" href="../catalog/" hidden data-postsubmit-action="return_object">Вернуться к объекту</a>
+            <a class="button" href="../catalog/" data-postsubmit-action="catalog">Открыть каталог</a>
+            <a class="button button--ghost" id="repeat-test-link" href="../#quick-lead" data-postsubmit-action="new_lead">Оставить ещё одну заявку</a>
+            <a class="button button--ghost" href="tel:+79038576909" data-postsubmit-action="phone">Позвонить: 8 903 857-69-09</a>
+          </div>
         </div>
       </div>
     </section>
 
     <section>
       <div class="container">
-        <div class="section__head"><h2>Что будет дальше</h2><p id="next-step-description">Менеджер увидит объект, параметры заявки, бюджет, способ покупки, рекламный источник и срочность обработки.</p></div>
+        <div class="section__head"><h2>Что будет дальше</h2><p id="next-step-description">Менеджер увидит объект, параметры заявки, форму, рекламный источник и срочность обработки.</p></div>
         <div class="grid grid--3"><article class="card"><h3>1. Уточнение задачи</h3><p>Специалист уточнит, какая квартира или информация вам нужна.</p></article><article class="card"><h3>2. Проверка данных</h3><p>По объекту подготовят актуальные сведения о ценах, планировках, документах или ипотеке.</p></article><article class="card"><h3>3. Следующий шаг</h3><p>После проверки вам сообщат доступные варианты и предложат удобный сценарий покупки.</p></article></div>
       </div>
     </section>
@@ -72,20 +78,95 @@
         callback: "Менеджер перезвонит в указанное время или при первой возможности.",
         waitlist: "Мы зафиксировали интерес и сообщим о важных обновлениях по проекту."
       };
+      const objectMap = {
+        "prostornaya-4a": { name: "Просторная 4А", href: "../catalog/prostornaya-4a/" },
+        "aerodromnaya-18g": { name: "Аэродромная 18Г", href: "../catalog/aerodromnaya-18g/" },
+        "sennaya-76": { name: "Сенная 76", href: "../catalog/sennaya-76/" },
+        "all-newbuilds": { name: "Общий подбор новостройки", href: "../catalog/" }
+      };
+      const referrerObjectRules = [
+        ["/catalog/prostornaya-4a/", "prostornaya-4a"],
+        ["/catalog/aerodromnaya-18g/", "aerodromnaya-18g"],
+        ["/catalog/sennaya-76/", "sennaya-76"],
+        ["/catalog/", "all-newbuilds"]
+      ];
 
-      const type = params.get("type") || "general";
-      const status = params.get("status") || "";
-      const id = params.get("id") || "";
+      function readLastLead() {
+        try {
+          return JSON.parse(localStorage.getItem("newbuildsBorisoglebskLastLead") || "{}");
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function inferObjectFromReferrer() {
+        if (!document.referrer) return "";
+        try {
+          const referrerUrl = new URL(document.referrer);
+          if (referrerUrl.origin !== window.location.origin) return "";
+          return referrerObjectRules.find(([path]) => referrerUrl.pathname.startsWith(path))?.[1] || "";
+        } catch (error) {
+          return "";
+        }
+      }
+
+      function sendPostSubmitEvent(action, context) {
+        if (isDryRun) return;
+        const payload = {
+          event: "lead_postsubmit_action",
+          action,
+          lead_type: context.type,
+          form_id: context.formId,
+          residential_complex_id: context.objectId,
+          attribution_source: context.source
+        };
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push(payload);
+        if (typeof window.gtag === "function") {
+          window.gtag("event", "lead_postsubmit_action", {
+            event_category: "lead",
+            event_label: action,
+            form_id: context.formId || ""
+          });
+        }
+      }
+
+      const queryId = params.get("id") || "";
+      const rawType = params.get("type") || "general";
+      const rawStatus = params.get("status") || "";
       const isDryRun = params.get("dry_run") === "1";
-      let lastLead = {};
-      try { lastLead = JSON.parse(localStorage.getItem("newbuildsBorisoglebskLastLead") || "{}"); } catch (error) { lastLead = {}; }
-      const objectName = lastLead.residential_complex || lastLead.project_name || "Новостройки Борисоглебска";
+      const lastLead = readLastLead();
+      const matchesStoredLead = Boolean(queryId && lastLead.client_fixation_id === queryId);
+      const storedType = matchesStoredLead && typeMap[lastLead.lead_type] ? lastLead.lead_type : "";
+      const type = storedType || (typeMap[rawType] ? rawType : "general");
+      const storedStatus = matchesStoredLead && statusMap[lastLead.qualification?.status] ? lastLead.qualification.status : "";
+      const status = storedStatus || (statusMap[rawStatus] ? rawStatus : "");
+      const storedObjectId = matchesStoredLead && objectMap[lastLead.residential_complex_id] ? lastLead.residential_complex_id : "";
+      const referrerObjectId = storedObjectId ? "" : inferObjectFromReferrer();
+      const objectId = storedObjectId || referrerObjectId;
+      const objectData = objectMap[objectId] || null;
+      const objectName = objectData?.name || "Новостройки Борисоглебска";
+      const formId = matchesStoredLead ? String(lastLead.form_id || "") : "";
+      const attributionSource = matchesStoredLead ? "matched_local_record" : objectId ? "same_origin_referrer" : "generic";
+      const context = { type, formId, objectId, source: attributionSource };
 
       document.getElementById("lead-type").textContent = typeMap[type] || "Заявка";
       document.getElementById("lead-object").textContent = objectName;
+      document.getElementById("lead-form").textContent = formId || "Не определена";
       document.getElementById("lead-status").textContent = statusMap[status] || "Новая";
-      document.getElementById("lead-id").textContent = id || lastLead.client_fixation_id || "—";
+      document.getElementById("lead-id").textContent = queryId || "—";
       document.getElementById("thankyou-message").textContent = messageMap[type] || "Специалист свяжется с вами, уточнит детали и подскажет следующий шаг.";
+
+      if (objectData && objectId !== "all-newbuilds") {
+        const objectReturnLink = document.getElementById("object-return-link");
+        objectReturnLink.href = objectData.href;
+        objectReturnLink.textContent = `Вернуться: ${objectData.name}`;
+        objectReturnLink.hidden = false;
+      }
+
+      document.querySelectorAll("[data-postsubmit-action]").forEach((link) => {
+        link.addEventListener("click", () => sendPostSubmitEvent(link.dataset.postsubmitAction || "unknown", context));
+      });
 
       if (isDryRun) {
         document.body.dataset.leadTestMode = "dry-run";
@@ -100,10 +181,22 @@
       }
 
       window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: "lead_thankyou_view", lead_type: type, residential_complex: objectName, qualification_status: status, client_fixation_id: id });
+      window.dataLayer.push({
+        event: "lead_thankyou_view",
+        lead_type: type,
+        form_id: formId,
+        residential_complex: objectName,
+        residential_complex_id: objectId,
+        qualification_status: status,
+        attribution_source: attributionSource
+      });
 
       if (typeof window.gtag === "function") {
-        window.gtag("event", "lead_thankyou_view", { event_category: "lead", event_label: type });
+        window.gtag("event", "lead_thankyou_view", {
+          event_category: "lead",
+          event_label: type,
+          form_id: formId || ""
+        });
       }
     })();
   </script>
