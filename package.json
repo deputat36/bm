@@ -20,7 +20,7 @@
     "validate:contextual-conversion": "node tools/validate-contextual-conversion.mjs",
     "validate:lead-source-output": "node tools/validate-lead-source-output.mjs",
     "validate:form-roles": "node tools/validate-form-role-analytics.mjs",
-    "validate:analytics": "node tools/validate-analytics-events.mjs",
+    "validate:analytics": "node tools/validate-analytics-events.mjs && npm run validate:analytics-funnel",
     "validate:analytics-funnel": "node --check tools/validate-analytics-funnel-report.mjs && node --check tools/build-analytics-funnel-report.mjs && node tools/validate-analytics-funnel-report.mjs && node tools/build-analytics-funnel-report.mjs --format=json > /tmp/analytics-funnel-report.json && node -e 'const fs=require(\"fs\"); const data=JSON.parse(fs.readFileSync(\"/tmp/analytics-funnel-report.json\",\"utf8\")); if(data.status!==\"specification_only_no_live_data\"||!Array.isArray(data.metrics)||data.metrics.length!==19||!Array.isArray(data.views)||data.views.length!==6) process.exit(1); console.log(`Generated funnel metrics: ${data.metrics.length}; views: ${data.views.length}`);'",
     "validate:analytics-debug": "node tools/validate-analytics-debug-mode.mjs",
     "validate:form-qa": "node tools/validate-form-qa-scenarios.mjs",
