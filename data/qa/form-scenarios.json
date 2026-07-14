@@ -1,0 +1,185 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-14",
+  "portal_id": "newbuilds-borisoglebsk",
+  "base_url": "https://novostroyki-borisoglebsk.ru",
+  "purpose": "Единая матрица безопасной ручной проверки 14 активных форм на компьютере, Android и iPhone.",
+  "test_parameters": {
+    "lead_test": "dry-run",
+    "analytics_test": "debug",
+    "test_ack": "1"
+  },
+  "rules": {
+    "all_scenarios_use_dry_run": true,
+    "all_scenarios_use_local_analytics_debug": true,
+    "real_submission_forbidden": true,
+    "public_content_links_forbidden": true,
+    "primary_anchor": "quick-lead",
+    "detailed_anchor": "lead",
+    "expected_devices": ["desktop", "android", "iphone"]
+  },
+  "required_events": [
+    "lead_form_view",
+    "lead_form_start",
+    "lead_submit",
+    "lead_submit_classified",
+    "lead_thankyou_view"
+  ],
+  "optional_events": ["lead_cta_click", "lead_postsubmit_action"],
+  "scenarios": [
+    {
+      "id": "homepage_primary",
+      "label": "Главная — короткая форма",
+      "page_path": "/",
+      "page_file": "index.html",
+      "anchor": "quick-lead",
+      "form_id": "homepage_quick_selection",
+      "form_role": "primary",
+      "lead_type": "portal_selection",
+      "object_id": "all-newbuilds"
+    },
+    {
+      "id": "homepage_detailed",
+      "label": "Главная — подробная форма",
+      "page_path": "/",
+      "page_file": "index.html",
+      "anchor": "lead",
+      "form_id": "homepage_priority_selection",
+      "form_role": "detailed",
+      "lead_type": "portal_selection",
+      "object_id": "all-newbuilds"
+    },
+    {
+      "id": "catalog_primary",
+      "label": "Каталог — короткая форма",
+      "page_path": "/catalog/",
+      "page_file": "catalog/index.html",
+      "anchor": "quick-lead",
+      "form_id": "catalog_quick_selection",
+      "form_role": "primary",
+      "lead_type": "portal_selection",
+      "object_id": "all-newbuilds"
+    },
+    {
+      "id": "catalog_detailed",
+      "label": "Каталог — подробная форма",
+      "page_path": "/catalog/",
+      "page_file": "catalog/index.html",
+      "anchor": "lead",
+      "form_id": "catalog_priority_selection",
+      "form_role": "detailed",
+      "lead_type": "portal_selection",
+      "object_id": "all-newbuilds"
+    },
+    {
+      "id": "prostornaya_4a_primary",
+      "label": "Просторная 4А — короткая форма",
+      "page_path": "/catalog/prostornaya-4a/",
+      "page_file": "catalog/prostornaya-4a/index.html",
+      "anchor": "quick-lead",
+      "form_id": "catalog_prostornaya_4a_quick_consultation",
+      "form_role": "primary",
+      "lead_type": "project_consultation",
+      "object_id": "prostornaya-4a"
+    },
+    {
+      "id": "prostornaya_4a_detailed",
+      "label": "Просторная 4А — подробная форма",
+      "page_path": "/catalog/prostornaya-4a/",
+      "page_file": "catalog/prostornaya-4a/index.html",
+      "anchor": "lead",
+      "form_id": "catalog_prostornaya_4a_priority_lead",
+      "form_role": "detailed",
+      "lead_type": "project_consultation",
+      "object_id": "prostornaya-4a"
+    },
+    {
+      "id": "aerodromnaya_18g_primary",
+      "label": "Аэродромная 18Г — короткая форма",
+      "page_path": "/catalog/aerodromnaya-18g/",
+      "page_file": "catalog/aerodromnaya-18g/index.html",
+      "anchor": "quick-lead",
+      "form_id": "catalog_aerodromnaya_18g_quick_consultation",
+      "form_role": "primary",
+      "lead_type": "project_consultation",
+      "object_id": "aerodromnaya-18g"
+    },
+    {
+      "id": "aerodromnaya_18g_detailed",
+      "label": "Аэродромная 18Г — подробная форма",
+      "page_path": "/catalog/aerodromnaya-18g/",
+      "page_file": "catalog/aerodromnaya-18g/index.html",
+      "anchor": "lead",
+      "form_id": "catalog_aerodromnaya_18g_priority_lead",
+      "form_role": "detailed",
+      "lead_type": "project_consultation",
+      "object_id": "aerodromnaya-18g"
+    },
+    {
+      "id": "sennaya_76_primary",
+      "label": "Сенная 76 — короткая форма",
+      "page_path": "/catalog/sennaya-76/",
+      "page_file": "catalog/sennaya-76/index.html",
+      "anchor": "quick-lead",
+      "form_id": "catalog_sennaya_76_quick_consultation",
+      "form_role": "primary",
+      "lead_type": "project_consultation",
+      "object_id": "sennaya-76"
+    },
+    {
+      "id": "sennaya_76_detailed",
+      "label": "Сенная 76 — подробная форма",
+      "page_path": "/catalog/sennaya-76/",
+      "page_file": "catalog/sennaya-76/index.html",
+      "anchor": "lead",
+      "form_id": "catalog_sennaya_76_priority_lead",
+      "form_role": "detailed",
+      "lead_type": "project_consultation",
+      "object_id": "sennaya-76"
+    },
+    {
+      "id": "contacts_primary",
+      "label": "Контакты — короткая форма",
+      "page_path": "/contacts/",
+      "page_file": "contacts/index.html",
+      "anchor": "quick-lead",
+      "form_id": "contacts_quick_selection",
+      "form_role": "primary",
+      "lead_type": "portal_selection",
+      "object_id": "all-newbuilds"
+    },
+    {
+      "id": "contacts_detailed",
+      "label": "Контакты — подробная форма",
+      "page_path": "/contacts/",
+      "page_file": "contacts/index.html",
+      "anchor": "lead",
+      "form_id": "contacts_priority_selection",
+      "form_role": "detailed",
+      "lead_type": "portal_selection",
+      "object_id": "all-newbuilds"
+    },
+    {
+      "id": "mortgage_primary",
+      "label": "Ипотека — короткая форма",
+      "page_path": "/ipoteka/",
+      "page_file": "ipoteka/index.html",
+      "anchor": "quick-lead",
+      "form_id": "portal_mortgage_quick_consultation",
+      "form_role": "primary",
+      "lead_type": "mortgage",
+      "object_id": "all-newbuilds"
+    },
+    {
+      "id": "mortgage_detailed",
+      "label": "Ипотека — подробная форма",
+      "page_path": "/ipoteka/",
+      "page_file": "ipoteka/index.html",
+      "anchor": "lead",
+      "form_id": "portal_mortgage_consultation",
+      "form_role": "detailed",
+      "lead_type": "mortgage",
+      "object_id": "all-newbuilds"
+    }
+  ]
+}
