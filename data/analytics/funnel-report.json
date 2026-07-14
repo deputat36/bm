@@ -1,0 +1,601 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-14",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "specification_only_no_live_data",
+  "purpose": "Проверяемая спецификация отчёта по конверсионной воронке без подключения к рабочему счётчику и без вымышленных значений.",
+  "rules": {
+    "event_registry": "data/analytics/events.json",
+    "canonical_submission_metric": "valid_submissions",
+    "canonical_submission_event": "lead_submit",
+    "classified_submission_metric": "classified_valid_submissions",
+    "classified_submission_event": "lead_submit_classified",
+    "classified_metrics_are_non_additive_to_canonical": true,
+    "valid_submission_filter": "blocked=false",
+    "online_submission_filter": "blocked=false AND offline=false",
+    "offline_submission_filter": "blocked=false AND offline=true",
+    "dry_run_excluded": true,
+    "ratio_zero_denominator_result": null,
+    "reporting_timezone": "Europe/Moscow",
+    "personal_data_forbidden": true,
+    "restricted_technical_id_forbidden": true,
+    "allowed_system_filter_fields": [
+      "dry_run"
+    ],
+    "prohibited_dimensions": [
+      "name",
+      "phone",
+      "phone_normalized",
+      "email",
+      "budget",
+      "comment",
+      "question",
+      "consent_text",
+      "user_agent",
+      "client_fixation_id"
+    ],
+    "reconciliation": {
+      "metric": "classification_coverage_rate",
+      "expected_value": 1,
+      "warning_below": 0.98,
+      "purpose": "Показывает, не потерялось ли классифицирующее событие относительно канонической отправки."
+    }
+  },
+  "dimensions": [
+    {
+      "id": "page_path",
+      "title": "Страница события",
+      "events": [
+        "lead_cta_click",
+        "lead_form_view",
+        "lead_form_start"
+      ]
+    },
+    {
+      "id": "action",
+      "title": "Действие CTA или после отправки",
+      "events": [
+        "lead_cta_click",
+        "lead_postsubmit_action"
+      ]
+    },
+    {
+      "id": "placement",
+      "title": "Размещение перехода",
+      "events": [
+        "lead_cta_click",
+        "lead_submit",
+        "lead_submit_classified"
+      ]
+    },
+    {
+      "id": "object_id",
+      "title": "ID объекта в CTA",
+      "events": [
+        "lead_cta_click"
+      ]
+    },
+    {
+      "id": "form_id",
+      "title": "Форма",
+      "events": [
+        "lead_form_view",
+        "lead_form_start",
+        "lead_submit",
+        "lead_submit_classified",
+        "lead_thankyou_view",
+        "lead_postsubmit_action"
+      ]
+    },
+    {
+      "id": "form_role",
+      "title": "Роль формы",
+      "events": [
+        "lead_form_view",
+        "lead_form_start",
+        "lead_submit_classified",
+        "lead_thankyou_view",
+        "lead_postsubmit_action"
+      ]
+    },
+    {
+      "id": "lead_type",
+      "title": "Тип заявки",
+      "events": [
+        "lead_form_view",
+        "lead_form_start",
+        "lead_submit",
+        "lead_submit_classified",
+        "lead_thankyou_view",
+        "lead_postsubmit_action"
+      ]
+    },
+    {
+      "id": "residential_complex_id",
+      "title": "ID объекта",
+      "events": [
+        "lead_form_view",
+        "lead_form_start",
+        "lead_submit",
+        "lead_submit_classified",
+        "lead_thankyou_view",
+        "lead_postsubmit_action"
+      ]
+    },
+    {
+      "id": "lead_source",
+      "title": "Источник заявки",
+      "events": [
+        "lead_submit",
+        "lead_submit_classified"
+      ]
+    },
+    {
+      "id": "qualification_status",
+      "title": "Квалификация",
+      "events": [
+        "lead_submit",
+        "lead_submit_classified",
+        "lead_thankyou_view"
+      ]
+    },
+    {
+      "id": "offline",
+      "title": "Offline-статус",
+      "events": [
+        "lead_submit",
+        "lead_submit_classified"
+      ]
+    },
+    {
+      "id": "blocked",
+      "title": "Антиспам-статус",
+      "events": [
+        "lead_submit",
+        "lead_submit_classified"
+      ]
+    },
+    {
+      "id": "attribution_source",
+      "title": "Источник контекста страницы благодарности",
+      "events": [
+        "lead_thankyou_view",
+        "lead_postsubmit_action"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "cta_clicks",
+      "name": "Клики по CTA",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Количество размеченных переходов к следующему шагу.",
+      "source_event": "lead_cta_click",
+      "filter": "none",
+      "dimensions": [
+        "page_path",
+        "action",
+        "placement",
+        "object_id"
+      ]
+    },
+    {
+      "id": "form_views",
+      "name": "Просмотры форм",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Первое попадание конкретной формы в видимую область страницы.",
+      "source_event": "lead_form_view",
+      "filter": "none",
+      "dimensions": [
+        "page_path",
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id"
+      ]
+    },
+    {
+      "id": "form_starts",
+      "name": "Начала заполнения",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Первое взаимодействие с конкретной формой.",
+      "source_event": "lead_form_start",
+      "filter": "none",
+      "dimensions": [
+        "page_path",
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id"
+      ]
+    },
+    {
+      "id": "valid_submissions",
+      "name": "Валидные отправки",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Единственная каноническая метрика общего количества заявок.",
+      "source_event": "lead_submit",
+      "filter": "blocked=false",
+      "dimensions": [
+        "form_id",
+        "lead_type",
+        "residential_complex_id",
+        "lead_source",
+        "placement",
+        "qualification_status",
+        "offline"
+      ]
+    },
+    {
+      "id": "online_submissions",
+      "name": "Онлайн-отправки",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Валидные заявки, принятые внешним каналом доставки.",
+      "source_event": "lead_submit",
+      "filter": "blocked=false AND offline=false",
+      "dimensions": [
+        "form_id",
+        "lead_type",
+        "residential_complex_id",
+        "lead_source",
+        "placement",
+        "qualification_status"
+      ]
+    },
+    {
+      "id": "offline_submissions",
+      "name": "Offline-отправки",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Валидные заявки, сохранённые без подтверждённой внешней доставки.",
+      "source_event": "lead_submit",
+      "filter": "blocked=false AND offline=true",
+      "dimensions": [
+        "form_id",
+        "lead_type",
+        "residential_complex_id",
+        "lead_source",
+        "placement",
+        "qualification_status"
+      ]
+    },
+    {
+      "id": "classified_valid_submissions",
+      "name": "Классифицированные отправки",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Разрез канонических заявок по роли формы; не является дополнительной заявкой.",
+      "source_event": "lead_submit_classified",
+      "filter": "blocked=false",
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id",
+        "lead_source",
+        "placement",
+        "qualification_status",
+        "offline"
+      ],
+      "non_additive_to": [
+        "valid_submissions"
+      ]
+    },
+    {
+      "id": "classified_online_submissions",
+      "name": "Классифицированные онлайн-отправки",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Онлайн-заявки с доступной ролью primary или detailed.",
+      "source_event": "lead_submit_classified",
+      "filter": "blocked=false AND offline=false",
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id",
+        "lead_source",
+        "placement",
+        "qualification_status"
+      ],
+      "non_additive_to": [
+        "online_submissions"
+      ]
+    },
+    {
+      "id": "content_assisted_submissions",
+      "name": "Заявки после справочного контента",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Классифицированные заявки, пришедшие через контекстные CTA справочника, новостей или раздела застройщиков.",
+      "source_event": "lead_submit_classified",
+      "filter": "blocked=false AND lead_source=internal_content",
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id",
+        "placement",
+        "qualification_status",
+        "offline"
+      ],
+      "non_additive_to": [
+        "valid_submissions",
+        "classified_valid_submissions"
+      ]
+    },
+    {
+      "id": "thankyou_views",
+      "name": "Просмотры страницы благодарности",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Открытия страницы результата после успешного перехода.",
+      "source_event": "lead_thankyou_view",
+      "filter": "dry_run=false",
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id",
+        "qualification_status",
+        "attribution_source"
+      ]
+    },
+    {
+      "id": "postsubmit_actions",
+      "name": "Действия после отправки",
+      "type": "count",
+      "unit": "count",
+      "purpose": "Возвраты к объекту, каталогу, новой заявке или звонку после отправки.",
+      "source_event": "lead_postsubmit_action",
+      "filter": "dry_run=false",
+      "dimensions": [
+        "action",
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id",
+        "attribution_source"
+      ]
+    },
+    {
+      "id": "view_to_start_rate",
+      "name": "Конверсия просмотра в начало",
+      "type": "ratio",
+      "unit": "percent",
+      "purpose": "Доля просмотров формы, завершившихся первым взаимодействием.",
+      "numerator_metric": "form_starts",
+      "denominator_metric": "form_views",
+      "zero_denominator_result": null,
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id"
+      ]
+    },
+    {
+      "id": "start_to_submit_rate",
+      "name": "Конверсия начала в отправку",
+      "type": "ratio",
+      "unit": "percent",
+      "purpose": "Доля начатых форм, завершившихся валидной классифицированной отправкой.",
+      "numerator_metric": "classified_valid_submissions",
+      "denominator_metric": "form_starts",
+      "zero_denominator_result": null,
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id"
+      ]
+    },
+    {
+      "id": "view_to_submit_rate",
+      "name": "Конверсия просмотра в отправку",
+      "type": "ratio",
+      "unit": "percent",
+      "purpose": "Доля просмотров формы, завершившихся валидной отправкой.",
+      "numerator_metric": "classified_valid_submissions",
+      "denominator_metric": "form_views",
+      "zero_denominator_result": null,
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id"
+      ]
+    },
+    {
+      "id": "online_submission_share",
+      "name": "Доля онлайн-доставки",
+      "type": "ratio",
+      "unit": "percent",
+      "purpose": "Доля валидных заявок, для которых внешний канал подтвердил приём.",
+      "numerator_metric": "online_submissions",
+      "denominator_metric": "valid_submissions",
+      "zero_denominator_result": null,
+      "dimensions": [
+        "form_id",
+        "lead_type",
+        "residential_complex_id",
+        "lead_source",
+        "placement",
+        "qualification_status"
+      ]
+    },
+    {
+      "id": "offline_submission_share",
+      "name": "Доля offline-заявок",
+      "type": "ratio",
+      "unit": "percent",
+      "purpose": "Доля валидных заявок без подтверждённой внешней доставки.",
+      "numerator_metric": "offline_submissions",
+      "denominator_metric": "valid_submissions",
+      "zero_denominator_result": null,
+      "dimensions": [
+        "form_id",
+        "lead_type",
+        "residential_complex_id",
+        "lead_source",
+        "placement",
+        "qualification_status"
+      ]
+    },
+    {
+      "id": "classification_coverage_rate",
+      "name": "Покрытие классификацией",
+      "type": "ratio",
+      "unit": "percent",
+      "purpose": "Сверка количества классифицированных и канонических отправок; не является новой конверсией.",
+      "numerator_metric": "classified_valid_submissions",
+      "denominator_metric": "valid_submissions",
+      "zero_denominator_result": null,
+      "dimensions": [
+        "form_id",
+        "lead_type",
+        "residential_complex_id",
+        "lead_source",
+        "placement",
+        "qualification_status",
+        "offline"
+      ]
+    },
+    {
+      "id": "content_assisted_share",
+      "name": "Доля заявок после справочного контента",
+      "type": "ratio",
+      "unit": "percent",
+      "purpose": "Доля классифицированных заявок с lead_source=internal_content.",
+      "numerator_metric": "content_assisted_submissions",
+      "denominator_metric": "classified_valid_submissions",
+      "zero_denominator_result": null,
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id",
+        "placement",
+        "qualification_status",
+        "offline"
+      ]
+    },
+    {
+      "id": "thankyou_view_rate",
+      "name": "Доля переходов на страницу благодарности",
+      "type": "ratio",
+      "unit": "percent",
+      "purpose": "Доля онлайн-отправок, после которых зафиксирован просмотр страницы благодарности.",
+      "numerator_metric": "thankyou_views",
+      "denominator_metric": "classified_online_submissions",
+      "zero_denominator_result": null,
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id",
+        "qualification_status"
+      ]
+    }
+  ],
+  "views": [
+    {
+      "id": "executive_summary",
+      "title": "Сводка запуска",
+      "metrics": [
+        "valid_submissions",
+        "online_submissions",
+        "offline_submissions",
+        "online_submission_share",
+        "classification_coverage_rate"
+      ],
+      "dimensions": []
+    },
+    {
+      "id": "cta_performance",
+      "title": "Эффективность CTA",
+      "metrics": [
+        "cta_clicks"
+      ],
+      "dimensions": [
+        "page_path",
+        "action",
+        "placement",
+        "object_id"
+      ]
+    },
+    {
+      "id": "form_funnel",
+      "title": "Воронка форм",
+      "metrics": [
+        "form_views",
+        "form_starts",
+        "classified_valid_submissions",
+        "view_to_start_rate",
+        "start_to_submit_rate",
+        "view_to_submit_rate"
+      ],
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id"
+      ]
+    },
+    {
+      "id": "source_performance",
+      "title": "Источники и размещения",
+      "metrics": [
+        "valid_submissions",
+        "online_submissions",
+        "offline_submissions",
+        "online_submission_share",
+        "offline_submission_share",
+        "classification_coverage_rate"
+      ],
+      "dimensions": [
+        "lead_source",
+        "placement",
+        "form_id",
+        "lead_type",
+        "residential_complex_id"
+      ]
+    },
+    {
+      "id": "content_assist",
+      "title": "Справочный контент",
+      "metrics": [
+        "content_assisted_submissions",
+        "content_assisted_share"
+      ],
+      "dimensions": [
+        "placement",
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id"
+      ]
+    },
+    {
+      "id": "post_submit",
+      "title": "После отправки",
+      "metrics": [
+        "classified_online_submissions",
+        "thankyou_views",
+        "thankyou_view_rate",
+        "postsubmit_actions"
+      ],
+      "dimensions": [
+        "form_id",
+        "form_role",
+        "lead_type",
+        "residential_complex_id"
+      ]
+    }
+  ]
+}
