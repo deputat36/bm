@@ -3,11 +3,56 @@
   const startedForms = new WeakSet();
   const viewedForms = new WeakSet();
   const MORTGAGE_PRIMARY_ANCHOR = "quick-lead";
+  const LAST_LEAD_STORAGE_KEY = "newbuildsBorisoglebskLastLead";
+  const FORM_ROLES = new Set(["primary", "detailed"]);
 
   function compactPayload(values) {
     return Object.fromEntries(
       Object.entries(values).filter(([, value]) => value !== "" && value !== null && value !== undefined)
     );
+  }
+
+  function getFormRole(form) {
+    if (!form) return "";
+    const explicitRole = String(form.dataset.formRole || "").trim();
+    if (FORM_ROLES.has(explicitRole)) return explicitRole;
+    return form.closest("[data-primary-lead]") ? "primary" : "detailed";
+  }
+
+  function ensureFormRole(form) {
+    if (!form) return "";
+    const role = getFormRole(form);
+    form.dataset.formRole = role;
+
+    let hidden = form.querySelector("input[name='form_role']");
+    if (!hidden) {
+      hidden = document.createElement("input");
+      hidden.type = "hidden";
+      hidden.name = "form_role";
+      form.prepend(hidden);
+    }
+    hidden.value = role;
+    return role;
+  }
+
+  function findFormById(formId) {
+    return forms.find((form) => form.dataset.formId === formId) || null;
+  }
+
+  function updateStoredLeadRole(detail, formRole) {
+    if (!formRole) return;
+
+    try {
+      const stored = JSON.parse(localStorage.getItem(LAST_LEAD_STORAGE_KEY) || "{}");
+      const eventId = String(detail?.client_fixation_id || "").trim();
+      const storedId = String(stored?.client_fixation_id || "").trim();
+      if (eventId && storedId && eventId !== storedId) return;
+
+      stored.form_role = formRole;
+      localStorage.setItem(LAST_LEAD_STORAGE_KEY, JSON.stringify(stored));
+    } catch (error) {
+      // Ошибка локального хранилища не должна мешать отправке заявки.
+    }
   }
 
   function sendConversionEvent(eventName, details = {}) {
@@ -31,6 +76,7 @@
   function getFormDetails(form) {
     return {
       form_id: form?.dataset.formId || "",
+      form_role: getFormRole(form),
       lead_type: form?.dataset.leadType || "",
       residential_complex: form?.dataset.complex || "",
       residential_complex_id: form?.dataset.complexId || ""
@@ -52,6 +98,7 @@
     });
   }
 
+  forms.forEach(ensureFormRole);
   enrichMortgageLinks();
 
   document.addEventListener("click", (event) => {
@@ -80,6 +127,31 @@
     });
 
     form.addEventListener("change", markStarted);
+  });
+
+  window.addEventListener("newbuildLeadSubmit", (event) => {
+    const detail = event.detail || {};
+    const form = findFormById(detail.form_id);
+    const formRole = ensureFormRole(form);
+    if (!formRole) return;
+
+    updateStoredLeadRole(detail, formRole);
+    sendConversionEvent("lead_submit_classified", {
+      form_id: detail.form_id || "",
+      form_role: formRole,
+      lead_type: detail.lead_type || "",
+      residential_complex_id: detail.residential_complex_id || "",
+      qualification_status: detail.qualification_status || "",
+      blocked: Boolean(detail.blocked),
+      offline: Boolean(detail.offline)
+    });
+  });
+
+  window.addEventListener("newbuildLeadDryRun", (event) => {
+    const detail = event.detail || {};
+    const form = findFormById(detail.form_id);
+    const formRole = ensureFormRole(form);
+    updateStoredLeadRole(detail, formRole);
   });
 
   if ("IntersectionObserver" in window) {
