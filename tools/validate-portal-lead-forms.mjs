@@ -283,6 +283,11 @@ function validateProjectTrustPage(expected) {
   if (!html.includes("нет подтверждённого источника") && !html.includes("первичн")) {
     errors.push(`${expected.file}: trust section must explain the primary-source verification rule`);
   }
+
+  const mortgageActionCount = (html.match(/data-track-action=["']mortgage_open["']/gi) || []).length;
+  if (mortgageActionCount < 2) {
+    errors.push(`${expected.file}: expected mortgage CTA in hero and FAQ`);
+  }
 }
 
 for (const expected of EXPECTED_FORMS) {
@@ -306,8 +311,10 @@ for (const expected of EXPECTED_FORMS) {
 PROJECT_TRUST_PAGES.forEach(validateProjectTrustPage);
 
 const homepage = read("index.html");
+const mortgagePage = read("ipoteka/index.html");
 const schemaScript = read("assets/js/schema.js");
 const conversionScript = read("assets/js/conversion-tracking.js");
+const priorityLeadsScript = read("assets/js/priority-leads.js");
 const mobileLeadBarScript = read("assets/js/mobile-lead-bar.js");
 const projectConversionCss = read("assets/css/project-conversion.css");
 
@@ -331,6 +338,22 @@ if (!schemaScript.includes('loadPortalScript(schemaScriptUrl, "conversion-tracki
     errors.push(`assets/js/conversion-tracking.js: missing event ${eventName}`);
   }
 });
+
+if (!conversionScript.includes("function enrichMortgageLinks")) {
+  errors.push("assets/js/conversion-tracking.js: mortgage links do not preserve object context");
+}
+
+if (!conversionScript.includes('params.set("object", objectId)')) {
+  errors.push("assets/js/conversion-tracking.js: mortgage object query parameter is not set");
+}
+
+if (!priorityLeadsScript.includes("[data-selected-object-note]")) {
+  errors.push("assets/js/priority-leads.js: selected mortgage object note is not updated");
+}
+
+if (!mortgagePage.includes("data-selected-object-note")) {
+  errors.push("ipoteka/index.html: selected object confirmation note is missing");
+}
 
 if (!mobileLeadBarScript.includes('form.closest("[data-primary-lead]")')) {
   errors.push("assets/js/mobile-lead-bar.js: mobile CTA does not prioritize the short lead form");
