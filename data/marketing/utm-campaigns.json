@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "updated_at": "2026-07-14",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Единый реестр рекламных ссылок, чтобы источник, объект и целевая форма фиксировались одинаково во всех каналах.",
@@ -8,6 +8,7 @@
     "legacy_single_project_prefix_forbidden": true,
     "landing_page_must_be_active": true,
     "form_id_and_lead_type_must_match_page": true,
+    "active_campaign_uses_primary_form": true,
     "utm_values_are_lowercase_latin": true
   },
   "campaigns": [
@@ -16,140 +17,140 @@
       "status": "active",
       "object_id": "all-newbuilds",
       "landing_path": "/catalog/",
-      "expected_form_id": "catalog_priority_selection",
+      "expected_form_id": "catalog_quick_selection",
       "expected_lead_type": "portal_selection",
       "utm_source": "vk",
       "utm_medium": "social",
       "utm_campaign": "portal_catalog",
       "utm_content": "catalog_post",
       "goal": "Общий подбор новостройки",
-      "sales_note": "Уточнить интересующий адрес, комнатность, бюджет и способ покупки."
+      "sales_note": "Сначала подтвердить выбранный объект и договориться о разговоре; комнатность, бюджет и способ покупки уточнить после первого контакта."
     },
     {
       "id": "portal_telegram_catalog",
       "status": "active",
       "object_id": "all-newbuilds",
       "landing_path": "/catalog/",
-      "expected_form_id": "catalog_priority_selection",
+      "expected_form_id": "catalog_quick_selection",
       "expected_lead_type": "portal_selection",
       "utm_source": "telegram",
       "utm_medium": "social",
       "utm_campaign": "portal_catalog",
       "utm_content": "catalog_post",
       "goal": "Общий подбор новостройки",
-      "sales_note": "Определить, какой из городских объектов интересует клиента."
+      "sales_note": "Определить интересующий адрес и удобный формат первого контакта; подробные параметры уточнить в разговоре."
     },
     {
       "id": "portal_offline_qr",
       "status": "active",
       "object_id": "all-newbuilds",
       "landing_path": "/",
-      "expected_form_id": "homepage_priority_selection",
+      "expected_form_id": "homepage_quick_selection",
       "expected_lead_type": "portal_selection",
       "utm_source": "offline",
       "utm_medium": "qr",
       "utm_campaign": "portal_city_awareness",
       "utm_content": "printed_material",
       "goal": "Переход с печатного материала и выбор объекта",
-      "sales_note": "Спросить, где клиент увидел QR-код, и зафиксировать носитель в комментарии."
+      "sales_note": "Уточнить выбранный объект и носитель QR-кода; остальные параметры собрать после первого контакта."
     },
     {
       "id": "prostornaya_4a_vk_launch",
       "status": "active",
       "object_id": "prostornaya-4a",
       "landing_path": "/catalog/prostornaya-4a/",
-      "expected_form_id": "catalog_prostornaya_4a_priority_lead",
+      "expected_form_id": "catalog_prostornaya_4a_quick_consultation",
       "expected_lead_type": "project_consultation",
       "utm_source": "vk",
       "utm_medium": "social",
       "utm_campaign": "prostornaya_4a_launch",
       "utm_content": "launch_post",
       "goal": "Заявка по Просторной 4А",
-      "sales_note": "Уточнить комнатность, бюджет, способ покупки и требуемую информацию по объекту."
+      "sales_note": "Сначала уточнить главный вопрос по объекту; комнатность, бюджет, способ и срок покупки квалифицировать в разговоре."
     },
     {
       "id": "prostornaya_4a_telegram_launch",
       "status": "active",
       "object_id": "prostornaya-4a",
       "landing_path": "/catalog/prostornaya-4a/",
-      "expected_form_id": "catalog_prostornaya_4a_priority_lead",
+      "expected_form_id": "catalog_prostornaya_4a_quick_consultation",
       "expected_lead_type": "project_consultation",
       "utm_source": "telegram",
       "utm_medium": "social",
       "utm_campaign": "prostornaya_4a_launch",
       "utm_content": "launch_post",
       "goal": "Заявка по Просторной 4А",
-      "sales_note": "Сообщать только актуально подтверждённые цены, планировки и условия."
+      "sales_note": "Уточнить главный вопрос клиента и сообщать только актуально подтверждённые цены, планировки и условия."
     },
     {
       "id": "aerodromnaya_18g_vk_interest",
       "status": "active",
       "object_id": "aerodromnaya-18g",
       "landing_path": "/catalog/aerodromnaya-18g/",
-      "expected_form_id": "catalog_aerodromnaya_18g_priority_lead",
+      "expected_form_id": "catalog_aerodromnaya_18g_quick_consultation",
       "expected_lead_type": "project_consultation",
       "utm_source": "vk",
       "utm_medium": "social",
       "utm_campaign": "aerodromnaya_18g_interest",
       "utm_content": "interest_post",
       "goal": "Фиксация интереса к Аэродромной 18Г",
-      "sales_note": "Не обещать цены, сроки или старт продаж без подтверждённого источника."
+      "sales_note": "Уточнить, какие сведения нужны клиенту; не обещать цены, сроки или старт продаж без подтверждённого источника."
     },
     {
       "id": "aerodromnaya_18g_telegram_interest",
       "status": "active",
       "object_id": "aerodromnaya-18g",
-      "landing_path": "/catalog/aerodromnaya-18g/",
-      "expected_form_id": "catalog_aerodromnaya_18g_priority_lead",
+      "landing_path": "/catalog/aerodромnaya-18g/",
+      "expected_form_id": "catalog_aerodromnaya_18g_quick_consultation",
       "expected_lead_type": "project_consultation",
       "utm_source": "telegram",
       "utm_medium": "social",
       "utm_campaign": "aerodromnaya_18g_interest",
       "utm_content": "interest_post",
       "goal": "Фиксация интереса к Аэродромной 18Г",
-      "sales_note": "Уточнить, какие сведения клиент хочет получить после проверки."
+      "sales_note": "Уточнить, какие сведения клиент хочет получить после проверки, и согласовать следующий контакт."
     },
     {
       "id": "sennaya_76_vk_interest",
       "status": "active",
       "object_id": "sennaya-76",
       "landing_path": "/catalog/sennaya-76/",
-      "expected_form_id": "catalog_sennaya_76_priority_lead",
+      "expected_form_id": "catalog_sennaya_76_quick_consultation",
       "expected_lead_type": "project_consultation",
       "utm_source": "vk",
       "utm_medium": "social",
       "utm_campaign": "sennaya_76_interest",
       "utm_content": "interest_post",
       "goal": "Фиксация интереса к Сенной 76",
-      "sales_note": "Не выдавать неподтверждённые характеристики объекта за факт."
+      "sales_note": "Уточнить главный вопрос по адресу и не выдавать неподтверждённые характеристики объекта за факт."
     },
     {
       "id": "sennaya_76_telegram_interest",
       "status": "active",
       "object_id": "sennaya-76",
       "landing_path": "/catalog/sennaya-76/",
-      "expected_form_id": "catalog_sennaya_76_priority_lead",
+      "expected_form_id": "catalog_sennaya_76_quick_consultation",
       "expected_lead_type": "project_consultation",
       "utm_source": "telegram",
       "utm_medium": "social",
       "utm_campaign": "sennaya_76_interest",
       "utm_content": "interest_post",
       "goal": "Фиксация интереса к Сенной 76",
-      "sales_note": "Зафиксировать интерес к адресу и удобный срок следующего контакта."
+      "sales_note": "Зафиксировать интерес к адресу, главный вопрос и удобный срок следующего контакта."
     },
     {
       "id": "portal_vk_mortgage",
       "status": "active",
       "object_id": "all-newbuilds",
       "landing_path": "/ipoteka/",
-      "expected_form_id": "portal_mortgage_consultation",
+      "expected_form_id": "portal_mortgage_quick_consultation",
       "expected_lead_type": "mortgage",
       "utm_source": "vk",
       "utm_medium": "social",
       "utm_campaign": "portal_mortgage",
       "utm_content": "mortgage_post",
       "goal": "Ипотечная консультация по новостройке",
-      "sales_note": "Уточнить объект, первоначальный взнос, бюджет и подходящую программу."
+      "sales_note": "Сначала подтвердить объект и удобство разговора; программу, первоначальный взнос и бюджет уточнить после первого контакта."
     }
   ]
 }
