@@ -15,43 +15,19 @@
 4. Общий подбор по другим новостройкам города
 ```
 
-Портал не позиционируется как официальный сайт застройщика, жилого комплекса или отдела продаж.
+Портал не является официальным сайтом застройщика, жилого комплекса или отдела продаж.
 
-Базовый принцип публикации:
+Основной принцип:
 
 ```text
 нет подтверждённого источника → нет публичного факта
 ```
 
-Корневая страница индексируется. Внутренние рабочие разделы сохраняют `noindex,follow`, пока сведения, формы и юридические тексты не прошли финальную проверку.
-
-## Рабочая структура
-
-```text
-/
-/catalog/
-/catalog/prostornaya-4a/
-/catalog/aerodromnaya-18g/
-/catalog/sennaya-76/
-/developers/
-/developers/bm-group/
-/ipoteka/
-/guides/
-/news/
-/contacts/
-/about/
-/sources/
-/legal/
-/privacy/
-/personal-data-consent/
-/advertising/
-/karta-sayta/
-/spasibo/
-```
+Корневая страница индексируется. Внутренние разделы и карточки объектов сохраняют `noindex,follow` до проверки источников, юридических текстов, форм и готовности публикации.
 
 ## Конверсионный путь
 
-Короткий и подробный сценарии работают на всех главных входах:
+Короткий и подробный сценарии работают на семи основных входах:
 
 ```text
 главная
@@ -76,17 +52,7 @@ CTA
 → возврат к объекту, каталог или звонок
 ```
 
-Короткие формы запрашивают только:
-
-```text
-имя
-телефон
-объект или главный вопрос
-```
-
-Комнатность, бюджет, способ покупки, программа, срок и комментарий остаются в подробных формах, когда это применимо.
-
-Мобильная панель ведёт к контейнеру `data-primary-lead`.
+Короткие формы запрашивают только имя, телефон и объект или главный вопрос. Комнатность, бюджет, способ покупки, программа, срок и комментарий остаются в подробных формах.
 
 ## Активные формы
 
@@ -109,26 +75,14 @@ portal_mortgage_quick_consultation
 portal_mortgage_consultation
 ```
 
-Каждая основная страница содержит одну пару:
+Роли:
 
 ```text
 primary = короткая форма внутри data-primary-lead
 detailed = подробная форма вне первичного контейнера
 ```
 
-Роль определяется автоматически и передаётся как:
-
-```text
-form_role=primary | detailed
-```
-
-Основной fallback:
-
-```text
-SITE_CONFIG.defaultComplex = «Общий подбор новостройки»
-```
-
-Каждая заявка сохраняет:
+В заявке сохраняются:
 
 ```text
 form_id
@@ -138,103 +92,65 @@ project_id
 project_name
 residential_complex
 residential_complex_id
-страницу отправки
-источник перехода
-first touch
-last touch
+page_url
+referrer
+first_touch
+last_touch
 UTM и рекламные идентификаторы
-ID фиксации клиента
-квалификацию
-согласие
+lead_source
+placement
+client_fixation_id
+qualification
+consent
 ```
 
-## Главная и каталог
+## Контекстные переходы
 
-На главной работают:
+Справочник, новости, раздел застройщиков и три статьи направляют к существующим коротким формам без создания дополнительных анкет.
+
+Охвачено:
 
 ```text
-homepage_quick_selection
-homepage_priority_selection
+6 справочных страниц
+12 контекстных CTA
+3 целевые первичные формы
 ```
 
-Карточки Просторной 4А, Аэродромной 18Г и Сенной 76 ведут к коротким формам объектных страниц, а не к подробным анкетам.
-
-На `/catalog/` работают:
+Размещения:
 
 ```text
-catalog_quick_selection
-catalog_priority_selection
+guides_hero
+news_hero
+developers_hero
+guide_documents_footer
+guide_declaration_footer
+guide_layout_footer
 ```
 
-Карточки каталога ведут к:
+Внутренние ссылки передают только:
 
 ```text
-/catalog/prostornaya-4a/#quick-lead
-/catalog/aerodromnaya-18g/#quick-lead
-/catalog/sennaya-76/#quick-lead
+lead_source=internal_content
+placement=<размещение кнопки>
 ```
 
-## Страницы объектов
-
-Для Просторной 4А, Аэродромной 18Г и Сенной 76 реализован единый путь:
-
-```text
-первый экран
-→ короткая консультация
-→ статус сведений
-→ ответы на вопросы
-→ CTA консультации и ипотеки
-→ подробная форма
-```
-
-На каждой странице:
-
-- разделены доступные и уточняемые сведения;
-- размещён FAQ минимум из пяти вопросов;
-- разъяснено, что заявка не является бронью, очередью или фиксацией цены;
-- CTA размечены по размещению и ID объекта;
-- ипотечный CTA сохраняет выбранный объект и ведёт к `#quick-lead`.
-
-## Контакты
-
-На `/contacts/` работают:
-
-```text
-contacts_quick_selection
-contacts_priority_selection
-```
-
-Первичная форма запрашивает имя, телефон и объект. Подробная форма дополнительно собирает комнатность, бюджет, способ и срок покупки.
+Внутренний переход не заменяет внешний рекламный UTM. Менеджер видит `lead_source` и `placement` отдельными строками в читаемом письме и отдельными полями Web3Forms.
 
 ## Ипотечная воронка
 
-На `/ipoteka/` работают:
-
-```text
-portal_mortgage_quick_consultation
-portal_mortgage_consultation
-```
-
-Объектная страница передаёт безопасный параметр:
+Объектные CTA ведут к:
 
 ```text
 /ipoteka/?object=<residential_complex_id>#quick-lead
 ```
 
-Обе ипотечные формы:
-
-- принимают только объект из внутреннего разрешённого реестра;
-- автоматически выбирают объект;
-- синхронизируют `residential_complex` и `residential_complex_id`;
-- показывают нейтральное подтверждение выбранного объекта.
-
-Короткая форма не требует программу, первоначальный взнос, бюджет или срок. Эти сведения собираются в подробном расчёте или в разговоре.
-
-Ипотечная консультация не обещает одобрение банка, ставку, аккредитацию или наличие квартиры.
+Формы принимают только ID из внутреннего разрешённого реестра, автоматически выбирают объект и не обещают одобрение банка, ставку, аккредитацию или наличие квартиры.
 
 ## Аналитика
 
-Реализованы неперсональные события:
+Машиночитаемый реестр использует schema version 1.2.
+
+Активные события:
 
 ```text
 lead_cta_click
@@ -246,242 +162,238 @@ lead_thankyou_view
 lead_postsubmit_action
 ```
 
-`lead_form_view` и `lead_form_start` получают `form_role` непосредственно от формы.
-
-`lead_submit` остаётся единственной общей конверсией отправки.
-
-`lead_submit_classified` используется только для разреза:
+Правило подсчёта:
 
 ```text
-primary
-detailed
+все отправки → lead_submit
+разрез primary/detailed → lead_submit_classified
 ```
 
-Его нельзя складывать с `lead_submit` как дополнительную заявку.
+`lead_submit_classified` нельзя складывать с `lead_submit` как дополнительную заявку.
 
-Событие `lead_submit_classified` содержит:
+`lead_submit` и `lead_submit_classified` содержат необязательные технические измерения:
 
 ```text
-form_id
-form_role
-lead_type
-residential_complex_id
-qualification_status
+lead_source
+placement
 ```
-
-`lead_thankyou_view` и `lead_postsubmit_action` также получают `form_role`.
 
 Имя, телефон, бюджет, комментарий и технический ID фиксации не передаются в классифицирующее событие.
 
-## Страница благодарности
+## Dry-run и локальный debug
 
-Порядок атрибуции `/spasibo/`:
-
-1. Локальная запись используется только при точном совпадении ID заявки.
-2. ID объекта проверяется по закрытому внутреннему реестру.
-3. Роль формы используется только из совпавшей локальной записи.
-4. При отсутствии совпадения допускается fallback объекта только по same-origin referrer.
-5. При недостатке данных выводится нейтральный контекст портала.
-
-Пользователь видит сценарий:
-
-```text
-Короткая форма
-```
-
-или:
-
-```text
-Подробная форма
-```
-
-В `lead_thankyou_view` не передаётся `client_fixation_id`.
-
-При известном объекте посетителю показывается безопасная ссылка возврата на его страницу.
-
-## Безопасный dry-run
-
-Режим включается только при одновременных параметрах:
+Обычный dry-run:
 
 ```text
 ?lead_test=dry-run&test_ack=1
 ```
 
-Он:
+не отправляет данные во внешние сервисы и не создаёт рабочие конверсии.
+
+Локальный analytics debug включается только при тройном условии:
 
 ```text
-не отправляет данные в Web3Forms
-не отправляет данные в email или CRM
-не создаёт событие реальной конверсии
-не создаёт lead_submit_classified
-не создаёт thank-you и post-submit события
-определяет form_role только локально
-создаёт локальный ID NB-TEST-*
-проверяет обязательные поля и системные идентификаторы
-показывает отдельное тестовое состояние
+?lead_test=dry-run&analytics_test=debug&test_ack=1
 ```
 
-Реальная доставка заявок этим режимом не подтверждается.
+Он моделирует полный путь событий только в `sessionStorage`, подавляет `dataLayer`, `gtag` и Метрику, удаляет персональные и ограниченные поля и хранит не более 100 записей.
+
+## Ручной QA
+
+Подготовлено:
+
+```text
+14 сценариев
+3 устройства: desktop, android, iphone
+42 QA-слота
+```
+
+Текущее состояние:
+
+```text
+passed=0
+failed=0
+blocked=0
+not_run=42
+```
+
+Физические тесты Android и iPhone не проводились.
 
 ## Рекламные кампании
 
-Реестр:
+Зарегистрировано 11 активных кампаний:
 
 ```text
-data/marketing/utm-campaigns.json
+общий каталог: VK + Telegram
+Просторная 4А: VK + Telegram
+Аэродромная 18Г: VK + Telegram
+Сенная 76: VK + Telegram
+ипотека: VK + Telegram
+общегородской QR: offline/qr
 ```
 
-Зарегистрировано 11 активных кампаний для общего каталога, офлайн QR, трёх объектов и ипотечной консультации.
-
-Все активные кампании привязаны к коротким формам внутри `data-primary-lead`.
-
-Целевые формы:
+Release pack подготовлен, но не опубликован.
 
 ```text
-catalog_quick_selection
-homepage_quick_selection
-catalog_prostornaya_4a_quick_consultation
-catalog_aerodromnaya_18g_quick_consultation
-catalog_sennaya_76_quick_consultation
-portal_mortgage_quick_consultation
+prepared_links=11
+published_placements=0
+qr_images_generated=false
+working_analytics_verified=false
 ```
 
-`validate:utm` проверяет активную страницу, целевую форму, `lead_type`, primary-контейнер, объект и нейтральную привязку общих кампаний.
+## Источники и готовность объектов
 
-Генератор показывает целевой `form_id` и добавляет в JSON/CSV:
+Очередь первичных источников:
 
 ```text
-entry_point=primary_short_form
+projects=3
+tasks=14
+accepted=0
+missing=14
 ```
 
-## Состояние объектов
+Распределение:
+
+```text
+Просторная 4А — 4 задачи
+Аэродромная 18Г — 5 задач
+Сенная 76 — 5 задач
+```
+
+Готовность карточек:
+
+```text
+public_ready=0
+requires_recheck=1
+requires_sources=2
+noindex=3
+```
 
 ### Просторная 4А
 
 ```text
-overall_status=requires_recheck
-claims=working_copy
-sources=reference_required
+sources_verified=0/3
+critical_claims_confirmed=0/14
 is_public_ready=false
 ```
 
-Для перевода характеристики в `confirmed` требуется первичный источник с точной ссылкой и датой проверки.
+Не сохранены точные первичные ссылки на карточку ЕИСЖС, актуальную проектную декларацию и разрешение на строительство. Права на семь визуализаций не подтверждены.
 
 ### Аэродромная 18Г и Сенная 76
 
 ```text
+verification_file=missing
 verification_status=requires_check
 is_public_ready=false
-robots=noindex,follow
 ```
 
-Неподтверждённые цены, сроки, застройщик, планировки и характеристики не публикуются как факт.
+Цены, сроки, застройщик, планировки и характеристики не публикуются как подтверждённые факты.
 
-## Визуальные материалы
+## Ворота запуска
 
-Семь унаследованных визуализаций Просторной 4А сохраняют:
+Всего ворот: 10.
 
 ```text
-verification_status=requires_check
-rights_status=unknown
-is_public_ready=false
-allowed_usage=[]
+passed=1
+blocked=9
+ready_profiles=0/3
 ```
 
-Публичный вывод возможен только после подтверждения источника, актуальности и прав.
+Пройдено только:
+
+```text
+campaign_links_prepared
+```
+
+Профили:
+
+```text
+рекламный запуск — BLOCKED
+SEO-индексация объектов — BLOCKED
+legacy-редиректы — BLOCKED
+```
+
+Ручного подтверждения требуют:
+
+```text
+real_lead_delivery
+live_analytics_debug
+legal_owner_review
+campaign_publication_approval
+hosting_redirect_format
+```
 
 ## Legacy-миграция
 
-Зарегистрировано 24 маршрута пяти очередей.
+Зарегистрировано 24 маршрута пяти очередей. Переходные страницы сохраняют `noindex`, не содержат самостоятельных форм и старого позиционирования.
 
-Переходные страницы закрыты от индексации, не содержат прежнего брендинга и самостоятельных лид-форм, не используют клиентские автоматические редиректы и содержат явную ссылку на целевую страницу.
-
-Серверные редиректы ещё не выпущены: платформа размещения и формат правил не определены.
+Серверные редиректы не выпущены: платформа размещения и формат правил не определены.
 
 ## Автоматические проверки
 
-Основные команды:
+Portal guards проходит 35 специализированных шагов.
+
+Ключевые команды:
 
 ```bash
 npm run validate
-npm run validate:json
-npm run validate:priority
-npm run validate:reference
-npm run validate:verification
 npm run validate:leads
+npm run validate:contextual-conversion
+npm run validate:lead-source-output
 npm run validate:form-roles
-npm run validate:form-scope
-npm run validate:a11y
-npm run validate:dry-run
-npm run validate:legal
-npm run validate:trust
-npm run validate:links
-npm run validate:html-sitemap
-npm run validate:legacy
-npm run validate:media
+npm run validate:analytics
+npm run validate:analytics-debug
+npm run validate:form-qa
+npm run validate:form-qa-results
+npm run validate:verification
+npm run validate:source-collection
+npm run validate:project-readiness
+npm run validate:launch-readiness
 npm run validate:utm
 npm run audit:branding
 ```
 
-Специализированные проверки:
-
-```text
-tools/validate-homepage-object-cta.mjs
-tools/validate-catalog-conversion.mjs
-tools/validate-contacts-conversion.mjs
-tools/validate-mortgage-conversion.mjs
-tools/validate-form-role-analytics.mjs
-tools/validate-thankyou-context.mjs
-```
-
-Guard ролей форм проверяет семь страниц, 14 форм, primary/detailed-размещение, состав классифицирующего события, отсутствие персональных данных и отключение событий в dry-run.
-
-Portal guards запускает специализированные проверки отдельными шагами.
-
 ## Открытые риски
 
-1. Реальная доставка заявок ещё не подтверждена контролируемой тестовой отправкой.
-2. Мобильное использование не проверено на физических Android и iPhone.
-3. События не проверены в реальном счётчике Google Analytics или Яндекс Метрики.
-4. Для Просторной 4А не сохранены точные URL первичных документов.
-5. Аэродромная 18Г и Сенная 76 остаются в статусе `requires_check`.
-6. Семь изображений требуют проверки происхождения, актуальности и разрешения на публикацию.
-7. Для страниц обработки данных нужно определить фактические реквизиты владельца и провести юридическую проверку.
-8. Платформа и формат серверных редиректов пока не определены.
-9. CRM или управляемый серверный endpoint не подключены.
-10. Фактические рекламные ссылки и QR-коды ещё не выпущены в материалы.
+1. Реальная доставка заявок не подтверждена контролируемой отправкой.
+2. Фактическое письмо с новыми полями не проверено.
+3. События не проверены в рабочем счётчике.
+4. 42 ручных QA-слота не выполнены.
+5. Для трёх объектов не завершён сбор первичных источников.
+6. Права на визуальные материалы не подтверждены.
+7. Фактические реквизиты владельца данных требуют юридической проверки.
+8. Рекламные ссылки не опубликованы, QR не создан.
+9. Платформа и формат серверных редиректов не определены.
+10. CRM или управляемый серверный endpoint не подключены.
 
 ## Следующие действия
 
-1. Провести ручную мобильную проверку 14 форм через dry-run на Android и iPhone.
-2. Проверить `form_role` и события в режиме отладки фактической аналитической системы.
-3. После отдельного согласования выполнить одну реальную тестовую заявку.
-4. Сохранить точные ссылки на карточку ЕИСЖС, декларацию и разрешение Просторной 4А.
-5. Продолжить сбор первичных источников по Аэродромной 18Г и Сенной 76.
-6. Проверить происхождение и права на визуализации.
-7. Сгенерировать и проверить фактические рекламные ссылки.
-8. Подготовить QR-коды после утверждения конкретных носителей.
-9. После начала трафика сравнивать primary и detailed по полной воронке.
-10. Определить платформу размещения и правила серверных редиректов.
-11. Принять решение по Web3Forms, Supabase Edge Function или другому endpoint.
+1. Провести ручную проверку форм на desktop, Android и iPhone через dry-run.
+2. Проверить события и поля `lead_source`, `placement`, `form_role` в фактическом debug-режиме аналитики.
+3. После отдельного согласования отправить одну реальную тестовую заявку и проверить письмо.
+4. Сохранить точные первичные ссылки по Просторной 4А.
+5. Продолжить сбор источников по Аэродромной 18Г и Сенной 76.
+6. Проверить права на визуальные материалы.
+7. Получить юридическое решение по владельцу данных и рекламной публикации.
+8. После разрешения опубликовать кампании и внести фактические размещения в журнал.
+9. Выбрать носитель и размер для QR.
+10. Определить платформу размещения и синтаксис серверных редиректов.
+11. Принять отдельное решение по endpoint заявок и CRM.
 
 ## Основные документы
 
 ```text
 docs/development-roadmap.md
-docs/portal/HOMEPAGE_OBJECT_CTA.md
-docs/portal/CATALOG_CONVERSION_PATH.md
-docs/portal/CONTACTS_CONVERSION_PATH.md
-docs/portal/PROJECT_PAGE_CONVERSION_AUDIT.md
-docs/portal/PROJECT_TRUST_AND_FAQ.md
-docs/portal/MORTGAGE_OBJECT_CONTEXT.md
-docs/portal/MORTGAGE_QUICK_CONSULTATION.md
+docs/portal/CONTEXTUAL_CONTENT_CTA.md
+docs/portal/LEAD_SOURCE_OUTPUT.md
 docs/portal/FORM_ROLE_ANALYTICS.md
-docs/portal/THANKYOU_ATTRIBUTION.md
-docs/portal/LEADS_AND_CRM.md
-docs/portal/LEAD_DRY_RUN_QA.md
-docs/portal/FORM_ACCESSIBILITY_AND_MOBILE_QA.md
-docs/portal/PROJECT_VERIFICATION_WORKFLOW.md
-docs/portal/MEDIA_REVIEW_WORKFLOW.md
-docs/portal/UTM_CAMPAIGNS.md
+docs/portal/ANALYTICS_EVENT_REGISTRY.md
+docs/portal/ANALYTICS_DEBUG_QA.md
+docs/portal/FORM_QA_MATRIX.md
+docs/portal/FORM_QA_RESULTS.md
+docs/portal/CAMPAIGN_RELEASE_PACK.md
+docs/portal/CAMPAIGN_PUBLICATION_TRACKER.md
+docs/portal/PROJECT_VERIFICATION_READINESS.md
+docs/portal/SOURCE_COLLECTION_QUEUE.md
+docs/portal/LAUNCH_READINESS_GATES.md
 ```
