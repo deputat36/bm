@@ -47,6 +47,7 @@ on:
       - "data/media/**"
       - "data/verification/**"
       - "data/marketing/**"
+      - "data/analytics/**"
       - "docs/portal/**"
       - "tools/**"
       - "scripts/**"
@@ -100,6 +101,7 @@ on:
       - "data/media/**"
       - "data/verification/**"
       - "data/marketing/**"
+      - "data/analytics/**"
       - "docs/portal/**"
       - "tools/**"
       - "scripts/**"
@@ -145,6 +147,8 @@ jobs:
           node --check tools/validate-contacts-conversion.mjs
           node --check tools/validate-mortgage-conversion.mjs
           node --check tools/validate-form-role-analytics.mjs
+          node --check tools/validate-analytics-events.mjs
+          node --check tools/build-analytics-report-spec.mjs
           node --check tools/validate-thankyou-context.mjs
           node --check tools/validate-active-form-scope.mjs
           node --check tools/validate-form-accessibility.mjs
@@ -181,6 +185,9 @@ jobs:
 
       - name: Validate form role analytics
         run: npm run validate:form-roles
+
+      - name: Validate analytics event registry
+        run: npm run validate:analytics
 
       - name: Validate thank-you attribution
         run: npm run validate:thankyou
@@ -225,6 +232,11 @@ jobs:
         run: |
           node tools/build-utm-links.mjs --format=json > /tmp/utm-links.json
           node -e 'const fs=require("fs"); const rows=JSON.parse(fs.readFileSync("/tmp/utm-links.json","utf8")); if(!Array.isArray(rows)||rows.length===0) process.exit(1); console.log(`Generated UTM links: ${rows.length}`);'
+
+      - name: Generate analytics report specification
+        run: |
+          node tools/build-analytics-report-spec.mjs --format=json > /tmp/analytics-spec.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/analytics-spec.json","utf8")); if(!Array.isArray(data.events)||data.events.length!==7) process.exit(1); console.log(`Generated analytics events: ${data.events.length}`);'
 
       - name: Audit portal branding
         run: npm run audit:branding
