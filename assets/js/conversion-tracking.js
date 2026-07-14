@@ -36,6 +36,23 @@
     };
   }
 
+  function enrichMortgageLinks() {
+    document.querySelectorAll('a[data-track-action="mortgage_open"][data-track-object]').forEach((link) => {
+      const objectId = String(link.dataset.trackObject || "").trim();
+      const rawHref = String(link.getAttribute("href") || "").trim();
+      if (!objectId || !rawHref) return;
+
+      const relativePath = rawHref.split(/[?#]/)[0];
+      const queryPart = rawHref.includes("?") ? rawHref.split("?")[1].split("#")[0] : "";
+      const params = new URLSearchParams(queryPart);
+      params.set("object", objectId);
+
+      link.setAttribute("href", `${relativePath}?${params.toString()}#lead`);
+    });
+  }
+
+  enrichMortgageLinks();
+
   document.addEventListener("click", (event) => {
     const target = event.target.closest("[data-track-action]");
     if (!target) return;

@@ -43,6 +43,20 @@ function ensureHiddenObjectId(form) {
   return hidden;
 }
 
+function updateRequestedObjectNote(objectName) {
+  const note = document.querySelector("[data-selected-object-note]");
+  if (!note) return;
+
+  if (!objectName || objectName === "Общий подбор новостройки") {
+    note.hidden = true;
+    note.textContent = "";
+    return;
+  }
+
+  note.textContent = `Вы перешли к предварительному расчёту по объекту «${objectName}». Он уже выбран в форме. Цена, наличие и возможность применения программы уточняются отдельно на дату консультации.`;
+  note.hidden = false;
+}
+
 function enhancePriorityObjectForm(form) {
   const select = form.querySelector("select[name='residential_complex']");
   if (!select) return;
@@ -65,6 +79,7 @@ function enhancePriorityObjectForm(form) {
 
   select.addEventListener("change", syncObject);
   syncObject();
+  updateRequestedObjectNote(requestedObject);
 }
 
 document.querySelectorAll("form[data-lead-form]").forEach(enhancePriorityObjectForm);
