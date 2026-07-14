@@ -43,6 +43,16 @@ const EXPECTED_FORMS = [
   },
   {
     file: "catalog/prostornaya-4a/index.html",
+    formId: "catalog_prostornaya_4a_quick_consultation",
+    leadType: "project_consultation",
+    kind: "project",
+    complex: "Просторная 4А",
+    complexId: "prostornaya-4a",
+    quick: true,
+    detailedFormId: "catalog_prostornaya_4a_priority_lead"
+  },
+  {
+    file: "catalog/prostornaya-4a/index.html",
     formId: "catalog_prostornaya_4a_priority_lead",
     leadType: "project_consultation",
     kind: "project",
@@ -51,11 +61,31 @@ const EXPECTED_FORMS = [
   },
   {
     file: "catalog/aerodromnaya-18g/index.html",
+    formId: "catalog_aerodromnaya_18g_quick_consultation",
+    leadType: "project_consultation",
+    kind: "project",
+    complex: "Аэродромная 18Г",
+    complexId: "aerodromnaya-18g",
+    quick: true,
+    detailedFormId: "catalog_aerodromnaya_18g_priority_lead"
+  },
+  {
+    file: "catalog/aerodromnaya-18g/index.html",
     formId: "catalog_aerodromnaya_18g_priority_lead",
     leadType: "project_consultation",
     kind: "project",
     complex: "Аэродромная 18Г",
     complexId: "aerodromnaya-18g"
+  },
+  {
+    file: "catalog/sennaya-76/index.html",
+    formId: "catalog_sennaya_76_quick_consultation",
+    leadType: "project_consultation",
+    kind: "project",
+    complex: "Сенная 76",
+    complexId: "sennaya-76",
+    quick: true,
+    detailedFormId: "catalog_sennaya_76_priority_lead"
   },
   {
     file: "catalog/sennaya-76/index.html",
@@ -98,6 +128,16 @@ function getAttribute(tag, name) {
 function findFormBlock(html, formId) {
   const pattern = new RegExp(`<form\\b[^>]*data-form-id=["']${escapeRegExp(formId)}["'][^>]*>[\\s\\S]*?<\\/form>`, "i");
   return html.match(pattern)?.[0] || "";
+}
+
+function hasNamedField(formBlock, fieldName) {
+  const pattern = new RegExp(`\\bname=["']${escapeRegExp(fieldName)}["']`, "i");
+  return pattern.test(formBlock);
+}
+
+function hasRequiredNamedField(formBlock, fieldName) {
+  const pattern = new RegExp(`<(?:input|select|textarea)\\b(?=[^>]*\\bname=["']${escapeRegExp(fieldName)}["'])(?=[^>]*\\brequired(?:\\s|=|>))[^>]*>`, "i");
+  return pattern.test(formBlock);
 }
 
 function validateCommon(expected, html, formTag) {
@@ -169,6 +209,41 @@ function validateProjectForm(expected, formTag) {
   }
 }
 
+function validateQuickProjectForm(expected, html, formBlock) {
+  const label = `${expected.file}:${expected.formId}`;
+
+  ["name", "phone", "interest"].forEach((fieldName) => {
+    if (!hasRequiredNamedField(formBlock, fieldName)) {
+      errors.push(`${label}: quick form requires ${fieldName}`);
+    }
+  });
+
+  ["budget", "purchase_method", "timeline", "comment"].forEach((fieldName) => {
+    if (hasNamedField(formBlock, fieldName)) {
+      errors.push(`${label}: quick form must not request ${fieldName} before first conversation`);
+    }
+  });
+
+  [
+    'id="quick-lead"',
+    "data-primary-lead",
+    'data-track-action="quick_consultation"',
+    'data-track-placement="project_hero"',
+    `data-track-object="${expected.complexId}"`,
+    "assets/css/project-conversion.css"
+  ].forEach((fragment) => {
+    if (!html.includes(fragment)) {
+      errors.push(`${expected.file}: missing project conversion fragment ${fragment}`);
+    }
+  });
+
+  const quickPosition = html.indexOf(`data-form-id="${expected.formId}"`);
+  const detailedPosition = html.indexOf(`data-form-id="${expected.detailedFormId}"`);
+  if (quickPosition < 0 || detailedPosition < 0 || quickPosition > detailedPosition) {
+    errors.push(`${expected.file}: quick form must appear before detailed form`);
+  }
+}
+
 for (const expected of EXPECTED_FORMS) {
   const html = read(expected.file);
   if (!html) continue;
@@ -183,6 +258,7 @@ for (const expected of EXPECTED_FORMS) {
     validateSelectionForm(expected, html, formBlock);
   } else {
     validateProjectForm(expected, formTag);
+    if (expected.quick) validateQuickProjectForm(expected, html, formBlock);
   }
 }
 
