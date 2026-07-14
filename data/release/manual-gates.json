@@ -1,0 +1,97 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-14",
+  "portal_id": "newbuilds-borisoglebsk",
+  "purpose": "Журнал только фактически пройденных ручных ворот запуска. Отсутствие доказательств не может считаться положительным результатом.",
+  "rules": {
+    "allowed_statuses": ["blocked", "in_review", "passed", "not_applicable"],
+    "passed_requires_evidence": true,
+    "passed_requires_checked_at": true,
+    "passed_requires_reviewer": true,
+    "not_applicable_requires_reason": true,
+    "personal_data_forbidden": true,
+    "evidence_must_be_https_or_repository_path": true
+  },
+  "gates": [
+    {
+      "id": "real_lead_delivery",
+      "title": "Контролируемая реальная доставка заявки",
+      "scope": "campaign_launch",
+      "status": "blocked",
+      "required_evidence": [
+        "Согласование на одну реальную тестовую отправку.",
+        "Подтверждение получения письма или записи endpoint.",
+        "Проверка form_id, form_role, lead_type, объекта, UTM и ID фиксации.",
+        "Проверка отсутствия потери согласия и обязательных технических полей."
+      ],
+      "evidence": [],
+      "checked_at": null,
+      "reviewer": "",
+      "notes": "Реальная тестовая заявка ещё не отправлялась. Требуется отдельное согласование пользователя."
+    },
+    {
+      "id": "live_analytics_debug",
+      "title": "Проверка событий в рабочем счётчике",
+      "scope": "campaign_launch",
+      "status": "blocked",
+      "required_evidence": [
+        "Скриншот или экспорт debug-режима фактического счётчика.",
+        "Подтверждение событий lead_cta_click, lead_form_view, lead_form_start и lead_submit.",
+        "Подтверждение form_role и отсутствия персональных параметров.",
+        "Подтверждение отсутствия двойного подсчёта lead_submit и lead_submit_classified."
+      ],
+      "evidence": [],
+      "checked_at": null,
+      "reviewer": "",
+      "notes": "Локальный analytics debug готов, но рабочий счётчик не подключался и не проверялся."
+    },
+    {
+      "id": "legal_owner_review",
+      "title": "Юридическая проверка владельца портала и обработки данных",
+      "scope": "campaign_and_seo",
+      "status": "blocked",
+      "required_evidence": [
+        "Подтверждены фактические реквизиты владельца или оператора портала.",
+        "Проверены политика конфиденциальности и согласие на обработку персональных данных.",
+        "Проверены рекламные формулировки и отсутствие впечатления официального сайта застройщика.",
+        "Зафиксировано решение по допустимым каналам и материалам."
+      ],
+      "evidence": [],
+      "checked_at": null,
+      "reviewer": "",
+      "notes": "Тексты содержат безопасную структуру, но окончательные реквизиты и юридическое согласование не подтверждены."
+    },
+    {
+      "id": "campaign_publication_approval",
+      "title": "Решение о фактической публикации рекламных кампаний",
+      "scope": "campaign_launch",
+      "status": "blocked",
+      "required_evidence": [
+        "Выбраны конкретные кампании и внешние площадки.",
+        "Подтверждено, что посадочная страница и объект допустимы для выбранного сообщения.",
+        "Назначен ответственный за обработку обращений.",
+        "Зафиксировано решение о дате и формате публикации."
+      ],
+      "evidence": [],
+      "checked_at": null,
+      "reviewer": "",
+      "notes": "Release pack из 11 ссылок подготовлен, но публикация требует ручного решения."
+    },
+    {
+      "id": "hosting_redirect_format",
+      "title": "Платформа размещения и формат серверных редиректов",
+      "scope": "legacy_redirect_release",
+      "status": "blocked",
+      "required_evidence": [
+        "Определена платформа размещения.",
+        "Подтверждён синтаксис серверных 301/308 редиректов.",
+        "Проверено сохранение query-параметров и UTM.",
+        "Проверено отсутствие циклов и цепочек."
+      ],
+      "evidence": [],
+      "checked_at": null,
+      "reviewer": "",
+      "notes": "Реестр legacy-маршрутов готов, но формат серверного выпуска неизвестен."
+    }
+  ]
+}
