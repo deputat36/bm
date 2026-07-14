@@ -1,0 +1,72 @@
+.project-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+  gap: 32px;
+  align-items: start;
+}
+
+.project-hero__content {
+  min-width: 0;
+}
+
+.project-hero__content .lead {
+  max-width: 760px;
+}
+
+.project-quick-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  box-shadow: 0 24px 64px rgba(18, 18, 18, 0.14);
+}
+
+.project-quick-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 5px;
+  background: linear-gradient(90deg, var(--red), #7250b8);
+}
+
+.project-quick-card h2 {
+  font-size: clamp(26px, 3vw, 34px);
+}
+
+.project-quick-card .form {
+  margin-top: 4px;
+}
+
+.project-quick-card .button {
+  width: 100%;
+}
+
+.project-quick-card .form__hint {
+  margin: 0;
+  text-align: center;
+}
+
+@media (max-width: 980px) {
+  .project-hero__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-quick-card {
+    max-width: 680px;
+  }
+}
+
+@media (max-width: 640px) {
+  .project-hero__grid {
+    gap: 24px;
+  }
+
+  .project-quick-card {
+    padding: 22px;
+    border-radius: 18px;
+  }
+
+  .project-quick-card input,
+  .project-quick-card select {
+    font-size: 16px;
+  }
+}
