@@ -87,7 +87,7 @@ dry_run_events_forbidden=true
 personal_data_in_analytics_forbidden=true
 ```
 
-Запрещённые поля включают:
+Запрещённые поля:
 
 ```text
 name
@@ -97,7 +97,6 @@ budget
 comment
 question
 consent_text
-client_fixation_id
 user_agent
 ```
 
@@ -106,6 +105,36 @@ user_agent
 ```text
 contains_personal_data=false
 ```
+
+### Технический ID фиксации
+
+`client_fixation_id` выделен в отдельную категорию:
+
+```text
+restricted_technical_fields=[client_fixation_id]
+```
+
+Он разрешён только в каноническом событии:
+
+```text
+restricted_field_allowed_events=[lead_submit]
+```
+
+Причина — существующий сценарий технического сопоставления отправки. ID не должен появляться в:
+
+```text
+lead_submit_classified
+lead_thankyou_view
+lead_postsubmit_action
+```
+
+Для этих событий validator требует:
+
+```text
+contains_restricted_technical_id=false
+```
+
+Технический ID не является именем или телефоном, но его нельзя использовать как обычное маркетинговое измерение или передавать во все события.
 
 ## Проверка реализации
 
@@ -131,6 +160,8 @@ Validator проверяет:
 - фильтр `blocked=false`;
 - наличие `form_role`, `blocked` и `offline`;
 - запрет персональных полей;
+- разрешение `client_fixation_id` только для `lead_submit`;
+- отсутствие ограниченного ID в классификации и post-submit событиях;
 - существование исходного файла;
 - наличие контрольных фрагментов реализации в коде.
 
