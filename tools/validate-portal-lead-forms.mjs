@@ -97,6 +97,12 @@ const EXPECTED_FORMS = [
   }
 ];
 
+const PROJECT_TRUST_PAGES = [
+  { file: "catalog/prostornaya-4a/index.html", complexId: "prostornaya-4a" },
+  { file: "catalog/aerodromnaya-18g/index.html", complexId: "aerodromnaya-18g" },
+  { file: "catalog/sennaya-76/index.html", complexId: "sennaya-76" }
+];
+
 const errors = [];
 const checkedFormIds = new Set();
 
@@ -244,6 +250,41 @@ function validateQuickProjectForm(expected, html, formBlock) {
   }
 }
 
+function validateProjectTrustPage(expected) {
+  const html = read(expected.file);
+  if (!html) return;
+
+  [
+    "data-project-status",
+    "data-status-available",
+    "data-status-pending",
+    "data-project-faq",
+    'data-track-placement="project_faq"',
+    `data-track-object="${expected.complexId}"`
+  ].forEach((fragment) => {
+    if (!html.includes(fragment)) {
+      errors.push(`${expected.file}: missing trust or FAQ fragment ${fragment}`);
+    }
+  });
+
+  const faqStart = html.indexOf("data-project-faq");
+  const faqEnd = faqStart >= 0 ? html.indexOf("</section>", faqStart) : -1;
+  const faqBlock = faqStart >= 0 && faqEnd > faqStart ? html.slice(faqStart, faqEnd) : "";
+  const faqCount = (faqBlock.match(/<details\b/gi) || []).length;
+
+  if (faqCount < 5) {
+    errors.push(`${expected.file}: project FAQ must contain at least 5 questions, found ${faqCount}`);
+  }
+
+  if (!/не (?:является|резервирует|закрепляет)|не фиксирует/i.test(faqBlock)) {
+    errors.push(`${expected.file}: FAQ must explicitly explain that an inquiry is not a booking or price fixation`);
+  }
+
+  if (!html.includes("нет подтверждённого источника") && !html.includes("первичн")) {
+    errors.push(`${expected.file}: trust section must explain the primary-source verification rule`);
+  }
+}
+
 for (const expected of EXPECTED_FORMS) {
   const html = read(expected.file);
   if (!html) continue;
@@ -262,10 +303,13 @@ for (const expected of EXPECTED_FORMS) {
   }
 }
 
+PROJECT_TRUST_PAGES.forEach(validateProjectTrustPage);
+
 const homepage = read("index.html");
 const schemaScript = read("assets/js/schema.js");
 const conversionScript = read("assets/js/conversion-tracking.js");
 const mobileLeadBarScript = read("assets/js/mobile-lead-bar.js");
+const projectConversionCss = read("assets/css/project-conversion.css");
 
 [
   'id="quick-lead"',
@@ -292,7 +336,14 @@ if (!mobileLeadBarScript.includes('form.closest("[data-primary-lead]")')) {
   errors.push("assets/js/mobile-lead-bar.js: mobile CTA does not prioritize the short lead form");
 }
 
+[".project-status-grid", ".project-status-card", ".project-faq", ".project-faq__actions"].forEach((selector) => {
+  if (!projectConversionCss.includes(selector)) {
+    errors.push(`assets/css/project-conversion.css: missing selector ${selector}`);
+  }
+});
+
 console.log(`Checked portal lead forms: ${EXPECTED_FORMS.length}`);
+console.log(`Checked project trust and FAQ pages: ${PROJECT_TRUST_PAGES.length}`);
 
 if (errors.length) {
   console.error("\nPortal lead form validation errors:");
