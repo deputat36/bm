@@ -13,6 +13,12 @@ const PRIORITY_OPTIONS = [
 const EXPECTED_FORMS = [
   {
     file: "index.html",
+    formId: "homepage_quick_selection",
+    leadType: "portal_selection",
+    kind: "selection"
+  },
+  {
+    file: "index.html",
     formId: "homepage_priority_selection",
     leadType: "portal_selection",
     kind: "selection"
