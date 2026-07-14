@@ -140,6 +140,9 @@ jobs:
           node --check tools/validate-priority-projects.mjs
           node --check tools/validate-reference-projects.mjs
           node --check tools/validate-portal-lead-forms.mjs
+          node --check tools/validate-homepage-object-cta.mjs
+          node --check tools/validate-catalog-conversion.mjs
+          node --check tools/validate-thankyou-context.mjs
           node --check tools/validate-active-form-scope.mjs
           node --check tools/validate-form-accessibility.mjs
           node --check tools/validate-lead-dry-run.mjs
@@ -160,6 +163,15 @@ jobs:
 
       - name: Validate portal lead forms
         run: npm run validate:leads
+
+      - name: Validate homepage object CTAs
+        run: npm run validate:homepage-cta
+
+      - name: Validate catalog conversion
+        run: npm run validate:catalog-conversion
+
+      - name: Validate thank-you attribution
+        run: npm run validate:thankyou
 
       - name: Validate active lead form scope
         run: npm run validate:form-scope
