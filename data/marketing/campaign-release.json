@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-14",
+  "release_id": "portal_campaign_links_2026_07_14",
+  "portal_id": "newbuilds-borisoglebsk",
+  "base_url": "https://novostroyki-borisoglebsk.ru",
+  "status": "prepared_not_published",
+  "purpose": "Контролируемый выпуск проверенных рекламных ссылок для социальных сетей и печатных носителей без автоматической публикации.",
+  "rules": {
+    "include_all_active_campaigns": true,
+    "test_parameters_forbidden": true,
+    "personal_parameters_forbidden": true,
+    "primary_short_form_required": true,
+    "publication_requires_manual_decision": true,
+    "qr_image_generation_requires_carrier_selection": true
+  },
+  "campaign_ids": [
+    "portal_vk_catalog",
+    "portal_telegram_catalog",
+    "portal_offline_qr",
+    "prostornaya_4a_vk_launch",
+    "prostornaya_4a_telegram_launch",
+    "aerodromnaya_18g_vk_interest",
+    "aerodromnaya_18g_telegram_interest",
+    "sennaya_76_vk_interest",
+    "sennaya_76_telegram_interest",
+    "portal_vk_mortgage",
+    "portal_telegram_mortgage"
+  ],
+  "publication": {
+    "links_published": false,
+    "qr_images_generated": false,
+    "external_shortener_used": false,
+    "working_analytics_verified": false
+  }
+}

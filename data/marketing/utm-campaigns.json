@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "updated_at": "2026-07-14",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Единый реестр рекламных ссылок, чтобы источник, объект и целевая форма фиксировались одинаково во всех каналах.",
@@ -151,6 +151,20 @@
       "utm_content": "mortgage_post",
       "goal": "Ипотечная консультация по новостройке",
       "sales_note": "Сначала подтвердить объект и удобство разговора; программу, первоначальный взнос и бюджет уточнить после первого контакта."
+    },
+    {
+      "id": "portal_telegram_mortgage",
+      "status": "active",
+      "object_id": "all-newbuilds",
+      "landing_path": "/ipoteka/",
+      "expected_form_id": "portal_mortgage_quick_consultation",
+      "expected_lead_type": "mortgage",
+      "utm_source": "telegram",
+      "utm_medium": "social",
+      "utm_campaign": "portal_mortgage",
+      "utm_content": "mortgage_post",
+      "goal": "Ипотечная консультация по новостройке",
+      "sales_note": "Уточнить выбранный объект и главный вопрос по ипотеке; программу, первоначальный взнос и бюджет обсуждать после первого контакта."
     }
   ]
 }
