@@ -43,7 +43,8 @@
       "optional_fields": ["placement", "object_id", "link_url"],
       "count_rule": "count_events",
       "count_filter": "none",
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "contains_restricted_technical_id": false
     },
     {
       "id": "lead_form_view",
@@ -62,7 +63,8 @@
       "optional_fields": ["residential_complex", "residential_complex_id"],
       "count_rule": "count_first_view_per_form_per_page_load",
       "count_filter": "none",
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "contains_restricted_technical_id": false
     },
     {
       "id": "lead_form_start",
@@ -80,7 +82,8 @@
       "optional_fields": ["residential_complex", "residential_complex_id"],
       "count_rule": "count_first_start_per_form_per_page_load",
       "count_filter": "none",
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "contains_restricted_technical_id": false
     },
     {
       "id": "lead_submit",
