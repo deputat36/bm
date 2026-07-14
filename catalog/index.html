@@ -9,35 +9,50 @@
   <link rel="stylesheet" href="../assets/css/styles.css">
   <link rel="stylesheet" href="../assets/css/home-polish.css">
   <link rel="stylesheet" href="../assets/css/leadgen.css">
+  <link rel="stylesheet" href="../assets/css/project-conversion.css">
 </head>
 <body>
   <header class="topbar">
     <div class="container topbar__inner">
       <a class="brand" href="../" aria-label="Новостройки Борисоглебска"><strong>Новостройки Борисоглебска</strong></a>
-      <nav class="nav" aria-label="Основное меню"><a href="./">Каталог</a><a href="../developers/">Застройщики</a><a href="../ipoteka/">Ипотека</a><a href="../guides/">Справочник</a><a href="../news/">Новости</a><a class="button" href="#lead">Подобрать квартиру</a></nav>
+      <nav class="nav" aria-label="Основное меню"><a href="./">Каталог</a><a href="../developers/">Застройщики</a><a href="../ipoteka/">Ипотека</a><a href="../guides/">Справочник</a><a href="../news/">Новости</a><a class="button" href="#quick-lead" data-track-action="quick_selection" data-track-placement="catalog_header">Подобрать квартиру</a></nav>
     </div>
   </header>
 
   <main>
     <div class="container breadcrumbs"><a href="../">Главная</a> / Каталог</div>
 
-    <section class="page-hero">
-      <div class="container">
-        <span class="eyebrow">Городской каталог</span>
-        <h1>Новостройки Борисоглебска</h1>
-        <p class="lead">Наиболее подробно развиваем страницы Просторной 4А, Аэродромной 18Г и Сенной 76. По этим объектам можно оставить отдельную заявку. Остальные новостройки представлены как проверяемый справочный каталог.</p>
-        <div class="hero__actions"><a class="button" href="#priority">Приоритетные объекты</a><a class="button button--ghost" href="#reference">Другие новостройки</a><a class="button button--ghost" href="#lead">Получить подборку</a><a class="button button--ghost" href="tel:+79038576909">8 903 857-69-09</a></div>
-        <div class="notice">Цена, наличие квартир и условия покупки уточняются перед консультацией. Заявка не является бронью и не фиксирует стоимость.</div>
+    <section class="page-hero project-hero">
+      <div class="container project-hero__grid">
+        <div class="project-hero__content">
+          <span class="eyebrow">Городской каталог</span>
+          <h1>Новостройки Борисоглебска</h1>
+          <p class="lead">Сравните приоритетные объекты и оставьте короткую заявку. Специалист уточнит параметры в разговоре и сообщит только проверенные на дату обращения сведения.</p>
+          <div class="hero__actions"><a class="button" href="#quick-lead" data-track-action="quick_selection" data-track-placement="catalog_hero">Получить подборку</a><a class="button button--ghost" href="#priority" data-track-action="priority_objects" data-track-placement="catalog_hero">Смотреть объекты</a><a class="button button--ghost" href="#reference" data-track-action="reference_catalog" data-track-placement="catalog_hero">Другие новостройки</a><a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="catalog_hero">8 903 857-69-09</a></div>
+          <div class="notice">Цена, наличие квартир и условия покупки уточняются перед консультацией. Заявка не является бронью и не фиксирует стоимость.</div>
+        </div>
+
+        <aside class="lead-form-card project-quick-card" id="quick-lead" data-primary-lead aria-labelledby="catalog-quick-title">
+          <div class="lead-form-card__head"><span class="lead-type-tag">Заявка за 30 секунд</span><h2 id="catalog-quick-title">Начать подбор новостройки</h2><p>Оставьте контакты и выберите объект. Комнатность, бюджет и способ покупки специалист уточнит в разговоре.</p></div>
+          <form class="form form--compact" data-lead-form data-lead-type="portal_selection" data-project="Портал Новостройки Борисоглебска" data-project-id="newbuilds-borisoglebsk" data-project-name="Новостройки Борисоглебска" data-complex="Общий подбор новостройки" data-form-id="catalog_quick_selection" data-success-message="Заявка отправлена. Специалист свяжется с вами и уточнит параметры.">
+            <label>Имя<input name="name" required autocomplete="name" placeholder="Как к вам обращаться"></label>
+            <label>Телефон<input name="phone" required autocomplete="tel" inputmode="tel" placeholder="+7 ___ ___-__-__"></label>
+            <label>Интересующий объект<select name="residential_complex" required><option value="">Выберите объект</option><option>Просторная 4А</option><option>Аэродромная 18Г</option><option>Сенная 76</option><option>Общий подбор новостройки</option></select></label>
+            <button class="button" type="submit">Получить консультацию</button>
+            <p class="form__hint">Без бронирования и фиксации цены.</p>
+            <div class="form__status" data-form-status></div>
+          </form>
+        </aside>
       </div>
     </section>
 
     <section id="priority">
       <div class="container">
-        <div class="section__head"><span class="eyebrow">Приоритет сбора заявок</span><h2>Три ключевых объекта</h2><p>Для каждого объекта создана отдельная карточка и форма, которая фиксирует адрес, интерес покупателя, бюджет, способ покупки и срок принятия решения.</p></div>
+        <div class="section__head"><span class="eyebrow">Приоритет сбора заявок</span><h2>Три ключевых объекта</h2><p>У каждого объекта есть отдельная карточка со статусом сведений, ответами на вопросы, короткой и подробной формами.</p></div>
         <div class="grid grid--3">
-          <article class="card card--shadow"><span class="eyebrow">Строится · данные частично подтверждены</span><h3>Просторная 4А</h3><p>Дом, связанный с ЖК «Теллерманов сад». Известны квартирография, этажность и опубликованные сроки.</p><div class="hero__actions"><a class="button" href="prostornaya-4a/#lead">Оставить заявку</a><a class="button button--ghost" href="prostornaya-4a/">Подробнее</a></div></article>
-          <article class="card card--shadow"><span class="eyebrow">Данные уточняются</span><h3>Аэродромная 18Г</h3><p>Собираем интерес покупателей и параллельно проверяем сведения о доме, документах, квартирах и статусе объекта.</p><div class="hero__actions"><a class="button" href="aerodromnaya-18g/#lead">Оставить заявку</a><a class="button button--ghost" href="aerodromnaya-18g/">Подробнее</a></div></article>
-          <article class="card card--shadow"><span class="eyebrow">Данные уточняются</span><h3>Сенная 76</h3><p>Собираем предварительные заявки и уточняем характеристики, застройщика, документы и возможные варианты покупки.</p><div class="hero__actions"><a class="button" href="sennaya-76/#lead">Оставить заявку</a><a class="button button--ghost" href="sennaya-76/">Подробнее</a></div></article>
+          <article class="card card--shadow"><span class="eyebrow">Данные частично подтверждены</span><h3>Просторная 4А</h3><p>Рабочая карточка содержит сведения о доме, квартирах, сроках и документах, которые требуют повторной сверки с первичными источниками.</p><div class="hero__actions"><a class="button" href="prostornaya-4a/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_card" data-track-object="prostornaya-4a">Короткая заявка</a><a class="button button--ghost" href="prostornaya-4a/" data-track-action="object_open" data-track-placement="catalog_card" data-track-object="prostornaya-4a">Подробнее</a></div></article>
+          <article class="card card--shadow"><span class="eyebrow">Данные уточняются</span><h3>Аэродромная 18Г</h3><p>Собираем интерес покупателей и проверяем сведения о доме, документах, квартирах и статусе объекта.</p><div class="hero__actions"><a class="button" href="aerodromnaya-18g/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_card" data-track-object="aerodromnaya-18g">Короткая заявка</a><a class="button button--ghost" href="aerodromnaya-18g/" data-track-action="object_open" data-track-placement="catalog_card" data-track-object="aerodromnaya-18g">Подробнее</a></div></article>
+          <article class="card card--shadow"><span class="eyebrow">Данные уточняются</span><h3>Сенная 76</h3><p>Собираем предварительные обращения и уточняем характеристики, документы и возможные варианты покупки.</p><div class="hero__actions"><a class="button" href="sennaya-76/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_card" data-track-object="sennaya-76">Короткая заявка</a><a class="button button--ghost" href="sennaya-76/" data-track-action="object_open" data-track-placement="catalog_card" data-track-object="sennaya-76">Подробнее</a></div></article>
         </div>
       </div>
     </section>
@@ -54,16 +69,16 @@
 
     <section class="cta" id="lead">
       <div class="container lead-panel">
-        <div><span class="eyebrow">Подбор квартиры</span><h2>Какой объект вас интересует?</h2><p class="lead">Оставьте контакты и выберите адрес. Специалист уточнит комнатность, бюджет, способ покупки и сообщит подтверждённую информацию.</p><ul class="list"><li>Приоритет обработки: Просторная 4А, Аэродромная 18Г и Сенная 76.</li><li>Можно выбрать общий подбор среди всех новостроек.</li><li>Заявка сохраняет страницу и рекламные метки перехода.</li></ul></div>
+        <div><span class="eyebrow">Подробный подбор квартиры</span><h2>Указать параметры будущей квартиры</h2><p class="lead">Эта форма подходит, если вы готовы сразу сообщить комнатность, бюджет и способ покупки.</p><ul class="list"><li>Приоритет обработки: Просторная 4А, Аэродромная 18Г и Сенная 76.</li><li>Можно выбрать общий подбор среди всех новостроек.</li><li>Заявка сохраняет страницу и рекламные метки перехода.</li></ul></div>
         <form class="form" data-lead-form data-lead-type="portal_selection" data-project="Портал Новостройки Борисоглебска" data-project-id="newbuilds-borisoglebsk" data-project-name="Новостройки Борисоглебска" data-complex="Общий подбор новостройки" data-form-id="catalog_priority_selection" data-success-message="Заявка отправлена. Специалист свяжется с вами и уточнит параметры.">
           <label>Имя<input name="name" required autocomplete="name" placeholder="Как к вам обращаться"></label>
-          <label>Телефон<input name="phone" required autocomplete="tel" placeholder="+7 ___ ___-__-__"></label>
+          <label>Телефон<input name="phone" required autocomplete="tel" inputmode="tel" placeholder="+7 ___ ___-__-__"></label>
           <label>Интересующий объект<select name="residential_complex" required><option value="">Выберите объект</option><option>Просторная 4А</option><option>Аэродромная 18Г</option><option>Сенная 76</option><option>Общий подбор новостройки</option></select></label>
           <label>Комнатность<select name="interest" required><option value="">Выберите вариант</option><option>Студия</option><option>1-комнатная квартира</option><option>2-комнатная квартира</option><option>3-комнатная квартира</option><option>Пока не определился</option></select></label>
           <label>Бюджет<input name="budget" placeholder="Например: до 5 млн ₽"></label>
           <label>Способ покупки<select name="purchase_method"><option value="">Пока не определился</option><option>Наличные</option><option>Ипотека</option><option>Семейная ипотека</option><option>Материнский капитал</option><option>Сертификат «Молодая семья»</option><option>Продажа своей недвижимости</option></select></label>
           <label>Комментарий<textarea name="comment" placeholder="Что важно учесть при подборе"></textarea></label>
-          <button class="button" type="submit">Получить консультацию</button>
+          <button class="button" type="submit">Получить подробную консультацию</button>
           <div class="form__status" data-form-status></div>
         </form>
       </div>
