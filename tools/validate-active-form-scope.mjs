@@ -82,7 +82,7 @@ if (!Array.isArray(pages)) {
       }
       if (!projectName) errors.push(`${label}: отсутствует data-project-name`);
       if (!complex) {
-        errors.push(`${label}: активная форма не должна использовать defaultComplex из main.js`);
+        errors.push(`${label}: активная форма должна явно указывать data-complex`);
       }
       if (complex === LEGACY_SINGLE_PROJECT_COMPLEX) {
         errors.push(`${label}: активная форма использует legacy-привязку к одному ЖК`);
@@ -110,6 +110,14 @@ if (!Array.isArray(pages)) {
 if (mainScript) {
   if (!mainScript.includes("SITE_CONFIG.defaultComplex")) {
     errors.push(`${MAIN_SCRIPT_PATH}: ожидаемый механизм резервного значения не найден`);
+  }
+
+  if (!mainScript.includes(`defaultComplex: "${NEUTRAL_COMPLEX}"`)) {
+    errors.push(`${MAIN_SCRIPT_PATH}: defaultComplex должен быть нейтральным значением «${NEUTRAL_COMPLEX}»`);
+  }
+
+  if (mainScript.includes(`defaultComplex: "${LEGACY_SINGLE_PROJECT_COMPLEX}"`)) {
+    errors.push(`${MAIN_SCRIPT_PATH}: обнаружена резервная привязка к старому ЖК`);
   }
 
   if (!mainScript.includes("form.dataset.complex || SITE_CONFIG.defaultComplex")) {
