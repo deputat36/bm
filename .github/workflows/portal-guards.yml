@@ -46,6 +46,7 @@ on:
       - "data/migration/**"
       - "data/media/**"
       - "data/verification/**"
+      - "data/marketing/**"
       - "docs/portal/**"
       - "tools/**"
       - "scripts/**"
@@ -98,6 +99,7 @@ on:
       - "data/migration/**"
       - "data/media/**"
       - "data/verification/**"
+      - "data/marketing/**"
       - "docs/portal/**"
       - "tools/**"
       - "scripts/**"
@@ -147,6 +149,7 @@ jobs:
           node --check tools/validate-trust-pages.mjs
           node --check tools/validate-media-inventory.mjs
           node --check tools/validate-project-verification.mjs
+          node --check tools/validate-utm-campaigns.mjs
           node --check tools/audit-portal-branding.mjs
           node --check scripts/check-site.js
 
@@ -188,6 +191,9 @@ jobs:
 
       - name: Validate media inventory
         run: npm run validate:media
+
+      - name: Validate UTM campaigns
+        run: npm run validate:utm
 
       - name: Audit portal branding
         run: npm run audit:branding
