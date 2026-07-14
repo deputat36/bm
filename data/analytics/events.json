@@ -19,9 +19,10 @@
       "comment",
       "question",
       "consent_text",
-      "client_fixation_id",
       "user_agent"
-    ]
+    ],
+    "restricted_technical_fields": ["client_fixation_id"],
+    "restricted_field_allowed_events": ["lead_submit"]
   },
   "events": [
     {
@@ -91,14 +92,16 @@
       "implementation_fragments": [
         "event: \"lead_submit\"",
         "form_id: data.form_id",
+        "client_fixation_id: data.client_fixation_id",
         "blocked: Boolean(result.blocked)",
         "offline: Boolean(result.offline)"
       ],
       "required_fields": ["event", "form_id", "lead_type", "blocked", "offline"],
-      "optional_fields": ["project_id", "project_name", "residential_complex", "residential_complex_id", "qualification_status", "qualification_score"],
+      "optional_fields": ["project_id", "project_name", "residential_complex", "residential_complex_id", "client_fixation_id", "qualification_status", "qualification_score"],
       "count_rule": "count_canonical_submissions",
       "count_filter": "blocked=false",
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "contains_restricted_technical_id": true
     },
     {
       "id": "lead_submit_classified",
@@ -118,7 +121,8 @@
       "count_rule": "segment_canonical_submissions_only",
       "count_filter": "blocked=false",
       "must_not_add_to": ["lead_submit"],
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "contains_restricted_technical_id": false
     },
     {
       "id": "lead_thankyou_view",
@@ -136,7 +140,8 @@
       "optional_fields": ["residential_complex", "residential_complex_id", "qualification_status"],
       "count_rule": "count_thankyou_views",
       "count_filter": "dry_run=false",
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "contains_restricted_technical_id": false
     },
     {
       "id": "lead_postsubmit_action",
@@ -155,7 +160,8 @@
       "optional_fields": ["residential_complex_id"],
       "count_rule": "count_actions",
       "count_filter": "dry_run=false",
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "contains_restricted_technical_id": false
     }
   ]
 }
