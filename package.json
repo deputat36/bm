@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "validate": "node tools/validate-static-site.mjs && node tools/validate-thankyou-context.mjs && node tools/validate-catalog-conversion.mjs && node tools/validate-homepage-object-cta.mjs && node tools/validate-contacts-conversion.mjs && node tools/validate-mortgage-conversion.mjs && node tools/validate-form-role-analytics.mjs",
+    "validate": "node tools/validate-static-site.mjs && node tools/validate-thankyou-context.mjs && node tools/validate-catalog-conversion.mjs && node tools/validate-homepage-object-cta.mjs && node tools/validate-contacts-conversion.mjs && node tools/validate-mortgage-conversion.mjs && node tools/validate-form-role-analytics.mjs && node tools/validate-analytics-events.mjs",
     "validate:json": "node tools/validate-json.mjs",
     "validate:priority": "node tools/validate-priority-projects.mjs",
     "validate:reference": "node tools/validate-reference-projects.mjs",
@@ -15,6 +15,8 @@
     "validate:contacts-conversion": "node tools/validate-contacts-conversion.mjs",
     "validate:mortgage-conversion": "node tools/validate-mortgage-conversion.mjs",
     "validate:form-roles": "node tools/validate-form-role-analytics.mjs",
+    "validate:analytics": "node tools/validate-analytics-events.mjs",
+    "analytics:spec": "node tools/build-analytics-report-spec.mjs",
     "validate:thankyou": "node tools/validate-thankyou-context.mjs",
     "validate:form-scope": "node tools/validate-active-form-scope.mjs",
     "validate:a11y": "node tools/validate-form-accessibility.mjs",
