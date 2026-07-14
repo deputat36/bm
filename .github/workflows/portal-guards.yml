@@ -134,6 +134,7 @@ jobs:
           node --check assets/js/priority-leads.js
           node --check assets/js/reference-catalog.js
           node --check assets/js/mobile-lead-bar.js
+          node --check assets/js/conversion-tracking.js
           node --check assets/js/form-accessibility.js
           node --check assets/js/gallery.js
           node --check tools/validate-priority-projects.mjs
