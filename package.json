@@ -20,6 +20,7 @@
     "validate:trust": "node tools/validate-trust-pages.mjs",
     "validate:media": "node tools/validate-media-inventory.mjs",
     "validate:utm": "node tools/validate-utm-campaigns.mjs",
+    "utm:links": "node tools/build-utm-links.mjs",
     "audit:branding": "node tools/audit-portal-branding.mjs",
     "urls:inventory": "node tools/build-url-inventory.mjs",
     "sitemap:preview": "node tools/build-sitemap-preview.mjs",
