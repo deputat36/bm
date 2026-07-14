@@ -166,10 +166,23 @@ const observerStart = conversionScript.indexOf('if ("IntersectionObserver"', dry
 const dryRunBlock = dryRunStart >= 0 && observerStart > dryRunStart
   ? conversionScript.slice(dryRunStart, observerStart)
   : "";
+const debugCondition = dryRunBlock.indexOf("if (isAnalyticsDebugMode())");
+const firstDryRunEvent = dryRunBlock.indexOf("sendConversionEvent");
 
-if (dryRunBlock.includes("sendConversionEvent")) {
-  errors.push("newbuildLeadDryRun: dry-run role enrichment must not create analytics events");
+if (firstDryRunEvent >= 0 && (debugCondition < 0 || firstDryRunEvent < debugCondition)) {
+  errors.push("newbuildLeadDryRun: simulated events must be inside isAnalyticsDebugMode()");
 }
+
+[
+  'sendConversionEvent("lead_submit"',
+  'sendConversionEvent("lead_submit_classified"',
+  "simulated: true",
+  "offline: true"
+].forEach((fragment) => {
+  if (!dryRunBlock.includes(fragment)) {
+    errors.push(`newbuildLeadDryRun: missing local debug fragment ${fragment}`);
+  }
+});
 
 console.log(`Checked form role pages: ${PAGE_FORMS.length}`);
 console.log(`Checked classified forms: ${checkedForms}`);
