@@ -29,12 +29,31 @@
 Контекстные кнопки направляют только к существующим первичным формам:
 
 ```text
-/catalog/#quick-lead
-/contacts/#quick-lead
-/ipoteka/#quick-lead
+/catalog/?lead_source=internal_content&placement=<placement>#quick-lead
+/contacts/?lead_source=internal_content&placement=<placement>#quick-lead
+/ipoteka/?lead_source=internal_content&placement=<placement>#quick-lead
 ```
 
 Переход к подробному якорю `#lead` из редакционного контента запрещён.
+
+## Внутренняя атрибуция
+
+Каждая ссылка передаёт только два разрешённых параметра:
+
+```text
+lead_source=internal_content
+placement=<точное размещение кнопки>
+```
+
+Они уже входят в `TRACKING_KEYS` файла `assets/js/main.js`. При открытии целевой страницы существующий tracking-контур:
+
+1. распознаёт входящие параметры;
+2. обновляет `last_touch`;
+3. сохраняет страницу назначения и браузерный referrer;
+4. сохраняет `lead_source` и `placement` в `tracking.current`;
+5. добавляет весь tracking-контекст в данные заявки.
+
+Внешние UTM-метки при этом не заменяются внутренними UTM-метками. Контекстная навигация не использует `utm_source`, `utm_medium`, `utm_campaign` и `utm_content`.
 
 ## Размещения аналитики
 
@@ -73,7 +92,9 @@ quick_mortgage
 - страницы сохраняют `noindex,follow`;
 - кнопки не обещают цену, наличие, бронь, одобрение ипотеки или подтверждённость объекта;
 - юридические и справочные предупреждения сохраняются;
-- целевая страница обязана содержать `id="quick-lead"` внутри `data-primary-lead`.
+- целевая страница обязана содержать `id="quick-lead"` внутри `data-primary-lead`;
+- query-параметры с персональными данными, test/debug и рекламными UTM запрещены;
+- значение query-параметра `placement` должно совпадать с `data-track-placement`.
 
 ## Автоматическая проверка
 
@@ -87,10 +108,15 @@ Validator проверяет:
 
 - шесть справочных страниц;
 - двенадцать контекстных CTA;
-- точные короткие якоря;
+- короткий якорь `#quick-lead`;
+- `lead_source=internal_content`;
+- совпадение query `placement` и `data-track-placement`;
+- только два разрешённых query-параметра;
+- отсутствие UTM, test/debug и персональных параметров;
 - `data-track-action` и `data-track-placement`;
 - наличие класса `button`;
 - отсутствие самостоятельных лид-форм;
 - отсутствие переходов к `#lead`;
 - порядок подключения debug и tracking-скриптов;
-- наличие первичной формы на каждой целевой странице.
+- наличие первичной формы на каждой целевой странице;
+- поддержку `lead_source` и `placement` в существующем tracking-контуре.
