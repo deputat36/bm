@@ -129,11 +129,22 @@ function buildItemListSchema() {
   };
 }
 
-function loadPortalScript(baseUrl, fileName) {
-  const script = document.createElement("script");
-  script.src = new URL(fileName, baseUrl).href;
-  script.async = true;
-  document.head.appendChild(script);
+function loadPortalScript(baseUrl, fileName, options = {}) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = new URL(fileName, baseUrl).href;
+    script.async = options.ordered !== true;
+    script.addEventListener("load", resolve, { once: true });
+    script.addEventListener("error", reject, { once: true });
+    document.head.appendChild(script);
+  });
+}
+
+function isAnalyticsDebugRequested() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("analytics_test") === "debug"
+    && params.get("lead_test") === "dry-run"
+    && params.get("test_ack") === "1";
 }
 
 function neutralizeLegacyLeadFallback() {
@@ -182,6 +193,7 @@ function enableLeadDryRunMode() {
   banner.querySelector("[data-disable-lead-test]")?.addEventListener("click", () => {
     const url = new URL(window.location.href);
     url.searchParams.delete("lead_test");
+    url.searchParams.delete("analytics_test");
     url.searchParams.delete("test_ack");
     window.location.href = url.toString();
   });
@@ -263,6 +275,11 @@ function enableLeadDryRunMode() {
           thankYouUrl.searchParams.set("id", payload.client_fixation_id);
           thankYouUrl.searchParams.set("status", "test");
           thankYouUrl.searchParams.set("dry_run", "1");
+          if (isAnalyticsDebugRequested()) {
+            thankYouUrl.searchParams.set("lead_test", "dry-run");
+            thankYouUrl.searchParams.set("analytics_test", "debug");
+            thankYouUrl.searchParams.set("test_ack", "1");
+          }
           window.location.href = thankYouUrl.toString();
           return;
         }
@@ -301,12 +318,17 @@ if (itemListSchema) createJsonLdScript(itemListSchema);
 const schemaScriptUrl = document.currentScript?.src || "";
 const portalLeadForm = document.querySelector("form[data-lead-form]");
 
-if (schemaScriptUrl && portalLeadForm?.querySelector("select[name='residential_complex']")) {
-  loadPortalScript(schemaScriptUrl, "priority-leads.js");
-}
-
 if (schemaScriptUrl && portalLeadForm) {
-  loadPortalScript(schemaScriptUrl, "mobile-lead-bar.js");
-  loadPortalScript(schemaScriptUrl, "form-accessibility.js");
-  loadPortalScript(schemaScriptUrl, "conversion-tracking.js");
+  const debugReady = isAnalyticsDebugRequested()
+    ? loadPortalScript(schemaScriptUrl, "analytics-debug.js", { ordered: true })
+    : Promise.resolve();
+
+  debugReady.catch(() => undefined).finally(() => {
+    if (portalLeadForm.querySelector("select[name='residential_complex']")) {
+      loadPortalScript(schemaScriptUrl, "priority-leads.js");
+    }
+    loadPortalScript(schemaScriptUrl, "mobile-lead-bar.js");
+    loadPortalScript(schemaScriptUrl, "form-accessibility.js");
+    loadPortalScript(schemaScriptUrl, "conversion-tracking.js");
+  });
 }
