@@ -109,7 +109,8 @@ if (!Array.isArray(index)) {
 }
 
 const activeProjects = index.filter((item) => item.is_active !== false);
-let rows = activeProjects.map(buildProjectRow);
+const allRows = activeProjects.map(buildProjectRow);
+let rows = allRows;
 const statusFilter = getArg("status", "all").toLowerCase();
 if (statusFilter !== "all") {
   rows = rows.filter((row) => row.readiness_status.toLowerCase() === statusFilter);
@@ -120,12 +121,12 @@ if (!rows.length) {
 }
 
 const summary = {
-  total_projects: activeProjects.length,
-  public_ready: activeProjects.map(buildProjectRow).filter((row) => row.readiness_status === "public_ready").length,
-  requires_recheck: activeProjects.map(buildProjectRow).filter((row) => row.readiness_status === "requires_recheck").length,
-  requires_sources: activeProjects.map(buildProjectRow).filter((row) => row.readiness_status === "requires_sources").length,
-  projects_with_verified_sources: activeProjects.map(buildProjectRow).filter((row) => row.sources_verified > 0).length,
-  projects_with_noindex: activeProjects.map(buildProjectRow).filter((row) => row.page_noindex).length
+  total_projects: allRows.length,
+  public_ready: allRows.filter((row) => row.readiness_status === "public_ready").length,
+  requires_recheck: allRows.filter((row) => row.readiness_status === "requires_recheck").length,
+  requires_sources: allRows.filter((row) => row.readiness_status === "requires_sources").length,
+  projects_with_verified_sources: allRows.filter((row) => row.sources_verified > 0).length,
+  projects_with_noindex: allRows.filter((row) => row.page_noindex).length
 };
 
 function renderMarkdown() {
