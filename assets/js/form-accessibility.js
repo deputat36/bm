@@ -10,6 +10,9 @@
   const SUCCESS_COOLDOWN_STORAGE_KEY = "newbuildsBorisoglebskLeadSuccessCooldowns";
   const SUCCESS_COOLDOWN_MS = 30_000;
   const SUCCESS_COOLDOWN_RETENTION_MS = 5 * 60_000;
+  const ATTRIBUTION_STORAGE_KEY = "newbuildsBorisoglebskTracking";
+  const ATTRIBUTION_RETENTION_MS = 30 * 24 * 60 * 60_000;
+  const ATTRIBUTION_FUTURE_SKEW_MS = 5 * 60_000;
 
   function enableLeadPayloadPrivacy() {
     if (window.__NEWBUILD_LEAD_PAYLOAD_PRIVACY__ === true) return true;
@@ -30,6 +33,66 @@
     };
 
     window.__NEWBUILD_LEAD_PAYLOAD_PRIVACY__ = true;
+    return true;
+  }
+
+  function isFreshAttributionTouch(touch, now = Date.now()) {
+    const capturedAt = Date.parse(String(touch?.captured_at || ""));
+    if (!Number.isFinite(capturedAt)) return false;
+    if (capturedAt > now + ATTRIBUTION_FUTURE_SKEW_MS) return false;
+    return now - capturedAt <= ATTRIBUTION_RETENTION_MS;
+  }
+
+  function pruneAttributionTracking(tracking) {
+    const source = tracking && typeof tracking === "object" && !Array.isArray(tracking) ? tracking : {};
+    const firstTouchFresh = isFreshAttributionTouch(source.first_touch);
+    const lastTouchFresh = isFreshAttributionTouch(source.last_touch);
+    const keepCurrent = firstTouchFresh || lastTouchFresh;
+
+    return {
+      first_touch: firstTouchFresh ? source.first_touch : {},
+      last_touch: lastTouchFresh ? source.last_touch : {},
+      current: keepCurrent && source.current && typeof source.current === "object" && !Array.isArray(source.current)
+        ? source.current
+        : {}
+    };
+  }
+
+  function persistAttributionTracking(tracking) {
+    try {
+      localStorage.setItem(ATTRIBUTION_STORAGE_KEY, JSON.stringify(tracking));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function enableAttributionRetention() {
+    if (window.__NEWBUILD_ATTRIBUTION_RETENTION__ === true) return true;
+    if (typeof getTrackingData !== "function" || typeof collectFormData !== "function") return false;
+
+    try {
+      const stored = JSON.parse(localStorage.getItem(ATTRIBUTION_STORAGE_KEY) || "{}");
+      persistAttributionTracking(pruneAttributionTracking(stored));
+    } catch (error) {
+      persistAttributionTracking(pruneAttributionTracking({}));
+    }
+
+    const originalGetTrackingData = getTrackingData;
+    getTrackingData = function getRetainedTrackingData() {
+      const tracking = pruneAttributionTracking(originalGetTrackingData());
+      persistAttributionTracking(tracking);
+      return tracking;
+    };
+
+    const originalCollectFormData = collectFormData;
+    collectFormData = function collectFormDataWithRetainedAttribution(form) {
+      const data = originalCollectFormData(form);
+      data.tracking = pruneAttributionTracking(data.tracking);
+      return data;
+    };
+
+    window.__NEWBUILD_ATTRIBUTION_RETENTION__ = true;
     return true;
   }
 
@@ -204,6 +267,7 @@
   }
 
   enableLeadPayloadPrivacy();
+  enableAttributionRetention();
   forms.forEach(enhanceForm);
   window.addEventListener("newbuildLeadSubmit", (event) => markSuccessfulSubmission(event.detail || {}));
 })();
