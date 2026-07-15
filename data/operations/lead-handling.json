@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-14",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "recommended_draft_not_operational",
+  "purpose": "Рекомендательная карта первого контакта и следующего шага без CRM, действующего SLA и назначения ответственных.",
+  "sources": {
+    "qualification_logic": "assets/js/main.js",
+    "form_matrix": "data/qa/form-scenarios.json",
+    "project_registry": "data/projects/index.json"
+  },
+  "rules": {
+    "approved_sla_exists": false,
+    "live_owner_assignment_exists": false,
+    "crm_mutation_enabled": false,
+    "response_guidance_is_recommendation": true,
+    "personal_data_in_playbook_forbidden": true,
+    "verified_source_required_before_factual_claim": true,
+    "first_contact_must_end_with_recorded_outcome": true,
+    "allowed_response_guidance": [
+      "first_available_work_block",
+      "same_working_day",
+      "planned_nurture_cycle"
+    ]
+  },
+  "priority_bands": [
+    {
+      "id": "hot",
+      "urgency_rank": 1,
+      "source_score_rule": "score>=65",
+      "response_guidance": "first_available_work_block",
+      "first_action": "Начать персональный контакт и определить основной вопрос, объект и готовность к следующему шагу.",
+      "required_outcome": "Квалификация, согласованное действие либо план повторного контакта."
+    },
+    {
+      "id": "warm",
+      "urgency_rank": 2,
+      "source_score_rule": "40<=score<65",
+      "response_guidance": "same_working_day",
+      "first_action": "Уточнить параметры покупки и определить нужный сценарий консультации.",
+      "required_outcome": "Зафиксирован интерес и конкретный следующий шаг."
+    },
+    {
+      "id": "cold",
+      "urgency_rank": 3,
+      "source_score_rule": "score<40",
+      "response_guidance": "planned_nurture_cycle",
+      "first_action": "Подтвердить интерес и предложить безопасный следующий шаг без давления.",
+      "required_outcome": "Определено продолжение, обновление по объекту, дата возврата либо прекращение контакта."
+    }
+  ],
+  "form_roles": [
+    {
+      "id": "primary",
+      "conversation_goal": "Собрать недостающий контекст без повторения уже переданных данных.",
+      "collect_if_missing": ["главный вопрос", "объект", "комнатность", "способ покупки", "срок"],
+      "required_outcome": "Короткая заявка превращена в понятный сценарий консультации."
+    },
+    {
+      "id": "detailed",
+      "conversation_goal": "Подтвердить полученные параметры, уточнить только пробелы и перейти к следующему шагу.",
+      "collect_if_missing": ["критичный критерий", "неуказанный способ покупки", "неуказанный срок", "следующий контакт"],
+      "required_outcome": "Параметры подтверждены без повторного анкетирования."
+    }
+  ],
+  "lead_types": [
+    {
+      "id": "project_consultation",
+      "first_questions": ["Что важно уточнить по объекту?", "Какая квартира рассматривается?", "Как планируется покупка и в какие сроки?"],
+      "required_outcome": "Определён предмет консультации по объекту.",
+      "source_check_required_by_default": true,
+      "allowed_next_actions": ["source_check", "project_consultation", "mortgage_precheck", "alternative_selection", "follow_up_scheduled"]
+    },
+    {
+      "id": "portal_selection",
+      "first_questions": ["Какой формат квартиры рассматривается?", "Какой ориентир по бюджету и способу покупки?", "Насколько срочно нужно решение?"],
+      "required_outcome": "Сформирован профиль подбора.",
+      "source_check_required_by_default": false,
+      "allowed_next_actions": ["selection_started", "project_consultation", "mortgage_precheck", "follow_up_scheduled"]
+    },
+    {
+      "id": "mortgage",
+      "first_questions": ["Какой объект или бюджет рассматривается?", "Какой есть первоначальный взнос?", "Нужна оценка доступных программ?"],
+      "required_outcome": "Собраны исходные данные для предварительной консультации.",
+      "source_check_required_by_default": false,
+      "allowed_next_actions": ["mortgage_precheck", "project_consultation", "selection_started", "follow_up_scheduled"]
+    }
+  ],
+  "object_contexts": [
+    {
+      "id": "all-newbuilds",
+      "verification_status": "neutral_selection_context",
+      "source_check_required": false,
+      "first_contact_focus": "Уточнить критерии и направить к подходящим объектам.",
+      "blocked_claim_categories": ["полнота рынка", "гарантированное наличие", "гарантированная цена"]
+    },
+    {
+      "id": "prostornaya-4a",
+      "project_registry_id": "tellermanov-sad",
+      "verification_status": "partially_confirmed",
+      "source_check_required": true,
+      "first_contact_focus": "Уточнить вопрос и повторно проверить первичный источник до предметного ответа.",
+      "blocked_claim_categories": ["актуальная цена", "наличие", "квартирография", "последняя редакция документов", "права на визуализации"]
+    },
+    {
+      "id": "aerodromnaya-18g",
+      "project_registry_id": "aerodromnaya-18g",
+      "verification_status": "requires_check",
+      "source_check_required": true,
+      "first_contact_focus": "Зафиксировать интерес и не сообщать неподтверждённые характеристики как факт.",
+      "blocked_claim_categories": ["застройщик", "цены", "планировки", "сроки", "статус продаж"]
+    },
+    {
+      "id": "sennaya-76",
+      "project_registry_id": "sennaya-76",
+      "verification_status": "requires_check",
+      "source_check_required": true,
+      "first_contact_focus": "Зафиксировать интерес и предложить проверку сведений либо общий подбор.",
+      "blocked_claim_categories": ["застройщик", "цены", "планировки", "сроки", "статус продаж"]
+    }
+  ],
+  "contact_outcomes": [
+    {"id": "contacted_qualified", "requires_next_action": true},
+    {"id": "contacted_follow_up_scheduled", "requires_next_action": true},
+    {"id": "no_answer_follow_up_planned", "requires_next_action": true},
+    {"id": "source_check_required", "requires_next_action": true},
+    {"id": "selection_started", "requires_next_action": true},
+    {"id": "mortgage_consultation_started", "requires_next_action": true},
+    {"id": "duplicate", "requires_next_action": false},
+    {"id": "invalid_or_spam", "requires_next_action": false},
+    {"id": "do_not_contact", "requires_next_action": false}
+  ],
+  "next_actions": ["source_check", "project_consultation", "mortgage_precheck", "selection_started", "alternative_selection", "updates_requested", "follow_up_scheduled", "close_no_action"]
+}
