@@ -7,6 +7,15 @@
   const PHONE_MAX_LENGTH = 24;
   const PHONE_PATTERN = "(?=(?:\\D*\\d){10,15}\\D*$)[+\\d\\s().-]+";
   const PHONE_ERROR_MESSAGE = "Укажите номер телефона от 10 до 15 цифр.";
+  const LEAD_TEXT_LIMITS = Object.freeze({
+    name: 80,
+    budget: 120,
+    callback_time: 120,
+    convenient_time: 120,
+    comment: 1000,
+    question: 1000
+  });
+  const LEAD_TEXT_CONTROL_PATTERN = /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g;
   const SUCCESS_COOLDOWN_STORAGE_KEY = "newbuildsBorisoglebskLeadSuccessCooldowns";
   const SUCCESS_COOLDOWN_MS = 30_000;
   const SUCCESS_COOLDOWN_RETENTION_MS = 5 * 60_000;
@@ -14,20 +23,39 @@
   const ATTRIBUTION_RETENTION_MS = 30 * 24 * 60 * 60_000;
   const ATTRIBUTION_FUTURE_SKEW_MS = 5 * 60_000;
 
+  function sanitizeLeadTextValue(value, maxLength) {
+    return String(value || "")
+      .replace(LEAD_TEXT_CONTROL_PATTERN, "")
+      .trim()
+      .slice(0, maxLength);
+  }
+
+  function sanitizeLeadTextFields(data) {
+    const sanitized = { ...(data || {}) };
+
+    Object.entries(LEAD_TEXT_LIMITS).forEach(([field, maxLength]) => {
+      if (Object.prototype.hasOwnProperty.call(sanitized, field)) {
+        sanitized[field] = sanitizeLeadTextValue(sanitized[field], maxLength);
+      }
+    });
+
+    return sanitized;
+  }
+
   function enableLeadPayloadPrivacy() {
     if (window.__NEWBUILD_LEAD_PAYLOAD_PRIVACY__ === true) return true;
     if (typeof collectFormData !== "function" || typeof sendLead !== "function") return false;
 
     const originalCollectFormData = collectFormData;
-    collectFormData = function collectLeadDataWithoutDeviceFingerprint(form) {
-      const data = originalCollectFormData(form);
+    collectFormData = function collectPrivateAndBoundedLeadData(form) {
+      const data = sanitizeLeadTextFields(originalCollectFormData(form));
       delete data.user_agent;
       return data;
     };
 
     const originalSendLead = sendLead;
-    sendLead = async function sendLeadWithoutDeviceFingerprint(data) {
-      const privateData = { ...(data || {}) };
+    sendLead = async function sendPrivateAndBoundedLead(data) {
+      const privateData = sanitizeLeadTextFields(data);
       delete privateData.user_agent;
       return originalSendLead(privateData);
     };
@@ -128,6 +156,16 @@
     return !invalid;
   }
 
+  function enhanceLeadTextFields(form) {
+    Object.entries(LEAD_TEXT_LIMITS).forEach(([fieldName, maxLength]) => {
+      form.querySelectorAll(`[name='${fieldName}']`).forEach((field) => {
+        if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) return;
+        field.maxLength = maxLength;
+        field.dataset.leadTextLimit = String(maxLength);
+      });
+    });
+  }
+
   function readSuccessCooldowns() {
     try {
       const parsed = JSON.parse(sessionStorage.getItem(SUCCESS_COOLDOWN_STORAGE_KEY) || "{}");
@@ -188,6 +226,7 @@
 
     if (!form.id) form.id = formKey;
     form.setAttribute("aria-busy", "false");
+    enhanceLeadTextFields(form);
 
     if (name) {
       if (!name.autocomplete) name.autocomplete = "name";
