@@ -165,6 +165,78 @@ function neutralizeLegacyLeadFallback() {
   });
 }
 
+function enableOfflineDraftPrivacy() {
+  if (typeof sendLead !== "function" || typeof SITE_CONFIG === "undefined") return false;
+
+  const legacyStorageKey = "newbuildsBorisoglebskLeadsDraft";
+  const receiptStorageKey = "newbuildsBorisoglebskOfflineReceipts";
+  const receiptLimit = 5;
+  const originalSendLead = sendLead;
+
+  try {
+    localStorage.removeItem(legacyStorageKey);
+  } catch (error) {
+    // Storage can be unavailable in privacy mode; external delivery must still work.
+  }
+
+  function createOfflineReceipt(data) {
+    return {
+      lead_type: data.lead_type || "",
+      form_id: data.form_id || "",
+      project_id: data.project_id || "",
+      residential_complex_id: data.residential_complex_id || "",
+      qualification_status: data.qualification?.status || "",
+      lead_source: data.lead_source || "",
+      placement: data.placement || "",
+      created_at: data.created_at || new Date().toISOString(),
+      contact_data_stored: false
+    };
+  }
+
+  function saveOfflineReceipt(data) {
+    let stored = [];
+
+    try {
+      const parsed = JSON.parse(localStorage.getItem(receiptStorageKey) || "[]");
+      stored = Array.isArray(parsed) ? parsed.filter((item) => item && typeof item === "object") : [];
+    } catch (error) {
+      stored = [];
+    }
+
+    stored.push(createOfflineReceipt(data));
+
+    try {
+      localStorage.setItem(receiptStorageKey, JSON.stringify(stored.slice(-receiptLimit)));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  sendLead = async function sendLeadWithPrivateFallback(data) {
+    const hasExternalDestination = Boolean(
+      SITE_CONFIG.LEAD_ENDPOINT
+      || (SITE_CONFIG.WEB3FORMS_ACCESS_KEY && SITE_CONFIG.SEND_EMAIL_COPY)
+    );
+
+    if (data.spam_check?.likely_bot || hasExternalDestination) {
+      return originalSendLead(data);
+    }
+
+    if (!saveOfflineReceipt(data)) {
+      throw new Error("Offline receipt storage unavailable");
+    }
+
+    return {
+      offline: true,
+      contact_data_stored: false
+    };
+  };
+
+  window.__NEWBUILD_OFFLINE_DRAFT_PRIVACY__ = true;
+  return true;
+}
+
 function createDryRunLeadId() {
   const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
   const randomPart = Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -297,6 +369,7 @@ function enableLeadDryRunMode() {
   return true;
 }
 
+enableOfflineDraftPrivacy();
 neutralizeLegacyLeadFallback();
 enableLeadDryRunMode();
 
