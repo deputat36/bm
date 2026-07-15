@@ -2,6 +2,28 @@
   const forms = Array.from(document.querySelectorAll("form[data-lead-form]"));
   if (!forms.length) return;
 
+  function enableLeadPayloadPrivacy() {
+    if (window.__NEWBUILD_LEAD_PAYLOAD_PRIVACY__ === true) return true;
+    if (typeof collectFormData !== "function" || typeof sendLead !== "function") return false;
+
+    const originalCollectFormData = collectFormData;
+    collectFormData = function collectLeadDataWithoutDeviceFingerprint(form) {
+      const data = originalCollectFormData(form);
+      delete data.user_agent;
+      return data;
+    };
+
+    const originalSendLead = sendLead;
+    sendLead = async function sendLeadWithoutDeviceFingerprint(data) {
+      const privateData = { ...(data || {}) };
+      delete privateData.user_agent;
+      return originalSendLead(privateData);
+    };
+
+    window.__NEWBUILD_LEAD_PAYLOAD_PRIVACY__ = true;
+    return true;
+  }
+
   function safeId(value) {
     return String(value || "lead-form")
       .toLowerCase()
@@ -91,5 +113,6 @@
     });
   }
 
+  enableLeadPayloadPrivacy();
   forms.forEach(enhanceForm);
 })();
