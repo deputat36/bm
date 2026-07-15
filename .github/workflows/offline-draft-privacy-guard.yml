@@ -11,10 +11,12 @@ on:
       - "tools/validate-attribution-url-privacy.mjs"
       - "tools/validate-attribution-retention.mjs"
       - "tools/validate-lead-device-data-privacy.mjs"
+      - "tools/validate-lead-text-limits.mjs"
       - "docs/portal/OFFLINE_DRAFT_PRIVACY.md"
       - "docs/portal/ATTRIBUTION_URL_PRIVACY.md"
       - "docs/portal/ATTRIBUTION_RETENTION.md"
       - "docs/portal/LEAD_DEVICE_DATA_PRIVACY.md"
+      - "docs/portal/LEAD_TEXT_LIMITS.md"
       - ".github/workflows/offline-draft-privacy-guard.yml"
   push:
     branches:
@@ -28,10 +30,12 @@ on:
       - "tools/validate-attribution-url-privacy.mjs"
       - "tools/validate-attribution-retention.mjs"
       - "tools/validate-lead-device-data-privacy.mjs"
+      - "tools/validate-lead-text-limits.mjs"
       - "docs/portal/OFFLINE_DRAFT_PRIVACY.md"
       - "docs/portal/ATTRIBUTION_URL_PRIVACY.md"
       - "docs/portal/ATTRIBUTION_RETENTION.md"
       - "docs/portal/LEAD_DEVICE_DATA_PRIVACY.md"
+      - "docs/portal/LEAD_TEXT_LIMITS.md"
       - ".github/workflows/offline-draft-privacy-guard.yml"
 
 permissions:
@@ -59,6 +63,7 @@ jobs:
           node --check tools/validate-attribution-url-privacy.mjs
           node --check tools/validate-attribution-retention.mjs
           node --check tools/validate-lead-device-data-privacy.mjs
+          node --check tools/validate-lead-text-limits.mjs
 
       - name: Validate offline draft privacy
         run: node tools/validate-offline-draft-privacy.mjs
@@ -71,3 +76,6 @@ jobs:
 
       - name: Validate lead device data privacy
         run: node tools/validate-lead-device-data-privacy.mjs
+
+      - name: Validate lead text limits
+        run: node tools/validate-lead-text-limits.mjs
