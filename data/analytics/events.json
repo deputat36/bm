@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.3",
+  "schema_version": "1.4",
   "updated_at": "2026-07-15",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Единый словарь событий, измерений и правил подсчёта конверсионной воронки портала.",
@@ -22,7 +22,9 @@
       "user_agent"
     ],
     "restricted_technical_fields": ["client_fixation_id"],
-    "restricted_field_allowed_events": ["lead_submit"],
+    "restricted_field_allowed_events": [],
+    "restricted_field_internal_event": "newbuildLeadSubmit",
+    "restricted_field_external_channels_forbidden": true,
     "local_debug_mode": {
       "analytics_test": "debug",
       "lead_test": "dry-run",
@@ -108,23 +110,25 @@
       "status": "active",
       "stage": "submit",
       "metric_role": "canonical_conversion",
-      "purpose": "Единственное каноническое событие общего количества отправок форм.",
-      "source_file": "assets/js/main.js",
+      "purpose": "Единственное каноническое событие общего количества отправок форм без внутреннего ID обращения.",
+      "source_file": "assets/js/mobile-lead-bar.js",
       "implementation_fragments": [
+        "const publicPayload = {",
         "event: \"lead_submit\"",
         "form_id: data.form_id",
-        "client_fixation_id: data.client_fixation_id",
         "lead_source: data.lead_source",
         "placement: data.placement",
         "blocked: Boolean(result.blocked)",
-        "offline: Boolean(result.offline)"
+        "offline: Boolean(result.offline)",
+        "window.dataLayer.push(publicPayload)",
+        "window.ym(counterId, \"reachGoal\", \"lead_submit\", publicPayload)"
       ],
       "required_fields": ["event", "form_id", "lead_type", "blocked", "offline"],
-      "optional_fields": ["project_id", "project_name", "residential_complex", "residential_complex_id", "client_fixation_id", "qualification_status", "qualification_score", "lead_source", "placement"],
+      "optional_fields": ["project_id", "project_name", "residential_complex", "residential_complex_id", "qualification_status", "qualification_score", "lead_source", "placement"],
       "count_rule": "count_canonical_submissions",
       "count_filter": "blocked=false",
       "contains_personal_data": false,
-      "contains_restricted_technical_id": true
+      "contains_restricted_technical_id": false
     },
     {
       "id": "lead_submit_classified",
