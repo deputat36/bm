@@ -45,6 +45,7 @@
 - [x] Контракт handoff-пакета: 72 шаблона передачи обращения без изменения рабочего письма.
 - [x] Append-only контракт журнала: 18 шаблонов событий без хранения реальных лидов в GitHub.
 - [x] Клиентская целостность submit: safe storage, in-flight lock и защита `lastLead` от honeypot.
+- [x] Согласованы фильтры `blocked/offline` между `dataLayer`, прямым `gtag` и Метрикой.
 - [x] Portal guards с аналитическим реестром, проверкой формул и runtime-загрузки.
 
 ## Текущее состояние
@@ -68,6 +69,9 @@ event log append_only=true
 submit in_flight_lock=true
 storage writes best_effort=true
 blocked updates lastLead=false
+lead_submit blocked filter in dataLayer=true
+lead_submit blocked filter in gtag=true
+lead_submit blocked filter in metrika=true
 QA not_run=42
 source tasks missing=14
 projects public_ready=0/3
@@ -94,6 +98,7 @@ ready profiles=0/3
 - [ ] Проверить письмо, объект, форму и ID фиксации.
 - [ ] Проверить `lead_source`, `placement` и `form_role`.
 - [ ] Проверить семь событий в фактическом debug-режиме.
+- [x] Согласовать `blocked/offline` между `dataLayer`, прямым `gtag` и Метрикой.
 - [x] Подготовить внутренний handoff-пакет для письма, endpoint или CRM без изменения live-доставки.
 - [x] Подготовить формулы и допустимые разрезы отчёта:
 
@@ -101,6 +106,7 @@ ready profiles=0/3
 источник → размещение → форма → роль → объект → отправка → результат
 ```
 
+- [ ] Зарегистрировать нужные custom dimensions в рабочем GA4 и проверить DebugView.
 - [ ] Перенести handoff-поля в рабочее письмо только вместе с контролируемым тестом доставки.
 - [ ] Подключить спецификацию к фактическому счётчику и проверить значения.
 - [ ] Назначить владельца и периодичность рабочего отчёта.
