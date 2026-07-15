@@ -5,8 +5,11 @@ on:
     paths:
       - "assets/js/main.js"
       - "assets/js/schema.js"
+      - "assets/js/conversion-tracking.js"
       - "tools/validate-offline-draft-privacy.mjs"
+      - "tools/validate-attribution-url-privacy.mjs"
       - "docs/portal/OFFLINE_DRAFT_PRIVACY.md"
+      - "docs/portal/ATTRIBUTION_URL_PRIVACY.md"
       - ".github/workflows/offline-draft-privacy-guard.yml"
   push:
     branches:
@@ -14,8 +17,11 @@ on:
     paths:
       - "assets/js/main.js"
       - "assets/js/schema.js"
+      - "assets/js/conversion-tracking.js"
       - "tools/validate-offline-draft-privacy.mjs"
+      - "tools/validate-attribution-url-privacy.mjs"
       - "docs/portal/OFFLINE_DRAFT_PRIVACY.md"
+      - "docs/portal/ATTRIBUTION_URL_PRIVACY.md"
       - ".github/workflows/offline-draft-privacy-guard.yml"
 
 permissions:
@@ -37,7 +43,12 @@ jobs:
         run: |
           node --check assets/js/main.js
           node --check assets/js/schema.js
+          node --check assets/js/conversion-tracking.js
           node --check tools/validate-offline-draft-privacy.mjs
+          node --check tools/validate-attribution-url-privacy.mjs
 
       - name: Validate offline draft privacy
         run: node tools/validate-offline-draft-privacy.mjs
+
+      - name: Validate attribution URL privacy
+        run: node tools/validate-attribution-url-privacy.mjs
