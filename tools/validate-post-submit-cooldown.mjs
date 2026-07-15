@@ -53,9 +53,6 @@ const matrix = readJson(MATRIX_PATH);
   'window.addEventListener("newbuildLeadSubmit"'
 ].forEach((fragment) => requireFragment(runtime, fragment, RUNTIME_PATH));
 
-if (!runtime.includes("}, true);")) {
-  errors.push(`${RUNTIME_PATH}: cooldown submit handler must use capture phase`);
-}
 if (!runtime.includes("sessionStorage.getItem(SUCCESS_COOLDOWN_STORAGE_KEY)")) {
   errors.push(`${RUNTIME_PATH}: cooldown must read from sessionStorage`);
 }
@@ -66,7 +63,7 @@ if (runtime.includes("localStorage.setItem(SUCCESS_COOLDOWN_STORAGE_KEY")) {
   errors.push(`${RUNTIME_PATH}: cooldown must not persist in localStorage`);
 }
 
-const cooldownStart = runtime.indexOf("const SUCCESS_COOLDOWN_STORAGE_KEY");
+const cooldownStart = runtime.indexOf("function readSuccessCooldowns()");
 const cooldownEnd = runtime.indexOf("function enhanceForm", cooldownStart);
 const cooldownBlock = cooldownStart >= 0 && cooldownEnd > cooldownStart
   ? runtime.slice(cooldownStart, cooldownEnd)
@@ -103,6 +100,7 @@ const submitBlock = submitListenerStart >= 0 && submitListenerEnd > submitListen
 if (!submitBlock.includes("getCooldownSeconds")) errors.push(`${RUNTIME_PATH}: submit handler must check cooldown`);
 if (!submitBlock.includes("event.stopImmediatePropagation()")) errors.push(`${RUNTIME_PATH}: duplicate submit must not reach main handler`);
 if (!submitBlock.includes("status.focus")) errors.push(`${RUNTIME_PATH}: duplicate message must receive focus`);
+if (!submitBlock.includes("}, true);")) errors.push(`${RUNTIME_PATH}: cooldown submit handler must use capture phase`);
 
 [
   'event: "lead_submit"',
