@@ -1,0 +1,42 @@
+name: Analytics delivery consistency guard
+
+on:
+  pull_request:
+    paths:
+      - "assets/js/main.js"
+      - "data/analytics/events.json"
+      - "tools/validate-analytics-delivery-consistency.mjs"
+      - "docs/portal/ANALYTICS_DELIVERY_CONSISTENCY.md"
+      - ".github/workflows/analytics-delivery-consistency-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "assets/js/main.js"
+      - "data/analytics/events.json"
+      - "tools/validate-analytics-delivery-consistency.mjs"
+      - "docs/portal/ANALYTICS_DELIVERY_CONSISTENCY.md"
+      - ".github/workflows/analytics-delivery-consistency-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-analytics-delivery-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/main.js
+          node --check tools/validate-analytics-delivery-consistency.mjs
+
+      - name: Validate analytics delivery consistency
+        run: node tools/validate-analytics-delivery-consistency.mjs
