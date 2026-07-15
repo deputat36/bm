@@ -43,4 +43,21 @@ jobs:
           node --check tools/validate-last-lead-privacy.mjs
 
       - name: Validate last lead privacy
-        run: node tools/validate-last-lead-privacy.mjs
+        id: validate
+        continue-on-error: true
+        run: node tools/validate-last-lead-privacy.mjs > last-lead-validation.log 2>&1
+
+      - name: Upload validation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-lead-validation-log
+          path: last-lead-validation.log
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Fail when validation failed
+        if: steps.validate.outcome == 'failure'
+        run: |
+          cat last-lead-validation.log
+          exit 1
