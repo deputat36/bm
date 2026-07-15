@@ -1,0 +1,40 @@
+name: Homepage verification safety
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "docs/portal/PROJECT_VERIFICATION_READINESS.md"
+      - "docs/portal/HOMEPAGE_VERIFICATION_SAFETY.md"
+      - "tools/validate-homepage-verification-safety.mjs"
+      - ".github/workflows/homepage-verification-safety.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "docs/portal/PROJECT_VERIFICATION_READINESS.md"
+      - "docs/portal/HOMEPAGE_VERIFICATION_SAFETY.md"
+      - "tools/validate-homepage-verification-safety.mjs"
+      - ".github/workflows/homepage-verification-safety.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-homepage-verification-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-homepage-verification-safety.mjs
+
+      - name: Validate homepage verification safety
+        run: node tools/validate-homepage-verification-safety.mjs
