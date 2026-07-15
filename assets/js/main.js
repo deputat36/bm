@@ -48,10 +48,27 @@ function safeJsonParse(value, fallback) {
   }
 }
 
+function safeStorageGet(key, fallback = "") {
+  try {
+    return localStorage.getItem(key) ?? fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function safeStorageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
 function getTrackingData() {
   const params = new URLSearchParams(window.location.search);
-  const saved = safeJsonParse(localStorage.getItem(TRACKING_STORAGE_KEY), {});
-  const legacy = safeJsonParse(localStorage.getItem(LEGACY_TRACKING_STORAGE_KEY), {});
+  const saved = safeJsonParse(safeStorageGet(TRACKING_STORAGE_KEY, "{}"), {});
+  const legacy = safeJsonParse(safeStorageGet(LEGACY_TRACKING_STORAGE_KEY, "{}"), {});
   const incoming = {};
 
   TRACKING_KEYS.forEach((key) => {
@@ -84,7 +101,7 @@ function getTrackingData() {
     current: { ...legacy, ...(saved.current || {}), ...incoming }
   };
 
-  localStorage.setItem(TRACKING_STORAGE_KEY, JSON.stringify(tracking));
+  safeStorageSet(TRACKING_STORAGE_KEY, JSON.stringify(tracking));
   return tracking;
 }
 
@@ -340,9 +357,11 @@ async function sendLead(data) {
   if (SITE_CONFIG.WEB3FORMS_ACCESS_KEY && SITE_CONFIG.SEND_EMAIL_COPY) tasks.push(sendWeb3FormsLead(data));
 
   if (!tasks.length) {
-    const saved = safeJsonParse(localStorage.getItem(DRAFT_STORAGE_KEY), []);
+    const saved = safeJsonParse(safeStorageGet(DRAFT_STORAGE_KEY, "[]"), []);
     saved.push(data);
-    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(saved));
+    if (!safeStorageSet(DRAFT_STORAGE_KEY, JSON.stringify(saved))) {
+      throw new Error("Offline draft storage unavailable");
+    }
     return { offline: true };
   }
 
@@ -400,7 +419,7 @@ function saveLastLead(data) {
     created_at: data.created_at
   };
 
-  localStorage.setItem(LAST_LEAD_STORAGE_KEY, JSON.stringify(safeLead));
+  return safeStorageSet(LAST_LEAD_STORAGE_KEY, JSON.stringify(safeLead));
 }
 
 function trackLeadEvent(data, result = {}) {
@@ -475,6 +494,8 @@ function enhanceLeadForm(form) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    if (form.dataset.submitting === "true") return;
+
     const status = form.querySelector("[data-form-status]");
     const button = form.querySelector("button[type='submit']");
     const originalText = button ? button.textContent : "";
@@ -484,6 +505,9 @@ function enhanceLeadForm(form) {
       return;
     }
 
+    form.dataset.submitting = "true";
+    form.setAttribute("aria-busy", "true");
+
     if (button) {
       button.disabled = true;
       button.textContent = "Отправляем...";
@@ -492,7 +516,6 @@ function enhanceLeadForm(form) {
     try {
       const data = collectFormData(form);
       const result = await sendLead(data);
-      saveLastLead(data);
       trackLeadEvent(data, result);
       form.reset();
       form.dataset.startedAt = String(Date.now());
@@ -500,6 +523,8 @@ function enhanceLeadForm(form) {
       if (result.blocked) {
         return;
       }
+
+      saveLastLead(data);
 
       if (shouldRedirectAfterSuccess(form, result)) {
         window.location.href = buildThankYouUrl(data);
@@ -518,6 +543,9 @@ function enhanceLeadForm(form) {
         status.classList.add("is-visible");
       }
     } finally {
+      delete form.dataset.submitting;
+      form.removeAttribute("aria-busy");
+
       if (button) {
         button.disabled = false;
         button.textContent = originalText;
