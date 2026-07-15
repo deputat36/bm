@@ -4,16 +4,22 @@ on:
   pull_request:
     paths:
       - "assets/js/main.js"
+      - "assets/js/form-accessibility.js"
       - "tools/validate-lead-submit-integrity.mjs"
+      - "tools/validate-post-submit-cooldown.mjs"
       - "docs/portal/LEAD_SUBMIT_INTEGRITY.md"
+      - "docs/portal/POST_SUBMIT_COOLDOWN.md"
       - ".github/workflows/lead-submit-integrity-guard.yml"
   push:
     branches:
       - main
     paths:
       - "assets/js/main.js"
+      - "assets/js/form-accessibility.js"
       - "tools/validate-lead-submit-integrity.mjs"
+      - "tools/validate-post-submit-cooldown.mjs"
       - "docs/portal/LEAD_SUBMIT_INTEGRITY.md"
+      - "docs/portal/POST_SUBMIT_COOLDOWN.md"
       - ".github/workflows/lead-submit-integrity-guard.yml"
 
 permissions:
@@ -34,7 +40,12 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check assets/js/main.js
+          node --check assets/js/form-accessibility.js
           node --check tools/validate-lead-submit-integrity.mjs
+          node --check tools/validate-post-submit-cooldown.mjs
 
       - name: Validate lead submit integrity
         run: node tools/validate-lead-submit-integrity.mjs
+
+      - name: Validate post-submit cooldown
+        run: node tools/validate-post-submit-cooldown.mjs
