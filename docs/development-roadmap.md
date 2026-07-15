@@ -27,6 +27,7 @@
 - [x] Сохранение объекта в ипотечной воронке.
 - [x] Защищённая страница благодарности.
 - [x] First touch, last touch, UTM и техническая квалификация.
+- [x] URL атрибуции очищаются по allowlist до записи в tracking и отправки формы.
 - [x] Семь аналитических событий.
 - [x] Проверяемая спецификация аналитической воронки: 19 метрик и 6 представлений без live-данных.
 - [x] Runtime-guard для семи страниц, 14 форм и телефонных CTA.
@@ -80,6 +81,9 @@ legacy PII draft removed=true
 dry-run evidence limit=20
 dry-run personal_data_stored=false
 dry-run full payload stored=false
+attribution query allowlist=18
+attribution arbitrary query stored=false
+attribution referrer query stored=false
 QA not_run=42
 source tasks missing=14
 projects public_ready=0/3
@@ -98,6 +102,7 @@ ready profiles=0/3
 - [ ] Проверить повторный submit и браузер с недоступным `localStorage`.
 - [ ] Проверить fallback без внешнего канала: старый ключ удалён, в квитанции нет имени и телефона, хранится не более пяти записей.
 - [ ] Проверить dry-run: в `sessionStorage` есть только evidence и `field_presence`, введённые значения отсутствуют.
+- [ ] Проверить URL privacy: разрешённые UTM сохранены, `phone`, `email`, `token` и fragment отсутствуют в tracking.
 - [ ] Сохранить обезличенные подтверждения в журнале QA.
 
 ## Этап 2 — доставка и аналитика
@@ -107,6 +112,7 @@ ready profiles=0/3
 - [ ] Выполнить одну контролируемую реальную отправку.
 - [ ] Проверить письмо, объект, форму и ID фиксации.
 - [ ] Проверить `lead_source`, `placement` и `form_role`.
+- [ ] Проверить, что `page_url`, `referrer` и tracking не содержат произвольных query-параметров.
 - [ ] Проверить семь событий в фактическом debug-режиме.
 - [x] Согласовать `blocked/offline` между `dataLayer`, прямым `gtag` и Метрикой.
 - [x] Подготовить внутренний handoff-пакет для письма, endpoint или CRM без изменения live-доставки.
@@ -187,6 +193,7 @@ ready profiles=0/3
 - [x] Сохранить honeypot и исключить blocked-заявки из `lastLead`.
 - [x] Исключить имя, телефон и полный payload из браузерного offline-fallback.
 - [x] Исключить введённые значения из dry-run журнала и внутреннего тестового события.
+- [x] Исключить произвольные query-параметры и fragment из URL атрибуции.
 - [ ] Реализовать серверную идемпотентность, deduplication и rate limiting в будущем endpoint.
 - [ ] Утвердить реальные сроки реакции и правила повторных контактов.
 - [ ] Назначить роли и ответственных.
