@@ -7,6 +7,9 @@
   const PHONE_MAX_LENGTH = 24;
   const PHONE_PATTERN = "(?=(?:\\D*\\d){10,15}\\D*$)[+\\d\\s().-]+";
   const PHONE_ERROR_MESSAGE = "Укажите номер телефона от 10 до 15 цифр.";
+  const SUCCESS_COOLDOWN_STORAGE_KEY = "newbuildsBorisoglebskLeadSuccessCooldowns";
+  const SUCCESS_COOLDOWN_MS = 30_000;
+  const SUCCESS_COOLDOWN_RETENTION_MS = 5 * 60_000;
 
   function enableLeadPayloadPrivacy() {
     if (window.__NEWBUILD_LEAD_PAYLOAD_PRIVACY__ === true) return true;
@@ -60,6 +63,53 @@
     field.setCustomValidity(invalid ? PHONE_ERROR_MESSAGE : "");
     setInvalidState(field, invalid);
     return !invalid;
+  }
+
+  function readSuccessCooldowns() {
+    try {
+      const parsed = JSON.parse(sessionStorage.getItem(SUCCESS_COOLDOWN_STORAGE_KEY) || "{}");
+      const source = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+      const now = Date.now();
+      const sanitized = {};
+
+      Object.entries(source).forEach(([formId, rawTimestamp]) => {
+        const timestamp = Number(rawTimestamp);
+        if (!formId || !Number.isFinite(timestamp)) return;
+        if (timestamp > now + 60_000) return;
+        if (now - timestamp > SUCCESS_COOLDOWN_RETENTION_MS) return;
+        sanitized[formId] = timestamp;
+      });
+
+      return sanitized;
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function writeSuccessCooldowns(cooldowns) {
+    try {
+      sessionStorage.setItem(SUCCESS_COOLDOWN_STORAGE_KEY, JSON.stringify(cooldowns));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function markSuccessfulSubmission(detail) {
+    if (!detail || detail.blocked || detail.offline) return false;
+    const formId = String(detail.form_id || "").trim();
+    if (!formId) return false;
+
+    const cooldowns = readSuccessCooldowns();
+    cooldowns[formId] = Date.now();
+    return writeSuccessCooldowns(cooldowns);
+  }
+
+  function getCooldownSeconds(formId) {
+    if (!formId) return 0;
+    const timestamp = Number(readSuccessCooldowns()[formId]);
+    if (!Number.isFinite(timestamp)) return 0;
+    return Math.max(0, Math.ceil((timestamp + SUCCESS_COOLDOWN_MS - Date.now()) / 1000));
   }
 
   function enhanceForm(form, index) {
@@ -116,6 +166,19 @@
       });
     }
 
+    form.addEventListener("submit", (event) => {
+      const seconds = getCooldownSeconds(String(form.dataset.formId || "").trim());
+      if (seconds <= 0) return;
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (status) {
+        status.textContent = `Заявка уже отправлена. Повторите через ${seconds} сек.`;
+        status.classList.add("is-visible");
+        status.focus({ preventScroll: false });
+      }
+    }, true);
+
     form.addEventListener("invalid", (event) => {
       setInvalidState(event.target, true);
 
@@ -142,4 +205,5 @@
 
   enableLeadPayloadPrivacy();
   forms.forEach(enhanceForm);
+  window.addEventListener("newbuildLeadSubmit", (event) => markSuccessfulSubmission(event.detail || {}));
 })();
