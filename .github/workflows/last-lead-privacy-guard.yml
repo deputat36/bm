@@ -1,0 +1,46 @@
+name: Last lead privacy guard
+
+on:
+  pull_request:
+    paths:
+      - "assets/js/main.js"
+      - "assets/js/schema.js"
+      - "assets/js/conversion-tracking.js"
+      - "tools/validate-last-lead-privacy.mjs"
+      - "docs/portal/LAST_LEAD_PRIVACY.md"
+      - ".github/workflows/last-lead-privacy-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "assets/js/main.js"
+      - "assets/js/schema.js"
+      - "assets/js/conversion-tracking.js"
+      - "tools/validate-last-lead-privacy.mjs"
+      - "docs/portal/LAST_LEAD_PRIVACY.md"
+      - ".github/workflows/last-lead-privacy-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-last-lead-privacy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/main.js
+          node --check assets/js/schema.js
+          node --check assets/js/conversion-tracking.js
+          node --check tools/validate-last-lead-privacy.mjs
+
+      - name: Validate last lead privacy
+        run: node tools/validate-last-lead-privacy.mjs
