@@ -305,20 +305,10 @@ function enableLeadDryRunMode() {
       payload.residential_complex_id = payload.residential_complex_id || form.dataset.complexId || "all-newbuilds";
       payload.client_fixation_id = createDryRunLeadId();
       payload.created_at = new Date().toISOString();
-      payload.page_url = window.location.href;
-      payload.page_title = document.title;
       payload.dry_run = true;
       payload.delivery_status = "not_sent";
 
-      let records = [];
-      try {
-        records = JSON.parse(sessionStorage.getItem(storageKey) || "[]");
-      } catch (error) {
-        records = [];
-      }
-      records.push(payload);
-      sessionStorage.setItem(storageKey, JSON.stringify(records.slice(-20)));
-      localStorage.setItem(lastLeadStorageKey, JSON.stringify({
+      const evidence = {
         client_fixation_id: payload.client_fixation_id,
         lead_type: payload.lead_type,
         form_id: payload.form_id,
@@ -326,16 +316,50 @@ function enableLeadDryRunMode() {
         project_name: payload.project_name,
         residential_complex: payload.residential_complex,
         residential_complex_id: payload.residential_complex_id,
-        qualification: { status: "test", score: 0, priority: "не отправлено" },
+        lead_source: payload.lead_source || "",
+        placement: payload.placement || "",
         created_at: payload.created_at,
+        page_path: window.location.pathname,
+        dry_run: true,
+        delivery_status: "not_sent",
+        personal_data_stored: false,
+        field_presence: {
+          name: Boolean(payload.name),
+          phone: Boolean(payload.phone),
+          interest: Boolean(payload.interest || payload.room_type),
+          purchase_method: Boolean(payload.purchase_method || payload.mortgage_program),
+          timeline: Boolean(payload.timeline || payload.purchase_timeline),
+          comment: Boolean(payload.comment || payload.question),
+          consent: payload.consent === "yes"
+        }
+      };
+
+      let records = [];
+      try {
+        records = JSON.parse(sessionStorage.getItem(storageKey) || "[]");
+      } catch (error) {
+        records = [];
+      }
+      records.push(evidence);
+      sessionStorage.setItem(storageKey, JSON.stringify(records.slice(-20)));
+      localStorage.setItem(lastLeadStorageKey, JSON.stringify({
+        client_fixation_id: evidence.client_fixation_id,
+        lead_type: evidence.lead_type,
+        form_id: evidence.form_id,
+        project_id: evidence.project_id,
+        project_name: evidence.project_name,
+        residential_complex: evidence.residential_complex,
+        residential_complex_id: evidence.residential_complex_id,
+        qualification: { status: "test", score: 0, priority: "не отправлено" },
+        created_at: evidence.created_at,
         dry_run: true
       }));
 
-      window.dispatchEvent(new CustomEvent("newbuildLeadDryRun", { detail: payload }));
+      window.dispatchEvent(new CustomEvent("newbuildLeadDryRun", { detail: evidence }));
       form.reset();
 
       if (status) {
-        status.textContent = `Тест пройден локально. Данные не отправлены. ID: ${payload.client_fixation_id}`;
+        status.textContent = `Тест пройден локально. Данные не отправлены и не сохранены. ID: ${evidence.client_fixation_id}`;
         status.classList.add("is-visible");
       }
 
@@ -343,8 +367,8 @@ function enableLeadDryRunMode() {
         const shouldRedirect = form.dataset.redirectSuccess !== "false";
         if (shouldRedirect) {
           const thankYouUrl = new URL("/spasibo/", window.location.origin);
-          thankYouUrl.searchParams.set("type", payload.lead_type);
-          thankYouUrl.searchParams.set("id", payload.client_fixation_id);
+          thankYouUrl.searchParams.set("type", evidence.lead_type);
+          thankYouUrl.searchParams.set("id", evidence.client_fixation_id);
           thankYouUrl.searchParams.set("status", "test");
           thankYouUrl.searchParams.set("dry_run", "1");
           if (isAnalyticsDebugRequested()) {

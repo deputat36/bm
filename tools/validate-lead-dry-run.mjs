@@ -34,6 +34,42 @@ function resolvePageFile(url) {
   return clean ? `${clean}/index.html` : "index.html";
 }
 
+function extractObject(source, marker) {
+  const markerIndex = source.indexOf(marker);
+  if (markerIndex === -1) return "";
+
+  const start = source.indexOf("{", markerIndex);
+  let depth = 0;
+  let quote = "";
+  let escaped = false;
+
+  for (let index = start; index < source.length; index += 1) {
+    const char = source[index];
+
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === quote) {
+        quote = "";
+      }
+      continue;
+    }
+
+    if (char === "\"" || char === "'" || char === "`") {
+      quote = char;
+      continue;
+    }
+
+    if (char === "{") depth += 1;
+    if (char === "}") depth -= 1;
+    if (depth === 0) return source.slice(start, index + 1);
+  }
+
+  return "";
+}
+
 const schema = read(SCHEMA_PATH);
 const thankYou = read(THANK_YOU_PATH);
 const pages = readJson(PAGE_INDEX_PATH);
@@ -48,9 +84,17 @@ const requiredSchemaFragments = [
   'newbuildsBorisoglebskLastLead',
   'payload.dry_run = true',
   'payload.delivery_status = "not_sent"',
+  'const evidence = {',
+  'personal_data_stored: false',
+  'field_presence: {',
+  'records.push(evidence)',
+  'records.slice(-20)',
+  'new CustomEvent("newbuildLeadDryRun", { detail: evidence })',
+  'page_path: window.location.pathname',
   'newbuildLeadDryRun',
   'NB-TEST-',
   'ТЕСТОВЫЙ РЕЖИМ — данные не отправляются',
+  'Данные не отправлены и не сохранены',
   'thankYouUrl.searchParams.set("dry_run", "1")',
   'thankYouUrl.searchParams.set("analytics_test", "debug")',
   'thankYouUrl.searchParams.set("lead_test", "dry-run")'
@@ -64,6 +108,76 @@ for (const fragment of requiredSchemaFragments) {
 
 if (/enableLeadDryRunMode[\s\S]*?fetch\s*\(/.test(schema)) {
   errors.push(`${SCHEMA_PATH}: dry-run не должен выполнять сетевые fetch-запросы`);
+}
+
+if (schema.includes("records.push(payload)")) {
+  errors.push(`${SCHEMA_PATH}: полный payload не должен сохраняться в dry-run журнале`);
+}
+
+if (schema.includes('new CustomEvent("newbuildLeadDryRun", { detail: payload })')) {
+  errors.push(`${SCHEMA_PATH}: полный payload не должен передаваться во внутреннее dry-run событие`);
+}
+
+const evidenceObject = extractObject(schema, "const evidence =");
+if (!evidenceObject) {
+  errors.push(`${SCHEMA_PATH}: не удалось выделить объект evidence`);
+} else {
+  const requiredEvidenceFields = [
+    "client_fixation_id",
+    "lead_type",
+    "form_id",
+    "project_id",
+    "project_name",
+    "residential_complex",
+    "residential_complex_id",
+    "lead_source",
+    "placement",
+    "created_at",
+    "page_path",
+    "dry_run",
+    "delivery_status",
+    "personal_data_stored",
+    "field_presence"
+  ];
+
+  for (const field of requiredEvidenceFields) {
+    if (!new RegExp(`\\b${field}\\s*:`).test(evidenceObject)) {
+      errors.push(`${SCHEMA_PATH}: evidence не содержит поле ${field}`);
+    }
+  }
+
+  const prohibitedDirectValues = [
+    "name: payload.name",
+    "phone: payload.phone",
+    "email: payload.email",
+    "budget: payload.budget",
+    "comment: payload.comment",
+    "question: payload.question",
+    "page_url: payload.page_url",
+    "tracking: payload.tracking"
+  ];
+
+  for (const fragment of prohibitedDirectValues) {
+    if (evidenceObject.includes(fragment)) {
+      errors.push(`${SCHEMA_PATH}: evidence сохраняет исходное значение: ${fragment}`);
+    }
+  }
+
+  const requiredPresenceFlags = [
+    "name: Boolean(payload.name)",
+    "phone: Boolean(payload.phone)",
+    "interest: Boolean(payload.interest || payload.room_type)",
+    "purchase_method: Boolean(payload.purchase_method || payload.mortgage_program)",
+    "timeline: Boolean(payload.timeline || payload.purchase_timeline)",
+    "comment: Boolean(payload.comment || payload.question)",
+    'consent: payload.consent === "yes"'
+  ];
+
+  for (const fragment of requiredPresenceFlags) {
+    if (!evidenceObject.includes(fragment)) {
+      errors.push(`${SCHEMA_PATH}: отсутствует безопасный признак заполнения: ${fragment}`);
+    }
+  }
 }
 
 const requiredThankYouFragments = [
@@ -145,4 +259,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log("\nLead dry-run validation passed.");
+console.log("\nLead dry-run validation passed with sanitized local evidence.");

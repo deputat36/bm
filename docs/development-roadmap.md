@@ -32,6 +32,7 @@
 - [x] Runtime-guard для семи страниц, 14 форм и телефонных CTA.
 - [x] Отдельный отчёт по телефонным CTA без трактовки клика как состоявшегося звонка.
 - [x] Локальный dry-run и analytics debug без внешней отправки.
+- [x] Dry-run хранит только обезличенные QA-доказательства и булевы признаки заполнения.
 - [x] Матрица 14 сценариев и журнал 42 QA-слотов.
 - [x] 11 подготовленных рекламных ссылок и журнал публикаций.
 - [x] Отчёт готовности трёх объектов.
@@ -76,6 +77,9 @@ lead_submit blocked filter in metrika=true
 offline receipt limit=5
 offline contact_data_stored=false
 legacy PII draft removed=true
+dry-run evidence limit=20
+dry-run personal_data_stored=false
+dry-run full payload stored=false
 QA not_run=42
 source tasks missing=14
 projects public_ready=0/3
@@ -93,6 +97,7 @@ ready profiles=0/3
 - [ ] Проверить фокус, клавиатуру, select и ошибки.
 - [ ] Проверить повторный submit и браузер с недоступным `localStorage`.
 - [ ] Проверить fallback без внешнего канала: старый ключ удалён, в квитанции нет имени и телефона, хранится не более пяти записей.
+- [ ] Проверить dry-run: в `sessionStorage` есть только evidence и `field_presence`, введённые значения отсутствуют.
 - [ ] Сохранить обезличенные подтверждения в журнале QA.
 
 ## Этап 2 — доставка и аналитика
@@ -181,6 +186,7 @@ ready profiles=0/3
 - [x] Заблокировать повторный клиентский submit во время текущего запроса.
 - [x] Сохранить honeypot и исключить blocked-заявки из `lastLead`.
 - [x] Исключить имя, телефон и полный payload из браузерного offline-fallback.
+- [x] Исключить введённые значения из dry-run журнала и внутреннего тестового события.
 - [ ] Реализовать серверную идемпотентность, deduplication и rate limiting в будущем endpoint.
 - [ ] Утвердить реальные сроки реакции и правила повторных контактов.
 - [ ] Назначить роли и ответственных.
