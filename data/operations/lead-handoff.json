@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-15",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "draft_contract_not_connected",
+  "purpose": "Контракт внутреннего handoff-пакета для письма, endpoint или CRM без изменения текущей доставки и без персональных значений в генерируемых отчётах.",
+  "sources": {
+    "handling_playbook": "data/operations/lead-handling.json",
+    "lifecycle_contract": "data/operations/lead-lifecycle.json",
+    "form_matrix": "data/qa/form-scenarios.json",
+    "project_registry": "data/projects/index.json"
+  },
+  "rules": {
+    "runtime_email_payload_changed": false,
+    "crm_connected": false,
+    "automatic_owner_assignment_enabled": false,
+    "approved_sla_exists": false,
+    "generated_reports_contain_personal_values": false,
+    "analytics_export_enabled": false,
+    "initial_lifecycle_state": "received",
+    "template_dimensions": ["qualification_status", "form_role", "lead_type", "residential_complex_id"],
+    "expected_route_templates": 72
+  },
+  "packet_sections": [
+    {
+      "id": "routing",
+      "fields": ["handling_contract_version", "lead_lifecycle_state", "qualification_status", "response_guidance", "form_role", "lead_type"]
+    },
+    {
+      "id": "context",
+      "fields": ["residential_complex_id", "source_check_required", "conversation_goal", "object_handling_focus"]
+    },
+    {
+      "id": "action",
+      "fields": ["recommended_first_action", "required_contact_outcome", "allowed_next_actions"]
+    },
+    {
+      "id": "attribution",
+      "fields": ["form_id", "lead_source", "placement"]
+    }
+  ],
+  "runtime_contact_fields": {
+    "handled_by_delivery_layer": true,
+    "excluded_from_generated_reports": true,
+    "fields": ["name", "phone", "personal_data_consent"]
+  },
+  "rendering": {
+    "handling_contract_version": "1.0",
+    "response_guidance_labels": {
+      "first_available_work_block": "Первый доступный рабочий блок",
+      "same_working_day": "В течение рабочего дня",
+      "planned_nurture_cycle": "Плановый цикл сопровождения"
+    },
+    "boolean_labels": {
+      "true": "Да",
+      "false": "Нет"
+    }
+  }
+}
