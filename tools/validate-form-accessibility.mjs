@@ -66,7 +66,7 @@ if (enhancementScript) {
     "const PHONE_MAX_LENGTH = 24;",
     "phone.pattern = PHONE_PATTERN;",
     "phone.maxLength = PHONE_MAX_LENGTH;",
-    "phone.setCustomValidity",
+    "field.setCustomValidity",
     "phoneDigitCount(value)",
     "digits < PHONE_MIN_DIGITS || digits > PHONE_MAX_DIGITS",
     'phone.addEventListener("input"',
