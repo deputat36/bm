@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.2",
-  "updated_at": "2026-07-14",
+  "schema_version": "1.3",
+  "updated_at": "2026-07-15",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Единый словарь событий, измерений и правил подсчёта конверсионной воронки портала.",
   "rules": {
@@ -47,10 +47,18 @@
         "action: target.dataset.trackAction",
         "placement: target.dataset.trackPlacement",
         "object_id: target.dataset.trackObject",
-        "link_url: target.getAttribute"
+        "link_url: sanitizeCtaDestination(target)"
       ],
       "required_fields": ["event", "page_path", "action"],
       "optional_fields": ["placement", "object_id", "link_url"],
+      "field_rules": {
+        "link_url": "sanitized_destination_only",
+        "phone_destination": "phone:primary_sales_phone",
+        "email_destination": "email:portal_contact",
+        "raw_href_forbidden": true,
+        "arbitrary_query_parameters_forbidden": true,
+        "fragment_forbidden": true
+      },
       "count_rule": "count_events",
       "count_filter": "none",
       "contains_personal_data": false,

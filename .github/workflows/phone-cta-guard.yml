@@ -8,6 +8,7 @@ on:
       - "catalog/**"
       - "contacts/**"
       - "ipoteka/**"
+      - "assets/js/conversion-tracking.js"
       - "data/analytics/**"
       - "data/qa/**"
       - "tools/validate-phone-cta-report.mjs"
@@ -19,6 +20,7 @@ on:
       - "catalog/**"
       - "contacts/**"
       - "ipoteka/**"
+      - "assets/js/conversion-tracking.js"
       - "data/analytics/**"
       - "data/qa/**"
       - "tools/validate-phone-cta-report.mjs"
@@ -44,6 +46,7 @@ jobs:
 
       - name: Check scripts
         run: |
+          node --check assets/js/conversion-tracking.js
           node --check tools/validate-phone-cta-report.mjs
           node --check tools/build-phone-cta-report.mjs
 
@@ -53,4 +56,4 @@ jobs:
       - name: Generate phone CTA inventory
         run: |
           node tools/build-phone-cta-report.mjs --format=json > /tmp/phone-cta-report.json
-          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/phone-cta-report.json","utf8")); if(data.status!=="specification_only_no_live_data"||!Array.isArray(data.metrics)||data.metrics.length!==2||!Array.isArray(data.views)||data.views.length!==3||data.summary?.phone_links<7||data.summary?.pages!==7||data.summary?.placements<5) process.exit(1); console.log(`Phone CTA links: ${data.summary.phone_links}; pages: ${data.summary.pages}; placements: ${data.summary.placements}`);'
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/phone-cta-report.json","utf8")); if(data.status!=="specification_only_no_live_data"||!Array.isArray(data.metrics)||data.metrics.length!==2||!Array.isArray(data.views)||data.views.length!==3||data.summary?.phone_links<7||data.summary?.pages!==7||data.summary?.placements<5||data.rules?.runtime_destination_token!=="phone:primary_sales_phone"||data.rules?.business_phone_number_not_exported!==true) process.exit(1); console.log(`Phone CTA links: ${data.summary.phone_links}; pages: ${data.summary.pages}; placements: ${data.summary.placements}`);'

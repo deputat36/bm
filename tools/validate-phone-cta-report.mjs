@@ -6,6 +6,7 @@ const SPEC_PATH = "data/analytics/phone-cta-report.json";
 const EVENTS_PATH = "data/analytics/events.json";
 const FUNNEL_PATH = "data/analytics/funnel-report.json";
 const MATRIX_PATH = "data/qa/form-scenarios.json";
+const RUNTIME_PATH = "assets/js/conversion-tracking.js";
 const errors = [];
 
 function read(relativePath) {
@@ -55,13 +56,14 @@ const spec = readJson(SPEC_PATH);
 const registry = readJson(EVENTS_PATH);
 const funnel = readJson(FUNNEL_PATH);
 const matrix = readJson(MATRIX_PATH);
+const runtime = read(RUNTIME_PATH);
 
-if (!spec || !registry || !funnel || !matrix) process.exit(1);
+if (!spec || !registry || !funnel || !matrix || !runtime) process.exit(1);
 
 if (spec.portal_id !== "newbuilds-borisoglebsk" || spec.portal_id !== registry.portal_id || spec.portal_id !== funnel.portal_id) {
   errors.push(`${SPEC_PATH}: portal_id must match analytics sources`);
 }
-if (spec.schema_version !== "1.0") errors.push(`${SPEC_PATH}: schema_version must be 1.0`);
+if (spec.schema_version !== "1.1") errors.push(`${SPEC_PATH}: schema_version must be 1.1`);
 if (spec.status !== "specification_only_no_live_data") errors.push(`${SPEC_PATH}: status must prohibit live-data claims`);
 if (spec.source?.event_registry !== EVENTS_PATH) errors.push(`${SPEC_PATH}: invalid event_registry path`);
 if (spec.source?.funnel_report !== FUNNEL_PATH) errors.push(`${SPEC_PATH}: invalid funnel_report path`);
@@ -75,6 +77,15 @@ const eventFields = new Set([...(event?.required_fields || []), ...(event?.optio
 ["page_path", "action", "placement", "object_id"].forEach((field) => {
   if (!eventFields.has(field)) errors.push(`${EVENTS_PATH}: lead_cta_click missing ${field}`);
 });
+if (event?.field_rules?.link_url !== "sanitized_destination_only") {
+  errors.push(`${EVENTS_PATH}: lead_cta_click link_url must be sanitized_destination_only`);
+}
+if (event?.field_rules?.phone_destination !== "phone:primary_sales_phone") {
+  errors.push(`${EVENTS_PATH}: lead_cta_click phone destination token is invalid`);
+}
+if (event?.field_rules?.raw_href_forbidden !== true || event?.field_rules?.arbitrary_query_parameters_forbidden !== true) {
+  errors.push(`${EVENTS_PATH}: lead_cta_click raw href and arbitrary query parameters must be forbidden`);
+}
 
 const baseMetric = (funnel.metrics || []).find((metric) => metric.id === "cta_clicks");
 if (!baseMetric || baseMetric.source_event !== "lead_cta_click" || baseMetric.filter !== "none") {
@@ -90,10 +101,13 @@ const rules = spec.rules || {};
   "unique_caller_unknown",
   "personal_data_forbidden",
   "business_phone_number_not_exported",
+  "raw_tel_href_forbidden",
   "project_link_requires_object_id"
 ].forEach((rule) => {
   if (rules[rule] !== true) errors.push(`${SPEC_PATH}: rule ${rule} must be true`);
 });
+if (rules.runtime_destination_field !== "link_url") errors.push(`${SPEC_PATH}: runtime destination field must be link_url`);
+if (rules.runtime_destination_token !== "phone:primary_sales_phone") errors.push(`${SPEC_PATH}: runtime phone token is invalid`);
 if (rules.ratio_zero_denominator_result !== null) errors.push(`${SPEC_PATH}: zero denominator must return null`);
 if (rules.reporting_timezone !== "Europe/Moscow") errors.push(`${SPEC_PATH}: reporting timezone must be Europe/Moscow`);
 
@@ -102,9 +116,32 @@ const prohibitedDimensions = new Set(uniqueStrings(rules.prohibited_dimensions, 
 ["page_path", "placement", "object_id"].forEach((field) => {
   if (!allowedDimensions.has(field)) errors.push(`${SPEC_PATH}: allowed_dimensions missing ${field}`);
 });
-["phone", "phone_normalized", "name", "email", "client_fixation_id", "call_duration", "call_status"].forEach((field) => {
+["phone", "phone_normalized", "name", "email", "client_fixation_id", "call_duration", "call_status", "link_url"].forEach((field) => {
   if (!prohibitedDimensions.has(field)) errors.push(`${SPEC_PATH}: prohibited_dimensions missing ${field}`);
 });
+
+const requiredRuntimeFragments = [
+  'const PRIMARY_SALES_PHONE_DESTINATION = "phone:primary_sales_phone"',
+  'const PORTAL_EMAIL_DESTINATION = "email:portal_contact"',
+  "function sanitizeCtaDestination(target)",
+  'action === "phone" || rawHref.toLowerCase().startsWith("tel:")',
+  "return PRIMARY_SALES_PHONE_DESTINATION",
+  'rawHref.toLowerCase().startsWith("mailto:")',
+  "return PORTAL_EMAIL_DESTINATION",
+  "link_url: sanitizeCtaDestination(target)"
+];
+requiredRuntimeFragments.forEach((fragment) => {
+  if (!runtime.includes(fragment)) errors.push(`${RUNTIME_PATH}: missing CTA privacy fragment ${fragment}`);
+});
+if (runtime.includes('link_url: target.getAttribute("href")') || runtime.includes("link_url: target.getAttribute('href')")) {
+  errors.push(`${RUNTIME_PATH}: raw href must not be assigned to link_url`);
+}
+if (!runtime.includes("return `${sanitized.pathname}${sanitized.search}`")) {
+  errors.push(`${RUNTIME_PATH}: internal CTA destination must be reduced to sanitized path and allowed query`);
+}
+if (!runtime.includes("return sanitized.toString()")) {
+  errors.push(`${RUNTIME_PATH}: external CTA destination must be reduced to origin and pathname`);
+}
 
 const metrics = new Map();
 for (const metric of Array.isArray(spec.metrics) ? spec.metrics : []) {
@@ -210,6 +247,7 @@ console.log(`Checked phone report views: ${views.size}`);
 console.log(`Checked active pages: ${pageMap.size}`);
 console.log(`Checked phone CTA links: ${phoneLinks}`);
 console.log(`Checked phone placements: ${placements.size}`);
+console.log("Checked runtime phone destination token: phone:primary_sales_phone");
 
 if (errors.length) {
   console.error("\nPhone CTA report validation errors:");
