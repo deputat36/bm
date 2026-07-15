@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-15",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "draft_contract_not_connected",
+  "purpose": "Append-only контракт истории первичного обращения без хранения реальных лидов в репозитории и без автоматического изменения CRM.",
+  "sources": {
+    "lifecycle_contract": "data/operations/lead-lifecycle.json",
+    "handling_playbook": "data/operations/lead-handling.json",
+    "handoff_contract": "data/operations/lead-handoff.json"
+  },
+  "rules": {
+    "append_only": true,
+    "event_update_forbidden": true,
+    "event_delete_forbidden": true,
+    "real_event_records_in_repository_forbidden": true,
+    "personal_values_in_generated_reports_forbidden": true,
+    "automatic_transition_enabled": false,
+    "crm_connected": false,
+    "approved_sla_exists": false,
+    "actor_is_role_not_person": true,
+    "expected_event_templates": 18
+  },
+  "required_event_fields": [
+    "event_id",
+    "lead_id",
+    "occurred_at",
+    "event_type",
+    "from_state",
+    "to_state",
+    "actor_role",
+    "source_system",
+    "payload_version"
+  ],
+  "optional_event_fields": [
+    "contact_outcome",
+    "next_action",
+    "next_action_at",
+    "source_check_required",
+    "evidence_ref",
+    "reason_code"
+  ],
+  "actor_roles": [
+    "portal_system",
+    "lead_operator",
+    "manager",
+    "source_reviewer"
+  ],
+  "source_systems": [
+    "portal_form",
+    "manual_register",
+    "future_endpoint",
+    "future_crm"
+  ],
+  "reason_codes": [
+    "contact_completed",
+    "no_answer",
+    "duplicate_detected",
+    "invalid_or_spam",
+    "contact_declined",
+    "source_check_needed",
+    "source_verified",
+    "source_unavailable",
+    "follow_up_agreed",
+    "closed_without_action"
+  ],
+  "privacy": {
+    "forbidden_fields": [
+      "name",
+      "phone",
+      "phone_normalized",
+      "email",
+      "comment",
+      "question",
+      "conversation_text",
+      "client_fixation_id"
+    ],
+    "repository_may_store_contract_only": true
+  },
+  "rendering": {
+    "payload_version": "1.0",
+    "default_source_system": "manual_register",
+    "default_actor_role": "lead_operator"
+  }
+}
