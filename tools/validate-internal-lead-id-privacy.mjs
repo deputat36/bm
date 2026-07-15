@@ -81,8 +81,24 @@ if (!(privacyCall >= 0 && duplicateBarReturn > privacyCall)) {
 const leadSubmit = (registry?.events || []).find((event) => event.id === "lead_submit");
 if (!leadSubmit) {
   errors.push(`${EVENTS_PATH}: lead_submit is missing`);
-} else if (!(leadSubmit.forbidden_fields || []).includes("client_fixation_id")) {
-  errors.push(`${EVENTS_PATH}: client_fixation_id must remain forbidden`);
+} else {
+  if ((leadSubmit.optional_fields || []).includes("client_fixation_id")) {
+    errors.push(`${EVENTS_PATH}: client_fixation_id must not be an optional public field`);
+  }
+  if (leadSubmit.contains_restricted_technical_id !== false) {
+    errors.push(`${EVENTS_PATH}: lead_submit must declare no restricted technical ID`);
+  }
+}
+
+const allowedRestrictedEvents = registry?.rules?.restricted_field_allowed_events || [];
+if (!Array.isArray(allowedRestrictedEvents) || allowedRestrictedEvents.length !== 0) {
+  errors.push(`${EVENTS_PATH}: restricted_field_allowed_events must be empty`);
+}
+if (registry?.rules?.restricted_field_internal_event !== "newbuildLeadSubmit") {
+  errors.push(`${EVENTS_PATH}: internal restricted field event must be newbuildLeadSubmit`);
+}
+if (registry?.rules?.restricted_field_external_channels_forbidden !== true) {
+  errors.push(`${EVENTS_PATH}: restricted fields must be forbidden in external channels`);
 }
 
 console.log("Public analytics client fixation IDs: 0");
