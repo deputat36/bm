@@ -448,8 +448,12 @@ function trackLeadEvent(data, result = {}) {
       event_category: "lead",
       event_label: data.lead_type,
       form_id: data.form_id,
+      residential_complex_id: data.residential_complex_id || "",
+      qualification_status: data.qualification?.status || "",
       lead_source: data.lead_source || "",
       placement: data.placement || "",
+      blocked: Boolean(result.blocked),
+      offline: Boolean(result.offline),
       value: data.qualification?.score || 0
     });
   }
