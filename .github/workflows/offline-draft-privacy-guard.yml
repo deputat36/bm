@@ -9,9 +9,11 @@ on:
       - "assets/js/form-accessibility.js"
       - "tools/validate-offline-draft-privacy.mjs"
       - "tools/validate-attribution-url-privacy.mjs"
+      - "tools/validate-attribution-retention.mjs"
       - "tools/validate-lead-device-data-privacy.mjs"
       - "docs/portal/OFFLINE_DRAFT_PRIVACY.md"
       - "docs/portal/ATTRIBUTION_URL_PRIVACY.md"
+      - "docs/portal/ATTRIBUTION_RETENTION.md"
       - "docs/portal/LEAD_DEVICE_DATA_PRIVACY.md"
       - ".github/workflows/offline-draft-privacy-guard.yml"
   push:
@@ -24,9 +26,11 @@ on:
       - "assets/js/form-accessibility.js"
       - "tools/validate-offline-draft-privacy.mjs"
       - "tools/validate-attribution-url-privacy.mjs"
+      - "tools/validate-attribution-retention.mjs"
       - "tools/validate-lead-device-data-privacy.mjs"
       - "docs/portal/OFFLINE_DRAFT_PRIVACY.md"
       - "docs/portal/ATTRIBUTION_URL_PRIVACY.md"
+      - "docs/portal/ATTRIBUTION_RETENTION.md"
       - "docs/portal/LEAD_DEVICE_DATA_PRIVACY.md"
       - ".github/workflows/offline-draft-privacy-guard.yml"
 
@@ -53,6 +57,7 @@ jobs:
           node --check assets/js/form-accessibility.js
           node --check tools/validate-offline-draft-privacy.mjs
           node --check tools/validate-attribution-url-privacy.mjs
+          node --check tools/validate-attribution-retention.mjs
           node --check tools/validate-lead-device-data-privacy.mjs
 
       - name: Validate offline draft privacy
@@ -60,6 +65,9 @@ jobs:
 
       - name: Validate attribution URL privacy
         run: node tools/validate-attribution-url-privacy.mjs
+
+      - name: Validate attribution retention
+        run: node tools/validate-attribution-retention.mjs
 
       - name: Validate lead device data privacy
         run: node tools/validate-lead-device-data-privacy.mjs
