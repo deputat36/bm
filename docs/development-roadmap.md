@@ -46,6 +46,7 @@
 - [x] Append-only контракт журнала: 18 шаблонов событий без хранения реальных лидов в GitHub.
 - [x] Клиентская целостность submit: safe storage, in-flight lock и защита `lastLead` от honeypot.
 - [x] Согласованы фильтры `blocked/offline` между `dataLayer`, прямым `gtag` и Метрикой.
+- [x] Локальный fallback удаляет старый PII-черновик и хранит не более пяти обезличенных технических квитанций.
 - [x] Portal guards с аналитическим реестром, проверкой формул и runtime-загрузки.
 
 ## Текущее состояние
@@ -72,6 +73,9 @@ blocked updates lastLead=false
 lead_submit blocked filter in dataLayer=true
 lead_submit blocked filter in gtag=true
 lead_submit blocked filter in metrika=true
+offline receipt limit=5
+offline contact_data_stored=false
+legacy PII draft removed=true
 QA not_run=42
 source tasks missing=14
 projects public_ready=0/3
@@ -88,6 +92,7 @@ ready profiles=0/3
 - [ ] Проверить 14 форм на iPhone.
 - [ ] Проверить фокус, клавиатуру, select и ошибки.
 - [ ] Проверить повторный submit и браузер с недоступным `localStorage`.
+- [ ] Проверить fallback без внешнего канала: старый ключ удалён, в квитанции нет имени и телефона, хранится не более пяти записей.
 - [ ] Сохранить обезличенные подтверждения в журнале QA.
 
 ## Этап 2 — доставка и аналитика
@@ -175,6 +180,7 @@ ready profiles=0/3
 - [x] Подготовить append-only контракт истории событий без хранения реальных обращений в репозитории.
 - [x] Заблокировать повторный клиентский submit во время текущего запроса.
 - [x] Сохранить honeypot и исключить blocked-заявки из `lastLead`.
+- [x] Исключить имя, телефон и полный payload из браузерного offline-fallback.
 - [ ] Реализовать серверную идемпотентность, deduplication и rate limiting в будущем endpoint.
 - [ ] Утвердить реальные сроки реакции и правила повторных контактов.
 - [ ] Назначить роли и ответственных.
