@@ -1,4 +1,98 @@
 (function () {
+  const THANKYOU_PATH_PATTERN = /\/spasibo\/?$/;
+  const LAST_LEAD_STORAGE_KEY = "newbuildsBorisoglebskLastLead";
+  const LAST_LEAD_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+  const LAST_LEAD_FUTURE_SKEW_MS = 5 * 60 * 1000;
+  const LIVE_LEAD_ID_PATTERN = /^NB-\d{8}-[A-Z0-9]{6}$/;
+  const TEST_LEAD_ID_PATTERN = /^NB-TEST-\d{8}-[A-Z0-9]{6}$/;
+
+  function isValidLeadId(value) {
+    const id = String(value || "").trim();
+    return LIVE_LEAD_ID_PATTERN.test(id) || TEST_LEAD_ID_PATTERN.test(id);
+  }
+
+  function removeLastLead() {
+    try {
+      localStorage.removeItem(LAST_LEAD_STORAGE_KEY);
+    } catch (error) {
+      // Privacy mode can make localStorage unavailable.
+    }
+  }
+
+  function readFreshLastLead() {
+    try {
+      const stored = JSON.parse(localStorage.getItem(LAST_LEAD_STORAGE_KEY) || "{}");
+      const storedId = String(stored?.client_fixation_id || "").trim();
+      const createdAt = Date.parse(String(stored?.created_at || ""));
+      const ageMs = Date.now() - createdAt;
+      const isFresh = Number.isFinite(createdAt)
+        && ageMs >= -LAST_LEAD_FUTURE_SKEW_MS
+        && ageMs <= LAST_LEAD_MAX_AGE_MS;
+
+      if (!isValidLeadId(storedId) || !isFresh) {
+        removeLastLead();
+        return {};
+      }
+
+      return stored;
+    } catch (error) {
+      removeLastLead();
+      return {};
+    }
+  }
+
+  function hardenThankYouContext() {
+    if (!THANKYOU_PATH_PATTERN.test(window.location.pathname)) return false;
+
+    const stored = readFreshLastLead();
+    const storedId = String(stored?.client_fixation_id || "").trim();
+    const url = new URL(window.location.href);
+    const rawId = String(url.searchParams.get("id") || "").trim();
+    const queryIdValid = isValidLeadId(rawId);
+    const matchesStoredLead = Boolean(queryIdValid && storedId && storedId === rawId);
+    const dryRunRequested = url.searchParams.get("dry_run") === "1";
+    const dryRunValid = Boolean(
+      dryRunRequested
+      && TEST_LEAD_ID_PATTERN.test(rawId)
+      && matchesStoredLead
+      && stored?.dry_run === true
+    );
+    let urlChanged = false;
+
+    if (rawId && !queryIdValid) {
+      url.searchParams.delete("id");
+      urlChanged = true;
+    }
+
+    if (dryRunRequested && !dryRunValid) {
+      url.searchParams.delete("dry_run");
+      urlChanged = true;
+    }
+
+    if (!dryRunValid) {
+      ["lead_test", "analytics_test", "test_ack"].forEach((key) => {
+        if (!url.searchParams.has(key)) return;
+        url.searchParams.delete(key);
+        urlChanged = true;
+      });
+    }
+
+    if (urlChanged) {
+      window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
+    window.__NEWBUILD_THANKYOU_CONTEXT_GUARD__ = {
+      maximum_age_ms: LAST_LEAD_MAX_AGE_MS,
+      stored_record_fresh: Boolean(storedId),
+      query_id_valid: queryIdValid,
+      matches_stored_lead: matchesStoredLead,
+      dry_run_valid: dryRunValid
+    };
+    return true;
+  }
+
+  hardenThankYouContext();
+
   const params = new URLSearchParams(window.location.search);
   const enabled = params.get("analytics_test") === "debug"
     && params.get("lead_test") === "dry-run"

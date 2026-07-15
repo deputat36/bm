@@ -3,14 +3,20 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const pagePath = path.join(ROOT, "spasibo/index.html");
+const debugPath = path.join(ROOT, "assets/js/analytics-debug.js");
 const errors = [];
 
 if (!fs.existsSync(pagePath)) {
   console.error("spasibo/index.html: file does not exist");
   process.exit(1);
 }
+if (!fs.existsSync(debugPath)) {
+  console.error("assets/js/analytics-debug.js: file does not exist");
+  process.exit(1);
+}
 
 const html = fs.readFileSync(pagePath, "utf8");
+const debug = fs.readFileSync(debugPath, "utf8");
 const requiredFragments = [
   'id="lead-form"',
   'id="lead-form-role"',
@@ -37,6 +43,54 @@ requiredFragments.forEach((fragment) => {
     errors.push(`spasibo/index.html: missing attribution fragment ${fragment}`);
   }
 });
+
+const requiredDebugFragments = [
+  "const THANKYOU_PATH_PATTERN = /\\/spasibo\\/?$/",
+  'const LAST_LEAD_STORAGE_KEY = "newbuildsBorisoglebskLastLead"',
+  "const LAST_LEAD_MAX_AGE_MS = 24 * 60 * 60 * 1000",
+  "const LAST_LEAD_FUTURE_SKEW_MS = 5 * 60 * 1000",
+  "const LIVE_LEAD_ID_PATTERN = /^NB-\\d{8}-[A-Z0-9]{6}$/",
+  "const TEST_LEAD_ID_PATTERN = /^NB-TEST-\\d{8}-[A-Z0-9]{6}$/",
+  "function readFreshLastLead()",
+  "localStorage.removeItem(LAST_LEAD_STORAGE_KEY)",
+  "ageMs <= LAST_LEAD_MAX_AGE_MS",
+  "ageMs >= -LAST_LEAD_FUTURE_SKEW_MS",
+  "TEST_LEAD_ID_PATTERN.test(rawId)",
+  "matchesStoredLead",
+  "stored?.dry_run === true",
+  'url.searchParams.delete("dry_run")',
+  '["lead_test", "analytics_test", "test_ack"]',
+  "window.history.replaceState",
+  "window.__NEWBUILD_THANKYOU_CONTEXT_GUARD__",
+  "hardenThankYouContext();"
+];
+
+requiredDebugFragments.forEach((fragment) => {
+  if (!debug.includes(fragment)) {
+    errors.push(`assets/js/analytics-debug.js: missing thank-you hardening fragment ${fragment}`);
+  }
+});
+
+const hardeningCallIndex = debug.indexOf("hardenThankYouContext();");
+const debugParamsIndex = debug.indexOf("const params = new URLSearchParams(window.location.search);");
+if (hardeningCallIndex === -1 || debugParamsIndex === -1 || hardeningCallIndex > debugParamsIndex) {
+  errors.push("assets/js/analytics-debug.js: thank-you context must be hardened before analytics debug parameters are read");
+}
+
+const dryRunValidityStart = debug.indexOf("const dryRunValid = Boolean(");
+const dryRunValidityEnd = dryRunValidityStart >= 0 ? debug.indexOf(");", dryRunValidityStart) : -1;
+const dryRunValidityBlock = dryRunValidityStart >= 0 && dryRunValidityEnd > dryRunValidityStart
+  ? debug.slice(dryRunValidityStart, dryRunValidityEnd)
+  : "";
+if (!dryRunValidityBlock) {
+  errors.push("assets/js/analytics-debug.js: dry-run validity block not found");
+} else {
+  ["dryRunRequested", "TEST_LEAD_ID_PATTERN.test(rawId)", "matchesStoredLead", "stored?.dry_run === true"].forEach((fragment) => {
+    if (!dryRunValidityBlock.includes(fragment)) {
+      errors.push(`assets/js/analytics-debug.js: dry-run validity missing ${fragment}`);
+    }
+  });
+}
 
 ["prostornaya-4a", "aerodromnaya-18g", "sennaya-76", "all-newbuilds"].forEach((objectId) => {
   if (!html.includes(`"${objectId}"`)) {
@@ -137,7 +191,13 @@ if (!inlineScripts.length) {
   });
 }
 
-console.log("Checked thank-you attribution, form roles, local debug and post-submit analytics.");
+try {
+  new Function(debug);
+} catch (error) {
+  errors.push(`assets/js/analytics-debug.js: invalid syntax: ${error.message}`);
+}
+
+console.log("Checked thank-you attribution, 24-hour context retention, ID validation, local debug and post-submit analytics.");
 
 if (errors.length) {
   console.error("\nThank-you attribution validation errors:");
