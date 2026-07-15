@@ -1,0 +1,40 @@
+name: Lead submit integrity guard
+
+on:
+  pull_request:
+    paths:
+      - "assets/js/main.js"
+      - "tools/validate-lead-submit-integrity.mjs"
+      - "docs/portal/LEAD_SUBMIT_INTEGRITY.md"
+      - ".github/workflows/lead-submit-integrity-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "assets/js/main.js"
+      - "tools/validate-lead-submit-integrity.mjs"
+      - "docs/portal/LEAD_SUBMIT_INTEGRITY.md"
+      - ".github/workflows/lead-submit-integrity-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-lead-submit-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/main.js
+          node --check tools/validate-lead-submit-integrity.mjs
+
+      - name: Validate lead submit integrity
+        run: node tools/validate-lead-submit-integrity.mjs
