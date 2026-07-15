@@ -76,8 +76,14 @@ if (!registry || !Array.isArray(registry.events)) {
   if (!restricted.has("client_fixation_id")) {
     errors.push(`${REGISTRY_PATH}: client_fixation_id must be a restricted technical field`);
   }
-  if (!restrictedAllowedEvents.has("lead_submit") || restrictedAllowedEvents.size !== 1) {
-    errors.push(`${REGISTRY_PATH}: restricted technical fields may be allowed only for lead_submit`);
+  if (restrictedAllowedEvents.size !== 0) {
+    errors.push(`${REGISTRY_PATH}: restricted technical fields must be forbidden in external analytics events`);
+  }
+  if (rules.restricted_field_internal_event !== "newbuildLeadSubmit") {
+    errors.push(`${REGISTRY_PATH}: restricted internal event must be newbuildLeadSubmit`);
+  }
+  if (rules.restricted_field_external_channels_forbidden !== true) {
+    errors.push(`${REGISTRY_PATH}: restricted fields must be forbidden in external channels`);
   }
 
   for (const event of registry.events) {
@@ -136,8 +142,8 @@ const classified = registry?.events?.find((event) => event.id === "lead_submit_c
 if (submit?.metric_role !== "canonical_conversion" || submit?.count_filter !== "blocked=false") {
   errors.push("lead_submit: invalid canonical counting rule");
 }
-if (!submit?.optional_fields?.includes("client_fixation_id") || submit?.contains_restricted_technical_id !== true) {
-  errors.push("lead_submit: restricted client_fixation_id declaration is missing");
+if (submit?.optional_fields?.includes("client_fixation_id") || submit?.contains_restricted_technical_id !== false) {
+  errors.push("lead_submit: restricted client_fixation_id must be absent from public analytics");
 }
 if (classified?.metric_role !== "classification_dimension" || classified?.count_filter !== "blocked=false") {
   errors.push("lead_submit_classified: invalid classification counting rule");
