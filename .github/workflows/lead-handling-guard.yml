@@ -1,0 +1,55 @@
+name: Lead handling guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/js/main.js"
+      - "data/operations/**"
+      - "data/projects/index.json"
+      - "data/qa/form-scenarios.json"
+      - "docs/portal/LEAD_HANDLING_PLAYBOOK.md"
+      - "tools/validate-lead-handling-playbook.mjs"
+      - "tools/build-lead-handling-playbook.mjs"
+      - ".github/workflows/lead-handling-guard.yml"
+  pull_request:
+    paths:
+      - "assets/js/main.js"
+      - "data/operations/**"
+      - "data/projects/index.json"
+      - "data/qa/form-scenarios.json"
+      - "docs/portal/LEAD_HANDLING_PLAYBOOK.md"
+      - "tools/validate-lead-handling-playbook.mjs"
+      - "tools/build-lead-handling-playbook.mjs"
+      - ".github/workflows/lead-handling-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-lead-handling:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-lead-handling-playbook.mjs
+          node --check tools/build-lead-handling-playbook.mjs
+
+      - name: Validate lead handling playbook
+        run: node tools/validate-lead-handling-playbook.mjs
+
+      - name: Generate lead handling matrix
+        run: |
+          node tools/build-lead-handling-playbook.mjs --format=json > /tmp/lead-handling.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/lead-handling.json","utf8")); if(data.status!=="recommended_draft_not_operational"||data.summary?.routes!==18||data.summary?.priority_bands!==3||data.summary?.form_roles!==2||data.summary?.lead_types!==3||data.summary?.object_contexts!==4||data.summary?.contact_outcomes!==9) process.exit(1); console.log(`Generated handling routes: ${data.summary.routes}; object contexts: ${data.summary.object_contexts}`);'
