@@ -120,7 +120,7 @@ if (!dryBlock) {
 }
 
 const roleStart = conversion.indexOf("function updateStoredLeadRole(detail, formRole)");
-const roleEnd = conversion.indexOf("\nfunction sendConversionEvent", roleStart);
+const roleEnd = conversion.indexOf("\n  function sendConversionEvent", roleStart);
 const roleBlock = roleStart >= 0 && roleEnd > roleStart ? conversion.slice(roleStart, roleEnd) : "";
 if (!roleBlock) {
   errors.push(`${CONVERSION_PATH}: updateStoredLeadRole block not found`);
