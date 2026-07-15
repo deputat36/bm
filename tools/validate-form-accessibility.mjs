@@ -2,10 +2,11 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const PAGE_INDEX_PATH = "data/pages/index.json";
+const QA_MATRIX_PATH = "data/qa/form-scenarios.json";
 const SCHEMA_PATH = "assets/js/schema.js";
 const ENHANCEMENT_PATH = "assets/js/form-accessibility.js";
-const ACTIVE_STATUSES = new Set(["ready", "published"]);
+const EXPECTED_FORMS = 14;
+const EXPECTED_PAGES = 7;
 const errors = [];
 
 function read(relativePath) {
@@ -20,7 +21,6 @@ function read(relativePath) {
 function readJson(relativePath) {
   const content = read(relativePath);
   if (!content) return null;
-
   try {
     return JSON.parse(content);
   } catch (error) {
@@ -29,25 +29,33 @@ function readJson(relativePath) {
   }
 }
 
-function resolvePageFile(url) {
-  const clean = String(url || "").replace(/^\/+/, "").replace(/\/+$/, "");
-  return clean ? `${clean}/index.html` : "index.html";
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function getFormBlocks(html) {
-  return html.match(/<form\b[^>]*data-lead-form[^>]*>[\s\S]*?<\/form>/gi) || [];
+function findFormBlock(html, formId) {
+  const pattern = new RegExp(`<form\\b[^>]*data-form-id=["']${escapeRegExp(formId)}["'][^>]*>[\\s\\S]*?<\\/form>`, "i");
+  return html.match(pattern)?.[0] || "";
 }
 
-const pages = readJson(PAGE_INDEX_PATH);
+function findInputTag(formBlock, fieldName) {
+  const pattern = new RegExp(`<input\\b(?=[^>]*\\bname=["']${escapeRegExp(fieldName)}["'])[^>]*>`, "i");
+  return formBlock.match(pattern)?.[0] || "";
+}
+
+function getAttribute(tag, name) {
+  const pattern = new RegExp(`${escapeRegExp(name)}=["']([^"']*)["']`, "i");
+  return tag.match(pattern)?.[1]?.trim() || "";
+}
+
+const matrix = readJson(QA_MATRIX_PATH);
 const schemaScript = read(SCHEMA_PATH);
 const enhancementScript = read(ENHANCEMENT_PATH);
-let checkedPages = 0;
-let checkedForms = 0;
+const checkedFormIds = new Set();
+const checkedPages = new Set();
 
-if (schemaScript) {
-  if (!schemaScript.includes('loadPortalScript(schemaScriptUrl, "form-accessibility.js")')) {
-    errors.push(`${SCHEMA_PATH}: form-accessibility.js не загружается для страниц с лид-формами`);
-  }
+if (schemaScript && !schemaScript.includes('loadPortalScript(schemaScriptUrl, "form-accessibility.js")')) {
+  errors.push(`${SCHEMA_PATH}: form-accessibility.js не загружается для страниц с лид-формами`);
 }
 
 if (enhancementScript) {
@@ -57,65 +65,95 @@ if (enhancementScript) {
     'setAttribute("aria-live", "polite")',
     'setAttribute("aria-atomic", "true")',
     'inputMode = "tel"',
-    'MutationObserver',
+    "const PHONE_MIN_DIGITS = 10;",
+    "const PHONE_MAX_DIGITS = 15;",
+    "const PHONE_MAX_LENGTH = 24;",
+    "phone.pattern = PHONE_PATTERN;",
+    "phone.maxLength = PHONE_MAX_LENGTH;",
+    "phone.setCustomValidity",
+    "phoneDigitCount(value)",
+    "digits < PHONE_MIN_DIGITS || digits > PHONE_MAX_DIGITS",
+    'phone.addEventListener("input"',
+    'phone.addEventListener("blur"',
+    "MutationObserver",
     'form.addEventListener("invalid"'
   ];
 
-  for (const fragment of requiredFragments) {
+  requiredFragments.forEach((fragment) => {
     if (!enhancementScript.includes(fragment)) {
       errors.push(`${ENHANCEMENT_PATH}: отсутствует обязательный механизм ${fragment}`);
     }
+  });
+}
+
+const scenarios = Array.isArray(matrix?.scenarios) ? matrix.scenarios : [];
+if (matrix?.portal_id !== "newbuilds-borisoglebsk") {
+  errors.push(`${QA_MATRIX_PATH}: неверный portal_id`);
+}
+if (scenarios.length !== EXPECTED_FORMS) {
+  errors.push(`${QA_MATRIX_PATH}: ожидается ${EXPECTED_FORMS} сценариев, найдено ${scenarios.length}`);
+}
+
+for (const scenario of scenarios) {
+  const formId = String(scenario.form_id || "").trim();
+  const pageFile = String(scenario.page_file || "").trim();
+  const label = `${pageFile || "unknown"}:${formId || "unknown"}`;
+
+  if (!formId || !pageFile) {
+    errors.push(`${QA_MATRIX_PATH}: у сценария отсутствует form_id или page_file`);
+    continue;
+  }
+  if (checkedFormIds.has(formId)) {
+    errors.push(`${QA_MATRIX_PATH}: повторяется form_id=${formId}`);
+    continue;
+  }
+  checkedFormIds.add(formId);
+  checkedPages.add(pageFile);
+
+  const html = read(pageFile);
+  if (!html) continue;
+  if (!html.includes("assets/js/main.js")) {
+    errors.push(`${pageFile}: страница с формой не подключает main.js`);
+  }
+  if (!html.includes("assets/js/schema.js")) {
+    errors.push(`${pageFile}: страница с формой не подключает schema.js`);
+  }
+
+  const formBlock = findFormBlock(html, formId);
+  if (!formBlock) {
+    errors.push(`${label}: форма из QA-матрицы не найдена`);
+    continue;
+  }
+
+  const nameInput = findInputTag(formBlock, "name");
+  const phoneInput = findInputTag(formBlock, "phone");
+  if (!nameInput) errors.push(`${label}: отсутствует поле имени`);
+  if (!phoneInput) {
+    errors.push(`${label}: отсутствует поле телефона`);
+  } else {
+    if (!/\brequired(?:\s|=|>)/i.test(phoneInput)) errors.push(`${label}: телефон должен быть обязательным`);
+    if (getAttribute(phoneInput, "autocomplete") !== "tel") errors.push(`${label}: телефон должен использовать autocomplete=tel`);
+    if (getAttribute(phoneInput, "inputmode") !== "tel") errors.push(`${label}: телефон должен использовать inputmode=tel`);
+  }
+
+  if (!/data-form-status/i.test(formBlock)) {
+    errors.push(`${label}: отсутствует область статуса отправки`);
+  }
+  if (!/<button\b[^>]*type=["']submit["'][^>]*>/i.test(formBlock)) {
+    errors.push(`${label}: отсутствует кнопка отправки`);
   }
 }
 
-if (!Array.isArray(pages)) {
-  errors.push(`${PAGE_INDEX_PATH}: ожидается массив страниц`);
-} else {
-  for (const page of pages) {
-    if (!ACTIVE_STATUSES.has(page.status)) continue;
-
-    const file = resolvePageFile(page.url);
-    const html = read(file);
-    if (!html) continue;
-
-    const forms = getFormBlocks(html);
-    if (!forms.length) continue;
-
-    checkedPages += 1;
-
-    if (!html.includes("assets/js/main.js")) {
-      errors.push(`${file}: страница с формой не подключает main.js`);
-    }
-
-    if (!html.includes("assets/js/schema.js")) {
-      errors.push(`${file}: страница с формой не подключает schema.js и доступные улучшения`);
-    }
-
-    forms.forEach((form, index) => {
-      checkedForms += 1;
-      const label = `${file}:form-${index + 1}`;
-
-      if (!/<input\b[^>]*name=["']name["'][^>]*>/i.test(form)) {
-        errors.push(`${label}: отсутствует поле имени`);
-      }
-
-      if (!/<input\b[^>]*name=["']phone["'][^>]*>/i.test(form)) {
-        errors.push(`${label}: отсутствует поле телефона`);
-      }
-
-      if (!/data-form-status/i.test(form)) {
-        errors.push(`${label}: отсутствует область статуса отправки`);
-      }
-
-      if (!/<button\b[^>]*type=["']submit["'][^>]*>/i.test(form)) {
-        errors.push(`${label}: отсутствует кнопка отправки`);
-      }
-    });
-  }
+if (checkedFormIds.size !== EXPECTED_FORMS) {
+  errors.push(`accessibility scope: ожидается ${EXPECTED_FORMS} уникальных форм, найдено ${checkedFormIds.size}`);
+}
+if (checkedPages.size !== EXPECTED_PAGES) {
+  errors.push(`accessibility scope: ожидается ${EXPECTED_PAGES} страниц, найдено ${checkedPages.size}`);
 }
 
-console.log(`Checked accessible lead pages: ${checkedPages}`);
-console.log(`Checked accessible lead forms: ${checkedForms}`);
+console.log(`Checked accessible lead pages: ${checkedPages.size}`);
+console.log(`Checked accessible lead forms: ${checkedFormIds.size}`);
+console.log("Phone digit rule: 10-15; max input length: 24");
 
 if (errors.length) {
   console.error("\nLead form accessibility validation errors:");
