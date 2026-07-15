@@ -4,8 +4,11 @@ on:
   pull_request:
     paths:
       - "assets/js/main.js"
+      - "assets/js/mobile-lead-bar.js"
+      - "assets/js/schema.js"
       - "data/analytics/events.json"
       - "tools/validate-analytics-delivery-consistency.mjs"
+      - "tools/validate-internal-lead-id-privacy.mjs"
       - "docs/portal/ANALYTICS_DELIVERY_CONSISTENCY.md"
       - ".github/workflows/analytics-delivery-consistency-guard.yml"
   push:
@@ -13,8 +16,11 @@ on:
       - main
     paths:
       - "assets/js/main.js"
+      - "assets/js/mobile-lead-bar.js"
+      - "assets/js/schema.js"
       - "data/analytics/events.json"
       - "tools/validate-analytics-delivery-consistency.mjs"
+      - "tools/validate-internal-lead-id-privacy.mjs"
       - "docs/portal/ANALYTICS_DELIVERY_CONSISTENCY.md"
       - ".github/workflows/analytics-delivery-consistency-guard.yml"
 
@@ -36,7 +42,12 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check assets/js/main.js
+          node --check assets/js/mobile-lead-bar.js
           node --check tools/validate-analytics-delivery-consistency.mjs
+          node --check tools/validate-internal-lead-id-privacy.mjs
 
       - name: Validate analytics delivery consistency
         run: node tools/validate-analytics-delivery-consistency.mjs
+
+      - name: Validate internal lead ID privacy
+        run: node tools/validate-internal-lead-id-privacy.mjs

@@ -2,26 +2,7 @@
 
 Дата обновления: 2026-07-15
 
-## Проблема
-
-Каноническое событие заявки `lead_submit` отправляется в несколько каналов:
-
-```text
-dataLayer
-gtag
-Яндекс Метрика
-внутренний CustomEvent
-```
-
-До исправления полный `eventPayload` с полями `blocked` и `offline` передавался в `dataLayer`, Метрику и внутреннее событие, но прямой вызов `gtag` содержал только форму, источник и score.
-
-Это создавало риск:
-
-- honeypot-попытка могла выглядеть в GA4 как обычная заявка;
-- offline-событие нельзя было отделить от подтверждённой доставки;
-- фильтр `blocked=false`, закреплённый в аналитическом реестре, нельзя было применить к прямому GA4-событию.
-
-## Канонические правила
+## Каноническое событие
 
 Событие:
 
@@ -29,44 +10,49 @@ gtag
 lead_submit
 ```
 
-Единственная каноническая метрика валидных заявок:
+Метрика валидных заявок:
 
 ```text
 count(lead_submit where blocked=false)
 ```
 
-Offline-заявки учитываются отдельно:
-
-```text
-blocked=false AND offline=true
-```
-
-Подтверждённые внешним каналом отправки:
+Подтверждённая внешняя отправка:
 
 ```text
 blocked=false AND offline=false
 ```
 
-## Поля прямого gtag
-
-Прямой вызов GA4 теперь получает:
+Локальное сохранение учитывается отдельно:
 
 ```text
+blocked=false AND offline=true
+```
+
+## Публичный payload
+
+`dataLayer`, прямой `gtag` и Яндекс Метрика получают только обезличенный `publicPayload`:
+
+```text
+event
+lead_type
 form_id
+project_id
+project_name
+residential_complex
 residential_complex_id
 qualification_status
+qualification_score
 lead_source
 placement
 blocked
 offline
-value
 ```
 
-`value` остаётся техническим qualification score и не является ценой объекта, суммой сделки или доходом.
+Поле `value` прямого GA4-вызова остаётся техническим qualification score. Оно не является ценой объекта, суммой сделки или доходом.
 
-## Конфиденциальность
+## Запрещённые поля
 
-В прямой `gtag` запрещено передавать:
+Во внешние аналитические каналы нельзя передавать:
 
 ```text
 name
@@ -81,25 +67,49 @@ user_agent
 client_fixation_id
 ```
 
-`client_fixation_id` остаётся ограниченным техническим полем канонического `eventPayload`, но не отправляется как параметр прямого GA4-вызова.
+`client_fixation_id` больше не является полем публичного `lead_submit`.
+
+## Внутренний CustomEvent
+
+Браузерное событие:
+
+```text
+newbuildLeadSubmit
+```
+
+получает тот же обезличенный payload и дополнительно:
+
+```text
+client_fixation_id
+```
+
+ID нужен только для локальной связи:
+
+```text
+последняя техническая запись заявки
+→ form_role
+→ страница благодарности
+```
+
+Внутренний `CustomEvent` не отправляется в `dataLayer`, прямой GA4-вызов или Метрику.
 
 ## Каналы
 
 ### dataLayer
 
-Получает полный технический `eventPayload`.
+Получает `publicPayload` без внутреннего ID.
 
 ### gtag
 
-Получает обезличенные параметры, достаточные для фильтрации валидных, blocked и offline-событий.
+Получает обезличенные параметры и одинаковые признаки `blocked/offline`.
 
 ### Яндекс Метрика
 
-Получает полный технический `eventPayload` через `reachGoal`.
+Получает `publicPayload` через `reachGoal` без внутреннего ID.
 
 ### CustomEvent
 
-`newbuildLeadSubmit` передаёт тот же `eventPayload` в `conversion-tracking.js`, где создаётся неаддитивное событие `lead_submit_classified`.
+Получает внутренний payload с ID обращения для локальной синхронизации.
 
 ## Подсчёт
 
@@ -109,17 +119,21 @@ client_fixation_id
 lead_submit + lead_submit_classified
 ```
 
-`lead_submit_classified` используется только для разреза по `form_role`.
+`lead_submit_classified` используется только для разреза по роли формы.
 
-Blocked и offline должны фильтроваться одинаково независимо от выбранного аналитического канала.
+## Реестр
 
-## Автоматическая проверка
+`data/analytics/events.json` использует schema version 1.4.
 
-Файл:
+Закреплено:
 
 ```text
-tools/validate-analytics-delivery-consistency.mjs
+restricted_field_allowed_events=[]
+restricted_field_internal_event=newbuildLeadSubmit
+restricted_field_external_channels_forbidden=true
 ```
+
+## Автоматическая проверка
 
 Workflow:
 
@@ -127,25 +141,31 @@ Workflow:
 Analytics delivery consistency guard
 ```
 
+Проверки:
+
+```text
+tools/validate-analytics-delivery-consistency.mjs
+tools/validate-internal-lead-id-privacy.mjs
+```
+
 Guard проверяет:
 
-- реестр оставляет `lead_submit` канонической конверсией;
-- обязательные поля включают `blocked` и `offline`;
-- `dataLayer` получает полный `eventPayload`;
-- прямой `gtag` получает `blocked` и `offline`;
-- прямой `gtag` получает ID объекта и статус квалификации;
-- Метрика получает полный `eventPayload`;
-- внутренний CustomEvent получает тот же payload;
-- прямой `gtag` не содержит персональных или ограниченных технических полей.
+- `lead_submit` остаётся канонической конверсией;
+- `blocked/offline` присутствуют во всех публичных каналах;
+- публичные каналы используют только `publicPayload`;
+- `client_fixation_id` отсутствует в публичном блоке;
+- ID присутствует только во внутреннем `CustomEvent`;
+- privacy-override устанавливается до раннего выхода мобильного runtime;
+- реестр не разрешает restricted ID ни одному внешнему событию.
 
 ## Ограничения
 
 CI не подтверждает:
 
 - наличие рабочего GA4-счётчика;
-- регистрацию custom dimensions в GA4;
-- фактическое отображение полей в DebugView;
-- корректность фильтров в производственном отчёте;
-- получение события внешним счётчиком.
+- регистрацию custom dimensions;
+- фактическое отображение событий в DebugView;
+- получение цели Метрикой;
+- сетевой payload в реальном браузере.
 
-Фактическая проверка рабочего счётчика остаётся отдельным launch gate.
+Production analytics debug остаётся отдельным launch gate.
