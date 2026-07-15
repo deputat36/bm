@@ -5,6 +5,8 @@
   const MORTGAGE_PRIMARY_ANCHOR = "quick-lead";
   const LAST_LEAD_STORAGE_KEY = "newbuildsBorisoglebskLastLead";
   const ATTRIBUTION_STORAGE_KEY = "newbuildsBorisoglebskTracking";
+  const PRIMARY_SALES_PHONE_DESTINATION = "phone:primary_sales_phone";
+  const PORTAL_EMAIL_DESTINATION = "email:portal_contact";
   const FORM_ROLES = new Set(["primary", "detailed"]);
   const ATTRIBUTION_QUERY_KEYS = new Set([
     "utm_source",
@@ -80,6 +82,37 @@
           const value = sanitizeTrackingValue(key, url.searchParams.get(key));
           if (value) sanitized.searchParams.set(key, value);
         });
+      }
+
+      return sanitized.toString();
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function sanitizeCtaDestination(target) {
+    const rawHref = String(target?.getAttribute("href") || "").trim();
+    const action = String(target?.dataset?.trackAction || "").trim();
+
+    if (!rawHref) return "";
+    if (action === "phone" || rawHref.toLowerCase().startsWith("tel:")) {
+      return PRIMARY_SALES_PHONE_DESTINATION;
+    }
+    if (rawHref.toLowerCase().startsWith("mailto:")) {
+      return PORTAL_EMAIL_DESTINATION;
+    }
+
+    try {
+      const url = new URL(rawHref, window.location.origin);
+      const isInternal = url.origin === window.location.origin;
+      const sanitized = new URL(`${url.origin}${url.pathname}`);
+
+      if (isInternal) {
+        ATTRIBUTION_QUERY_KEYS.forEach((key) => {
+          const value = sanitizeTrackingValue(key, url.searchParams.get(key));
+          if (value) sanitized.searchParams.set(key, value);
+        });
+        return `${sanitized.pathname}${sanitized.search}`;
       }
 
       return sanitized.toString();
@@ -256,7 +289,7 @@
       action: target.dataset.trackAction || "unknown",
       placement: target.dataset.trackPlacement || "",
       object_id: target.dataset.trackObject || "",
-      link_url: target.getAttribute("href") || ""
+      link_url: sanitizeCtaDestination(target)
     });
   });
 
