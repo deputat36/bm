@@ -1,0 +1,130 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-15",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "draft_contract_not_connected",
+  "purpose": "Контракт состояний первичного обращения без подключения CRM, назначения ответственных и автоматического изменения данных.",
+  "sources": {
+    "handling_playbook": "data/operations/lead-handling.json",
+    "form_matrix": "data/qa/form-scenarios.json"
+  },
+  "rules": {
+    "initial_state": "received",
+    "crm_connected": false,
+    "automatic_transition_enabled": false,
+    "approved_sla_exists": false,
+    "live_owner_assignment_exists": false,
+    "deal_pipeline_not_in_scope": true,
+    "terminal_states": ["duplicate", "invalid_or_spam", "do_not_contact", "closed_no_action"],
+    "required_identity_fields": ["lead_id", "received_at", "lead_type", "form_id"],
+    "required_triage_fields": ["form_role", "residential_complex_id", "qualification_status"],
+    "required_action_fields": ["contact_outcome", "next_action", "source_check_required"],
+    "personal_data_in_state_reports_forbidden": true
+  },
+  "states": [
+    {
+      "id": "received",
+      "stage_order": 1,
+      "terminal": false,
+      "purpose": "Обращение получено техническим каналом.",
+      "required_fields": ["lead_id", "received_at", "lead_type", "form_id"]
+    },
+    {
+      "id": "triage_ready",
+      "stage_order": 2,
+      "terminal": false,
+      "purpose": "Форма, роль, объект и техническая квалификация определены.",
+      "required_fields": ["form_role", "residential_complex_id", "qualification_status"]
+    },
+    {
+      "id": "contact_pending",
+      "stage_order": 3,
+      "terminal": false,
+      "purpose": "Обращение готово к первой или повторной попытке связи.",
+      "required_fields": ["next_action"]
+    },
+    {
+      "id": "contact_attempted",
+      "stage_order": 4,
+      "terminal": false,
+      "purpose": "Попытка связи зафиксирована.",
+      "required_fields": ["attempt_at", "contact_outcome"]
+    },
+    {
+      "id": "contacted_qualified",
+      "stage_order": 5,
+      "terminal": false,
+      "purpose": "Связь состоялась, потребность уточнена.",
+      "required_fields": ["contact_outcome", "next_action", "source_check_required"]
+    },
+    {
+      "id": "source_check_pending",
+      "stage_order": 6,
+      "terminal": false,
+      "purpose": "До предметного ответа требуется проверка первичного источника.",
+      "required_fields": ["source_check_required", "next_action"]
+    },
+    {
+      "id": "consultation_active",
+      "stage_order": 7,
+      "terminal": false,
+      "purpose": "Предметная консультация или подбор начаты.",
+      "required_fields": ["next_action"]
+    },
+    {
+      "id": "follow_up_scheduled",
+      "stage_order": 8,
+      "terminal": false,
+      "purpose": "Согласован следующий контакт или возврат к обращению.",
+      "required_fields": ["next_action", "next_action_at"]
+    },
+    {
+      "id": "duplicate",
+      "stage_order": 90,
+      "terminal": true,
+      "purpose": "Обращение должно быть объединено с существующим контактом.",
+      "required_fields": ["contact_outcome"]
+    },
+    {
+      "id": "invalid_or_spam",
+      "stage_order": 91,
+      "terminal": true,
+      "purpose": "Обращение признано технически невалидным или спамом.",
+      "required_fields": ["contact_outcome"]
+    },
+    {
+      "id": "do_not_contact",
+      "stage_order": 92,
+      "terminal": true,
+      "purpose": "Зафиксирован отказ от дальнейшего контакта.",
+      "required_fields": ["contact_outcome"]
+    },
+    {
+      "id": "closed_no_action",
+      "stage_order": 93,
+      "terminal": true,
+      "purpose": "Обращение закрыто без следующего действия.",
+      "required_fields": ["close_reason"]
+    }
+  ],
+  "transitions": [
+    {"id": "receive_to_triage", "from": "received", "to": "triage_ready", "event": "triage_completed"},
+    {"id": "triage_to_queue", "from": "triage_ready", "to": "contact_pending", "event": "queued_for_contact"},
+    {"id": "queue_to_attempt", "from": "contact_pending", "to": "contact_attempted", "event": "contact_attempt_recorded"},
+    {"id": "attempt_to_qualified", "from": "contact_attempted", "to": "contacted_qualified", "event": "contact_qualified", "required_outcome": "contacted_qualified"},
+    {"id": "attempt_to_follow_up", "from": "contact_attempted", "to": "follow_up_scheduled", "event": "no_answer_follow_up", "required_outcome": "no_answer_follow_up_planned"},
+    {"id": "attempt_to_duplicate", "from": "contact_attempted", "to": "duplicate", "event": "duplicate_detected", "required_outcome": "duplicate"},
+    {"id": "attempt_to_invalid", "from": "contact_attempted", "to": "invalid_or_spam", "event": "invalid_detected", "required_outcome": "invalid_or_spam"},
+    {"id": "attempt_to_do_not_contact", "from": "contact_attempted", "to": "do_not_contact", "event": "contact_declined", "required_outcome": "do_not_contact"},
+    {"id": "qualified_to_source_check", "from": "contacted_qualified", "to": "source_check_pending", "event": "source_check_requested", "required_outcome": "source_check_required"},
+    {"id": "qualified_to_consultation", "from": "contacted_qualified", "to": "consultation_active", "event": "consultation_started"},
+    {"id": "qualified_to_follow_up", "from": "contacted_qualified", "to": "follow_up_scheduled", "event": "follow_up_agreed", "required_outcome": "contacted_follow_up_scheduled"},
+    {"id": "qualified_to_close", "from": "contacted_qualified", "to": "closed_no_action", "event": "closed_without_action"},
+    {"id": "source_check_to_consultation", "from": "source_check_pending", "to": "consultation_active", "event": "source_verified"},
+    {"id": "source_check_to_follow_up", "from": "source_check_pending", "to": "follow_up_scheduled", "event": "source_pending_follow_up"},
+    {"id": "source_check_to_close", "from": "source_check_pending", "to": "closed_no_action", "event": "source_unavailable_close"},
+    {"id": "consultation_to_follow_up", "from": "consultation_active", "to": "follow_up_scheduled", "event": "follow_up_agreed_after_consultation"},
+    {"id": "consultation_to_close", "from": "consultation_active", "to": "closed_no_action", "event": "consultation_closed"},
+    {"id": "follow_up_to_queue", "from": "follow_up_scheduled", "to": "contact_pending", "event": "follow_up_due"}
+  ]
+}
