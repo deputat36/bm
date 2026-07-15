@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-07-14",
+  "schema_version": "1.1",
+  "updated_at": "2026-07-15",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "specification_only_no_live_data",
   "purpose": "Отдельная спецификация интереса к телефонному контакту без приравнивания клика к состоявшемуся звонку или заявке.",
@@ -19,6 +19,9 @@
     "unique_caller_unknown": true,
     "personal_data_forbidden": true,
     "business_phone_number_not_exported": true,
+    "runtime_destination_field": "link_url",
+    "runtime_destination_token": "phone:primary_sales_phone",
+    "raw_tel_href_forbidden": true,
     "ratio_zero_denominator_result": null,
     "reporting_timezone": "Europe/Moscow",
     "required_link_attributes": [
@@ -38,7 +41,8 @@
       "email",
       "client_fixation_id",
       "call_duration",
-      "call_status"
+      "call_status",
+      "link_url"
     ]
   },
   "metrics": [
@@ -54,7 +58,7 @@
         "placement",
         "object_id"
       ],
-      "purpose": "Количество кликов по размеченным ссылкам tel:. Не подтверждает факт звонка, соединения или разговора."
+      "purpose": "Количество кликов по размеченным ссылкам tel:. Не подтверждает факт звонка, соединения или разговора. Сам номер в событие не передаётся."
     },
     {
       "id": "phone_cta_share",
