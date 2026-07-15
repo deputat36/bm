@@ -43,11 +43,6 @@ function findInputTag(formBlock, fieldName) {
   return formBlock.match(pattern)?.[0] || "";
 }
 
-function getAttribute(tag, name) {
-  const pattern = new RegExp(`${escapeRegExp(name)}=["']([^"']*)["']`, "i");
-  return tag.match(pattern)?.[1]?.trim() || "";
-}
-
 const matrix = readJson(QA_MATRIX_PATH);
 const schemaScript = read(SCHEMA_PATH);
 const enhancementScript = read(ENHANCEMENT_PATH);
@@ -65,6 +60,7 @@ if (enhancementScript) {
     'setAttribute("aria-live", "polite")',
     'setAttribute("aria-atomic", "true")',
     'inputMode = "tel"',
+    'autocomplete = "tel"',
     "const PHONE_MIN_DIGITS = 10;",
     "const PHONE_MAX_DIGITS = 15;",
     "const PHONE_MAX_LENGTH = 24;",
@@ -130,10 +126,8 @@ for (const scenario of scenarios) {
   if (!nameInput) errors.push(`${label}: отсутствует поле имени`);
   if (!phoneInput) {
     errors.push(`${label}: отсутствует поле телефона`);
-  } else {
-    if (!/\brequired(?:\s|=|>)/i.test(phoneInput)) errors.push(`${label}: телефон должен быть обязательным`);
-    if (getAttribute(phoneInput, "autocomplete") !== "tel") errors.push(`${label}: телефон должен использовать autocomplete=tel`);
-    if (getAttribute(phoneInput, "inputmode") !== "tel") errors.push(`${label}: телефон должен использовать inputmode=tel`);
+  } else if (!/\brequired(?:\s|=|>)/i.test(phoneInput)) {
+    errors.push(`${label}: телефон должен быть обязательным`);
   }
 
   if (!/data-form-status/i.test(formBlock)) {
