@@ -54,8 +54,22 @@ function extractObjectFields(block, marker) {
   const start = block.indexOf(marker);
   if (start < 0) return [];
   const bodyStart = block.indexOf("{", start);
-  const bodyEnd = block.indexOf("};", bodyStart);
-  if (bodyStart < 0 || bodyEnd < 0) return [];
+  if (bodyStart < 0) return [];
+
+  let depth = 0;
+  let bodyEnd = -1;
+  for (let index = bodyStart; index < block.length; index += 1) {
+    if (block[index] === "{") depth += 1;
+    if (block[index] === "}") {
+      depth -= 1;
+      if (depth === 0) {
+        bodyEnd = index;
+        break;
+      }
+    }
+  }
+
+  if (bodyEnd < 0) return [];
   const body = block.slice(bodyStart + 1, bodyEnd);
   return Array.from(body.matchAll(/^\s*([a-z][a-z0-9_]*)\s*:/gmi), (match) => match[1]);
 }
