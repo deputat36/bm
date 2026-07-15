@@ -2,6 +2,12 @@
   const forms = Array.from(document.querySelectorAll("form[data-lead-form]"));
   if (!forms.length) return;
 
+  const PHONE_MIN_DIGITS = 10;
+  const PHONE_MAX_DIGITS = 15;
+  const PHONE_MAX_LENGTH = 24;
+  const PHONE_PATTERN = "(?=(?:\\D*\\d){10,15}\\D*$)[+\\d\\s().-]+";
+  const PHONE_ERROR_MESSAGE = "Укажите номер телефона от 10 до 15 цифр.";
+
   function enableLeadPayloadPrivacy() {
     if (window.__NEWBUILD_LEAD_PAYLOAD_PRIVACY__ === true) return true;
     if (typeof collectFormData !== "function" || typeof sendLead !== "function") return false;
@@ -40,6 +46,22 @@
     }
   }
 
+  function phoneDigitCount(value) {
+    return (String(value || "").match(/\d/g) || []).length;
+  }
+
+  function validatePhoneField(field) {
+    if (!field) return true;
+
+    const value = String(field.value || "").trim();
+    const digits = phoneDigitCount(value);
+    const invalid = Boolean(value) && (digits < PHONE_MIN_DIGITS || digits > PHONE_MAX_DIGITS);
+
+    field.setCustomValidity(invalid ? PHONE_ERROR_MESSAGE : "");
+    setInvalidState(field, invalid);
+    return !invalid;
+  }
+
   function enhanceForm(form, index) {
     if (form.dataset.accessibilityEnhanced === "true") return;
 
@@ -63,6 +85,11 @@
       phone.inputMode = "tel";
       if (!phone.autocomplete) phone.autocomplete = "tel";
       phone.setAttribute("enterkeyhint", "next");
+      phone.pattern = PHONE_PATTERN;
+      phone.maxLength = PHONE_MAX_LENGTH;
+      phone.title = PHONE_ERROR_MESSAGE;
+      phone.addEventListener("input", () => validatePhoneField(phone));
+      phone.addEventListener("blur", () => validatePhoneField(phone));
     }
 
     if (status) {
