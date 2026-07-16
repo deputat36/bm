@@ -1,0 +1,42 @@
+name: Homepage mobile CTA guard
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "assets/css/home-polish.css"
+      - "tools/validate-homepage-mobile-cta.mjs"
+      - "docs/portal/HOMEPAGE_MOBILE_CTA.md"
+      - ".github/workflows/homepage-mobile-cta.yml"
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "assets/css/home-polish.css"
+      - "tools/validate-homepage-mobile-cta.mjs"
+      - "docs/portal/HOMEPAGE_MOBILE_CTA.md"
+      - ".github/workflows/homepage-mobile-cta.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-homepage-mobile-cta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-homepage-mobile-cta.mjs
+
+      - name: Validate homepage mobile CTA
+        run: node tools/validate-homepage-mobile-cta.mjs

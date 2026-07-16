@@ -95,3 +95,54 @@
   .hero-quick-form input,
   .hero-quick-form select{font-size:16px}
 }
+
+/* Главная: мобильная панель быстрого звонка и заявки. */
+@media(max-width:760px){
+  body:has(.hero__content--conversion){
+    padding-bottom:calc(84px + env(safe-area-inset-bottom,0px));
+  }
+  body:has(.hero__content--conversion)::after{
+    content:"";
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:998;
+    height:calc(76px + env(safe-area-inset-bottom,0px));
+    background:rgba(255,255,255,.96);
+    border-top:1px solid rgba(18,18,18,.1);
+    box-shadow:0 -12px 32px rgba(18,18,18,.14);
+    backdrop-filter:blur(14px);
+    pointer-events:none;
+  }
+  body:has(.hero__content--conversion) .nav .button[href="#quick-lead"],
+  body:has(.hero__content--conversion) .hero__pitch .hero__actions a[href^="tel:"]{
+    position:fixed;
+    bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    z-index:999;
+    width:calc(50% - 18px);
+    min-height:52px;
+    margin:0;
+    padding:14px 12px;
+    border-radius:14px;
+    box-shadow:0 10px 24px rgba(18,18,18,.18);
+  }
+  body:has(.hero__content--conversion) .nav .button[href="#quick-lead"]{
+    right:12px;
+  }
+  body:has(.hero__content--conversion) .hero__pitch .hero__actions a[href^="tel:"]{
+    left:12px;
+    color:#fff;
+    background:var(--black);
+    border:0;
+    font-size:0;
+  }
+  body:has(.hero__content--conversion) .hero__pitch .hero__actions a[href^="tel:"]::before{
+    content:"Позвонить";
+    font-size:15px;
+  }
+  body:has(.hero__content--conversion) #quick-lead,
+  body:has(.hero__content--conversion) #lead{
+    scroll-margin-bottom:100px;
+  }
+}
