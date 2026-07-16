@@ -9,7 +9,8 @@ const PATHS = {
   sourceCollection: "data/research/source-collection.json",
   projectIndex: "data/projects/index.json",
   campaignRelease: "data/marketing/campaign-release.json",
-  campaignPublications: "data/marketing/campaign-publications.json"
+  campaignPublications: "data/marketing/campaign-publications.json",
+  leadOperationsApproval: "data/operations/lead-operations-approval.json"
 };
 
 function getArg(name, fallback = "") {
@@ -44,6 +45,7 @@ const sourceCollection = readJson(PATHS.sourceCollection);
 const projectIndex = readJson(PATHS.projectIndex);
 const campaignRelease = readJson(PATHS.campaignRelease);
 const campaignPublications = readJson(PATHS.campaignPublications);
+const leadOperationsApproval = readJson(PATHS.leadOperationsApproval);
 
 const scenarios = Array.isArray(formScenarios.scenarios) ? formScenarios.scenarios : [];
 const devices = Array.isArray(formResults.rules?.expected_devices) ? formResults.rules.expected_devices : [];
@@ -68,6 +70,18 @@ const campaignIds = Array.isArray(campaignRelease.campaign_ids) ? campaignReleas
 const publications = Array.isArray(campaignPublications.publications) ? campaignPublications.publications : [];
 const publishedPlacements = publications.filter((item) => item.status === "published").length;
 
+const operationsDecisions = Array.isArray(leadOperationsApproval.decisions) ? leadOperationsApproval.decisions : [];
+const approvedOperationsDecisions = operationsDecisions.filter((item) => item.status === "approved").length;
+const pendingOperationsDecisions = operationsDecisions.filter((item) => item.status === "requires_owner_decision").length;
+const rejectedOperationsDecisions = operationsDecisions.filter((item) => item.status === "rejected").length;
+const supersededOperationsDecisions = operationsDecisions.filter((item) => item.status === "superseded").length;
+const operationsActivationEnabled = leadOperationsApproval.rules?.operational_activation_enabled === true;
+const operationsReady = operationsDecisions.length === 8
+  && approvedOperationsDecisions === operationsDecisions.length
+  && pendingOperationsDecisions === 0
+  && rejectedOperationsDecisions === 0
+  && operationsActivationEnabled;
+
 const manualGates = Array.isArray(manualRegistry.gates) ? manualRegistry.gates : [];
 const manualGateRows = manualGates.map((gate) => ({
   id: gate.id,
@@ -88,6 +102,15 @@ const derivedGates = [
     status: expectedFormSlots > 0 && formStatusCounts.passed === expectedFormSlots && formStatusCounts.failed === 0 && formStatusCounts.blocked === 0 && formStatusCounts.not_run === 0 ? "passed" : "blocked",
     details: `passed=${formStatusCounts.passed}; failed=${formStatusCounts.failed}; blocked=${formStatusCounts.blocked}; not_run=${formStatusCounts.not_run}`,
     evidence_count: results.length
+  },
+  {
+    id: "lead_operations_approval",
+    title: "Утверждённая операционная обработка обращений",
+    category: "derived",
+    scope: "campaign_launch",
+    status: operationsReady ? "passed" : "blocked",
+    details: `approved=${approvedOperationsDecisions}; pending=${pendingOperationsDecisions}; rejected=${rejectedOperationsDecisions}; superseded=${supersededOperationsDecisions}; total=${operationsDecisions.length}; activation_enabled=${operationsActivationEnabled}`,
+    evidence_count: approvedOperationsDecisions
   },
   {
     id: "source_collection",
@@ -135,6 +158,7 @@ const profiles = [
     title: "Запуск рекламы и сбор реальных заявок",
     required_gates: [
       "form_manual_qa",
+      "lead_operations_approval",
       "real_lead_delivery",
       "live_analytics_debug",
       "legal_owner_review",
@@ -188,6 +212,15 @@ const metrics = {
     devices: devices.length,
     expected_slots: expectedFormSlots,
     ...formStatusCounts
+  },
+  lead_operations: {
+    total_decisions: operationsDecisions.length,
+    approved: approvedOperationsDecisions,
+    pending: pendingOperationsDecisions,
+    rejected: rejectedOperationsDecisions,
+    superseded: supersededOperationsDecisions,
+    activation_enabled: operationsActivationEnabled,
+    ready: operationsReady
   },
   sources: {
     total_tasks: sourceTasks.length,
