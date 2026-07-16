@@ -1,0 +1,44 @@
+name: Guide permit commissioning
+
+on:
+  pull_request:
+    paths:
+      - "guides/index.html"
+      - "guides/kak-proverit-razreshenie-na-vvod/index.html"
+      - "sitemap.xml"
+      - "tools/validate-guide-permit-commissioning.mjs"
+      - "docs/portal/GUIDE_PERMIT_COMMISSIONING.md"
+      - "package.json"
+      - ".github/workflows/guide-permit-commissioning.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "guides/index.html"
+      - "guides/kak-proverit-razreshenie-na-vvod/index.html"
+      - "sitemap.xml"
+      - "tools/validate-guide-permit-commissioning.mjs"
+      - "docs/portal/GUIDE_PERMIT_COMMISSIONING.md"
+      - "package.json"
+      - ".github/workflows/guide-permit-commissioning.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-guide-permit-commissioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-guide-permit-commissioning.mjs
+
+      - name: Validate guide
+        run: node tools/validate-guide-permit-commissioning.mjs
