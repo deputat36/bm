@@ -10,6 +10,7 @@ const errors = [];
 const EXPECTED_IDS = new Set([
   "guide-documents-check",
   "guide-seller-documents",
+  "guide-contract-types",
   "guide-project-declaration",
   "guide-layout-choice",
   "guide-permit-commissioning",
