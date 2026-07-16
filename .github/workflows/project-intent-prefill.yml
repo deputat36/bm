@@ -1,0 +1,46 @@
+name: Project intent prefill guard
+
+on:
+  pull_request:
+    paths:
+      - "assets/js/project-intent-prefill.js"
+      - "catalog/prostornaya-4a/index.html"
+      - "catalog/aerodromnaya-18g/index.html"
+      - "catalog/sennaya-76/index.html"
+      - "tools/validate-project-intent-prefill.mjs"
+      - "docs/portal/PROJECT_INTENT_PREFILL.md"
+      - ".github/workflows/project-intent-prefill.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "assets/js/project-intent-prefill.js"
+      - "catalog/prostornaya-4a/index.html"
+      - "catalog/aerodromnaya-18g/index.html"
+      - "catalog/sennaya-76/index.html"
+      - "tools/validate-project-intent-prefill.mjs"
+      - "docs/portal/PROJECT_INTENT_PREFILL.md"
+      - ".github/workflows/project-intent-prefill.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-project-intent-prefill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/project-intent-prefill.js
+          node --check tools/validate-project-intent-prefill.mjs
+
+      - name: Validate project intent prefill
+        run: node tools/validate-project-intent-prefill.mjs
