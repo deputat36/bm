@@ -36,7 +36,7 @@ if (!article || !guideIndex || !sitemap) process.exit(1);
   'Для покупателя это важный документ, но не единственная проверка.',
   'Разрешение может относиться не ко всему проекту одновременно, а к отдельному этапу строительства.',
   'Продажа «только за наличные» не является доказательством законности или незаконности схемы',
-  'Материал носит справочный характер',
+  'носит справочный характер',
   'data-track-placement="guide_commissioning_footer"',
   'href="../../contacts/?lead_source=internal_content&amp;placement=guide_commissioning_footer#quick-lead"',
   'https://www.consultant.ru/document/cons_doc_LAW_51040/935a657a2b5f7c7a6436cb756694bb2d649c7a00/'
