@@ -1,0 +1,126 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-16",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "review_pack_only_no_implied_approval",
+  "purpose": "Воспроизводимый чек-лист редакционной и юридической проверки материалов справочника без автоматического изменения статусов публикации.",
+  "registry_path": "data/content/guides.json",
+  "results_path": "data/content/guide-review-results.json",
+  "rules": {
+    "reviewer_must_be_role_or_secure_reference": true,
+    "personal_data_in_repository_forbidden": true,
+    "passed_requires_all_checks": true,
+    "passed_requires_evidence": true,
+    "passed_requires_checked_at": true,
+    "passed_requires_reviewer_reference": true,
+    "failed_or_blocked_requires_notes": true,
+    "automatic_status_mutation_forbidden": true,
+    "noindex_removal_forbidden": true,
+    "sitemap_mutation_forbidden": true,
+    "article_schema_mutation_forbidden": true,
+    "allowed_result_statuses": [
+      "passed",
+      "failed",
+      "blocked"
+    ],
+    "allowed_review_types": [
+      "editorial",
+      "legal"
+    ],
+    "allowed_evidence_types": [
+      "repository_file",
+      "pull_request",
+      "issue",
+      "report",
+      "external_url"
+    ]
+  },
+  "editorial_checks": [
+    {
+      "id": "single_search_intent",
+      "title": "Материал отвечает одному основному поисковому интенту"
+    },
+    {
+      "id": "title_description_alignment",
+      "title": "Title, description, H1 и содержание согласованы"
+    },
+    {
+      "id": "answer_first_structure",
+      "title": "Пользователь получает понятный ответ до второстепенных деталей"
+    },
+    {
+      "id": "readability_and_navigation",
+      "title": "Структура, заголовки, списки и ссылки удобны для чтения"
+    },
+    {
+      "id": "source_claim_alignment",
+      "title": "Формулировки не выходят за пределы принятых источников"
+    },
+    {
+      "id": "cta_relevance",
+      "title": "CTA соответствует интенту и ведёт в существующий primary-контур"
+    },
+    {
+      "id": "language_quality",
+      "title": "Нет ошибок, двусмысленностей и неоправданного профессионального жаргона"
+    },
+    {
+      "id": "internal_linking",
+      "title": "Внутренние ссылки полезны и не передают персональные данные"
+    }
+  ],
+  "legal_checks": [
+    {
+      "id": "independent_portal_positioning",
+      "title": "Материал не имитирует официальный сайт застройщика или объекта"
+    },
+    {
+      "id": "reference_disclaimer",
+      "title": "Справочный характер и необходимость проверки конкретной сделки обозначены"
+    },
+    {
+      "id": "current_source_basis",
+      "title": "Юридически значимые утверждения имеют принятый актуальный источник"
+    },
+    {
+      "id": "no_guarantees",
+      "title": "Нет гарантий безопасности, законности, одобрения или результата сделки"
+    },
+    {
+      "id": "no_object_specific_claims",
+      "title": "В общем справочнике отсутствуют факты о приоритетных объектах"
+    },
+    {
+      "id": "no_unverified_dynamic_data",
+      "title": "Нет неподтверждённых цен, наличия, ставок, сроков и программ"
+    },
+    {
+      "id": "contract_scheme_precision",
+      "title": "Виды договоров и правовые последствия описаны без подмены анализа договора"
+    },
+    {
+      "id": "payment_and_seller_caution",
+      "title": "Оплата и полномочия продавца не считаются подтверждёнными без документов"
+    },
+    {
+      "id": "external_links_and_attribution",
+      "title": "Источники корректно обозначены и доступны по HTTPS"
+    },
+    {
+      "id": "publication_decision_separate",
+      "title": "Проверка текста не выдаётся за отдельное разрешение на индексацию"
+    }
+  ],
+  "required_guide_ids": [
+    "guide-documents-check",
+    "guide-seller-documents",
+    "guide-contract-types",
+    "guide-project-declaration",
+    "guide-layout-choice",
+    "guide-permit-commissioning",
+    "guide-uncommissioned-section"
+  ],
+  "legal_review_not_applicable_guide_ids": [
+    "guide-layout-choice"
+  ]
+}
