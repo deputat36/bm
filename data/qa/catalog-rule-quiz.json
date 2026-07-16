@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-16",
+  "page": "/catalog/",
+  "target_form_id": "catalog_quick_selection",
+  "expected_active_form_count": 14,
+  "rules": {
+    "maximum_steps": 5,
+    "contact_requested_after_result": true,
+    "new_form_forbidden": true,
+    "query_parameters_forbidden": true,
+    "browser_storage_forbidden": true,
+    "specific_object_recommendation_forbidden": true,
+    "availability_promise_forbidden": true
+  },
+  "steps": [
+    {
+      "id": "priority",
+      "label": "Что важнее проверить сначала",
+      "field": "quiz_priority",
+      "options": ["availability", "documents", "mortgage", "alternatives"]
+    },
+    {
+      "id": "rooms",
+      "label": "Какая квартира нужна",
+      "field": "room_type",
+      "options": ["studio", "one_room", "two_room", "three_room", "undecided"]
+    },
+    {
+      "id": "budget",
+      "label": "Какой бюджет рассматриваете",
+      "field": "budget",
+      "options": ["up_to_4", "from_4_to_6", "above_6", "undecided"]
+    },
+    {
+      "id": "purchase_method",
+      "label": "Как планируется покупка",
+      "field": "purchase_method",
+      "options": ["cash", "mortgage", "family_mortgage", "maternity_capital", "sale_property", "undecided"]
+    },
+    {
+      "id": "timeline",
+      "label": "Когда планируется покупка",
+      "field": "timeline",
+      "options": ["one_month", "one_to_three", "half_year", "research"]
+    }
+  ],
+  "result_keys": ["documents", "mortgage", "availability", "alternatives"],
+  "handoff_fields": [
+    "quiz_priority",
+    "room_type",
+    "budget",
+    "purchase_method",
+    "timeline",
+    "quiz_result",
+    "quiz_result_key",
+    "quiz_answers",
+    "quiz_completed",
+    "quiz_version",
+    "placement"
+  ],
+  "analytics": [
+    {"action": "catalog_quiz_start", "placement": "catalog_quiz_start"},
+    {"action": "catalog_quiz_next", "placement": "catalog_quiz_step_1"},
+    {"action": "catalog_quiz_next", "placement": "catalog_quiz_step_2"},
+    {"action": "catalog_quiz_next", "placement": "catalog_quiz_step_3"},
+    {"action": "catalog_quiz_next", "placement": "catalog_quiz_step_4"},
+    {"action": "catalog_quiz_complete", "placement": "catalog_quiz_step_5"},
+    {"action": "catalog_quiz_to_form", "placement": "catalog_quiz_result"},
+    {"action": "catalog_quiz_reset", "placement": "catalog_quiz_result_reset"}
+  ]
+}
