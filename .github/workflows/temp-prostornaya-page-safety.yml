@@ -1,0 +1,40 @@
+name: Temporary Prostornaya page safety patch
+
+on:
+  push:
+    branches:
+      - agent/prostornaya-page-verification-safety
+
+permissions:
+  contents: write
+
+jobs:
+  patch-pages:
+    if: ${{ !contains(github.event.head_commit.message, '[prostornaya-page-safe]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/prostornaya-page-verification-safety
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply focused patch
+        run: node tools/apply-prostornaya-page-safety.mjs
+
+      - name: Commit patched pages
+        run: |
+          if git diff --quiet -- catalog/prostornaya-4a/index.html catalog/index.html; then
+            echo "No page changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalog/prostornaya-4a/index.html catalog/index.html
+          git commit -m "[prostornaya-page-safe] Убрать неподтверждённые сведения со страницы"
+          git push origin HEAD:agent/prostornaya-page-verification-safety
