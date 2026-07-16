@@ -1,0 +1,53 @@
+name: Guide content registry
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/content/guides.json"
+      - "guides/**"
+      - "sitemap.xml"
+      - "tools/validate-guide-content-registry.mjs"
+      - "tools/build-guide-content-report.mjs"
+      - "docs/portal/GUIDE_CONTENT_REGISTRY.md"
+      - ".github/workflows/guide-content-registry.yml"
+  pull_request:
+    paths:
+      - "data/content/guides.json"
+      - "guides/**"
+      - "sitemap.xml"
+      - "tools/validate-guide-content-registry.mjs"
+      - "tools/build-guide-content-report.mjs"
+      - "docs/portal/GUIDE_CONTENT_REGISTRY.md"
+      - ".github/workflows/guide-content-registry.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-guide-content-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-guide-content-registry.mjs
+          node --check tools/build-guide-content-report.mjs
+
+      - name: Validate guide registry
+        run: node tools/validate-guide-content-registry.mjs
+
+      - name: Generate guide readiness report
+        run: |
+          node tools/build-guide-content-report.mjs --format=json > /tmp/guide-content-report.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/guide-content-report.json","utf8")); if(data.status!=="editorial_registry_not_publication_approval"||data.summary?.total_guides!==5||data.summary?.index_ready!==0||data.summary?.index_blocked!==5||data.summary?.source_verified!==2||data.summary?.source_review_required!==2||data.summary?.source_not_applicable!==1||data.summary?.editorial_passed!==0||data.summary?.legal_passed!==0) process.exit(1); console.log(`Guide registry: ${data.summary.total_guides}; index ready: ${data.summary.index_ready}`);'
