@@ -1,0 +1,55 @@
+name: Guide review pack
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/content/guide-review-contract.json"
+      - "data/content/guide-review-results.json"
+      - "data/content/guides.json"
+      - "tools/build-guide-review-pack.mjs"
+      - "tools/validate-guide-review-pack.mjs"
+      - "docs/portal/GUIDE_REVIEW_PACK.md"
+      - "package.json"
+      - ".github/workflows/guide-review-pack.yml"
+  pull_request:
+    paths:
+      - "data/content/guide-review-contract.json"
+      - "data/content/guide-review-results.json"
+      - "data/content/guides.json"
+      - "tools/build-guide-review-pack.mjs"
+      - "tools/validate-guide-review-pack.mjs"
+      - "docs/portal/GUIDE_REVIEW_PACK.md"
+      - "package.json"
+      - ".github/workflows/guide-review-pack.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-guide-review-pack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/build-guide-review-pack.mjs
+          node --check tools/validate-guide-review-pack.mjs
+
+      - name: Validate review contract and results
+        run: node tools/validate-guide-review-pack.mjs
+
+      - name: Generate review execution pack
+        run: |
+          node tools/build-guide-review-pack.mjs --format=json > /tmp/guide-review-pack.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/guide-review-pack.json","utf8")); if(data.status!=="review_pack_only_no_implied_approval"||data.summary?.total_guides!==7||data.summary?.editorial_tasks!==7||data.summary?.legal_tasks!==6||data.summary?.total_tasks!==13||data.summary?.recorded_results!==0||data.summary?.passed!==0||data.summary?.failed!==0||data.summary?.blocked!==0||data.summary?.not_run!==13) process.exit(1); console.log(`Guide review tasks: ${data.summary.total_tasks}; recorded results: ${data.summary.recorded_results}`);'
