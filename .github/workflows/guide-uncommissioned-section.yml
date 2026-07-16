@@ -1,0 +1,44 @@
+name: Guide uncommissioned section
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "guides/index.html"
+      - "guides/pokupka-kvartiry-v-nevvedennoy-sektsii/**"
+      - "sitemap.xml"
+      - "tools/validate-guide-uncommissioned-section.mjs"
+      - "docs/portal/GUIDE_UNCOMMISSIONED_SECTION.md"
+      - ".github/workflows/guide-uncommissioned-section.yml"
+  pull_request:
+    paths:
+      - "guides/index.html"
+      - "guides/pokupka-kvartiry-v-nevvedennoy-sektsii/**"
+      - "sitemap.xml"
+      - "tools/validate-guide-uncommissioned-section.mjs"
+      - "docs/portal/GUIDE_UNCOMMISSIONED_SECTION.md"
+      - ".github/workflows/guide-uncommissioned-section.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-guide-uncommissioned-section:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-guide-uncommissioned-section.mjs
+
+      - name: Validate guide
+        run: node tools/validate-guide-uncommissioned-section.mjs
