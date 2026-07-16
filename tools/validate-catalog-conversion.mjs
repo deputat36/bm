@@ -39,13 +39,13 @@ const detailedForm = findForm(detailedFormId);
 if (!quickForm) errors.push(`catalog/index.html: missing ${quickFormId}`);
 if (!detailedForm) errors.push(`catalog/index.html: missing ${detailedFormId}`);
 
-["name", "phone", "residential_complex"].forEach((fieldName) => {
+["name", "phone", "residential_complex", "interest"].forEach((fieldName) => {
   if (quickForm && !hasRequiredField(quickForm, fieldName)) {
     errors.push(`${quickFormId}: required field ${fieldName} is missing`);
   }
 });
 
-["interest", "budget", "purchase_method", "timeline", "comment"].forEach((fieldName) => {
+["budget", "purchase_method", "timeline", "comment"].forEach((fieldName) => {
   if (quickForm && hasField(quickForm, fieldName)) {
     errors.push(`${quickFormId}: must not request ${fieldName} before the first conversation`);
   }
@@ -54,6 +54,18 @@ if (!detailedForm) errors.push(`catalog/index.html: missing ${detailedFormId}`);
 ["Просторная 4А", "Аэродромная 18Г", "Сенная 76", "Общий подбор новостройки"].forEach((option) => {
   if (quickForm && !quickForm.includes(`>${option}<`)) {
     errors.push(`${quickFormId}: missing object option ${option}`);
+  }
+});
+
+[
+  "Наличие и актуальный статус",
+  "Документы по объекту",
+  "Схема покупки и договор",
+  "Ипотека и расчёт покупки",
+  "Альтернативы и общий подбор"
+].forEach((option) => {
+  if (quickForm && !quickForm.includes(`>${option}<`)) {
+    errors.push(`${quickFormId}: missing question option ${option}`);
   }
 });
 
@@ -76,7 +88,9 @@ if (quickPosition < 0 || detailedPosition < 0 || quickPosition > detailedPositio
   "data-primary-lead",
   "../assets/css/project-conversion.css",
   'href="#quick-lead" data-track-action="quick_selection" data-track-placement="catalog_header"',
-  'href="#quick-lead" data-track-action="quick_selection" data-track-placement="catalog_hero"'
+  'href="#questions" data-track-action="catalog_question_start" data-track-placement="catalog_hero_questions"',
+  "data-catalog-question-routes",
+  "data-catalog-verification-comparison"
 ].forEach((fragment) => {
   if (!html.includes(fragment)) {
     errors.push(`catalog/index.html: missing quick conversion fragment ${fragment}`);
@@ -93,12 +107,13 @@ objects.forEach(([objectId, href]) => {
   if (!html.includes(`href="${href}"`)) {
     errors.push(`catalog/index.html: ${objectId} card must lead to its quick form`);
   }
-  if (!html.includes(`data-track-action="object_quick_consultation" data-track-placement="catalog_card" data-track-object="${objectId}"`)) {
+  if (!html.includes(`data-track-action="object_quick_consultation" data-track-placement="catalog_comparison_card" data-track-object="${objectId}"`)) {
     errors.push(`catalog/index.html: ${objectId} quick CTA tracking is missing`);
   }
 });
 
 console.log("Checked catalog short and detailed conversion paths.");
+console.log("Catalog primary fields: name, phone, object, main question.");
 
 if (errors.length) {
   console.error("\nCatalog conversion validation errors:");

@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-16",
+  "page": "/catalog/",
+  "target_form_id": "catalog_quick_selection",
+  "expected_active_form_count": 14,
+  "routes": [
+    {
+      "id": "availability",
+      "label": "Проверить наличие",
+      "interest": "Наличие и актуальный статус",
+      "action": "catalog_question_prefill",
+      "placement": "catalog_question_availability"
+    },
+    {
+      "id": "documents",
+      "label": "Проверить документы",
+      "interest": "Документы по объекту",
+      "action": "catalog_question_prefill",
+      "placement": "catalog_question_documents"
+    },
+    {
+      "id": "purchase_scheme",
+      "label": "Разобрать схему покупки",
+      "interest": "Схема покупки и договор",
+      "action": "catalog_question_prefill",
+      "placement": "catalog_question_purchase_scheme"
+    },
+    {
+      "id": "mortgage",
+      "label": "Рассчитать ипотеку",
+      "interest": "Ипотека и расчёт покупки",
+      "action": "catalog_question_prefill",
+      "placement": "catalog_question_mortgage"
+    },
+    {
+      "id": "alternative",
+      "label": "Подобрать альтернативу",
+      "interest": "Альтернативы и общий подбор",
+      "action": "catalog_question_prefill",
+      "placement": "catalog_question_alternative"
+    }
+  ]
+}

@@ -27,17 +27,18 @@
         <div class="project-hero__content">
           <span class="eyebrow">Городской каталог</span>
           <h1>Новостройки Борисоглебска</h1>
-          <p class="lead">Сравните приоритетные объекты и оставьте короткую заявку. Специалист уточнит параметры в разговоре и сообщит только проверенные на дату обращения сведения.</p>
-          <div class="hero__actions"><a class="button" href="#quick-lead" data-track-action="quick_selection" data-track-placement="catalog_hero">Получить подборку</a><a class="button button--ghost" href="#priority" data-track-action="priority_objects" data-track-placement="catalog_hero">Смотреть объекты</a><a class="button button--ghost" href="#reference" data-track-action="reference_catalog" data-track-placement="catalog_hero">Другие новостройки</a><a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="catalog_hero">8 903 857-69-09</a></div>
+          <p class="lead">Сравните объекты по статусу проверки, выберите главный вопрос и оставьте одну короткую заявку. Специалист сообщит только сведения, которые можно подтвердить на дату обращения.</p>
+          <div class="hero__actions"><a class="button" href="#questions" data-track-action="catalog_question_start" data-track-placement="catalog_hero_questions">Выбрать вопрос</a><a class="button button--ghost" href="#priority" data-track-action="priority_objects" data-track-placement="catalog_hero">Сравнить объекты</a><a class="button button--ghost" href="#reference" data-track-action="reference_catalog" data-track-placement="catalog_hero">Другие новостройки</a><a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="catalog_hero">8 903 857-69-09</a></div>
           <div class="notice">Цена, наличие квартир и условия покупки уточняются перед консультацией. Заявка не является бронью и не фиксирует стоимость.</div>
         </div>
 
         <aside class="lead-form-card project-quick-card" id="quick-lead" data-primary-lead aria-labelledby="catalog-quick-title">
-          <div class="lead-form-card__head"><span class="lead-type-tag">Заявка за 30 секунд</span><h2 id="catalog-quick-title">Начать подбор новостройки</h2><p>Оставьте контакты и выберите объект. Комнатность, бюджет и способ покупки специалист уточнит в разговоре.</p></div>
+          <div class="lead-form-card__head"><span class="lead-type-tag">Заявка за 30 секунд</span><h2 id="catalog-quick-title">Начать подбор новостройки</h2><p>Оставьте контакты, выберите объект и главный вопрос. Остальные параметры специалист уточнит в разговоре.</p></div>
           <form class="form form--compact" data-lead-form data-lead-type="portal_selection" data-project="Портал Новостройки Борисоглебска" data-project-id="newbuilds-borisoglebsk" data-project-name="Новостройки Борисоглебска" data-complex="Общий подбор новостройки" data-form-id="catalog_quick_selection" data-success-message="Заявка отправлена. Специалист свяжется с вами и уточнит параметры.">
             <label>Имя<input name="name" required autocomplete="name" placeholder="Как к вам обращаться"></label>
             <label>Телефон<input name="phone" required autocomplete="tel" inputmode="tel" placeholder="+7 ___ ___-__-__"></label>
             <label>Интересующий объект<select name="residential_complex" required><option value="">Выберите объект</option><option>Просторная 4А</option><option>Аэродромная 18Г</option><option>Сенная 76</option><option>Общий подбор новостройки</option></select></label>
+            <label>Главный вопрос<select name="interest" required><option value="">Выберите вопрос</option><option>Наличие и актуальный статус</option><option>Документы по объекту</option><option>Схема покупки и договор</option><option>Ипотека и расчёт покупки</option><option>Альтернативы и общий подбор</option></select></label>
             <button class="button" type="submit">Получить консультацию</button>
             <p class="form__hint">Без бронирования и фиксации цены.</p>
             <div class="form__status" data-form-status></div>
@@ -46,14 +47,28 @@
       </div>
     </section>
 
+    <section class="section--soft" id="questions" data-catalog-question-routes>
+      <div class="container">
+        <div class="section__head"><span class="eyebrow">Что нужно проверить</span><h2>Начните с главного вопроса</h2><p>Кнопка заполнит поле в существующей короткой форме. Вы сможете изменить вопрос и выбрать нужный объект перед отправкой.</p></div>
+        <div class="grid grid--3">
+          <article class="card card--shadow"><h3>Наличие и статус</h3><p>Уточнить, есть ли подтверждённая информация о продажах и доступных вариантах на текущую дату.</p><a class="button" href="#quick-lead" data-prefill-interest="Наличие и актуальный статус" data-track-action="catalog_question_prefill" data-track-placement="catalog_question_availability">Проверить наличие</a></article>
+          <article class="card card--shadow"><h3>Документы</h3><p>Запросить проверку первичных источников, реквизитов объекта и документов, связанных с покупкой.</p><a class="button" href="#quick-lead" data-prefill-interest="Документы по объекту" data-track-action="catalog_question_prefill" data-track-placement="catalog_question_documents">Проверить документы</a></article>
+          <article class="card card--shadow"><h3>Схема покупки</h3><p>Разобрать продавца, договор, порядок оплаты и ограничения до передачи денег.</p><a class="button" href="#quick-lead" data-prefill-interest="Схема покупки и договор" data-track-action="catalog_question_prefill" data-track-placement="catalog_question_purchase_scheme">Разобрать схему покупки</a></article>
+          <article class="card card--shadow"><h3>Ипотека</h3><p>Предварительно оценить взнос, платёж и возможность применения программы после проверки объекта.</p><a class="button" href="#quick-lead" data-prefill-interest="Ипотека и расчёт покупки" data-track-action="catalog_question_prefill" data-track-placement="catalog_question_mortgage">Рассчитать ипотеку</a></article>
+          <article class="card card--shadow"><h3>Альтернатива</h3><p>Сравнить другие новые дома, если выбранный объект не подходит по сроку, документам или способу покупки.</p><a class="button" href="#quick-lead" data-prefill-interest="Альтернативы и общий подбор" data-track-action="catalog_question_prefill" data-track-placement="catalog_question_alternative">Подобрать альтернативу</a></article>
+        </div>
+      </div>
+    </section>
+
     <section id="priority">
       <div class="container">
-        <div class="section__head"><span class="eyebrow">Приоритет сбора заявок</span><h2>Три ключевых объекта</h2><p>У каждого объекта есть отдельная карточка со статусом сведений, ответами на вопросы, короткой и подробной формами.</p></div>
-        <div class="grid grid--3">
-          <article class="card card--shadow"><span class="eyebrow">Данные уточняются</span><h3>Просторная 4А</h3><p>Проверяем статус объекта, документы, характеристики и возможные условия покупки. Точные значения не публикуются без принятых источников.</p><div class="hero__actions"><a class="button" href="prostornaya-4a/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_card" data-track-object="prostornaya-4a">Короткая заявка</a><a class="button button--ghost" href="prostornaya-4a/" data-track-action="object_open" data-track-placement="catalog_card" data-track-object="prostornaya-4a">Подробнее</a></div></article>
-          <article class="card card--shadow"><span class="eyebrow">Данные уточняются</span><h3>Аэродромная 18Г</h3><p>Собираем интерес покупателей и проверяем сведения о доме, документах, квартирах и статусе объекта.</p><div class="hero__actions"><a class="button" href="aerodromnaya-18g/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_card" data-track-object="aerodromnaya-18g">Короткая заявка</a><a class="button button--ghost" href="aerodromnaya-18g/" data-track-action="object_open" data-track-placement="catalog_card" data-track-object="aerodromnaya-18g">Подробнее</a></div></article>
-          <article class="card card--shadow"><span class="eyebrow">Данные уточняются</span><h3>Сенная 76</h3><p>Собираем предварительные обращения и уточняем характеристики, документы и возможные варианты покупки.</p><div class="hero__actions"><a class="button" href="sennaya-76/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_card" data-track-object="sennaya-76">Короткая заявка</a><a class="button button--ghost" href="sennaya-76/" data-track-action="object_open" data-track-placement="catalog_card" data-track-object="sennaya-76">Подробнее</a></div></article>
+        <div class="section__head"><span class="eyebrow">Сравнение проверки</span><h2>Три ключевых объекта</h2><p>Сравнение показывает только состояние внутренней проверки и доступные категории сведений. Оно не раскрывает рабочие значения характеристик, документов, цен или наличия.</p></div>
+        <div class="grid grid--3" data-catalog-verification-comparison>
+          <article class="card card--shadow" data-catalog-verification-card data-verification-profile="../data/verification/prostornaya-4a.json"><span class="eyebrow" data-verification-status>Загружаем статус проверки</span><h3>Просторная 4А</h3><p data-verification-date>Дата обновления уточняется</p><ul class="list"><li data-verification-sources>Источники уточняются</li><li data-verification-critical>Ключевые сведения уточняются</li><li data-verification-categories>Категории сведений уточняются</li></ul><div class="hero__actions"><a class="button" href="prostornaya-4a/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_comparison_card" data-track-object="prostornaya-4a">Получить обновление</a><a class="button button--ghost" href="prostornaya-4a/" data-track-action="object_open" data-track-placement="catalog_comparison_card" data-track-object="prostornaya-4a">Подробнее</a></div></article>
+          <article class="card card--shadow" data-catalog-verification-card data-verification-profile="../data/verification/aerodromnaya-18g.json"><span class="eyebrow" data-verification-status>Загружаем статус проверки</span><h3>Аэродромная 18Г</h3><p data-verification-date>Дата обновления уточняется</p><ul class="list"><li data-verification-sources>Источники уточняются</li><li data-verification-critical>Ключевые сведения уточняются</li><li data-verification-categories>Категории сведений уточняются</li></ul><div class="hero__actions"><a class="button" href="aerodromnaya-18g/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_comparison_card" data-track-object="aerodromnaya-18g">Получить обновление</a><a class="button button--ghost" href="aerodromnaya-18g/" data-track-action="object_open" data-track-placement="catalog_comparison_card" data-track-object="aerodromnaya-18g">Подробнее</a></div></article>
+          <article class="card card--shadow" data-catalog-verification-card data-verification-profile="../data/verification/sennaya-76.json"><span class="eyebrow" data-verification-status>Загружаем статус проверки</span><h3>Сенная 76</h3><p data-verification-date>Дата обновления уточняется</p><ul class="list"><li data-verification-sources>Источники уточняются</li><li data-verification-critical>Ключевые сведения уточняются</li><li data-verification-categories>Категории сведений уточняются</li></ul><div class="hero__actions"><a class="button" href="sennaya-76/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_comparison_card" data-track-object="sennaya-76">Получить обновление</a><a class="button button--ghost" href="sennaya-76/" data-track-action="object_open" data-track-placement="catalog_comparison_card" data-track-object="sennaya-76">Подробнее</a></div></article>
         </div>
+        <div class="notice">Нулевой показатель означает, что источник или ключевое сведение ещё не принято для публичного использования. Это не означает отсутствие самого объекта или документов.</div>
       </div>
     </section>
 
@@ -87,6 +102,8 @@
 
   <footer class="footer"><div class="container footer__inner"><div><strong>Новостройки Борисоглебска</strong><br>Городской каталог новых домов и квартир.</div><div>Не является официальным сайтом застройщика. Информация уточняется по публичным источникам. <a href="../privacy/">Политика данных</a> · <a href="../contacts/">Контакты</a></div></div></footer>
   <script src="../assets/js/main.js"></script>
+  <script src="../assets/js/project-intent-prefill.js"></script>
+  <script src="../assets/js/catalog-verification-comparison.js"></script>
   <script src="../assets/js/reference-catalog.js"></script>
   <script src="../assets/js/schema.js"></script>
 </body>
