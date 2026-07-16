@@ -24,10 +24,13 @@ const css = read(CSS_PATH);
 
 if (!homepage || !css) process.exit(1);
 
+const headerLeadCta = 'href="#quick-lead" data-track-action="quick_selection" data-track-placement="header"';
+const heroPhoneCta = 'href="tel:+79038576909" data-track-action="phone" data-track-placement="hero"';
+
 for (const fragment of [
   'class="hero__content hero__content--conversion"',
-  'href="#quick-lead" data-track-action="quick_selection" data-track-placement="header"',
-  'href="tel:+79038576909" data-track-action="phone" data-track-placement="hero"',
+  headerLeadCta,
+  heroPhoneCta,
   'id="quick-lead" data-primary-lead',
   'data-form-id="homepage_quick_selection"'
 ]) {
@@ -38,12 +41,12 @@ if (count(homepage, "<form ") !== 2) {
   errors.push(`${HOME_PATH}: mobile CTA change must not alter the two-form homepage contract`);
 }
 
-if (count(homepage, 'data-track-placement="header"') !== 1) {
-  errors.push(`${HOME_PATH}: header CTA placement must remain unique`);
+if (count(homepage, headerLeadCta) !== 1) {
+  errors.push(`${HOME_PATH}: header lead CTA contract must remain unique`);
 }
 
-if (count(homepage, 'data-track-placement="hero"') !== 1) {
-  errors.push(`${HOME_PATH}: hero phone placement must remain unique`);
+if (count(homepage, heroPhoneCta) !== 1) {
+  errors.push(`${HOME_PATH}: hero phone CTA contract must remain unique`);
 }
 
 for (const fragment of [
