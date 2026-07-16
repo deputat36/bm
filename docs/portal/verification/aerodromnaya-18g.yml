@@ -1,0 +1,35 @@
+object:
+  slug: aerodromnaya-18g
+  name: "Аэродромная 18Г"
+  city: "Борисоглебск"
+  status: secondary_only
+  public_ready: false
+
+verification:
+  checked_at: "2026-07-15"
+  source_id: A18G-1
+  publication_allowed: false
+
+claims:
+  - key: sections_model
+    value: "Рабочая модель: 8 секций"
+    status: secondary_only
+    source_id: A18G-1
+    publication_allowed: false
+
+  - key: commissioning_information
+    value: "Информация о поэтапном вводе требует подтверждения"
+    status: user_operational_information
+    source_id: A18G-1
+    publication_allowed: false
+
+  - key: sections_3_5
+    value: "Предполагаемые невведённые секции"
+    status: requires_document_confirmation
+    source_id: A18G-1
+    publication_allowed: false
+
+legal_checks:
+  - "Проверить возможность продажи до ввода"
+  - "Проверить договорную схему"
+  - "Проверить полномочия продавца"
