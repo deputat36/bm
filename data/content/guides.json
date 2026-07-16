@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-16",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "editorial_registry_not_publication_approval",
+  "purpose": "Единый реестр поисковых интентов, источников, CTA и готовности материалов справочника без автоматического снятия noindex.",
+  "rules": {
+    "all_entries_require_noindex": true,
+    "sitemap_forbidden_until_index_ready": true,
+    "standalone_forms_forbidden": true,
+    "contact_fields_forbidden": true,
+    "object_specific_claims_forbidden": true,
+    "article_schema_deferred_until_index_ready": true,
+    "index_ready_requires_editorial_review": true,
+    "index_ready_requires_legal_review_when_applicable": true,
+    "index_ready_requires_source_review": true,
+    "allowed_review_statuses": ["requires_review", "passed", "not_applicable"],
+    "allowed_source_statuses": ["requires_source_review", "verified_on_date", "not_applicable"],
+    "allowed_indexing_statuses": ["blocked", "ready"]
+  },
+  "guides": [
+    {
+      "id": "guide-documents-check",
+      "path": "guides/proverka-dokumentov-novostroyki/index.html",
+      "canonical": "https://novostroyki-borisoglebsk.ru/guides/proverka-dokumentov-novostroyki/",
+      "intent": "как проверить документы новостройки",
+      "topic": "documents",
+      "content_checked_at": null,
+      "source_status": "requires_source_review",
+      "source_urls": [],
+      "editorial_review": "requires_review",
+      "legal_review": "requires_review",
+      "indexing_status": "blocked",
+      "expected_tracked_cta_count": 2,
+      "allowed_placements": ["guide_documents_footer"]
+    },
+    {
+      "id": "guide-project-declaration",
+      "path": "guides/proektnaya-deklaratsiya/index.html",
+      "canonical": "https://novostroyki-borisoglebsk.ru/guides/proektnaya-deklaratsiya/",
+      "intent": "как читать проектную декларацию",
+      "topic": "project_declaration",
+      "content_checked_at": null,
+      "source_status": "requires_source_review",
+      "source_urls": [],
+      "editorial_review": "requires_review",
+      "legal_review": "requires_review",
+      "indexing_status": "blocked",
+      "expected_tracked_cta_count": 2,
+      "allowed_placements": ["guide_declaration_footer"]
+    },
+    {
+      "id": "guide-layout-choice",
+      "path": "guides/kak-vybrat-planirovku/index.html",
+      "canonical": "https://novostroyki-borisoglebsk.ru/guides/kak-vybrat-planirovku/",
+      "intent": "как выбрать планировку квартиры в новостройке",
+      "topic": "layout",
+      "content_checked_at": null,
+      "source_status": "not_applicable",
+      "source_urls": [],
+      "editorial_review": "requires_review",
+      "legal_review": "not_applicable",
+      "indexing_status": "blocked",
+      "expected_tracked_cta_count": 2,
+      "allowed_placements": ["guide_layout_footer"]
+    },
+    {
+      "id": "guide-permit-commissioning",
+      "path": "guides/kak-proverit-razreshenie-na-vvod/index.html",
+      "canonical": "https://novostroyki-borisoglebsk.ru/guides/kak-proverit-razreshenie-na-vvod/",
+      "intent": "как проверить разрешение на ввод дома",
+      "topic": "commissioning_permit",
+      "content_checked_at": "2026-07-16",
+      "source_status": "verified_on_date",
+      "source_urls": [
+        "https://www.consultant.ru/document/cons_doc_LAW_51040/935a657a2b5f7c7a6436cb756694bb2d649c7a00/"
+      ],
+      "editorial_review": "requires_review",
+      "legal_review": "requires_review",
+      "indexing_status": "blocked",
+      "expected_tracked_cta_count": 1,
+      "allowed_placements": ["guide_commissioning_footer"]
+    },
+    {
+      "id": "guide-uncommissioned-section",
+      "path": "guides/pokupka-kvartiry-v-nevvedennoy-sektsii/index.html",
+      "canonical": "https://novostroyki-borisoglebsk.ru/guides/pokupka-kvartiry-v-nevvedennoy-sektsii/",
+      "intent": "покупка квартиры в невведённой секции",
+      "topic": "uncommissioned_section",
+      "content_checked_at": "2026-07-16",
+      "source_status": "verified_on_date",
+      "source_urls": [
+        "https://www.consultant.ru/document/cons_doc_LAW_51038/"
+      ],
+      "editorial_review": "requires_review",
+      "legal_review": "requires_review",
+      "indexing_status": "blocked",
+      "expected_tracked_cta_count": 1,
+      "allowed_placements": ["guide_uncommissioned_section_footer"]
+    }
+  ]
+}
