@@ -1,0 +1,61 @@
+name: Lead operations approval guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/operations/lead-operations-approval.json"
+      - "data/operations/lead-handling.json"
+      - "data/operations/lead-lifecycle.json"
+      - "data/operations/lead-handoff.json"
+      - "data/operations/lead-event-log.json"
+      - "data/qa/form-scenarios.json"
+      - "docs/portal/LEAD_OPERATIONS_APPROVAL.md"
+      - "tools/validate-lead-operations-approval.mjs"
+      - "tools/build-lead-operations-approval-report.mjs"
+      - ".github/workflows/lead-operations-approval-guard.yml"
+      - "package.json"
+  pull_request:
+    paths:
+      - "data/operations/lead-operations-approval.json"
+      - "data/operations/lead-handling.json"
+      - "data/operations/lead-lifecycle.json"
+      - "data/operations/lead-handoff.json"
+      - "data/operations/lead-event-log.json"
+      - "data/qa/form-scenarios.json"
+      - "docs/portal/LEAD_OPERATIONS_APPROVAL.md"
+      - "tools/validate-lead-operations-approval.mjs"
+      - "tools/build-lead-operations-approval-report.mjs"
+      - ".github/workflows/lead-operations-approval-guard.yml"
+      - "package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-lead-operations-approval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-lead-operations-approval.mjs
+          node --check tools/build-lead-operations-approval-report.mjs
+
+      - name: Validate owner decisions and inactive operational flags
+        run: node tools/validate-lead-operations-approval.mjs
+
+      - name: Generate approval readiness report
+        run: |
+          node tools/build-lead-operations-approval-report.mjs --format=json > /tmp/lead-operations-approval.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/lead-operations-approval.json","utf8")); if(data.status!=="owner_decisions_required_not_operational"||data.summary?.total_decisions!==8||data.summary?.approved_decisions!==0||data.summary?.pending_decisions!==8||data.summary?.activation_enabled!==false||data.summary?.required_operational_fields!==13||data.summary?.activation_gates!==7) process.exit(1); console.log(`Owner decisions: ${data.summary.approved_decisions}/${data.summary.total_decisions}; pending: ${data.summary.pending_decisions}`);'
