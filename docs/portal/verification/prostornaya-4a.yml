@@ -1,0 +1,27 @@
+object:
+  slug: prostornaya-4a
+  name: "Просторная 4А"
+  city: "Борисоглебск"
+  status: verification_pending
+  public_ready: false
+
+verification:
+  checked_at: "2026-07-15"
+  source_id: P4A-1
+  publication_allowed: false
+
+claims:
+  - key: object_characteristics
+    value: "Характеристики требуют синхронизации с принятыми источниками"
+    status: requires_document_confirmation
+    source_id: P4A-1
+    publication_allowed: false
+
+requirements:
+  - "Сопоставить claims и источники"
+  - "Удалить неподтверждённые публичные характеристики"
+  - "Сохранить noindex до прохождения legal gate"
+
+publication_rules:
+  noindex: true
+  is_public_ready: false
