@@ -28,10 +28,10 @@ function extractSection(html, marker) {
 
 const html = read(PAGE_PATH);
 const routes = extractSection(html, "data-homepage-routes");
-const process = extractSection(html, "data-homepage-consultation-process");
+const processSection = extractSection(html, "data-homepage-consultation-process");
 
 if (!routes) errors.push(`${PAGE_PATH}: homepage routes section not found`);
-if (!process) errors.push(`${PAGE_PATH}: consultation process section not found`);
+if (!processSection) errors.push(`${PAGE_PATH}: consultation process section not found`);
 
 const routeContracts = [
   {
@@ -87,12 +87,12 @@ if (count(html, 'data-track-placement="homepage_hero_route_start"') !== 1) {
 }
 
 for (const step of ["Шаг 1", "Шаг 2", "Шаг 3"]) {
-  if (count(process, `>${step}</span>`) !== 1) errors.push(`${PAGE_PATH}: consultation process missing ${step}`);
+  if (count(processSection, `>${step}</span>`) !== 1) errors.push(`${PAGE_PATH}: consultation process missing ${step}`);
 }
-if (count(process, '<article class="card">') !== 3) {
+if (count(processSection, '<article class="card">') !== 3) {
   errors.push(`${PAGE_PATH}: consultation process must contain exactly 3 steps`);
 }
-if (routes.includes("<form") || process.includes("<form")) {
+if (routes.includes("<form") || processSection.includes("<form")) {
   errors.push(`${PAGE_PATH}: routes and process sections must not contain forms`);
 }
 if (count(html, "<form ") !== 2) {
