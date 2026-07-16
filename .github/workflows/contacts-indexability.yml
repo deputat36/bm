@@ -1,0 +1,44 @@
+name: Contacts indexability guard
+
+on:
+  pull_request:
+    paths:
+      - "contacts/index.html"
+      - "data/pages/index.json"
+      - "sitemap.xml"
+      - "tools/validate-contacts-indexability.mjs"
+      - "docs/portal/CONTACTS_SEO_INDEXING.md"
+      - ".github/workflows/contacts-indexability.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "contacts/index.html"
+      - "data/pages/index.json"
+      - "sitemap.xml"
+      - "tools/validate-contacts-indexability.mjs"
+      - "docs/portal/CONTACTS_SEO_INDEXING.md"
+      - ".github/workflows/contacts-indexability.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-contacts-indexability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-contacts-indexability.mjs
+
+      - name: Validate contacts SEO indexing
+        run: node tools/validate-contacts-indexability.mjs
