@@ -2,7 +2,7 @@
 
 ## Цель
 
-Создать воспроизводимый процесс редакционной и юридической приёмки восьми материалов без автоматического присвоения статусов `passed` и без снятия `noindex`.
+Создать воспроизводимый процесс редакционной и юридической приёмки восьми материалов без автоматического снятия `noindex`.
 
 Канонические файлы:
 
@@ -19,11 +19,36 @@ data/content/guides.json
 редакционных задач: 8
 юридических задач: 7
 всего задач: 15
-записано результатов: 0
-не выполнено: 15
+записано результатов: 1
+пройдено: 1
+не выполнено: 14
 ```
 
-Юридическая проверка отмечена как `not_applicable` только для практического материала о выборе планировки. Это не отменяет его редакционную проверку.
+Юридическая проверка отмечена как `not_applicable` только для материала о выборе планировки. Это не отменяет его редакционную проверку.
+
+## Выполненная проверка
+
+Редакционно принят материал:
+
+```text
+guide-egrn-cadastral
+```
+
+Evidence:
+
+```text
+docs/portal/reviews/GUIDE_EGRN_EDITORIAL_REVIEW_2026-07-16.md
+```
+
+Результат использует:
+
+```text
+reviewer_reference=role:content_editor
+review_type=editorial
+status=passed
+```
+
+Юридическая проверка материала не выполнялась. Его `legal_review` остаётся `requires_review`, а `indexing_status` — `blocked`.
 
 ## Редакционный чек-лист
 
@@ -53,42 +78,18 @@ data/content/guides.json
 9. корректность ссылок и атрибуции;
 10. отделение проверки текста от решения об индексации.
 
-## Формат результата
-
-Результат добавляется в массив:
+## Статус журнала
 
 ```text
-data/content/guide-review-results.json
+not_reviewed — результатов нет
+in_progress — выполнена часть задач
+completed — записаны результаты всех применимых задач
 ```
 
-Минимальная структура:
+Текущий статус:
 
-```json
-{
-  "guide_id": "guide-documents-check",
-  "review_type": "editorial",
-  "status": "passed",
-  "reviewer_reference": "role:content_editor",
-  "checked_at": "2026-07-16",
-  "check_results": {
-    "single_search_intent": true,
-    "title_description_alignment": true,
-    "answer_first_structure": true,
-    "readability_and_navigation": true,
-    "source_claim_alignment": true,
-    "cta_relevance": true,
-    "language_quality": true,
-    "internal_linking": true
-  },
-  "evidence": [
-    {
-      "type": "pull_request",
-      "reference": "pulls/123",
-      "note": "Редакционная проверка и исправления"
-    }
-  ],
-  "notes": ""
-}
+```text
+in_progress
 ```
 
 ## Правила `passed`
@@ -102,17 +103,7 @@ data/content/guide-review-results.json
 - результат относится к зарегистрированному материалу;
 - тип проверки применим к материалу.
 
-Сам результат не меняет `data/content/guides.json`. Перевод `editorial_review` или `legal_review` в `passed` выполняется отдельным PR после проверки evidence.
-
-## Статусы `failed` и `blocked`
-
-Они требуют:
-
-- полного набора результатов проверок;
-- роли или защищённой ссылки проверяющего;
-- даты;
-- пояснения в `notes`;
-- исправлений или решения блокера до повторной проверки.
+Сам результат не снимает `noindex`. Перевод статуса в реестре выполняется только при наличии соответствующей evidence-записи.
 
 ## Защита данных
 
@@ -138,21 +129,9 @@ secure_reference:review-system/guide-123
 
 ## Автоматические проверки
 
-Validator:
-
 ```text
 tools/validate-guide-review-pack.mjs
-```
-
-Генератор:
-
-```text
 tools/build-guide-review-pack.mjs
-```
-
-Workflow:
-
-```text
 .github/workflows/guide-review-pack.yml
 ```
 
@@ -168,10 +147,11 @@ node tools/build-guide-review-pack.mjs --format=csv
 ## Текущий статус
 
 ```text
-review-pack создан
-фактические проверки не выполнены
-редакционно принято: 0/8
+review-pack: in_progress
+редакционно принято: 1/8
 юридически принято: 0/7
+записано результатов: 1/15
+не выполнено: 14/15
 index_ready: 0/8
 noindex: сохраняется
 ```
