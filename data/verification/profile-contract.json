@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "profile_schema_version": "1.1",
+  "updated_at": "2026-07-16",
+  "required_profile_fields": [
+    "schema_version",
+    "updated_at",
+    "project_id",
+    "portal_slug",
+    "page_url",
+    "overall_status",
+    "publication_policy",
+    "sources",
+    "claims",
+    "excluded_claims"
+  ],
+  "allowed_overall_statuses": [
+    "requires_recheck",
+    "confirmed",
+    "rejected"
+  ],
+  "allowed_source_statuses": [
+    "reference_required",
+    "attached_unverified",
+    "secondary_only",
+    "user_operational_information",
+    "verified",
+    "rejected",
+    "not_applicable"
+  ],
+  "allowed_claim_statuses": [
+    "working_copy",
+    "secondary_only",
+    "user_operational_information",
+    "requires_document_confirmation",
+    "contradicted",
+    "not_found",
+    "confirmed",
+    "rejected",
+    "not_applicable"
+  ],
+  "allowed_importance": [
+    "critical",
+    "standard",
+    "volatile"
+  ],
+  "required_source_fields": [
+    "id",
+    "source_type",
+    "title",
+    "reference",
+    "status",
+    "last_checked_at",
+    "notes"
+  ],
+  "required_claim_fields": [
+    "field",
+    "value",
+    "importance",
+    "verification_status",
+    "source_ids",
+    "checked_at",
+    "publication_allowed"
+  ],
+  "rules": {
+    "verified_source_requires_https_reference": true,
+    "confirmed_claim_requires_verified_sources": true,
+    "publication_allowed_requires_confirmed_claim": true,
+    "public_ready_requires_all_critical_claims_confirmed": true,
+    "unconfirmed_project_page_must_be_noindex": true,
+    "volatile_claims_require_separate_current_check": true,
+    "working_and_user_information_publication_forbidden": true,
+    "profile_project_and_page_must_match_index": true
+  }
+}

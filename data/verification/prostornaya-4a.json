@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-07-13",
+  "schema_version": "1.1",
+  "updated_at": "2026-07-16",
   "project_id": "tellermanov-sad",
   "portal_slug": "prostornaya-4a",
   "page_url": "/catalog/prostornaya-4a/",
@@ -51,162 +51,263 @@
       "value": "ул. Просторная, 4А",
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["eiszh-project-card", "project-declaration"]
+      "source_ids": [
+        "eiszh-project-card",
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "builder_name",
       "value": "СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ",
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["eiszh-project-card", "project-declaration"]
+      "source_ids": [
+        "eiszh-project-card",
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "status",
       "value": "Строится",
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["eiszh-project-card"]
+      "source_ids": [
+        "eiszh-project-card"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "sales_status",
       "value": "Продажи по карточке наш.дом.рф ещё не начались",
       "importance": "volatile",
       "verification_status": "working_copy",
-      "source_ids": ["eiszh-project-card"],
-      "notes": "Статус может измениться в любой момент и должен проверяться перед каждым публичным упоминанием."
+      "source_ids": [
+        "eiszh-project-card"
+      ],
+      "notes": "Статус может измениться в любой момент и должен проверяться перед каждым публичным упоминанием.",
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "class",
       "value": "Комфорт",
       "importance": "standard",
       "verification_status": "working_copy",
-      "source_ids": ["eiszh-project-card", "project-declaration"]
+      "source_ids": [
+        "eiszh-project-card",
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "wall_material",
       "value": "Кирпич / мелкоштучные каменные материалы",
       "importance": "standard",
       "verification_status": "working_copy",
-      "source_ids": ["eiszh-project-card", "project-declaration"]
+      "source_ids": [
+        "eiszh-project-card",
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "floors",
       "value": 9,
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["eiszh-project-card", "project-declaration"]
+      "source_ids": [
+        "eiszh-project-card",
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "entrances",
       "value": 1,
       "importance": "standard",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "apartments_total",
       "value": 70,
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["eiszh-project-card", "project-declaration"]
+      "source_ids": [
+        "eiszh-project-card",
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "area_min",
       "value": 27.71,
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "area_max",
       "value": 63.76,
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "ceiling_height",
       "value": 2.7,
       "importance": "standard",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "handover",
       "value": "I квартал 2028",
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["eiszh-project-card", "project-declaration"]
+      "source_ids": [
+        "eiszh-project-card",
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "keys_until",
       "value": "30.09.2028",
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "project_declaration",
       "value": "36-001139",
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "project_declaration_date",
       "value": "2026-06-26",
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "nash_dom_rf_id",
       "value": "72480",
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["eiszh-project-card"]
+      "source_ids": [
+        "eiszh-project-card"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "building_permit",
       "value": "36-04-13-2026",
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["building-permit", "project-declaration"]
+      "source_ids": [
+        "building-permit",
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "building_permit_date",
       "value": "2026-06-08",
       "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": ["building-permit", "project-declaration"]
+      "source_ids": [
+        "building-permit",
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "apartment_types.studio.count",
       "value": 9,
       "importance": "standard",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "apartment_types.one-room.count",
       "value": 17,
       "importance": "standard",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "apartment_types.two-room.count",
       "value": 35,
       "importance": "standard",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     },
     {
       "field": "apartment_types.three-room.count",
       "value": 9,
       "importance": "standard",
       "verification_status": "working_copy",
-      "source_ids": ["project-declaration"]
+      "source_ids": [
+        "project-declaration"
+      ],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false
     }
   ],
   "excluded_claims": [

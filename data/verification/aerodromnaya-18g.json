@@ -1,0 +1,213 @@
+{
+  "schema_version": "1.1",
+  "updated_at": "2026-07-16",
+  "project_id": "aerodromnaya-18g",
+  "portal_slug": "aerodromnaya-18g",
+  "page_url": "/catalog/aerodromnaya-18g/",
+  "overall_status": "requires_recheck",
+  "publication_policy": {
+    "page_must_remain_noindex_until_confirmed": true,
+    "public_ready_requires_all_critical_claims_confirmed": true,
+    "advertising_requires_separate_current_check": true,
+    "prices_and_availability_are_not_covered": true
+  },
+  "sources": [
+    {
+      "id": "working-due-diligence-report",
+      "source_type": "working_due_diligence_report",
+      "title": "Рабочий отчёт due diligence по Аэродромной 18Г",
+      "reference": "https://docs.google.com/document/d/18oSix-IEpEDervbl8EwJ2KI2TK_DXy-dfC3FSU4QHzg/edit",
+      "status": "secondary_only",
+      "last_checked_at": "2026-07-15",
+      "notes": "Используется как структурированная рабочая база. Не заменяет разрешения, ЕГРН, ЕИСЖС и договоры."
+    },
+    {
+      "id": "user-operational-information",
+      "source_type": "user_operational_information",
+      "title": "Рабочая информация владельца проекта о поэтапном вводе",
+      "reference": "",
+      "status": "user_operational_information",
+      "last_checked_at": "2026-07-15",
+      "notes": "Сообщено, что большинство секций введено и продано, а две семиэтажные секции предположительно №3 и №5 ещё не введены и продаются за наличные. Требуется документальное подтверждение."
+    },
+    {
+      "id": "public-object-registry",
+      "source_type": "public_object_registry",
+      "title": "Официальная карточка объекта или здания",
+      "reference": "",
+      "status": "reference_required",
+      "last_checked_at": "2026-07-15",
+      "notes": "Нужна точная официальная ссылка по адресу, кадастровому номеру или разрешению."
+    },
+    {
+      "id": "commissioning-documents",
+      "source_type": "commissioning_permits",
+      "title": "Разрешения на ввод секций или подъездов",
+      "reference": "",
+      "status": "reference_required",
+      "last_checked_at": "2026-07-15",
+      "notes": "Нужны документы с официальной нумерацией и составом введённых частей объекта."
+    },
+    {
+      "id": "seller-contract",
+      "source_type": "seller_and_contract_documents",
+      "title": "Продавец и действующая договорная схема",
+      "reference": "",
+      "status": "reference_required",
+      "last_checked_at": "2026-07-15",
+      "notes": "Нужны реквизиты продавца, образец договора, основание распоряжения квартирами и получатель оплаты."
+    },
+    {
+      "id": "media-rights",
+      "source_type": "media_rights",
+      "title": "Права на фотографии, планы и схемы",
+      "reference": "",
+      "status": "reference_required",
+      "last_checked_at": "2026-07-15",
+      "notes": "Материалы нельзя публиковать без подтверждения правообладателя и допустимых каналов использования."
+    }
+  ],
+  "claims": [
+    {
+      "field": "address",
+      "value": "ул. Аэродромная, 18Г",
+      "importance": "critical",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "sections_total",
+      "value": 8,
+      "importance": "standard",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "commissioning_model",
+      "value": "Поэтапный ввод по секциям или подъездам",
+      "importance": "critical",
+      "verification_status": "user_operational_information",
+      "source_ids": ["user-operational-information"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "commissioned_sections_count_estimate",
+      "value": 6,
+      "importance": "standard",
+      "verification_status": "user_operational_information",
+      "source_ids": ["user-operational-information"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "uncommissioned_sections_probable",
+      "value": [3, 5],
+      "importance": "critical",
+      "verification_status": "requires_document_confirmation",
+      "source_ids": ["user-operational-information", "commissioning-documents"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "uncommissioned_sections_floors",
+      "value": 7,
+      "importance": "standard",
+      "verification_status": "requires_document_confirmation",
+      "source_ids": ["working-due-diligence-report", "commissioning-documents"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "sales_status_uncommissioned",
+      "value": "Сообщается о продаже только за наличные",
+      "importance": "critical",
+      "verification_status": "user_operational_information",
+      "source_ids": ["user-operational-information", "seller-contract"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "contract_type",
+      "value": null,
+      "importance": "critical",
+      "verification_status": "not_found",
+      "source_ids": ["seller-contract"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "seller_identity",
+      "value": null,
+      "importance": "critical",
+      "verification_status": "not_found",
+      "source_ids": ["seller-contract"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "commissioning_permits",
+      "value": null,
+      "importance": "critical",
+      "verification_status": "not_found",
+      "source_ids": ["commissioning-documents"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "developer_name",
+      "value": null,
+      "importance": "critical",
+      "verification_status": "not_found",
+      "source_ids": ["public-object-registry"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "mortgage_availability",
+      "value": null,
+      "importance": "volatile",
+      "verification_status": "not_found",
+      "source_ids": ["seller-contract"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "price",
+      "value": null,
+      "importance": "volatile",
+      "verification_status": "not_found",
+      "source_ids": ["seller-contract"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "section-numbering-and-commissioning",
+      "status": "requires_document_confirmation",
+      "summary": "Нужно сопоставить рабочую нумерацию секций с разрешениями на ввод и кадастровыми данными."
+    }
+  ],
+  "legal_gates": [
+    "Подтвердить официальную нумерацию секций",
+    "Получить разрешения на ввод уже введённых частей",
+    "Подтвердить статус предполагаемых секций №3 и №5",
+    "Проверить продавца и основание распоряжения квартирами",
+    "Проверить договор, получателя денег и момент возникновения права покупателя"
+  ],
+  "excluded_claims": [
+    "current_price",
+    "current_availability",
+    "discount",
+    "booking",
+    "mortgage_approval",
+    "official_section_numbers",
+    "guaranteed_commissioning_date",
+    "media_publication_rights"
+  ]
+}
