@@ -1,0 +1,280 @@
+{
+  "schema_version": "1.1",
+  "updated_at": "2026-07-16",
+  "project_id": "sennaya-76",
+  "portal_slug": "sennaya-76",
+  "page_url": "/catalog/sennaya-76/",
+  "overall_status": "requires_recheck",
+  "publication_policy": {
+    "page_must_remain_noindex_until_confirmed": true,
+    "public_ready_requires_all_critical_claims_confirmed": true,
+    "advertising_requires_separate_current_check": true,
+    "prices_and_availability_are_not_covered": true
+  },
+  "sources": [
+    {
+      "id": "working-due-diligence-report",
+      "source_type": "working_due_diligence_report",
+      "title": "Рабочий отчёт due diligence по Сенной 76",
+      "reference": "https://docs.google.com/document/d/1sXPtfrsnsN5S-uPTI88qWrVbJYERLsF0kpvj-Bz9Fvo/edit",
+      "status": "secondary_only",
+      "last_checked_at": "2026-07-15",
+      "notes": "Используется как рабочая база. Не заменяет ЕГРН, разрешение на ввод, ЕГРИП и документы продавца."
+    },
+    {
+      "id": "public-object-registry",
+      "source_type": "public_object_registry",
+      "title": "Официальная карточка здания или объекта",
+      "reference": "",
+      "status": "reference_required",
+      "last_checked_at": "2026-07-15",
+      "notes": "Нужна официальная карточка по адресу или кадастровому номеру здания."
+    },
+    {
+      "id": "control-egrn-extracts",
+      "source_type": "egrn_extracts",
+      "title": "Контрольные выписки ЕГРН по квартирам из разных подъездов",
+      "reference": "",
+      "status": "reference_required",
+      "last_checked_at": "2026-07-15",
+      "notes": "Нужно сверить адрес, этаж, площадь, собственника, обременения и получить кадастровый номер здания."
+    },
+    {
+      "id": "commissioning-permit",
+      "source_type": "commissioning_permit",
+      "title": "Разрешение на ввод здания в эксплуатацию",
+      "reference": "",
+      "status": "reference_required",
+      "last_checked_at": "2026-07-15",
+      "notes": "Публичное заявление о сдаче дома не заменяет разрешение на ввод."
+    },
+    {
+      "id": "developer-registry",
+      "source_type": "developer_or_seller_registry",
+      "title": "ЕГРИП и документы ИП Тарасова М.К.",
+      "reference": "",
+      "status": "reference_required",
+      "last_checked_at": "2026-07-15",
+      "notes": "Нужны полное имя, ИНН, ОГРНИП и документальная связь с объектом."
+    },
+    {
+      "id": "seller-contract",
+      "source_type": "seller_and_contract_documents",
+      "title": "Продавец, право собственности и проект договора",
+      "reference": "",
+      "status": "reference_required",
+      "last_checked_at": "2026-07-15",
+      "notes": "Нужно подтвердить право продавца, тип рынка и юридическую схему конкретной квартиры."
+    },
+    {
+      "id": "media-rights",
+      "source_type": "media_rights",
+      "title": "Права на фотографии и планировки",
+      "reference": "",
+      "status": "reference_required",
+      "last_checked_at": "2026-07-15",
+      "notes": "Материалы нельзя переносить из объявлений без подтверждения правообладателя."
+    }
+  ],
+  "claims": [
+    {
+      "field": "address",
+      "value": "ул. Сенная, 76",
+      "importance": "critical",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "buildings_total",
+      "value": 1,
+      "importance": "standard",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "entrances_total",
+      "value": 3,
+      "importance": "standard",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "floors",
+      "value": 3,
+      "importance": "critical",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "apartments_total",
+      "value": 42,
+      "importance": "critical",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "apartments_one_room",
+      "value": 30,
+      "importance": "standard",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "apartments_two_room",
+      "value": 12,
+      "importance": "standard",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "area_min",
+      "value": 37,
+      "importance": "critical",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "area_max",
+      "value": 61.3,
+      "importance": "critical",
+      "verification_status": "requires_document_confirmation",
+      "source_ids": ["working-due-diligence-report", "control-egrn-extracts"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "area_max_conflict",
+      "value": {
+        "working_matrix_m2": 61.3,
+        "public_listing_m2": 58.8
+      },
+      "importance": "critical",
+      "verification_status": "contradicted",
+      "source_ids": ["working-due-diligence-report", "control-egrn-extracts"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "apartment_cadastral_numbers_available",
+      "value": true,
+      "importance": "critical",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report", "control-egrn-extracts"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "commissioning_status",
+      "value": "Во вторичном источнике объект обозначен как сданный",
+      "importance": "critical",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report", "commissioning-permit"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "commissioning_permit",
+      "value": null,
+      "importance": "critical",
+      "verification_status": "not_found",
+      "source_ids": ["commissioning-permit"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "developer_name",
+      "value": "ИП Тарасов М.К.",
+      "importance": "critical",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report", "developer-registry"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "developer_ogrnip",
+      "value": null,
+      "importance": "critical",
+      "verification_status": "not_found",
+      "source_ids": ["developer-registry"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "market_type",
+      "value": null,
+      "importance": "critical",
+      "verification_status": "requires_document_confirmation",
+      "source_ids": ["seller-contract", "control-egrn-extracts"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "seller_identity",
+      "value": null,
+      "importance": "critical",
+      "verification_status": "not_found",
+      "source_ids": ["seller-contract"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "price_from",
+      "value": 5920000,
+      "importance": "volatile",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    },
+    {
+      "field": "available_offers_count",
+      "value": 26,
+      "importance": "volatile",
+      "verification_status": "secondary_only",
+      "source_ids": ["working-due-diligence-report"],
+      "checked_at": "2026-07-15",
+      "publication_allowed": false
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "maximum-area",
+      "status": "contradicted",
+      "summary": "Рабочая шахматка указывает 61,3 м², публичная карточка — 58,8 м². Нужна сверка по ЕГРН и актуальной шахматке."
+    }
+  ],
+  "document_gates": [
+    "Получить контрольные выписки ЕГРН по квартирам из разных подъездов",
+    "Установить кадастровый номер здания",
+    "Получить разрешение на ввод",
+    "Проверить ЕГРИП и ОГРНИП",
+    "Подтвердить продавца и право собственности на конкретную квартиру",
+    "Получить актуальную шахматку с расшифровкой статусов"
+  ],
+  "excluded_claims": [
+    "current_price",
+    "current_availability",
+    "discount",
+    "booking",
+    "mortgage_approval",
+    "comfort_class",
+    "premium_or_elite_class",
+    "media_publication_rights"
+  ]
+}
