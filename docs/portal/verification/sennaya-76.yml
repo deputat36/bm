@@ -1,0 +1,40 @@
+object:
+  slug: sennaya-76
+  name: "Сенная 76"
+  city: "Борисоглебск"
+  status: secondary_only
+  public_ready: false
+
+verification:
+  checked_at: "2026-07-15"
+  source_id: S1
+  publication_allowed: false
+
+claims:
+  - key: apartment_structure
+    value: "Предварительная рабочая модель: 3 подъезда, 42 квартиры"
+    status: secondary_only
+    source_id: S1
+    publication_allowed: false
+
+  - key: apartment_area_range
+    value: "37.0-61.3 м² по рабочей шахматке"
+    status: requires_document_confirmation
+    source_id: S1
+    publication_allowed: false
+
+  - key: public_area_conflict
+    value: "Есть расхождение с публичным значением максимальной площади"
+    status: requires_document_confirmation
+    source_id: S1
+    publication_allowed: false
+
+document_gates:
+  - "Получить контрольные выписки ЕГРН"
+  - "Подтвердить адрес здания"
+  - "Подтвердить право продавца"
+  - "Подтвердить ввод в эксплуатацию"
+
+legal_notes:
+  - "Не использовать как подтверждённые характеристики до принятия источников"
+  - "Для ИП использовать developer_ogrnip вместо ogrn"
