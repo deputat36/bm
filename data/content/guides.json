@@ -58,6 +58,25 @@
       "allowed_placements": ["guide_seller_documents_footer"]
     },
     {
+      "id": "guide-egrn-cadastral",
+      "path": "guides/kak-proverit-kadastrovyy-nomer-i-vypisku-egrn/index.html",
+      "canonical": "https://novostroyki-borisoglebsk.ru/guides/kak-proverit-kadastrovyy-nomer-i-vypisku-egrn/",
+      "intent": "как проверить кадастровый номер квартиры и выписку ЕГРН",
+      "topic": "egrn_cadastral",
+      "content_checked_at": "2026-07-16",
+      "source_status": "verified_on_date",
+      "source_urls": [
+        "https://www.consultant.ru/document/cons_doc_LAW_182661/a7537540b724239fcfec2f80f39ed58c36942692/",
+        "https://www.consultant.ru/document/cons_doc_LAW_182661/bc326ae3c1b555e686e6baaea1f061af46fad306/",
+        "https://www.consultant.ru/document/cons_doc_LAW_182661/e064cc95b1bdffa4d12abb92fdfc56dea94198df/"
+      ],
+      "editorial_review": "requires_review",
+      "legal_review": "requires_review",
+      "indexing_status": "blocked",
+      "expected_tracked_cta_count": 1,
+      "allowed_placements": ["guide_egrn_footer"]
+    },
+    {
       "id": "guide-contract-types",
       "path": "guides/ddu-dkp-predvaritelnyy-investitsionnyy-dogovor/index.html",
       "canonical": "https://novostroyki-borisoglebsk.ru/guides/ddu-dkp-predvaritelnyy-investitsionnyy-dogovor/",
