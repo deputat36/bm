@@ -35,6 +35,24 @@
       "allowed_placements": ["guide_documents_footer"]
     },
     {
+      "id": "guide-seller-documents",
+      "path": "guides/kakie-dokumenty-zaprosit-u-prodavtsa-novoy-kvartiry/index.html",
+      "canonical": "https://novostroyki-borisoglebsk.ru/guides/kakie-dokumenty-zaprosit-u-prodavtsa-novoy-kvartiry/",
+      "intent": "какие документы запросить у продавца новой квартиры",
+      "topic": "seller_documents",
+      "content_checked_at": "2026-07-16",
+      "source_status": "verified_on_date",
+      "source_urls": [
+        "https://www.consultant.ru/document/cons_doc_LAW_51038/",
+        "https://www.consultant.ru/document/cons_doc_LAW_182661/"
+      ],
+      "editorial_review": "requires_review",
+      "legal_review": "requires_review",
+      "indexing_status": "blocked",
+      "expected_tracked_cta_count": 1,
+      "allowed_placements": ["guide_seller_documents_footer"]
+    },
+    {
       "id": "guide-project-declaration",
       "path": "guides/proektnaya-deklaratsiya/index.html",
       "canonical": "https://novostroyki-borisoglebsk.ru/guides/proektnaya-deklaratsiya/",
