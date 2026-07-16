@@ -1,0 +1,55 @@
+name: Form QA execution pack guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/qa/form-execution-contract.json"
+      - "data/qa/form-scenarios.json"
+      - "data/qa/form-results.json"
+      - "docs/portal/FORM_QA_EXECUTION_PACK.md"
+      - "tools/build-form-qa-execution-pack.mjs"
+      - "tools/validate-form-qa-execution-pack.mjs"
+      - ".github/workflows/form-qa-execution-pack-guard.yml"
+      - "package.json"
+  pull_request:
+    paths:
+      - "data/qa/form-execution-contract.json"
+      - "data/qa/form-scenarios.json"
+      - "data/qa/form-results.json"
+      - "docs/portal/FORM_QA_EXECUTION_PACK.md"
+      - "tools/build-form-qa-execution-pack.mjs"
+      - "tools/validate-form-qa-execution-pack.mjs"
+      - ".github/workflows/form-qa-execution-pack-guard.yml"
+      - "package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-form-qa-execution-pack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/build-form-qa-execution-pack.mjs
+          node --check tools/validate-form-qa-execution-pack.mjs
+
+      - name: Validate execution contract
+        run: node tools/validate-form-qa-execution-pack.mjs
+
+      - name: Generate execution pack
+        run: |
+          node tools/build-form-qa-execution-pack.mjs --format=json > /tmp/form-qa-execution-pack.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/form-qa-execution-pack.json","utf8")); if(data.status!=="execution_pack_only_no_implied_results"||data.summary?.scenarios!==14||data.summary?.devices!==3||data.summary?.total_slots!==42||data.summary?.slot_checks!==10||data.summary?.device_resilience_cases!==6||data.summary?.recorded_results!==0||data.summary?.by_status?.not_run!==42) process.exit(1); console.log(`QA slots: ${data.summary.total_slots}; checks per slot: ${data.summary.slot_checks}; recorded: ${data.summary.recorded_results}`);'
