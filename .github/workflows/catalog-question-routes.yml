@@ -1,0 +1,48 @@
+name: Catalog question routes guard
+
+on:
+  pull_request:
+    paths:
+      - "catalog/index.html"
+      - "assets/js/catalog-verification-comparison.js"
+      - "assets/js/project-intent-prefill.js"
+      - "data/qa/catalog-question-routes.json"
+      - "data/qa/form-scenarios.json"
+      - "data/verification/*.json"
+      - "tools/validate-catalog-question-routes.mjs"
+      - ".github/workflows/catalog-question-routes.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "catalog/index.html"
+      - "assets/js/catalog-verification-comparison.js"
+      - "assets/js/project-intent-prefill.js"
+      - "data/qa/catalog-question-routes.json"
+      - "data/qa/form-scenarios.json"
+      - "data/verification/*.json"
+      - "tools/validate-catalog-question-routes.mjs"
+      - ".github/workflows/catalog-question-routes.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-catalog-question-routes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/catalog-verification-comparison.js
+          node --check tools/validate-catalog-question-routes.mjs
+
+      - name: Validate catalog question routes
+        run: node tools/validate-catalog-question-routes.mjs
