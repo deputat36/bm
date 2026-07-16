@@ -27,8 +27,8 @@
         <div class="project-hero__content">
           <span class="eyebrow">Городской каталог</span>
           <h1>Новостройки Борисоглебска</h1>
-          <p class="lead">Сравните объекты по статусу проверки, выберите главный вопрос и оставьте одну короткую заявку. Специалист сообщит только сведения, которые можно подтвердить на дату обращения.</p>
-          <div class="hero__actions"><a class="button" href="#questions" data-track-action="catalog_question_start" data-track-placement="catalog_hero_questions">Выбрать вопрос</a><a class="button button--ghost" href="#priority" data-track-action="priority_objects" data-track-placement="catalog_hero">Сравнить объекты</a><a class="button button--ghost" href="#reference" data-track-action="reference_catalog" data-track-placement="catalog_hero">Другие новостройки</a><a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="catalog_hero">8 903 857-69-09</a></div>
+          <p class="lead">Сравните объекты по статусу проверки, пройдите быстрый подбор или выберите главный вопрос. Специалист сообщит только сведения, которые можно подтвердить на дату обращения.</p>
+          <div class="hero__actions"><a class="button" href="#quiz" data-track-action="catalog_quiz_open" data-track-placement="catalog_hero_quiz">Пройти быстрый подбор</a><a class="button button--ghost" href="#questions" data-track-action="catalog_question_start" data-track-placement="catalog_hero_questions">Выбрать вопрос</a><a class="button button--ghost" href="#priority" data-track-action="priority_objects" data-track-placement="catalog_hero">Сравнить объекты</a><a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="catalog_hero">8 903 857-69-09</a></div>
           <div class="notice">Цена, наличие квартир и условия покупки уточняются перед консультацией. Заявка не является бронью и не фиксирует стоимость.</div>
         </div>
 
@@ -56,6 +56,79 @@
           <article class="card card--shadow"><h3>Схема покупки</h3><p>Разобрать продавца, договор, порядок оплаты и ограничения до передачи денег.</p><a class="button" href="#quick-lead" data-prefill-interest="Схема покупки и договор" data-track-action="catalog_question_prefill" data-track-placement="catalog_question_purchase_scheme">Разобрать схему покупки</a></article>
           <article class="card card--shadow"><h3>Ипотека</h3><p>Предварительно оценить взнос, платёж и возможность применения программы после проверки объекта.</p><a class="button" href="#quick-lead" data-prefill-interest="Ипотека и расчёт покупки" data-track-action="catalog_question_prefill" data-track-placement="catalog_question_mortgage">Рассчитать ипотеку</a></article>
           <article class="card card--shadow"><h3>Альтернатива</h3><p>Сравнить другие новые дома, если выбранный объект не подходит по сроку, документам или способу покупки.</p><a class="button" href="#quick-lead" data-prefill-interest="Альтернативы и общий подбор" data-track-action="catalog_question_prefill" data-track-placement="catalog_question_alternative">Подобрать альтернативу</a></article>
+        </div>
+        <div class="hero__actions"><a class="button button--ghost" href="#quiz" data-track-action="catalog_quiz_open" data-track-placement="catalog_questions_quiz">Не знаете, с чего начать? Пройти подбор</a></div>
+      </div>
+    </section>
+
+    <section id="quiz" data-catalog-rule-quiz>
+      <div class="container">
+        <div class="section__head"><span class="eyebrow">Подбор без звонка на первом шаге</span><h2>Ответьте на пять вопросов и получите следующий шаг</h2><p>Квиз не подбирает фактически свободную квартиру и не обещает одобрение ипотеки. Он помогает определить, что проверить в первую очередь.</p></div>
+
+        <div class="card card--shadow" data-quiz-intro>
+          <h3>Сначала результат — потом контакты</h3>
+          <p>Телефон не нужен для прохождения вопросов. После результата вы решите, оставлять ли заявку специалисту.</p>
+          <button class="button" type="button" data-quiz-start data-track-action="catalog_quiz_start" data-track-placement="catalog_quiz_start">Начать подбор</button>
+        </div>
+
+        <p class="project-status-note" data-quiz-progress hidden></p>
+        <p class="notice" data-quiz-status role="alert" hidden></p>
+
+        <fieldset class="card card--shadow" data-quiz-step="priority" hidden>
+          <legend><strong>Что важнее проверить сначала?</strong></legend>
+          <label><input type="radio" name="quiz_priority" value="availability"> Актуальное наличие и статус</label>
+          <label><input type="radio" name="quiz_priority" value="documents"> Документы и схема покупки</label>
+          <label><input type="radio" name="quiz_priority" value="mortgage"> Ипотека и финансовый расчёт</label>
+          <label><input type="radio" name="quiz_priority" value="alternatives"> Сравнение и альтернативы</label>
+          <div class="hero__actions"><button class="button" type="button" data-quiz-next data-track-action="catalog_quiz_next" data-track-placement="catalog_quiz_step_1">Далее</button></div>
+        </fieldset>
+
+        <fieldset class="card card--shadow" data-quiz-step="rooms" hidden>
+          <legend><strong>Какая квартира нужна?</strong></legend>
+          <label><input type="radio" name="quiz_rooms" value="studio"> Студия</label>
+          <label><input type="radio" name="quiz_rooms" value="one_room"> 1-комнатная</label>
+          <label><input type="radio" name="quiz_rooms" value="two_room"> 2-комнатная</label>
+          <label><input type="radio" name="quiz_rooms" value="three_room"> 3-комнатная</label>
+          <label><input type="radio" name="quiz_rooms" value="undecided"> Пока не определился</label>
+          <div class="hero__actions"><button class="button button--ghost" type="button" data-quiz-back>Назад</button><button class="button" type="button" data-quiz-next data-track-action="catalog_quiz_next" data-track-placement="catalog_quiz_step_2">Далее</button></div>
+        </fieldset>
+
+        <fieldset class="card card--shadow" data-quiz-step="budget" hidden>
+          <legend><strong>Какой бюджет рассматриваете?</strong></legend>
+          <label><input type="radio" name="quiz_budget" value="up_to_4"> До 4 млн ₽</label>
+          <label><input type="radio" name="quiz_budget" value="from_4_to_6"> От 4 до 6 млн ₽</label>
+          <label><input type="radio" name="quiz_budget" value="above_6"> Более 6 млн ₽</label>
+          <label><input type="radio" name="quiz_budget" value="undecided"> Пока не определился</label>
+          <div class="hero__actions"><button class="button button--ghost" type="button" data-quiz-back>Назад</button><button class="button" type="button" data-quiz-next data-track-action="catalog_quiz_next" data-track-placement="catalog_quiz_step_3">Далее</button></div>
+        </fieldset>
+
+        <fieldset class="card card--shadow" data-quiz-step="purchase_method" hidden>
+          <legend><strong>Как планируется покупка?</strong></legend>
+          <label><input type="radio" name="quiz_purchase_method" value="cash"> Наличные</label>
+          <label><input type="radio" name="quiz_purchase_method" value="mortgage"> Ипотека</label>
+          <label><input type="radio" name="quiz_purchase_method" value="family_mortgage"> Семейная ипотека</label>
+          <label><input type="radio" name="quiz_purchase_method" value="maternity_capital"> Материнский капитал</label>
+          <label><input type="radio" name="quiz_purchase_method" value="sale_property"> Продажа своей недвижимости</label>
+          <label><input type="radio" name="quiz_purchase_method" value="undecided"> Пока не определился</label>
+          <div class="hero__actions"><button class="button button--ghost" type="button" data-quiz-back>Назад</button><button class="button" type="button" data-quiz-next data-track-action="catalog_quiz_next" data-track-placement="catalog_quiz_step_4">Далее</button></div>
+        </fieldset>
+
+        <fieldset class="card card--shadow" data-quiz-step="timeline" hidden>
+          <legend><strong>Когда планируется покупка?</strong></legend>
+          <label><input type="radio" name="quiz_timeline" value="one_month"> В ближайший месяц</label>
+          <label><input type="radio" name="quiz_timeline" value="one_to_three"> В течение 1–3 месяцев</label>
+          <label><input type="radio" name="quiz_timeline" value="half_year"> В течение полугода</label>
+          <label><input type="radio" name="quiz_timeline" value="research"> Пока изучаю варианты</label>
+          <div class="hero__actions"><button class="button button--ghost" type="button" data-quiz-back>Назад</button><button class="button" type="button" data-quiz-show-result data-track-action="catalog_quiz_complete" data-track-placement="catalog_quiz_step_5">Показать результат</button></div>
+        </fieldset>
+
+        <div class="card card--shadow" data-quiz-result-panel hidden>
+          <span class="eyebrow">Предварительный результат</span>
+          <h3 data-quiz-result-title tabindex="-1">Следующий шаг</h3>
+          <p data-quiz-result-text></p>
+          <ul class="list" data-quiz-result-reasons></ul>
+          <div class="notice">Результат основан только на ваших ответах. Он не подтверждает наличие квартиры, цену, статус объекта или решение банка.</div>
+          <div class="hero__actions"><a class="button" href="#quick-lead" data-quiz-to-form data-track-action="catalog_quiz_to_form" data-track-placement="catalog_quiz_result">Передать ответы специалисту</a><button class="button button--ghost" type="button" data-quiz-reset data-track-action="catalog_quiz_reset" data-track-placement="catalog_quiz_result_reset">Пройти заново</button></div>
         </div>
       </div>
     </section>
@@ -103,6 +176,7 @@
   <footer class="footer"><div class="container footer__inner"><div><strong>Новостройки Борисоглебска</strong><br>Городской каталог новых домов и квартир.</div><div>Не является официальным сайтом застройщика. Информация уточняется по публичным источникам. <a href="../privacy/">Политика данных</a> · <a href="../contacts/">Контакты</a></div></div></footer>
   <script src="../assets/js/main.js"></script>
   <script src="../assets/js/project-intent-prefill.js"></script>
+  <script src="../assets/js/catalog-rule-quiz.js"></script>
   <script src="../assets/js/catalog-verification-comparison.js"></script>
   <script src="../assets/js/reference-catalog.js"></script>
   <script src="../assets/js/schema.js"></script>

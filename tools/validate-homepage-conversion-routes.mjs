@@ -3,6 +3,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const PAGE_PATH = "index.html";
+const CATALOG_PATH = "catalog/index.html";
 const errors = [];
 
 function read(relativePath) {
@@ -27,6 +28,7 @@ function extractSection(html, marker) {
 }
 
 const html = read(PAGE_PATH);
+const catalog = read(CATALOG_PATH);
 const routes = extractSection(html, "data-homepage-routes");
 const processSection = extractSection(html, "data-homepage-consultation-process");
 
@@ -43,8 +45,8 @@ const routeContracts = [
   {
     action: "route_selection",
     placement: "homepage_route_selection",
-    href: "#quick-lead",
-    label: "Начать подбор"
+    href: "catalog/#quiz",
+    label: "Пройти подбор"
   },
   {
     action: "route_mortgage",
@@ -75,6 +77,7 @@ for (const fragment of [
   ">Выбрать сценарий</a>",
   "Выберите конкретный дом, получите общий подбор или предварительный расчёт покупки",
   "без обещаний неподтверждённых цен и наличия",
+  "Ответьте на пять вопросов, получите предварительный следующий шаг и только потом решите, оставлять ли контакты",
   "Что решим за один разговор",
   "От вопроса к понятному следующему шагу",
   "Портал не является официальным сайтом застройщика"
@@ -124,9 +127,20 @@ for (const href of routeHrefs) {
   }
 }
 
+for (const fragment of [
+  'id="quiz" data-catalog-rule-quiz',
+  "Сначала результат — потом контакты",
+  'data-quiz-result-panel',
+  'data-quiz-to-form',
+  'script src="../assets/js/catalog-rule-quiz.js"'
+]) {
+  if (!catalog.includes(fragment)) errors.push(`${CATALOG_PATH}: homepage selection route target missing ${fragment}`);
+}
+
 console.log(`Homepage route cards: ${routeContracts.length}`);
 console.log("Homepage forms: 2");
 console.log("Consultation process steps: 3");
+console.log("Selection route: catalog quiz before contact request");
 console.log("New query parameters: 0");
 
 if (errors.length) {

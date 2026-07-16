@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "validate": "node tools/validate-static-site.mjs && node tools/validate-thankyou-context.mjs && node tools/validate-catalog-conversion.mjs && node tools/validate-homepage-object-cta.mjs && node tools/validate-contacts-conversion.mjs && node tools/validate-mortgage-conversion.mjs && node tools/validate-contextual-conversion.mjs && node tools/validate-lead-source-output.mjs && node tools/validate-form-role-analytics.mjs && node tools/validate-analytics-events.mjs && node tools/validate-analytics-funnel-report.mjs && node tools/validate-analytics-debug-mode.mjs && node tools/validate-conversion-runtime.mjs && node tools/validate-form-qa-scenarios.mjs && node tools/validate-form-qa-results.mjs && node tools/validate-campaign-release.mjs && node tools/validate-campaign-publications.mjs && node tools/validate-object-verification-profiles.mjs && node tools/validate-prostornaya-page-verification-safety.mjs && node tools/validate-project-verification-summary.mjs && node tools/validate-project-readiness-report.mjs && node tools/validate-source-collection.mjs && node tools/validate-launch-gates.mjs",
+    "validate": "node tools/validate-static-site.mjs && node tools/validate-thankyou-context.mjs && node tools/validate-catalog-conversion.mjs && node tools/validate-catalog-rule-quiz.mjs && node tools/validate-homepage-object-cta.mjs && node tools/validate-contacts-conversion.mjs && node tools/validate-mortgage-conversion.mjs && node tools/validate-contextual-conversion.mjs && node tools/validate-lead-source-output.mjs && node tools/validate-form-role-analytics.mjs && node tools/validate-analytics-events.mjs && node tools/validate-analytics-funnel-report.mjs && node tools/validate-analytics-debug-mode.mjs && node tools/validate-conversion-runtime.mjs && node tools/validate-form-qa-scenarios.mjs && node tools/validate-form-qa-results.mjs && node tools/validate-campaign-release.mjs && node tools/validate-campaign-publications.mjs && node tools/validate-object-verification-profiles.mjs && node tools/validate-prostornaya-page-verification-safety.mjs && node tools/validate-project-verification-summary.mjs && node tools/validate-project-readiness-report.mjs && node tools/validate-source-collection.mjs && node tools/validate-launch-gates.mjs",
     "validate:json": "node tools/validate-json.mjs",
     "validate:priority": "node tools/validate-priority-projects.mjs",
     "validate:reference": "node tools/validate-reference-projects.mjs",
@@ -18,6 +18,7 @@
     "validate:leads": "node tools/validate-portal-lead-forms.mjs",
     "validate:homepage-cta": "node tools/validate-homepage-object-cta.mjs",
     "validate:catalog-conversion": "node tools/validate-catalog-conversion.mjs",
+    "validate:catalog-rule-quiz": "node --check assets/js/catalog-rule-quiz.js && node --check tools/validate-catalog-rule-quiz.mjs && node tools/validate-catalog-rule-quiz.mjs",
     "validate:contacts-conversion": "node tools/validate-contacts-conversion.mjs",
     "validate:mortgage-conversion": "node tools/validate-mortgage-conversion.mjs",
     "validate:contextual-conversion": "node tools/validate-contextual-conversion.mjs",
