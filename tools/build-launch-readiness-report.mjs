@@ -10,7 +10,8 @@ const PATHS = {
   projectIndex: "data/projects/index.json",
   campaignRelease: "data/marketing/campaign-release.json",
   campaignPublications: "data/marketing/campaign-publications.json",
-  leadOperationsApproval: "data/operations/lead-operations-approval.json"
+  leadOperationsApproval: "data/operations/lead-operations-approval.json",
+  guideContentRegistry: "data/content/guides.json"
 };
 
 function getArg(name, fallback = "") {
@@ -46,6 +47,7 @@ const projectIndex = readJson(PATHS.projectIndex);
 const campaignRelease = readJson(PATHS.campaignRelease);
 const campaignPublications = readJson(PATHS.campaignPublications);
 const leadOperationsApproval = readJson(PATHS.leadOperationsApproval);
+const guideContentRegistry = readJson(PATHS.guideContentRegistry);
 
 const scenarios = Array.isArray(formScenarios.scenarios) ? formScenarios.scenarios : [];
 const devices = Array.isArray(formResults.rules?.expected_devices) ? formResults.rules.expected_devices : [];
@@ -81,6 +83,24 @@ const operationsReady = operationsDecisions.length === 8
   && pendingOperationsDecisions === 0
   && rejectedOperationsDecisions === 0
   && operationsActivationEnabled;
+
+const guides = Array.isArray(guideContentRegistry.guides) ? guideContentRegistry.guides : [];
+const guideStatusCounts = {
+  index_ready: guides.filter((item) => item.indexing_status === "ready").length,
+  index_blocked: guides.filter((item) => item.indexing_status === "blocked").length,
+  source_verified: guides.filter((item) => item.source_status === "verified_on_date").length,
+  source_review_required: guides.filter((item) => item.source_status === "requires_source_review").length,
+  source_not_applicable: guides.filter((item) => item.source_status === "not_applicable").length,
+  editorial_passed: guides.filter((item) => item.editorial_review === "passed").length,
+  legal_passed: guides.filter((item) => item.legal_review === "passed").length,
+  legal_not_applicable: guides.filter((item) => item.legal_review === "not_applicable").length
+};
+const guideContentReady = guides.length > 0
+  && guideStatusCounts.index_ready === guides.length
+  && guideStatusCounts.index_blocked === 0
+  && guideStatusCounts.source_review_required === 0
+  && guideStatusCounts.editorial_passed === guides.length
+  && guideStatusCounts.legal_passed + guideStatusCounts.legal_not_applicable === guides.length;
 
 const manualGates = Array.isArray(manualRegistry.gates) ? manualRegistry.gates : [];
 const manualGateRows = manualGates.map((gate) => ({
@@ -131,6 +151,15 @@ const derivedGates = [
     evidence_count: publicReadyProjects
   },
   {
+    id: "guide_content_publication",
+    title: "Готовность материалов справочника к индексации",
+    category: "derived",
+    scope: "seo_guide_indexing",
+    status: guideContentReady ? "passed" : "blocked",
+    details: `ready=${guideStatusCounts.index_ready}; blocked=${guideStatusCounts.index_blocked}; source_verified=${guideStatusCounts.source_verified}; source_pending=${guideStatusCounts.source_review_required}; editorial_passed=${guideStatusCounts.editorial_passed}; legal_passed_or_na=${guideStatusCounts.legal_passed + guideStatusCounts.legal_not_applicable}; total=${guides.length}`,
+    evidence_count: guideStatusCounts.index_ready
+  },
+  {
     id: "campaign_links_prepared",
     title: "Проверенный пакет рекламных ссылок",
     category: "derived",
@@ -172,6 +201,14 @@ const profiles = [
     required_gates: [
       "source_collection",
       "project_publication",
+      "legal_owner_review"
+    ]
+  },
+  {
+    id: "seo_guide_indexing",
+    title: "Индексация материалов справочника",
+    required_gates: [
+      "guide_content_publication",
       "legal_owner_review"
     ]
   },
@@ -230,6 +267,11 @@ const metrics = {
   projects: {
     active: activeProjects.length,
     public_ready: publicReadyProjects
+  },
+  guides: {
+    total: guides.length,
+    ...guideStatusCounts,
+    ready: guideContentReady
   },
   campaigns: {
     prepared_links: campaignIds.length,

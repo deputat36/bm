@@ -1,0 +1,55 @@
+name: Guide launch readiness
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/content/guides.json"
+      - "tools/build-launch-readiness-report.mjs"
+      - "tools/validate-guide-launch-gate.mjs"
+      - "tools/validate-guide-content-registry.mjs"
+      - "tools/build-guide-content-report.mjs"
+      - "data/release/manual-gates.json"
+      - "package.json"
+      - "docs/portal/GUIDE_LAUNCH_READINESS.md"
+      - ".github/workflows/guide-launch-readiness.yml"
+  pull_request:
+    paths:
+      - "data/content/guides.json"
+      - "tools/build-launch-readiness-report.mjs"
+      - "tools/validate-guide-launch-gate.mjs"
+      - "tools/validate-guide-content-registry.mjs"
+      - "tools/build-guide-content-report.mjs"
+      - "data/release/manual-gates.json"
+      - "package.json"
+      - "docs/portal/GUIDE_LAUNCH_READINESS.md"
+      - ".github/workflows/guide-launch-readiness.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-guide-launch-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/build-launch-readiness-report.mjs
+          node --check tools/validate-guide-launch-gate.mjs
+
+      - name: Validate guide launch gate
+        run: npm run validate:guide-launch-readiness
+
+      - name: Validate full launch readiness
+        run: npm run validate:launch-readiness
