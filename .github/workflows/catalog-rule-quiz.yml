@@ -1,0 +1,58 @@
+name: Catalog rule quiz guard
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "catalog/index.html"
+      - "assets/js/catalog-rule-quiz.js"
+      - "assets/js/main.js"
+      - "data/qa/catalog-rule-quiz.json"
+      - "data/qa/form-scenarios.json"
+      - "tools/validate-catalog-rule-quiz.mjs"
+      - "tools/validate-homepage-conversion-routes.mjs"
+      - "docs/portal/CATALOG_RULE_QUIZ.md"
+      - "docs/portal/HOMEPAGE_CONVERSION_ROUTES.md"
+      - ".github/workflows/catalog-rule-quiz.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "catalog/index.html"
+      - "assets/js/catalog-rule-quiz.js"
+      - "assets/js/main.js"
+      - "data/qa/catalog-rule-quiz.json"
+      - "data/qa/form-scenarios.json"
+      - "tools/validate-catalog-rule-quiz.mjs"
+      - "tools/validate-homepage-conversion-routes.mjs"
+      - "docs/portal/CATALOG_RULE_QUIZ.md"
+      - "docs/portal/HOMEPAGE_CONVERSION_ROUTES.md"
+      - ".github/workflows/catalog-rule-quiz.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-catalog-rule-quiz:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/catalog-rule-quiz.js
+          node --check tools/validate-catalog-rule-quiz.mjs
+          node --check tools/validate-homepage-conversion-routes.mjs
+
+      - name: Validate catalog rule quiz
+        run: node tools/validate-catalog-rule-quiz.mjs
+
+      - name: Validate homepage selection route
+        run: node tools/validate-homepage-conversion-routes.mjs
