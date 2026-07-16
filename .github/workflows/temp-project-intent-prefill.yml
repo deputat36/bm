@@ -1,0 +1,40 @@
+name: Temporary project intent prefill patch
+
+on:
+  push:
+    branches:
+      - agent/project-intent-prefill
+
+permissions:
+  contents: write
+
+jobs:
+  patch-pages:
+    if: ${{ !contains(github.event.head_commit.message, '[project-intent-connected]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/project-intent-prefill
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply focused patch
+        run: node tools/apply-project-intent-prefill.mjs
+
+      - name: Commit patched pages
+        run: |
+          if git diff --quiet -- catalog/prostornaya-4a/index.html catalog/aerodromnaya-18g/index.html catalog/sennaya-76/index.html; then
+            echo "No page changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add catalog/prostornaya-4a/index.html catalog/aerodromnaya-18g/index.html catalog/sennaya-76/index.html
+          git commit -m "[project-intent-connected] Добавить intent CTA в карточки объектов"
+          git push origin HEAD:agent/project-intent-prefill
