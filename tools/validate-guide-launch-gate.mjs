@@ -54,7 +54,7 @@ if (blocked !== guides.length) errors.push(`${REGISTRY_PATH}: every current guid
 if (sourceVerified !== 7 || sourcePending !== 0 || sourceNotApplicable !== 1) {
   errors.push(`${REGISTRY_PATH}: unexpected source status counts`);
 }
-if (editorialPassed !== 0) errors.push(`${REGISTRY_PATH}: editorial review must not be implied`);
+if (editorialPassed !== 1) errors.push(`${REGISTRY_PATH}: expected one editorially passed guide`);
 if (legalPassed !== 0) errors.push(`${REGISTRY_PATH}: legal review must not be implied`);
 
 const gate = Array.isArray(report.gates)
@@ -77,7 +77,7 @@ if (gate) {
     "blocked=8",
     "source_verified=7",
     "source_pending=0",
-    "editorial_passed=0",
+    "editorial_passed=1",
     "legal_passed_or_na=1",
     "total=8"
   ]) {
@@ -109,7 +109,7 @@ if (!metrics) {
     source_verified: 7,
     source_review_required: 0,
     source_not_applicable: 1,
-    editorial_passed: 0,
+    editorial_passed: 1,
     legal_passed: 0,
     legal_not_applicable: 1,
     ready: false

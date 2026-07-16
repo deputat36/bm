@@ -2,13 +2,39 @@
   "schema_version": "1.0",
   "updated_at": "2026-07-16",
   "portal_id": "newbuilds-borisoglebsk",
-  "status": "not_reviewed",
-  "purpose": "Журнал фактически выполненных редакционных и юридических проверок. Пустой массив не означает успешную проверку.",
+  "status": "in_progress",
+  "purpose": "Журнал выполненных проверок материалов справочника.",
   "rules": {
     "empty_results_mean_not_reviewed": true,
     "generated_checklist_is_not_evidence": true,
     "personal_data_forbidden": true,
     "registry_status_changes_require_separate_pull_request": true
   },
-  "results": []
+  "results": [
+    {
+      "guide_id": "guide-egrn-cadastral",
+      "review_type": "editorial",
+      "status": "passed",
+      "reviewer_reference": "role:content_editor",
+      "checked_at": "2026-07-16",
+      "check_results": {
+        "single_search_intent": true,
+        "title_description_alignment": true,
+        "answer_first_structure": true,
+        "readability_and_navigation": true,
+        "source_claim_alignment": true,
+        "cta_relevance": true,
+        "language_quality": true,
+        "internal_linking": true
+      },
+      "evidence": [
+        {
+          "type": "repository_file",
+          "reference": "docs/portal/reviews/GUIDE_EGRN_EDITORIAL_REVIEW_2026-07-16.md",
+          "note": "Редакционная проверка"
+        }
+      ],
+      "notes": ""
+    }
+  ]
 }
