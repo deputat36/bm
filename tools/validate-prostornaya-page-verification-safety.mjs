@@ -89,18 +89,32 @@ for (const fragment of forbiddenPageFragments) {
   if (page.includes(fragment)) errors.push(`${PAGE_PATH}: unverified public fragment remains: ${fragment}`);
 }
 
-const requiredCatalogFragment = '<span class="eyebrow">Данные уточняются</span><h3>Просторная 4А</h3>';
-if (!catalog.includes(requiredCatalogFragment)) {
-  errors.push(`${CATALOG_PATH}: Просторная 4А card must use Данные уточняются`);
+const requiredCatalogFragments = [
+  'data-catalog-verification-card data-verification-profile="../data/verification/prostornaya-4a.json"',
+  '<span class="eyebrow" data-verification-status>Загружаем статус проверки</span><h3>Просторная 4А</h3>',
+  'data-verification-date',
+  'data-verification-sources',
+  'data-verification-critical',
+  'data-verification-categories',
+  'script src="../assets/js/catalog-verification-comparison.js"'
+];
+for (const fragment of requiredCatalogFragments) {
+  if (!catalog.includes(fragment)) {
+    errors.push(`${CATALOG_PATH}: missing safe verification comparison fragment ${fragment}`);
+  }
 }
 if (catalog.includes('<span class="eyebrow">Данные частично подтверждены</span><h3>Просторная 4А</h3>')) {
   errors.push(`${CATALOG_PATH}: outdated partially-confirmed label is forbidden`);
+}
+if (catalog.includes('<span class="eyebrow">Данные уточняются</span><h3>Просторная 4А</h3>')) {
+  errors.push(`${CATALOG_PATH}: static verification label must not replace profile-backed status`);
 }
 
 console.log(`Prostornaya claims checked: ${claims.length}`);
 console.log(`Publication-allowed claims: ${publicClaims.length}`);
 console.log(`Confirmed critical claims: ${confirmedCritical.length}`);
 console.log("Project forms preserved: 2");
+console.log("Catalog status source: verification profile aggregate");
 
 if (errors.length) {
   console.error("\nProstornaya page verification safety errors:");
