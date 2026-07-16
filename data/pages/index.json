@@ -1,7 +1,7 @@
 [
   {
     "url": "/",
-    "title": "Новостройки Борисоглебска — каталог новых домов и квартир",
+    "title": "Новостройки Борисоглебска — квартиры, каталог и ипотека",
     "page_type": "home",
     "robots": "index,follow",
     "status": "published"
@@ -96,10 +96,10 @@
   },
   {
     "url": "/contacts/",
-    "title": "Консультация по новостройкам Борисоглебска",
+    "title": "Консультация по новостройкам Борисоглебска — телефон и заявка",
     "page_type": "contacts",
-    "robots": "noindex,follow",
-    "status": "ready"
+    "robots": "index,follow",
+    "status": "published"
   },
   {
     "url": "/about/",
