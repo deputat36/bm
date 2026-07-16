@@ -1,0 +1,33 @@
+name: Temporary homepage routes diagnostic
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "tools/validate-homepage-conversion-routes.mjs"
+      - ".github/workflows/temp-homepage-routes-diagnostic.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  capture-validator-output:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Capture validator output
+        run: node tools/validate-homepage-conversion-routes.mjs > homepage-routes-validator.log 2>&1 || true
+
+      - name: Upload validator output
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-routes-validator-log
+          path: homepage-routes-validator.log
+          if-no-files-found: error
