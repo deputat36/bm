@@ -119,7 +119,7 @@ const guides = Array.isArray(registry.guides) ? registry.guides : [];
 const guideIds = new Set(guides.map((item) => item.id));
 const requiredGuideIds = new Set(contract.required_guide_ids || []);
 exactSet(guideIds, requiredGuideIds, `${PATHS.contract}: required guide ids`);
-if (guideIds.size !== 7) errors.push(`${PATHS.registry}: expected 7 guides`);
+if (guideIds.size !== 8) errors.push(`${PATHS.registry}: expected 8 guides`);
 
 const legalNotApplicable = new Set(contract.legal_review_not_applicable_guide_ids || []);
 exactSet(legalNotApplicable, new Set(["guide-layout-choice"]), `${PATHS.contract}: legal not applicable guides`);
