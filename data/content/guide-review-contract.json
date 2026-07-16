@@ -114,6 +114,7 @@
   "required_guide_ids": [
     "guide-documents-check",
     "guide-seller-documents",
+    "guide-egrn-cadastral",
     "guide-contract-types",
     "guide-project-declaration",
     "guide-layout-choice",
