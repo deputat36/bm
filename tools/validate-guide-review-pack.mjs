@@ -137,7 +137,9 @@ guides.forEach((guide) => {
 
 if (resultsRegistry.schema_version !== "1.0") errors.push(`${PATHS.results}: schema_version must be 1.0`);
 if (resultsRegistry.portal_id !== "newbuilds-borisoglebsk") errors.push(`${PATHS.results}: invalid portal_id`);
-if (resultsRegistry.status !== "not_reviewed") errors.push(`${PATHS.results}: current status must be not_reviewed`);
+if (!new Set(["not_reviewed", "in_progress", "completed"]).has(resultsRegistry.status)) {
+  errors.push(`${PATHS.results}: invalid status=${resultsRegistry.status}`);
+}
 if (!isIsoDate(resultsRegistry.updated_at)) errors.push(`${PATHS.results}: updated_at must be YYYY-MM-DD`);
 [
   "empty_results_mean_not_reviewed",
@@ -214,10 +216,19 @@ scanForbiddenKeys(resultsRegistry, PATHS.results);
 const expectedEditorialTasks = guides.length;
 const expectedLegalTasks = guides.filter((guide) => !legalNotApplicable.has(guide.id)).length;
 const expectedTotalTasks = expectedEditorialTasks + expectedLegalTasks;
+if (results.length === 0 && resultsRegistry.status !== "not_reviewed") {
+  errors.push(`${PATHS.results}: empty results require status=not_reviewed`);
+} else if (results.length > 0 && results.length < expectedTotalTasks && resultsRegistry.status !== "in_progress") {
+  errors.push(`${PATHS.results}: partial results require status=in_progress`);
+} else if (results.length === expectedTotalTasks && resultsRegistry.status !== "completed") {
+  errors.push(`${PATHS.results}: complete results require status=completed`);
+}
+if (results.length > expectedTotalTasks) errors.push(`${PATHS.results}: too many review results`);
 
 console.log(`Guide review tasks: editorial=${expectedEditorialTasks}; legal=${expectedLegalTasks}; total=${expectedTotalTasks}`);
 console.log(`Recorded review results: ${results.length}`);
 console.log(`Passed review results: ${results.filter((item) => item.status === "passed").length}`);
+console.log(`Review registry status: ${resultsRegistry.status}`);
 
 if (errors.length) {
   console.error("\nGuide review pack validation errors:");
