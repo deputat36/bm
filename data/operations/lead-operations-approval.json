@@ -1,0 +1,138 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-16",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "requires_owner_approval_not_operational",
+  "purpose": "Единый реестр решений владельца перед активацией операционной обработки обращений. Реестр не назначает людей, не включает CRM и не превращает рекомендательные гипотезы в действующий SLA.",
+  "sources": {
+    "handling_playbook": "data/operations/lead-handling.json",
+    "lifecycle_contract": "data/operations/lead-lifecycle.json",
+    "handoff_contract": "data/operations/lead-handoff.json",
+    "event_log_contract": "data/operations/lead-event-log.json",
+    "form_matrix": "data/qa/form-scenarios.json"
+  },
+  "rules": {
+    "activation_requires_all_decisions_approved": true,
+    "operational_activation_enabled": false,
+    "crm_mutation_enabled": false,
+    "real_owner_identity_in_repository_forbidden": true,
+    "approved_owner_values_must_use_role_or_secure_reference": true,
+    "hypotheses_are_not_approved_sla": true,
+    "test_leads_only_until_activation": true,
+    "personal_data_in_decision_register_forbidden": true,
+    "timezone_required_before_activation": true,
+    "system_of_record_required_before_activation": true,
+    "allowed_decision_statuses": [
+      "requires_owner_decision",
+      "approved",
+      "rejected",
+      "superseded"
+    ]
+  },
+  "decisions": [
+    {
+      "id": "primary_owner_assignment",
+      "decision_type": "secure_role_reference",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "secure_reference": null,
+      "hypothesis": "Назначить одну операционную роль, которая принимает все новые обращения и отвечает за первое действие.",
+      "approval_question": "Какая роль или защищённый идентификатор является основным владельцем входящих обращений?",
+      "activation_effects": ["assigned_at_required", "lead_owner_ref_required"]
+    },
+    {
+      "id": "backup_owner_assignment",
+      "decision_type": "secure_role_reference",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "secure_reference": null,
+      "hypothesis": "Назначить резервную роль для отсутствия основного владельца и просроченных обращений.",
+      "approval_question": "Какая роль или защищённый идентификатор принимает обращение при недоступности основного владельца?",
+      "activation_effects": ["backup_owner_ref_required", "escalation_target_required"]
+    },
+    {
+      "id": "working_schedule",
+      "decision_type": "schedule_and_timezone",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "secure_reference": null,
+      "hypothesis": "Утвердить рабочие интервалы, выходные и часовой пояс отдельно от технического времени сервера.",
+      "approval_question": "В какие дни, часы и часовом поясе действует рабочий SLA?",
+      "activation_effects": ["working_timezone_required", "business_calendar_required"]
+    },
+    {
+      "id": "first_response_sla",
+      "decision_type": "duration_policy",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "secure_reference": null,
+      "hypothesis": "Стартовая гипотеза из roadmap: первое действие не позднее 10 минут в утверждённые рабочие часы; после первых 30 обращений значение пересматривается.",
+      "approval_question": "Какой максимальный срок первого действия действует в рабочее и нерабочее время?",
+      "activation_effects": ["first_action_due_at_required", "sla_breach_event_required"]
+    },
+    {
+      "id": "routing_policy",
+      "decision_type": "routing_rules",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "secure_reference": null,
+      "hypothesis": "Сначала единая очередь, затем распределение по объекту, типу обращения, квалификации и текущей нагрузке.",
+      "approval_question": "По каким правилам обращения распределяются между ролями и специалистами?",
+      "activation_effects": ["routing_reason_required", "assigned_role_required"]
+    },
+    {
+      "id": "contact_attempt_policy",
+      "decision_type": "contact_attempts",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "secure_reference": null,
+      "hypothesis": "Зафиксировать число попыток, каналы и интервалы; каждая неуспешная попытка должна завершаться следующим действием и датой.",
+      "approval_question": "Сколько попыток связи выполняется, через какие интервалы и какими каналами?",
+      "activation_effects": ["attempt_number_required", "next_action_at_required"]
+    },
+    {
+      "id": "closure_reason_policy",
+      "decision_type": "controlled_dictionary",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "secure_reference": null,
+      "hypothesis": "Минимальные кандидаты: duplicate, invalid_or_spam, do_not_contact, no_answer_after_policy, not_interested, postponed, no_suitable_option, financing_not_available, other_with_comment.",
+      "approval_question": "Какие причины закрытия обязательны и когда требуется комментарий менеджера?",
+      "activation_effects": ["close_reason_required", "terminal_state_mapping_required"]
+    },
+    {
+      "id": "system_of_record",
+      "decision_type": "secure_system_reference",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "secure_reference": null,
+      "hypothesis": "Выбрать один управляемый источник статусов: CRM, защищённый Supabase endpoint или другой утверждённый реестр. GitHub не является хранилищем реальных обращений.",
+      "approval_question": "Какая система является единственным источником владельца, статуса, результата контакта и следующего действия?",
+      "activation_effects": ["source_system_required", "record_locator_required", "audit_log_required"]
+    }
+  ],
+  "required_operational_fields": [
+    "lead_id",
+    "received_at",
+    "lead_owner_ref",
+    "backup_owner_ref",
+    "assigned_at",
+    "first_action_due_at",
+    "first_action_at",
+    "contact_outcome",
+    "next_action",
+    "next_action_at",
+    "close_reason",
+    "source_system",
+    "record_locator"
+  ],
+  "activation_gates": [
+    "all_decisions_approved",
+    "owner_references_resolve_in_secure_system",
+    "working_schedule_and_timezone_approved",
+    "system_of_record_available",
+    "test_lead_has_owner_first_action_outcome_and_next_action",
+    "crm_or_endpoint_security_review_completed",
+    "operational_activation_explicitly_enabled"
+  ]
+}
