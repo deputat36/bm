@@ -51,7 +51,7 @@ const legalNotApplicable = guides.filter((item) => item.legal_review === "not_ap
 if (guides.length !== 7) errors.push(`${REGISTRY_PATH}: expected 7 guides, found ${guides.length}`);
 if (ready !== 0) errors.push(`${REGISTRY_PATH}: current baseline expects index_ready=0, found ${ready}`);
 if (blocked !== guides.length) errors.push(`${REGISTRY_PATH}: every current guide must remain blocked`);
-if (sourceVerified !== 4 || sourcePending !== 2 || sourceNotApplicable !== 1) {
+if (sourceVerified !== 6 || sourcePending !== 0 || sourceNotApplicable !== 1) {
   errors.push(`${REGISTRY_PATH}: unexpected source status counts`);
 }
 if (editorialPassed !== 0) errors.push(`${REGISTRY_PATH}: editorial review must not be implied`);
@@ -75,8 +75,8 @@ if (gate) {
   for (const fragment of [
     "ready=0",
     "blocked=7",
-    "source_verified=4",
-    "source_pending=2",
+    "source_verified=6",
+    "source_pending=0",
     "editorial_passed=0",
     "legal_passed_or_na=1",
     "total=7"
@@ -106,8 +106,8 @@ if (!metrics) {
     total: 7,
     index_ready: 0,
     index_blocked: 7,
-    source_verified: 4,
-    source_review_required: 2,
+    source_verified: 6,
+    source_review_required: 0,
     source_not_applicable: 1,
     editorial_passed: 0,
     legal_passed: 0,
