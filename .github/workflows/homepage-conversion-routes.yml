@@ -1,0 +1,38 @@
+name: Homepage conversion routes guard
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "tools/validate-homepage-conversion-routes.mjs"
+      - "docs/portal/HOMEPAGE_CONVERSION_ROUTES.md"
+      - ".github/workflows/homepage-conversion-routes.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "tools/validate-homepage-conversion-routes.mjs"
+      - "docs/portal/HOMEPAGE_CONVERSION_ROUTES.md"
+      - ".github/workflows/homepage-conversion-routes.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-homepage-conversion-routes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-homepage-conversion-routes.mjs
+
+      - name: Validate homepage conversion routes
+        run: node tools/validate-homepage-conversion-routes.mjs
