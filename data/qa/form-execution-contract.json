@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-16",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "execution_specification_no_implied_results",
+  "purpose": "Чек-лист фактической ручной проверки 14 форм на desktop, Android и iPhone. Сам файл не является доказательством прохождения QA.",
+  "sources": {
+    "scenario_matrix": "data/qa/form-scenarios.json",
+    "result_registry": "data/qa/form-results.json"
+  },
+  "rules": {
+    "all_links_use_dry_run": true,
+    "external_delivery_forbidden": true,
+    "synthetic_contact_values_required": true,
+    "synthetic_values_in_repository_forbidden": true,
+    "personal_data_in_evidence_forbidden": true,
+    "passed_requires_result_registry_record": true,
+    "passed_requires_evidence_reference": true,
+    "passed_requires_event_log_attached": true,
+    "missing_record_means_not_run": true,
+    "generated_pack_is_not_execution_evidence": true
+  },
+  "slot_checks": [
+    {"id":"target_form_visible","acceptance":"Открыта нужная форма; form_id и роль соответствуют сценарию."},
+    {"id":"required_validation_and_focus","acceptance":"Пустая отправка блокируется и фокус переходит к невалидному полю."},
+    {"id":"phone_boundary_validation","acceptance":"9 и 16 цифр отклоняются; 10 и 15 принимаются; форматирование не ломает проверку."},
+    {"id":"phone_keyboard_and_autocomplete","acceptance":"На мобильном устройстве доступна телефонная клавиатура; inputmode и autocomplete корректны."},
+    {"id":"select_and_text_controls","acceptance":"Все видимые поля доступны, редактируются и не сбрасываются при смене фокуса."},
+    {"id":"dry_run_submission","acceptance":"Dry-run завершается без внешней доставки и без создания реального лида."},
+    {"id":"analytics_event_sequence","acceptance":"Есть пять обязательных событий с корректными form_id и form_role."},
+    {"id":"privacy_payload_check","acceptance":"В event log и evidence нет имени, телефона, email, user_agent и текста заявки."},
+    {"id":"repeat_submit_integrity","acceptance":"Параллельный повторный submit блокируется."},
+    {"id":"status_and_recovery","acceptance":"Status-region понятен, а кнопка восстанавливается после ошибки или dry-run."}
+  ],
+  "device_resilience_checks": [
+    {"id":"local_storage_unavailable","run_once_per_device":true,"acceptance":"Форма и dry-run продолжают работать без localStorage."},
+    {"id":"session_storage_unavailable","run_once_per_device":true,"acceptance":"Форма работает без sessionStorage, а cooldown не создаёт вечную блокировку."}
+  ],
+  "required_devices": ["desktop", "android", "iphone"],
+  "evidence_requirements": [
+    "Обезличенное изображение или запись экрана.",
+    "Обезличенный локальный event log.",
+    "Браузер, версия, ОС и версия ОС.",
+    "Заметка при failed или blocked.",
+    "Evidence reference без персональных данных."
+  ]
+}
