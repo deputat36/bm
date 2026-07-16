@@ -48,10 +48,10 @@ const editorialPassed = guides.filter((item) => item.editorial_review === "passe
 const legalPassed = guides.filter((item) => item.legal_review === "passed").length;
 const legalNotApplicable = guides.filter((item) => item.legal_review === "not_applicable").length;
 
-if (guides.length !== 7) errors.push(`${REGISTRY_PATH}: expected 7 guides, found ${guides.length}`);
+if (guides.length !== 8) errors.push(`${REGISTRY_PATH}: expected 8 guides, found ${guides.length}`);
 if (ready !== 0) errors.push(`${REGISTRY_PATH}: current baseline expects index_ready=0, found ${ready}`);
 if (blocked !== guides.length) errors.push(`${REGISTRY_PATH}: every current guide must remain blocked`);
-if (sourceVerified !== 6 || sourcePending !== 0 || sourceNotApplicable !== 1) {
+if (sourceVerified !== 7 || sourcePending !== 0 || sourceNotApplicable !== 1) {
   errors.push(`${REGISTRY_PATH}: unexpected source status counts`);
 }
 if (editorialPassed !== 0) errors.push(`${REGISTRY_PATH}: editorial review must not be implied`);
@@ -74,12 +74,12 @@ if (gate) {
   if (gate.evidence_count !== 0) errors.push(`guide_content_publication: evidence_count must equal ready guides`);
   for (const fragment of [
     "ready=0",
-    "blocked=7",
-    "source_verified=6",
+    "blocked=8",
+    "source_verified=7",
     "source_pending=0",
     "editorial_passed=0",
     "legal_passed_or_na=1",
-    "total=7"
+    "total=8"
   ]) {
     if (!String(gate.details || "").includes(fragment)) {
       errors.push(`guide_content_publication: details missing ${fragment}`);
@@ -103,10 +103,10 @@ if (!metrics) {
   errors.push(`${REPORT_SCRIPT}: guide metrics are missing`);
 } else {
   const expected = {
-    total: 7,
+    total: 8,
     index_ready: 0,
-    index_blocked: 7,
-    source_verified: 6,
+    index_blocked: 8,
+    source_verified: 7,
     source_review_required: 0,
     source_not_applicable: 1,
     editorial_passed: 0,
