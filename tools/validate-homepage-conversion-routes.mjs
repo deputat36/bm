@@ -115,8 +115,11 @@ for (const forbidden of [
   }
 }
 
-if (routes.includes("?") || routes.includes("utm_") || routes.includes("lead_source=") || routes.includes("placement=")) {
-  errors.push(`${PAGE_PATH}: homepage route links must not use query attribution or personal parameters`);
+const routeHrefs = Array.from(routes.matchAll(/href="([^"]+)"/g), (match) => match[1]);
+for (const href of routeHrefs) {
+  if (href.includes("?") || href.includes("utm_") || href.includes("lead_source=") || href.includes("placement=")) {
+    errors.push(`${PAGE_PATH}: route href must not use query attribution or personal parameters: ${href}`);
+  }
 }
 
 console.log(`Homepage route cards: ${routeContracts.length}`);
