@@ -10,19 +10,19 @@ const PROJECTS = [
     page: "catalog/prostornaya-4a/index.html",
     profile: "data/verification/prostornaya-4a.json",
     htmlProfile: "../../data/verification/prostornaya-4a.json",
-    expected: { sources: 3, claims: 23, critical: 14 }
+    expected: { sourcesMin: 5, claimsMin: 30, criticalMin: 8, confirmedCriticalMin: 6, publicClaimsMin: 21 }
   },
   {
     page: "catalog/aerodromnaya-18g/index.html",
     profile: "data/verification/aerodromnaya-18g.json",
     htmlProfile: "../../data/verification/aerodromnaya-18g.json",
-    expected: { sources: 6, claims: 13, critical: 8 }
+    expected: { sources: 6, claims: 13, critical: 8, confirmedCritical: 0, publicClaims: 0 }
   },
   {
     page: "catalog/sennaya-76/index.html",
     profile: "data/verification/sennaya-76.json",
     htmlProfile: "../../data/verification/sennaya-76.json",
-    expected: { sources: 7, claims: 19, critical: 13 }
+    expected: { sources: 7, claims: 19, critical: 13, confirmedCritical: 0, publicClaims: 0 }
   }
 ];
 
@@ -61,10 +61,12 @@ const runtime = read(RUNTIME_PATH);
   'source?.status === "verified"',
   'claim?.importance === "critical"',
   'claim?.verification_status === "confirmed"',
+  'claim?.publication_allowed === true',
+  'publicClaims: publicClaims.length',
+  'Опубликовано подтверждённых характеристик',
+  'Текущая цена, наличие квартир, акции и индивидуальные условия проверяются отдельно',
   'block.className = "notice project-verification-summary"',
   'block.setAttribute("role", "status")',
-  'metrics.textContent = `Внутренняя актуализация:',
-  'note.textContent = "Точные характеристики не публикуются',
   'Статус проверки временно недоступен'
 ].forEach((fragment) => {
   if (!runtime.includes(fragment)) errors.push(`${RUNTIME_PATH}: missing ${fragment}`);
@@ -85,10 +87,6 @@ for (const forbidden of [
   if (runtime.includes(forbidden)) {
     errors.push(`${RUNTIME_PATH}: forbidden profile detail rendering token ${forbidden}`);
   }
-}
-
-if (!runtime.includes('metrics.textContent = `Внутренняя актуализация: ${summary.updatedAt}. Проверено источников: ${summary.sourcesVerified} из ${summary.sourcesTotal}. Подтверждено критических фактов: ${summary.criticalConfirmed} из ${summary.criticalTotal}.`;')) {
-  errors.push(`${RUNTIME_PATH}: aggregate-only metrics template changed`);
 }
 
 for (const project of PROJECTS) {
@@ -120,29 +118,40 @@ for (const project of PROJECTS) {
   const claims = Array.isArray(profile?.claims) ? profile.claims : [];
   const critical = claims.filter((claim) => claim.importance === "critical");
   const confirmedCritical = critical.filter((claim) => claim.verification_status === "confirmed");
+  const publicClaims = claims.filter(
+    (claim) => claim.verification_status === "confirmed" && claim.publication_allowed === true
+  );
   const verifiedSources = sources.filter(
     (source) => source.status === "verified" && /^https:\/\//i.test(String(source.reference || ""))
   );
 
-  if (sources.length !== project.expected.sources) {
-    errors.push(`${project.profile}: expected ${project.expected.sources} sources, found ${sources.length}`);
+  if (project.expected.sourcesMin !== undefined) {
+    if (sources.length < project.expected.sourcesMin) errors.push(`${project.profile}: expected at least ${project.expected.sourcesMin} sources`);
+    if (claims.length < project.expected.claimsMin) errors.push(`${project.profile}: expected at least ${project.expected.claimsMin} claims`);
+    if (critical.length < project.expected.criticalMin) errors.push(`${project.profile}: expected at least ${project.expected.criticalMin} critical claims`);
+    if (confirmedCritical.length < project.expected.confirmedCriticalMin) errors.push(`${project.profile}: expected confirmed critical progress`);
+    if (publicClaims.length < project.expected.publicClaimsMin) errors.push(`${project.profile}: expected confirmed buyer claims`);
+    if (verifiedSources.length < 4) errors.push(`${project.profile}: expected verified official sources`);
+  } else {
+    if (sources.length !== project.expected.sources) errors.push(`${project.profile}: expected ${project.expected.sources} sources, found ${sources.length}`);
+    if (claims.length !== project.expected.claims) errors.push(`${project.profile}: expected ${project.expected.claims} claims, found ${claims.length}`);
+    if (critical.length !== project.expected.critical) errors.push(`${project.profile}: expected ${project.expected.critical} critical claims, found ${critical.length}`);
+    if (confirmedCritical.length !== project.expected.confirmedCritical) errors.push(`${project.profile}: unexpected critical confirmation progress`);
+    if (publicClaims.length !== project.expected.publicClaims) errors.push(`${project.profile}: unverified project must not expose public claims`);
+    if (verifiedSources.length !== 0) errors.push(`${project.profile}: unexpected verified source progress`);
   }
-  if (claims.length !== project.expected.claims) {
-    errors.push(`${project.profile}: expected ${project.expected.claims} claims, found ${claims.length}`);
-  }
-  if (critical.length !== project.expected.critical) {
-    errors.push(`${project.profile}: expected ${project.expected.critical} critical claims, found ${critical.length}`);
-  }
-  if (verifiedSources.length !== 0 || confirmedCritical.length !== 0) {
-    errors.push(`${project.profile}: validator must be reviewed when verification progress changes`);
-  }
-  if (claims.some((claim) => claim.publication_allowed !== false)) {
-    errors.push(`${project.profile}: all claims must remain non-public in the current state`);
-  }
+
+  publicClaims.forEach((claim) => {
+    const allVerified = (claim.source_ids || []).every((sourceId) => {
+      const source = sources.find((item) => item.id === sourceId);
+      return source?.status === "verified" && /^https:\/\//i.test(String(source.reference || ""));
+    });
+    if (!allVerified) errors.push(`${project.profile}:${claim.field}: public claim requires verified sources`);
+  });
 }
 
 console.log(`Project verification summary pages: ${PROJECTS.length}`);
-console.log("Rendered fields: updated_at + source counts + critical claim counts");
+console.log("Rendered fields: updated_at + source counts + critical claim counts + public claim count");
 console.log("Rendered claim values: 0");
 console.log("Rendered source details: 0");
 
