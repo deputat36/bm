@@ -1,5 +1,6 @@
 (function () {
   const forms = Array.from(document.querySelectorAll("form[data-lead-form]"));
+  const runtimeScriptUrl = document.currentScript?.src || "";
   const startedForms = new WeakSet();
   const viewedForms = new WeakSet();
   const MORTGAGE_PRIMARY_ANCHOR = "quick-lead";
@@ -39,6 +40,16 @@
   ]);
   const EMAIL_VALUE_PATTERN = /[^\s@]+@[^\s@]+\.[^\s@]+/i;
   const PHONE_VALUE_PATTERN = /(?:^|\D)\+?\d[\d\s().-]{8,}\d(?:\D|$)/;
+
+  function loadPageAccessibilityRuntime() {
+    if (!runtimeScriptUrl || document.querySelector("script[data-page-accessibility-runtime]")) return;
+
+    const script = document.createElement("script");
+    script.src = new URL("page-accessibility.js", runtimeScriptUrl).href;
+    script.async = true;
+    script.dataset.pageAccessibilityRuntime = "true";
+    document.head.appendChild(script);
+  }
 
   function compactPayload(values) {
     return Object.fromEntries(
@@ -277,6 +288,7 @@
     });
   }
 
+  loadPageAccessibilityRuntime();
   installAttributionUrlPrivacy();
   forms.forEach(ensureFormRole);
   enrichMortgageLinks();
