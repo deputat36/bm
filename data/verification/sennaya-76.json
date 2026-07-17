@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "updated_at": "2026-07-16",
+  "updated_at": "2026-07-17",
   "project_id": "sennaya-76",
   "portal_slug": "sennaya-76",
   "page_url": "/catalog/sennaya-76/",
@@ -20,6 +20,15 @@
       "status": "secondary_only",
       "last_checked_at": "2026-07-15",
       "notes": "Используется как рабочая база. Не заменяет ЕГРН, разрешение на ввод, ЕГРИП и документы продавца."
+    },
+    {
+      "id": "developer-engineer-interview",
+      "source_type": "developer_representative_interview",
+      "title": "Интервью главного инженера компании-застройщика о доме на Сенной 76",
+      "reference": "https://ria-glas.ru/2024/blagoustroistvo/novyj-dom-na-ulicze-sennaya-76-chto-za-fasadom/",
+      "status": "verified",
+      "last_checked_at": "2026-07-17",
+      "notes": "Источник подтверждает факт публичного заявления представителя компании о материалах, инженерных решениях и благоустройстве. Не подтверждает разрешение на ввод, право собственности, продавца, состав свободных квартир, цену или договорную схему."
     },
     {
       "id": "public-object-registry",
@@ -73,7 +82,7 @@
       "reference": "",
       "status": "reference_required",
       "last_checked_at": "2026-07-15",
-      "notes": "Материалы нельзя переносить из объявлений без подтверждения правообладателя."
+      "notes": "Материалы нельзя переносить из публикаций и объявлений без подтверждения правообладателя."
     }
   ],
   "claims": [
@@ -81,10 +90,127 @@
       "field": "address",
       "value": "ул. Сенная, 76",
       "importance": "critical",
-      "verification_status": "secondary_only",
-      "source_ids": ["working-due-diligence-report"],
-      "checked_at": "2026-07-15",
-      "publication_allowed": false
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "public_name",
+      "value": "Дом на Сенной 76",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "developer_representative_role",
+      "value": "Главный инженер компании-застройщика",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "facade_material_statement",
+      "value": "В публичном интервью заявлен фасад из голландского кирпича",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "roof_material_statement",
+      "value": "В публичном интервью заявлена кровля из керамической черепицы",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "facade_insulation_statement",
+      "value": "Представитель застройщика сообщил об утеплении дома по фасаду",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "individual_heating_statement",
+      "value": "Представитель застройщика сообщил об индивидуальном отоплении",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "smart_home_statement",
+      "value": "В публичном интервью заявлена система «умный дом»",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "landscaping_statement",
+      "value": "В публичном интервью заявлен ландшафтный дизайн двора",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "automatic_irrigation_statement",
+      "value": "В публичном интервью заявлена система автоматического полива",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "energy_efficient_lighting_statement",
+      "value": "В публичном интервью заявлены энергоэффективные светильники во дворе и подъездах",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "motion_sensor_lighting_statement",
+      "value": "В публичном интервью заявлены датчики движения для освещения",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "common_area_finish_statement",
+      "value": "В публичном интервью для мест общего пользования заявлены декоративная штукатурка и керамогранит",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "video_surveillance_statement",
+      "value": "В публичном интервью заявлены камеры видеонаблюдения внутри и снаружи дома",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["developer-engineer-interview"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
       "field": "buildings_total",
