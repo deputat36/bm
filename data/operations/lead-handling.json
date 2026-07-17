@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-07-14",
+  "updated_at": "2026-07-17",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "recommended_draft_not_operational",
   "purpose": "Рекомендательная карта первого контакта и следующего шага без CRM, действующего SLA и назначения ответственных.",
@@ -113,10 +113,10 @@
     {
       "id": "sennaya-76",
       "project_registry_id": "sennaya-76",
-      "verification_status": "requires_check",
+      "verification_status": "partially_confirmed",
       "source_check_required": true,
-      "first_contact_focus": "Зафиксировать интерес и предложить проверку сведений либо общий подбор.",
-      "blocked_claim_categories": ["застройщик", "цены", "планировки", "сроки", "статус продаж"]
+      "first_contact_focus": "Уточнить конкретную квартиру и отделить опубликованные заявления о доме от документов продавца, цены, наличия и юридического статуса сделки.",
+      "blocked_claim_categories": ["разрешение на ввод", "ЕГРН", "продавец", "договорная схема", "квартирография", "площади", "актуальная цена", "наличие", "ипотека по конкретной квартире"]
     }
   ],
   "contact_outcomes": [
