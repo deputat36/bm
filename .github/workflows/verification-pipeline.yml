@@ -1,0 +1,82 @@
+name: Verification pipeline
+
+on:
+  pull_request:
+    paths:
+      - "data/projects/**"
+      - "data/verification/**"
+      - "data/research/source-collection.json"
+      - "catalog/**"
+      - "docs/portal/PROJECT_VERIFICATION_READINESS.md"
+      - "tools/validate-project-verification.mjs"
+      - "tools/validate-object-verification-profiles.mjs"
+      - "tools/validate-prostornaya-page-verification-safety.mjs"
+      - "tools/validate-project-verification-summary.mjs"
+      - "tools/validate-project-readiness-report.mjs"
+      - "tools/validate-source-collection.mjs"
+      - "tools/validate-launch-gates.mjs"
+      - ".github/workflows/verification-pipeline.yml"
+  push:
+    branches: [main]
+    paths:
+      - "data/projects/**"
+      - "data/verification/**"
+      - "data/research/source-collection.json"
+      - "catalog/**"
+      - "docs/portal/PROJECT_VERIFICATION_READINESS.md"
+      - "tools/validate-project-verification.mjs"
+      - "tools/validate-object-verification-profiles.mjs"
+      - "tools/validate-prostornaya-page-verification-safety.mjs"
+      - "tools/validate-project-verification-summary.mjs"
+      - "tools/validate-project-readiness-report.mjs"
+      - "tools/validate-source-collection.mjs"
+      - "tools/validate-launch-gates.mjs"
+      - ".github/workflows/verification-pipeline.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-verification-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check validator syntax
+        run: |
+          node --check tools/validate-project-verification.mjs
+          node --check tools/validate-object-verification-profiles.mjs
+          node --check tools/validate-prostornaya-page-verification-safety.mjs
+          node --check tools/validate-project-verification-summary.mjs
+          node --check tools/validate-project-readiness-report.mjs
+          node --check tools/validate-source-collection.mjs
+          node --check tools/validate-launch-gates.mjs
+
+      - name: Validate Tellermanov buyer profile
+        run: node tools/validate-project-verification.mjs
+
+      - name: Validate all object profiles
+        run: node tools/validate-object-verification-profiles.mjs
+
+      - name: Validate Tellermanov page safety
+        run: node tools/validate-prostornaya-page-verification-safety.mjs
+
+      - name: Validate project summaries
+        run: node tools/validate-project-verification-summary.mjs
+
+      - name: Validate readiness report
+        run: node tools/validate-project-readiness-report.mjs
+
+      - name: Validate source collection
+        run: node tools/validate-source-collection.mjs
+
+      - name: Validate launch gates
+        run: node tools/validate-launch-gates.mjs
