@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-07-12",
+  "updated_at": "2026-07-17",
   "purpose": "Рабочий реестр трёх объектов, по которым портал приоритетно собирает заявки.",
   "rules": {
     "lead_collection_allowed": true,
@@ -46,11 +46,11 @@
       "commercial_role": "priority_lead",
       "lead_type": "project_consultation",
       "lead_form_id": "catalog_sennaya_76_priority_lead",
-      "verification_status": "requires_check",
+      "verification_status": "partially_confirmed",
       "is_public_ready": false,
       "data_file": "/data/projects/sennaya-76.json",
       "page_url": "/catalog/sennaya-76/",
-      "next_action": "Найти первичные публичные источники по застройщику, документам, статусу и характеристикам."
+      "next_action": "Получить разрешение на ввод, выписки ЕГРН, документы продавца и актуальное предложение по конкретным квартирам."
     }
   ]
 }
