@@ -1,0 +1,37 @@
+name: 404 page guard
+
+on:
+  pull_request:
+    paths:
+      - "404.html"
+      - "tools/validate-404-page.mjs"
+      - ".github/workflows/404-page-guard.yml"
+      - "assets/css/**"
+      - "assets/js/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "404.html"
+      - "tools/validate-404-page.mjs"
+      - ".github/workflows/404-page-guard.yml"
+      - "assets/css/**"
+      - "assets/js/**"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-404-page:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check validator syntax
+        run: node --check tools/validate-404-page.mjs
+      - name: Validate 404 page
+        run: node tools/validate-404-page.mjs
