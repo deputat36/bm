@@ -1,0 +1,55 @@
+name: Form QA runner guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/form-qa-runner.html"
+      - "assets/js/form-qa-runner.js"
+      - "assets/css/form-qa-runner.css"
+      - "tools/validate-form-qa-runner.mjs"
+      - "data/qa/form-scenarios.json"
+      - "data/qa/form-execution-contract.json"
+      - "data/qa/form-results.json"
+      - "robots.txt"
+      - ".github/workflows/form-qa-runner.yml"
+  pull_request:
+    paths:
+      - "tools/form-qa-runner.html"
+      - "assets/js/form-qa-runner.js"
+      - "assets/css/form-qa-runner.css"
+      - "tools/validate-form-qa-runner.mjs"
+      - "data/qa/form-scenarios.json"
+      - "data/qa/form-execution-contract.json"
+      - "data/qa/form-results.json"
+      - "robots.txt"
+      - ".github/workflows/form-qa-runner.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-form-qa-runner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check runner syntax
+        run: |
+          node --check assets/js/form-qa-runner.js
+          node --check tools/validate-form-qa-runner.mjs
+
+      - name: Validate runner contract
+        run: node tools/validate-form-qa-runner.mjs
+
+      - name: Validate existing QA result registry
+        run: node tools/validate-form-qa-results.mjs
