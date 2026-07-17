@@ -1,0 +1,62 @@
+name: Buyer project content guard
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "data/verification/**"
+      - "assets/js/buyer-project-content.js"
+      - "assets/js/catalog-verification-comparison.js"
+      - "assets/js/page-accessibility.js"
+      - "tools/validate-buyer-project-content.mjs"
+      - "tools/validate-prostornaya-page-verification-safety.mjs"
+      - ".github/workflows/buyer-project-content.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "data/verification/**"
+      - "assets/js/buyer-project-content.js"
+      - "assets/js/catalog-verification-comparison.js"
+      - "assets/js/page-accessibility.js"
+      - "tools/validate-buyer-project-content.mjs"
+      - "tools/validate-prostornaya-page-verification-safety.mjs"
+      - ".github/workflows/buyer-project-content.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-buyer-content:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/buyer-project-content.js
+          node --check assets/js/catalog-verification-comparison.js
+          node --check assets/js/page-accessibility.js
+          node --check tools/validate-buyer-project-content.mjs
+          node --check tools/validate-prostornaya-page-verification-safety.mjs
+
+      - name: Validate buyer project content
+        run: node tools/validate-buyer-project-content.mjs
+
+      - name: Validate project page safety
+        run: node tools/validate-prostornaya-page-verification-safety.mjs
+
+      - name: Validate verification profiles
+        run: node tools/validate-object-verification-profiles.mjs
+
+      - name: Validate page accessibility integration
+        run: node tools/validate-page-accessibility.mjs
