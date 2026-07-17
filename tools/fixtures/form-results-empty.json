@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-17",
+  "portal_id": "newbuilds-borisoglebsk",
+  "source_matrix": "data/qa/form-scenarios.json",
+  "purpose": "Технический пустой реестр только для самотеста импортера. Не является журналом фактических проверок.",
+  "rules": {
+    "allowed_statuses": ["passed", "failed", "blocked"],
+    "missing_result_status": "not_run",
+    "passed_requires_evidence": true,
+    "failed_requires_notes": true,
+    "blocked_requires_notes": true,
+    "personal_data_forbidden": true,
+    "expected_devices": ["desktop", "android", "iphone"]
+  },
+  "results": []
+}
