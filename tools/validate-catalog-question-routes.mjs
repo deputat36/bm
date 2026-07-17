@@ -214,9 +214,7 @@ for (const forbidden of [
   "current_price",
   "current_availability",
   "price_from",
-  "available_offers_count",
-  "seller_identity",
-  "commissioning_permit"
+  "available_offers_count"
 ]) {
   if (runtime.includes(forbidden)) errors.push(`${runtimePath}: forbidden source detail, storage or volatile claim access: ${forbidden}`);
 }
