@@ -6,8 +6,8 @@
   "city": "Борисоглебск",
   "address": "ул. Сенная, 76",
   "developer_id": null,
-  "status": "Данные уточняются",
-  "sales_status": "Данные уточняются",
+  "status": "Юридический статус уточняется",
+  "sales_status": "Актуальное предложение проверяется на дату обращения",
   "class": null,
   "floors": null,
   "apartments_total": null,
@@ -20,25 +20,26 @@
   "commercial_role": "priority_lead",
   "lead_type": "project_consultation",
   "lead_form_id": "catalog_sennaya_76_priority_lead",
-  "verification_status": "requires_check",
+  "verification_status": "partially_confirmed",
   "is_public_ready": false,
   "is_featured": true,
   "is_active": true,
-  "last_checked_at": "2026-07-15",
-  "verification_note": "Создан внутренний verification-профиль. Рабочая квартирография, кадастровые номера, статус ввода, цена и наличие требуют первичных документов.",
+  "last_checked_at": "2026-07-17",
+  "verification_note": "Принято публичное интервью главного инженера компании-застройщика как источник заявлений о материалах, инженерных решениях, благоустройстве и видеонаблюдении. ЕГРН, разрешение на ввод, продавец, договор, квартирография, цена и наличие требуют отдельной проверки.",
   "publication_rules": {
     "robots": "noindex,follow",
     "can_be_in_sitemap": false,
     "can_show_prices": false,
     "can_show_layouts_as_official": false,
     "can_collect_preliminary_leads": true,
-    "safe_label": "Данные уточняются"
+    "safe_label": "Публичные сведения о доме; документы квартиры проверяются отдельно"
   },
   "needed_sources": [
     "карточка здания и контрольные выписки ЕГРН",
     "ЕГРИП и документы застройщика или продавца",
     "разрешение на ввод в эксплуатацию",
     "договор и подтверждение права продавца",
+    "актуальная шахматка и коммерческое предложение",
     "фотографии и материалы, разрешённые к публикации"
   ]
 }
