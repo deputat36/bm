@@ -1,0 +1,40 @@
+name: Lead payload privacy guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/js/main.js"
+      - "tools/validate-lead-payload-privacy.mjs"
+      - ".github/workflows/lead-payload-privacy.yml"
+  pull_request:
+    paths:
+      - "assets/js/main.js"
+      - "tools/validate-lead-payload-privacy.mjs"
+      - ".github/workflows/lead-payload-privacy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-lead-payload-privacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/main.js
+          node --check tools/validate-lead-payload-privacy.mjs
+
+      - name: Validate lead payload privacy
+        run: node tools/validate-lead-payload-privacy.mjs
