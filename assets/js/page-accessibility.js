@@ -11,6 +11,14 @@
     document.head.appendChild(stylesheet);
   }
 
+  if (scriptUrl && !document.querySelector("script[data-buyer-project-content]")) {
+    const buyerContentScript = document.createElement("script");
+    buyerContentScript.src = new URL("buyer-project-content.js", scriptUrl).href;
+    buyerContentScript.async = true;
+    buyerContentScript.dataset.buyerProjectContent = "true";
+    document.head.appendChild(buyerContentScript);
+  }
+
   if (!main.id) main.id = "main-content";
   if (!main.hasAttribute("tabindex")) main.setAttribute("tabindex", "-1");
 

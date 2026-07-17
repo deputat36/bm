@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "updated_at": "2026-07-16",
+  "updated_at": "2026-07-17",
   "project_id": "tellermanov-sad",
   "portal_slug": "prostornaya-4a",
   "page_url": "/catalog/prostornaya-4a/",
@@ -13,6 +13,46 @@
   },
   "sources": [
     {
+      "id": "official-developer-project-page",
+      "source_type": "official_developer_project_page",
+      "title": "Официальная страница ЖК «Теллерманов сад» на сайте BM Group",
+      "reference": "https://bm36.ru/projects/tellermanov-sad/",
+      "status": "verified",
+      "last_checked_at": "2026-07-17",
+      "notes": "Первичный публичный источник для описания комплекса, преимуществ, отделки, способов покупки и опубликованного комплекта документов. Изменяемые условия необходимо проверять повторно."
+    },
+    {
+      "id": "official-developer-project-list",
+      "source_type": "official_developer_project_list",
+      "title": "Официальный список проектов BM Group",
+      "reference": "https://bm36.ru/projects/",
+      "status": "verified",
+      "last_checked_at": "2026-07-17",
+      "notes": "Подтверждает название проекта, город, адресный ориентир, общее количество квартир и заявленный срок."
+    },
+    {
+      "id": "project-declaration",
+      "source_type": "project_declaration",
+      "title": "Проектная декларация №36-001139",
+      "reference": "https://bm36.ru/upload/iblock/8e2/pji4jdt72vhip2subx2vnxmefnnp04hi/%D0%9F%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%BD%D0%B0%D1%8F%20%D0%B4%D0%B5%D0%BA%D0%BB%D0%B0%D1%80%D0%B0%D1%86%D0%B8%D1%8F%20%E2%84%9636-001139.pdf",
+      "document_number": "36-001139",
+      "document_date": "2026-06-26",
+      "status": "verified",
+      "last_checked_at": "2026-07-17",
+      "notes": "Официальный файл опубликован на странице проекта. Значения, извлечённые ранее из документа, сохраняются отдельно от характеристик всего жилого комплекса."
+    },
+    {
+      "id": "building-permit",
+      "source_type": "building_permit",
+      "title": "Разрешение на строительство",
+      "reference": "https://bm36.ru/upload/iblock/223/dctqd0rd52ty43jgs9jhideyf9gz3c94/%D0%A0%D0%B0%D0%B7%D1%80%D0%B5%D1%88%D0%B5%D0%BD%D0%B8%D0%B5%20%D0%BD%D0%B0%20%D1%81%D1%82%D1%80%D0%BE%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D1%81%D1%82%D0%B2%D0%BE.pdf",
+      "document_number": "36-04-13-2026",
+      "document_date": "2026-06-08",
+      "status": "verified",
+      "last_checked_at": "2026-07-17",
+      "notes": "Официальный файл опубликован на странице проекта. Перед сделкой требуется проверить актуальность и связь документа с выбранным домом и квартирой."
+    },
+    {
       "id": "eiszh-project-card",
       "source_type": "eiszh_project_card",
       "title": "Карточка объекта в ЕИСЖС / наш.дом.рф",
@@ -20,304 +60,294 @@
       "document_number": "72480",
       "status": "reference_required",
       "last_checked_at": "2026-07-05",
-      "notes": "Нужно сохранить точную публичную ссылку и повторно сверить актуальную редакцию карточки."
-    },
-    {
-      "id": "project-declaration",
-      "source_type": "project_declaration",
-      "title": "Проектная декларация",
-      "reference": "",
-      "document_number": "36-001139",
-      "document_date": "2026-06-26",
-      "status": "reference_required",
-      "last_checked_at": "2026-07-05",
-      "notes": "Нужно сохранить ссылку на актуальную редакцию, а не только номер документа."
-    },
-    {
-      "id": "building-permit",
-      "source_type": "building_permit",
-      "title": "Разрешение на строительство",
-      "reference": "",
-      "document_number": "36-04-13-2026",
-      "document_date": "2026-06-08",
-      "status": "reference_required",
-      "last_checked_at": "2026-07-05",
-      "notes": "Требуется повторная проверка номера, даты, срока действия и связи с объектом."
+      "notes": "Точная публичная ссылка на карточку объекта ещё должна быть сохранена; это блокирует полную готовность профиля, но не отменяет подтверждённые сведения официального сайта проекта."
     }
   ],
   "claims": [
     {
-      "field": "address",
-      "value": "ул. Просторная, 4А",
+      "field": "complex_name",
+      "value": "ЖК «Теллерманов сад»",
       "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "eiszh-project-card",
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page", "official-developer-project-list"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "address",
+      "value": "г. Борисоглебск, ул. Просторная",
+      "importance": "critical",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page", "official-developer-project-list"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
       "field": "builder_name",
-      "value": "СЗ БМ-ГРУПП ЧЕРНОЗЕМЬЕ",
+      "value": "BM Group development",
       "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "eiszh-project-card",
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
-    },
-    {
-      "field": "status",
-      "value": "Строится",
-      "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "eiszh-project-card"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
       "field": "sales_status",
-      "value": "Продажи по карточке наш.дом.рф ещё не начались",
+      "value": "Старт продаж",
       "importance": "volatile",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "eiszh-project-card"
-      ],
-      "notes": "Статус может измениться в любой момент и должен проверяться перед каждым публичным упоминанием.",
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page", "official-developer-project-list"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true,
+      "notes": "Статус изменяемый; проверять перед рекламой и консультацией."
     },
     {
       "field": "class",
       "value": "Комфорт",
       "importance": "standard",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "eiszh-project-card",
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
-      "field": "wall_material",
-      "value": "Кирпич / мелкоштучные каменные материалы",
-      "importance": "standard",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "eiszh-project-card",
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
-    },
-    {
-      "field": "floors",
-      "value": 9,
+      "field": "buildings_total",
+      "value": 2,
       "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "eiszh-project-card",
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
-      "field": "entrances",
-      "value": 1,
-      "importance": "standard",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
-    },
-    {
-      "field": "apartments_total",
-      "value": 70,
+      "field": "complex_apartments_total",
+      "value": 194,
       "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "eiszh-project-card",
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
-    },
-    {
-      "field": "area_min",
-      "value": 27.71,
-      "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
-    },
-    {
-      "field": "area_max",
-      "value": 63.76,
-      "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page", "official-developer-project-list"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
       "field": "ceiling_height",
       "value": 2.7,
       "importance": "standard",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "yard_area_m2",
+      "value": 1730,
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "parking_spaces",
+      "value": 130,
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
       "field": "handover",
       "value": "I квартал 2028",
-      "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "eiszh-project-card",
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "importance": "volatile",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-list"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true,
+      "notes": "Заявленный срок необходимо сверять по актуальной проектной декларации перед сделкой."
     },
     {
-      "field": "keys_until",
-      "value": "30.09.2028",
-      "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "field": "barrier_free_environment",
+      "value": true,
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
-      "field": "project_declaration",
-      "value": "36-001139",
-      "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "field": "stroller_rooms",
+      "value": true,
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
-      "field": "project_declaration_date",
-      "value": "2026-06-26",
-      "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "field": "house_boiler",
+      "value": true,
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
-      "field": "nash_dom_rf_id",
-      "value": "72480",
-      "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "eiszh-project-card"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "field": "closed_yard",
+      "value": true,
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
-      "field": "building_permit",
-      "value": "36-04-13-2026",
-      "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "building-permit",
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "field": "video_surveillance",
+      "value": true,
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
-      "field": "building_permit_date",
-      "value": "2026-06-08",
-      "importance": "critical",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "building-permit",
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
-      "publication_allowed": false
+      "field": "electronic_access",
+      "value": true,
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
     },
     {
-      "field": "apartment_types.studio.count",
-      "value": 9,
+      "field": "studio_area_from_m2",
+      "value": 25,
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "four_room_area_to_m2",
+      "value": 92,
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "layout_features",
+      "value": ["мастер-спальни с гардеробными", "компактные студии", "семейные четырёхкомнатные квартиры"],
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "energy_efficiency",
+      "value": "A",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "finish_type",
+      "value": "Улучшенная предчистовая отделка",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "finish_includes",
+      "value": ["стяжка пола", "разводка отопления и радиаторы", "индивидуальный счётчик отопления", "ввод горячей и холодной воды", "электрощиток", "штукатурка стен", "металлическая входная дверь"],
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "purchase_methods",
+      "value": ["100% оплата", "ипотека", "материнский капитал", "рассрочка от застройщика", "trade-in"],
+      "importance": "volatile",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true,
+      "notes": "Применимость, условия и доступность каждого способа проверяются на дату обращения."
+    },
+    {
+      "field": "project_documents_published",
+      "value": ["проектная декларация №36-001139", "разрешение на строительство", "проект ДДУ", "градостроительный план", "схема земельного участка", "экспертиза проектной документации"],
+      "importance": "critical",
+      "verification_status": "confirmed",
+      "source_ids": ["official-developer-project-page", "project-declaration", "building-permit"],
+      "checked_at": "2026-07-17",
+      "publication_allowed": true
+    },
+    {
+      "field": "house_2_apartments_total",
+      "value": 70,
+      "importance": "critical",
+      "verification_status": "working_copy",
+      "source_ids": ["project-declaration"],
+      "checked_at": "2026-07-05",
+      "publication_allowed": false,
+      "notes": "Разбивка по отдельным домам должна быть повторно сверена по актуальной редакции декларации."
+    },
+    {
+      "field": "house_2_apartment_types",
+      "value": {"studio": 9, "one_room": 17, "two_room": 35, "three_room": 9},
       "importance": "standard",
       "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
+      "source_ids": ["project-declaration"],
       "checked_at": "2026-07-05",
       "publication_allowed": false
     },
     {
-      "field": "apartment_types.one-room.count",
-      "value": 17,
-      "importance": "standard",
+      "field": "house_2_area_range_m2",
+      "value": {"min": 27.71, "max": 63.76},
+      "importance": "critical",
       "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
+      "source_ids": ["project-declaration"],
       "checked_at": "2026-07-05",
       "publication_allowed": false
     },
     {
-      "field": "apartment_types.two-room.count",
-      "value": 35,
-      "importance": "standard",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
+      "field": "current_price",
+      "value": null,
+      "importance": "volatile",
+      "verification_status": "not_found",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
       "publication_allowed": false
     },
     {
-      "field": "apartment_types.three-room.count",
-      "value": 9,
-      "importance": "standard",
-      "verification_status": "working_copy",
-      "source_ids": [
-        "project-declaration"
-      ],
-      "checked_at": "2026-07-05",
+      "field": "current_availability",
+      "value": null,
+      "importance": "volatile",
+      "verification_status": "not_found",
+      "source_ids": ["official-developer-project-page"],
+      "checked_at": "2026-07-17",
       "publication_allowed": false
     }
   ],
   "excluded_claims": [
-    "price",
-    "availability",
+    "exact_current_price",
+    "exact_current_availability",
     "discount",
     "booking",
     "mortgage_approval",
     "exact_view_from_windows",
     "final_appearance",
-    "guaranteed_parking_space"
+    "guaranteed_parking_space",
+    "guaranteed_handover_date"
   ]
 }

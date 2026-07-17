@@ -111,28 +111,59 @@ if (comparisonSection.includes("<form") || comparisonSection.includes("<input") 
 }
 
 const comparisonContracts = [
-  ["Просторная 4А", "../data/verification/prostornaya-4a.json", "data-track-object=\"prostornaya-4a\""],
-  ["Аэродромная 18Г", "../data/verification/aerodromnaya-18g.json", "data-track-object=\"aerodromnaya-18g\""],
-  ["Сенная 76", "../data/verification/sennaya-76.json", "data-track-object=\"sennaya-76\""]
+  {
+    label: "Просторная 4А",
+    profile: "../data/verification/prostornaya-4a.json",
+    objectFragment: 'data-track-object="prostornaya-4a"',
+    projectId: "tellermanov-sad",
+    minimumPublicClaims: 21
+  },
+  {
+    label: "Аэродромная 18Г",
+    profile: "../data/verification/aerodromnaya-18g.json",
+    objectFragment: 'data-track-object="aerodromnaya-18g"',
+    projectId: "aerodromnaya-18g",
+    minimumPublicClaims: 0
+  },
+  {
+    label: "Сенная 76",
+    profile: "../data/verification/sennaya-76.json",
+    objectFragment: 'data-track-object="sennaya-76"',
+    projectId: "sennaya-76",
+    minimumPublicClaims: 0
+  }
 ];
 if (count(comparisonSection, "data-catalog-verification-card") !== 3) {
   errors.push(`${pagePath}: expected exactly 3 verification comparison cards`);
 }
-for (const [label, profile, objectFragment] of comparisonContracts) {
-  for (const fragment of [label, `data-verification-profile="${profile}"`, objectFragment]) {
+for (const contract of comparisonContracts) {
+  for (const fragment of [contract.label, `data-verification-profile="${contract.profile}"`, contract.objectFragment]) {
     if (!comparisonSection.includes(fragment)) errors.push(`${pagePath}: comparison card missing ${fragment}`);
   }
-  const profilePath = profile.replace("../", "");
+  const profilePath = contract.profile.replace("../", "");
   const verification = readJson(profilePath);
   if (!verification || !Array.isArray(verification.sources) || !Array.isArray(verification.claims)) {
     errors.push(`${profilePath}: invalid verification profile`);
     continue;
   }
+  if (verification.project_id !== contract.projectId) {
+    errors.push(`${profilePath}: project identity mismatch`);
+  }
   if (verification.publication_policy?.page_must_remain_noindex_until_confirmed !== true) {
     errors.push(`${profilePath}: noindex publication gate must remain enabled`);
   }
   const publicClaims = verification.claims.filter((claim) => claim?.publication_allowed === true);
-  if (publicClaims.length !== 0) errors.push(`${profilePath}: no claims may be public in the current state`);
+  if (contract.minimumPublicClaims === 0 && publicClaims.length !== 0) {
+    errors.push(`${profilePath}: unverified project must not expose public claims`);
+  }
+  if (contract.minimumPublicClaims > 0 && publicClaims.length < contract.minimumPublicClaims) {
+    errors.push(`${profilePath}: expected at least ${contract.minimumPublicClaims} confirmed buyer claims`);
+  }
+  publicClaims.forEach((claim) => {
+    if (claim.verification_status !== "confirmed") {
+      errors.push(`${profilePath}: public claim ${claim.field} must be confirmed`);
+    }
+  });
 }
 
 for (const marker of [
@@ -172,7 +203,6 @@ for (const href of Array.from(questionSection.matchAll(/href="([^"]+)"/g), (matc
 }
 
 for (const forbidden of [
-  "claim.value",
   "source.title",
   "source.reference",
   "source.notes",
@@ -180,23 +210,29 @@ for (const forbidden of [
   "innerHTML",
   "localStorage",
   "sessionStorage",
-  "document.cookie"
+  "document.cookie",
+  "current_price",
+  "current_availability"
 ]) {
-  if (runtime.includes(forbidden)) errors.push(`${runtimePath}: forbidden profile detail or storage access: ${forbidden}`);
+  if (runtime.includes(forbidden)) errors.push(`${runtimePath}: forbidden source detail, storage or volatile claim access: ${forbidden}`);
 }
 for (const required of [
   "profile?.updated_at",
   "profile?.overall_status",
+  "profile?.project_id",
   "profile?.sources",
   "profile?.claims",
   "claim?.field",
   "claim?.importance",
   "claim?.verification_status",
   "claim?.publication_allowed",
+  "claim.value",
+  'profile?.project_id === "tellermanov-sad"',
+  "getPublicClaimMap",
   "textContent",
-  "credentials: \"same-origin\""
+  'credentials: "same-origin"'
 ]) {
-  if (!runtime.includes(required)) errors.push(`${runtimePath}: missing safe aggregate fragment ${required}`);
+  if (!runtime.includes(required)) errors.push(`${runtimePath}: missing safe buyer aggregate fragment ${required}`);
 }
 
 for (const forbidden of [
@@ -207,14 +243,14 @@ for (const forbidden of [
   "data-catalog-area-filter",
   "data-catalog-floor-filter"
 ]) {
-  if (html.includes(forbidden)) errors.push(`${pagePath}: exact characteristic filter is forbidden before accepted sources: ${forbidden}`);
+  if (html.includes(forbidden)) errors.push(`${pagePath}: exact characteristic filter is forbidden before current offer data`);
 }
 
 console.log(`Catalog question routes: ${qa?.routes?.length || 0}`);
 console.log(`Catalog comparison cards: ${count(comparisonSection, "data-catalog-verification-card")}`);
 console.log(`Active forms: ${activeFormIds.size}`);
 console.log("Exact characteristic filters: 0");
-console.log("Public claim values rendered: 0");
+console.log("Confirmed buyer claim values rendered for Tellermanov only.");
 
 if (errors.length) {
   console.error("\nCatalog question route validation errors:");

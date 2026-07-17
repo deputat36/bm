@@ -9,8 +9,8 @@ const PROJECTS = [
   {
     page: "catalog/prostornaya-4a/index.html",
     objectId: "prostornaya-4a",
-    interest: "Документы по объекту",
-    label: "Проверить документы",
+    interest: "Презентацию и документы проекта",
+    label: "Получить документы и пояснения",
     placement: "project_documents_check",
     optionCount: 1,
     formIds: [
