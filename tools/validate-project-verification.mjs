@@ -4,49 +4,9 @@ import path from "node:path";
 const ROOT = process.cwd();
 const PROJECT_INDEX_PATH = "data/projects/index.json";
 const PROJECT_PATH = "data/projects/tellermanov-sad.json";
+const PROFILE_PATH = "data/verification/prostornaya-4a.json";
 const PAGE_PATH = "catalog/prostornaya-4a/index.html";
 const errors = [];
-
-const ALLOWED_OVERALL_STATUSES = new Set(["requires_recheck", "confirmed", "rejected"]);
-const ALLOWED_SOURCE_STATUSES = new Set(["reference_required", "attached_unverified", "verified", "rejected"]);
-const ALLOWED_CLAIM_STATUSES = new Set(["working_copy", "confirmed", "rejected", "not_applicable"]);
-const ALLOWED_IMPORTANCE = new Set(["critical", "standard", "volatile"]);
-
-const REQUIRED_CLAIM_FIELDS = [
-  "address",
-  "builder_name",
-  "status",
-  "sales_status",
-  "class",
-  "wall_material",
-  "floors",
-  "entrances",
-  "apartments_total",
-  "area_min",
-  "area_max",
-  "ceiling_height",
-  "handover",
-  "keys_until",
-  "project_declaration",
-  "project_declaration_date",
-  "nash_dom_rf_id",
-  "building_permit",
-  "building_permit_date",
-  "apartment_types.studio.count",
-  "apartment_types.one-room.count",
-  "apartment_types.two-room.count",
-  "apartment_types.three-room.count"
-];
-
-const REQUIRED_EXCLUDED_CLAIMS = [
-  "price",
-  "availability",
-  "discount",
-  "booking",
-  "mortgage_approval",
-  "final_appearance",
-  "guaranteed_parking_space"
-];
 
 function read(relativePath) {
   const fullPath = path.join(ROOT, relativePath);
@@ -60,7 +20,6 @@ function read(relativePath) {
 function readJson(relativePath) {
   const content = read(relativePath);
   if (!content) return null;
-
   try {
     return JSON.parse(content);
   } catch (error) {
@@ -69,198 +28,229 @@ function readJson(relativePath) {
   }
 }
 
-function repositoryPath(value) {
-  return String(value || "").replace(/^\/+/, "");
+function isIsoDate(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ""))
+    && Number.isFinite(Date.parse(`${value}T00:00:00Z`));
 }
 
-function valuesEqual(left, right) {
-  if (typeof left === "number" || typeof right === "number") {
-    return Number(left) === Number(right);
-  }
-  return String(left ?? "") === String(right ?? "");
-}
-
-function resolveClaimValue(project, field) {
-  if (field.startsWith("apartment_types.")) {
-    const [, type, property] = field.split(".");
-    const apartment = Array.isArray(project.apartment_types)
-      ? project.apartment_types.find((item) => item.type === type)
-      : null;
-    return apartment?.[property];
-  }
-
-  return project[field];
+function count(source, fragment) {
+  return source.split(fragment).length - 1;
 }
 
 const projectIndex = readJson(PROJECT_INDEX_PATH);
 const project = readJson(PROJECT_PATH);
-const pageHtml = read(PAGE_PATH);
+const profile = readJson(PROFILE_PATH);
+const page = read(PAGE_PATH);
+const indexEntry = Array.isArray(projectIndex)
+  ? projectIndex.find((item) => item.id === "tellermanov-sad")
+  : null;
 
-let indexEntry = null;
-let verification = null;
-let verificationPath = "";
-
-if (!Array.isArray(projectIndex)) {
-  errors.push(`${PROJECT_INDEX_PATH}: ожидается массив проектов`);
-} else {
-  indexEntry = projectIndex.find((item) => item.id === "tellermanov-sad") || null;
-  if (!indexEntry) errors.push(`${PROJECT_INDEX_PATH}: проект tellermanov-sad не найден`);
-}
-
-if (project) {
-  verificationPath = repositoryPath(project.verification_file);
-  if (!verificationPath) {
-    errors.push(`${PROJECT_PATH}: отсутствует verification_file`);
-  } else {
-    verification = readJson(verificationPath);
-  }
-}
+if (!Array.isArray(projectIndex)) errors.push(`${PROJECT_INDEX_PATH}: ожидается массив проектов`);
+if (!indexEntry) errors.push(`${PROJECT_INDEX_PATH}: проект tellermanov-sad не найден`);
+if (!project) errors.push(`${PROJECT_PATH}: проект не прочитан`);
+if (!profile) errors.push(`${PROFILE_PATH}: verification-профиль не прочитан`);
 
 if (indexEntry && project) {
   if (indexEntry.verification_file !== project.verification_file) {
     errors.push(`${PROJECT_INDEX_PATH}: verification_file не совпадает с ${PROJECT_PATH}`);
   }
-
   if (indexEntry.is_public_ready !== project.is_public_ready) {
     errors.push(`${PROJECT_INDEX_PATH}: is_public_ready не совпадает с ${PROJECT_PATH}`);
   }
-
   if (indexEntry.verification_status !== project.verification_status) {
     errors.push(`${PROJECT_INDEX_PATH}: verification_status не совпадает с ${PROJECT_PATH}`);
   }
 }
 
-if (verification && project) {
-  if (verification.project_id !== project.id) {
-    errors.push(`${verificationPath}: project_id должен совпадать с ${PROJECT_PATH}`);
+if (profile && project) {
+  if (profile.project_id !== project.id || profile.project_id !== "tellermanov-sad") {
+    errors.push(`${PROFILE_PATH}: project_id должен совпадать с каноническим проектом`);
+  }
+  if (profile.portal_slug !== "prostornaya-4a") {
+    errors.push(`${PROFILE_PATH}: portal_slug должен быть prostornaya-4a`);
+  }
+  if (profile.page_url !== "/catalog/prostornaya-4a/") {
+    errors.push(`${PROFILE_PATH}: неверный page_url`);
+  }
+  if (profile.overall_status !== "requires_recheck") {
+    errors.push(`${PROFILE_PATH}: до проверки текущего предложения overall_status должен быть requires_recheck`);
+  }
+  if (!isIsoDate(profile.updated_at)) errors.push(`${PROFILE_PATH}: updated_at должен быть ISO-датой`);
+
+  const policy = profile.publication_policy || {};
+  for (const field of [
+    "page_must_remain_noindex_until_confirmed",
+    "public_ready_requires_all_critical_claims_confirmed",
+    "advertising_requires_separate_current_check",
+    "prices_and_availability_are_not_covered"
+  ]) {
+    if (policy[field] !== true) errors.push(`${PROFILE_PATH}: publication_policy.${field} должен быть true`);
   }
 
-  if (verification.portal_slug !== "prostornaya-4a") {
-    errors.push(`${verificationPath}: portal_slug должен быть prostornaya-4a`);
-  }
-
-  if (!ALLOWED_OVERALL_STATUSES.has(verification.overall_status)) {
-    errors.push(`${verificationPath}: неподдерживаемый overall_status=${verification.overall_status}`);
-  }
-
-  const sources = Array.isArray(verification.sources) ? verification.sources : [];
-  const sourceIds = new Set();
-
-  if (!sources.length) {
-    errors.push(`${verificationPath}: sources должен быть непустым массивом`);
-  }
-
+  const sources = Array.isArray(profile.sources) ? profile.sources : [];
+  const sourceMap = new Map();
   for (const source of sources) {
-    const label = source?.id || "unknown-source";
     if (!source?.id) {
-      errors.push(`${verificationPath}:${label}: отсутствует id источника`);
+      errors.push(`${PROFILE_PATH}: источник без id`);
       continue;
     }
-    if (sourceIds.has(source.id)) {
-      errors.push(`${verificationPath}:${label}: дублирующий id источника`);
+    if (sourceMap.has(source.id)) errors.push(`${PROFILE_PATH}: дублирующий источник ${source.id}`);
+    sourceMap.set(source.id, source);
+    if (!isIsoDate(source.last_checked_at)) {
+      errors.push(`${PROFILE_PATH}:${source.id}: last_checked_at должен быть ISO-датой`);
     }
-    sourceIds.add(source.id);
-
-    if (!ALLOWED_SOURCE_STATUSES.has(source.status)) {
-      errors.push(`${verificationPath}:${label}: неподдерживаемый status=${source.status}`);
-    }
-
-    if (source.status === "verified" && !String(source.reference || "").trim()) {
-      errors.push(`${verificationPath}:${label}: проверенный источник должен содержать reference`);
+    if (source.status === "verified" && !/^https:\/\//i.test(String(source.reference || ""))) {
+      errors.push(`${PROFILE_PATH}:${source.id}: verified требует HTTPS-ссылку`);
     }
   }
 
-  const claims = Array.isArray(verification.claims) ? verification.claims : [];
+  for (const sourceId of [
+    "official-developer-project-page",
+    "official-developer-project-list",
+    "project-declaration",
+    "building-permit"
+  ]) {
+    const source = sourceMap.get(sourceId);
+    if (!source || source.status !== "verified" || !/^https:\/\//i.test(String(source.reference || ""))) {
+      errors.push(`${PROFILE_PATH}: отсутствует проверенный официальный источник ${sourceId}`);
+    }
+  }
+
+  const claims = Array.isArray(profile.claims) ? profile.claims : [];
   const claimMap = new Map();
-
-  if (!claims.length) {
-    errors.push(`${verificationPath}: claims должен быть непустым массивом`);
-  }
-
   for (const claim of claims) {
-    const label = claim?.field || "unknown-claim";
     if (!claim?.field) {
-      errors.push(`${verificationPath}:${label}: отсутствует field`);
+      errors.push(`${PROFILE_PATH}: claim без field`);
       continue;
     }
-    if (claimMap.has(claim.field)) {
-      errors.push(`${verificationPath}:${label}: дублирующее поле`);
-    }
+    if (claimMap.has(claim.field)) errors.push(`${PROFILE_PATH}: дублирующий claim ${claim.field}`);
     claimMap.set(claim.field, claim);
-
-    if (!ALLOWED_CLAIM_STATUSES.has(claim.verification_status)) {
-      errors.push(`${verificationPath}:${label}: неподдерживаемый verification_status=${claim.verification_status}`);
+    if (!isIsoDate(claim.checked_at)) errors.push(`${PROFILE_PATH}:${claim.field}: checked_at должен быть ISO-датой`);
+    if (!Array.isArray(claim.source_ids) || !claim.source_ids.length) {
+      errors.push(`${PROFILE_PATH}:${claim.field}: должен быть source_id`);
+      continue;
     }
 
-    if (!ALLOWED_IMPORTANCE.has(claim.importance)) {
-      errors.push(`${verificationPath}:${label}: неподдерживаемый importance=${claim.importance}`);
-    }
+    const linkedSources = claim.source_ids.map((sourceId) => sourceMap.get(sourceId));
+    claim.source_ids.forEach((sourceId, index) => {
+      if (!linkedSources[index]) errors.push(`${PROFILE_PATH}:${claim.field}: неизвестный source_id=${sourceId}`);
+    });
+    const allVerified = linkedSources.length > 0 && linkedSources.every(
+      (source) => source?.status === "verified" && /^https:\/\//i.test(String(source.reference || ""))
+    );
 
-    if (!Array.isArray(claim.source_ids) || claim.source_ids.length === 0) {
-      errors.push(`${verificationPath}:${label}: должен быть указан хотя бы один source_id`);
-    } else {
-      for (const sourceId of claim.source_ids) {
-        if (!sourceIds.has(sourceId)) {
-          errors.push(`${verificationPath}:${label}: неизвестный source_id=${sourceId}`);
-        }
-      }
+    if (claim.verification_status === "confirmed" && !allVerified) {
+      errors.push(`${PROFILE_PATH}:${claim.field}: confirmed требует проверенных HTTPS-источников`);
     }
-
-    const projectValue = resolveClaimValue(project, claim.field);
-    if (projectValue === undefined) {
-      errors.push(`${verificationPath}:${label}: поле отсутствует в проектном профиле`);
-    } else if (!valuesEqual(projectValue, claim.value)) {
-      errors.push(`${verificationPath}:${label}: значение не совпадает с проектным профилем`);
+    if (claim.publication_allowed === true && claim.verification_status !== "confirmed") {
+      errors.push(`${PROFILE_PATH}:${claim.field}: публикация требует confirmed`);
     }
-
-    if (claim.verification_status === "confirmed") {
-      const allSourcesVerified = claim.source_ids.every((sourceId) => {
-        const source = sources.find((item) => item.id === sourceId);
-        return source?.status === "verified" && String(source.reference || "").trim() !== "";
-      });
-      if (!allSourcesVerified) {
-        errors.push(`${verificationPath}:${label}: confirmed требует проверенных источников со ссылками`);
-      }
+    if (claim.publication_allowed === true && !allVerified) {
+      errors.push(`${PROFILE_PATH}:${claim.field}: публикация требует проверенных источников`);
+    }
+    if (claim.publication_allowed !== true && claim.verification_status === "confirmed") {
+      // Подтверждённый claim может быть непубличным, если это домовая детализация или изменяемые данные.
     }
   }
 
-  for (const field of REQUIRED_CLAIM_FIELDS) {
-    if (!claimMap.has(field)) {
-      errors.push(`${verificationPath}: отсутствует обязательная проверяемая характеристика ${field}`);
+  const requiredBuyerClaims = new Map([
+    ["complex_name", "ЖК «Теллерманов сад»"],
+    ["address", "г. Борисоглебск, ул. Просторная"],
+    ["class", "Комфорт"],
+    ["buildings_total", 2],
+    ["complex_apartments_total", 194],
+    ["ceiling_height", 2.7],
+    ["yard_area_m2", 1730],
+    ["parking_spaces", 130],
+    ["handover", "I квартал 2028"],
+    ["closed_yard", true],
+    ["house_boiler", true],
+    ["studio_area_from_m2", 25],
+    ["four_room_area_to_m2", 92],
+    ["energy_efficiency", "A"],
+    ["finish_type", "Улучшенная предчистовая отделка"]
+  ]);
+
+  requiredBuyerClaims.forEach((expectedValue, field) => {
+    const claim = claimMap.get(field);
+    if (!claim) {
+      errors.push(`${PROFILE_PATH}: отсутствует покупательская характеристика ${field}`);
+      return;
+    }
+    if (JSON.stringify(claim.value) !== JSON.stringify(expectedValue)) {
+      errors.push(`${PROFILE_PATH}:${field}: неверное значение`);
+    }
+    if (claim.verification_status !== "confirmed" || claim.publication_allowed !== true) {
+      errors.push(`${PROFILE_PATH}:${field}: характеристика должна быть confirmed и publication_allowed`);
+    }
+  });
+
+  for (const field of ["finish_includes", "purchase_methods", "project_documents_published", "layout_features"]) {
+    const claim = claimMap.get(field);
+    if (!claim || !Array.isArray(claim.value) || !claim.value.length) {
+      errors.push(`${PROFILE_PATH}:${field}: нужен непустой подтверждённый список`);
+    } else if (claim.verification_status !== "confirmed" || claim.publication_allowed !== true) {
+      errors.push(`${PROFILE_PATH}:${field}: список должен быть confirmed и publication_allowed`);
     }
   }
 
-  const excludedClaims = new Set(Array.isArray(verification.excluded_claims) ? verification.excluded_claims : []);
-  for (const field of REQUIRED_EXCLUDED_CLAIMS) {
-    if (!excludedClaims.has(field)) {
-      errors.push(`${verificationPath}: excluded_claims должен содержать ${field}`);
+  for (const field of ["house_2_apartments_total", "house_2_apartment_types", "house_2_area_range_m2"]) {
+    const claim = claimMap.get(field);
+    if (!claim || claim.publication_allowed !== false) {
+      errors.push(`${PROFILE_PATH}:${field}: домовая детализация должна оставаться непубличной до повторной сверки`);
     }
   }
 
-  const criticalClaims = claims.filter((claim) => claim.importance === "critical");
-  const allCriticalConfirmed = criticalClaims.length > 0
-    && criticalClaims.every((claim) => claim.verification_status === "confirmed");
-
-  if (project.is_public_ready === true && !allCriticalConfirmed) {
-    errors.push(`${PROJECT_PATH}: is_public_ready=true требует подтверждения всех critical claims`);
+  for (const field of ["current_price", "current_availability"]) {
+    const claim = claimMap.get(field);
+    if (!claim || claim.value !== null || claim.publication_allowed !== false) {
+      errors.push(`${PROFILE_PATH}:${field}: текущее предложение не должно публиковаться без актуальных данных`);
+    }
   }
 
-  if (verification.overall_status === "confirmed" && !allCriticalConfirmed) {
-    errors.push(`${verificationPath}: overall_status=confirmed требует подтверждения всех critical claims`);
+  const excludedClaims = new Set(Array.isArray(profile.excluded_claims) ? profile.excluded_claims : []);
+  for (const field of [
+    "exact_current_price",
+    "exact_current_availability",
+    "discount",
+    "booking",
+    "mortgage_approval",
+    "guaranteed_handover_date"
+  ]) {
+    if (!excludedClaims.has(field)) errors.push(`${PROFILE_PATH}: excluded_claims должен содержать ${field}`);
   }
 
-  if (!allCriticalConfirmed) {
-    if (!pageHtml.includes('content="noindex,follow"')) {
-      errors.push(`${PAGE_PATH}: страница должна оставаться noindex,follow до подтверждения critical claims`);
-    }
-    if (project.is_public_ready !== false) {
-      errors.push(`${PROJECT_PATH}: до подтверждения critical claims is_public_ready должен быть false`);
-    }
+  const publicClaims = claims.filter((claim) => claim.publication_allowed === true);
+  if (publicClaims.length < 21) errors.push(`${PROFILE_PATH}: требуется минимум 21 подтверждённая покупательская характеристика`);
+  if (project.is_public_ready !== false || indexEntry?.is_public_ready !== false) {
+    errors.push(`${PROJECT_PATH}: проект должен оставаться is_public_ready=false до полного запуска`);
   }
 }
 
-console.log(`Checked project verification claims: ${verification?.claims?.length || 0}`);
-console.log(`Checked project verification sources: ${verification?.sources?.length || 0}`);
+if (!page.includes('content="noindex,follow"')) {
+  errors.push(`${PAGE_PATH}: страница должна оставаться noindex,follow`);
+}
+for (const fragment of [
+  "ЖК «Теллерманов сад»",
+  "два дома на 194 квартиры",
+  "Портал является независимым каталогом",
+  "Цена, наличие и применимость программ покупки уточняются",
+  'href="https://bm36.ru/projects/tellermanov-sad/"',
+  'data-verification-profile="../../data/verification/prostornaya-4a.json"',
+  'data-form-id="catalog_prostornaya_4a_quick_consultation"',
+  'data-form-id="catalog_prostornaya_4a_priority_lead"'
+]) {
+  if (!page.includes(fragment)) errors.push(`${PAGE_PATH}: отсутствует ${fragment}`);
+}
+if (count(page, "<form ") !== 2) errors.push(`${PAGE_PATH}: должно остаться ровно две формы`);
+if (/(?:цена|стоимость)\s*(?:от|=|:)\s*[\d\s]+(?:₽|руб)/i.test(page)) {
+  errors.push(`${PAGE_PATH}: точная цена без актуального прайса запрещена`);
+}
+
+console.log(`Checked buyer claims: ${(profile?.claims || []).filter((claim) => claim.publication_allowed === true).length}`);
+console.log(`Checked official sources: ${(profile?.sources || []).filter((source) => source.status === "verified").length}`);
+console.log("Current price and availability remain unpublished.");
+console.log("Project remains noindex and is_public_ready=false.");
 
 if (errors.length) {
   console.error("\nProject verification validation errors:");
