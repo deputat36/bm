@@ -3,20 +3,89 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Страница не найдена — ЖК «Теллерманов сад»</title>
-  <meta name="robots" content="noindex, follow">
+  <meta name="robots" content="noindex,follow">
+  <title>Страница не найдена — Новостройки Борисоглебска</title>
+  <meta name="description" content="Запрошенная страница не найдена. Перейдите в каталог новостроек Борисоглебска, получите консультацию или позвоните специалисту.">
   <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/home-polish.css">
+  <link rel="stylesheet" href="assets/css/leadgen.css">
 </head>
 <body>
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="./" aria-label="Новостройки Борисоглебска"><strong>Новостройки Борисоглебска</strong></a>
+      <nav class="nav" aria-label="Основное меню">
+        <a href="catalog/">Каталог</a>
+        <a href="ipoteka/">Ипотека</a>
+        <a href="guides/">Справочник</a>
+        <a href="contacts/">Контакты</a>
+        <a class="button" href="contacts/#quick-lead" data-track-action="quick_selection" data-track-placement="not_found_header">Оставить заявку</a>
+      </nav>
+    </div>
+  </header>
+
   <main>
     <section class="page-hero">
       <div class="container">
         <span class="eyebrow">Ошибка 404</span>
         <h1>Страница не найдена</h1>
-        <p class="lead">Возможно, ссылка устарела или адрес введён с ошибкой. Перейдите на главную страницу ЖК «Теллерманов сад» или оставьте заявку на консультацию.</p>
-        <div class="hero__actions"><a class="button" href="/">На главную</a><a class="button button--ghost" href="/contacts/">Оставить заявку</a><a class="button button--ghost" href="/kvartiry/">Квартиры</a></div>
+        <p class="lead">Возможно, адрес изменился, ссылка устарела или в ней есть ошибка. Выберите нужный раздел либо сразу свяжитесь со специалистом по новостройкам Борисоглебска.</p>
+        <div class="hero__actions">
+          <a class="button" href="./" data-track-action="not_found_home" data-track-placement="not_found_hero">Перейти на главную</a>
+          <a class="button button--ghost" href="catalog/" data-track-action="catalog_open" data-track-placement="not_found_hero">Смотреть каталог</a>
+          <a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="not_found_hero">Позвонить: 8 903 857-69-09</a>
+        </div>
+        <div class="notice">Портал не является официальным сайтом застройщика. Цена, наличие квартир и условия покупки уточняются перед консультацией.</div>
+      </div>
+    </section>
+
+    <section class="section--soft">
+      <div class="container">
+        <div class="section__head">
+          <span class="eyebrow">Продолжить поиск</span>
+          <h2>Популярные разделы</h2>
+          <p>Эти страницы помогут вернуться к выбору квартиры и получить понятный следующий шаг.</p>
+        </div>
+        <div class="grid grid--3">
+          <a class="card card--shadow" href="catalog/" data-track-action="catalog_open" data-track-placement="not_found_routes">
+            <h3>Каталог новостроек</h3>
+            <p>Новые дома Борисоглебска и формы запроса актуальной информации.</p>
+          </a>
+          <a class="card card--shadow" href="contacts/" data-track-action="contacts_open" data-track-placement="not_found_routes">
+            <h3>Консультация</h3>
+            <p>Подбор квартиры, проверка доступных сведений и обсуждение способа покупки.</p>
+          </a>
+          <a class="card card--shadow" href="guides/" data-track-action="guides_open" data-track-placement="not_found_routes">
+            <h3>Справочник покупателя</h3>
+            <p>Документы, договоры, планировки и вопросы перед покупкой квартиры.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section__head">
+          <span class="eyebrow">Нужна помощь</span>
+          <h2>Не нашли нужную информацию?</h2>
+          <p>Сообщите, какой дом или вариант квартиры вас интересует. Специалист уточнит, какие данные доступны на дату обращения.</p>
+        </div>
+        <div class="hero__actions">
+          <a class="button" href="contacts/#quick-lead" data-track-action="quick_selection" data-track-placement="not_found_footer">Оставить короткую заявку</a>
+          <a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="not_found_footer">Позвонить специалисту</a>
+        </div>
       </div>
     </section>
   </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div><strong>Новостройки Борисоглебска</strong><br>Городской каталог новых домов и квартир.</div>
+      <div>Не является официальным сайтом застройщика. <a href="sources/">Источники</a> · <a href="privacy/">Политика данных</a> · <a href="contacts/">Контакты</a></div>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/schema.js"></script>
 </body>
 </html>
