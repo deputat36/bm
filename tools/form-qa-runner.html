@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Панель ручного QA форм — Новостройки Борисоглебска</title>
+  <meta name="description" content="Внутренняя панель безопасного ручного тестирования лид-форм портала в dry-run режиме.">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/form-qa-runner.css">
+</head>
+<body>
+  <header class="topbar qa-topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="../" aria-label="Новостройки Борисоглебска"><strong>Новостройки Борисоглебска</strong></a>
+      <span class="qa-private-label">Внутренний инструмент · noindex</span>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="page-hero qa-hero">
+      <div class="container">
+        <span class="eyebrow">P0 · ручная проверка</span>
+        <h1>Панель QA лид-форм</h1>
+        <p class="lead">Пошаговая проверка 14 сценариев на компьютере, Android и iPhone. Все ссылки открываются только в dry-run и локальном analytics debug — реальные заявки не отправляются.</p>
+        <div class="notice qa-danger" role="note">
+          Используйте только вымышленные имя и телефон. Не прикладывайте персональные данные к evidence. Панель не отмечает тест успешным без всех проверок, ссылки на evidence и локального event log.
+        </div>
+      </div>
+    </section>
+
+    <section class="section--soft qa-controls-section">
+      <div class="container">
+        <div class="qa-controls" aria-label="Настройки тестирования">
+          <label>
+            Устройство
+            <select data-qa-device>
+              <option value="desktop">Компьютер</option>
+              <option value="android">Android</option>
+              <option value="iphone">iPhone</option>
+            </select>
+          </label>
+          <label>
+            Браузер и версия
+            <input data-qa-browser maxlength="80" placeholder="Например: Chrome 150">
+          </label>
+          <label>
+            ОС и версия
+            <input data-qa-os maxlength="80" placeholder="Например: Windows 11">
+          </label>
+        </div>
+
+        <div class="qa-actions">
+          <button class="button" type="button" data-qa-export-results>Скачать form-results.json</button>
+          <button class="button button--ghost" type="button" data-qa-export-evidence>Скачать QA evidence</button>
+          <button class="button button--ghost" type="button" data-qa-clear-device>Очистить текущее устройство</button>
+        </div>
+
+        <div class="qa-summary" aria-live="polite" data-qa-summary>
+          <div><strong data-summary-total>42</strong><span>всего слотов</span></div>
+          <div><strong data-summary-recorded>0</strong><span>зафиксировано</span></div>
+          <div><strong data-summary-passed>0</strong><span>пройдено</span></div>
+          <div><strong data-summary-failed>0</strong><span>ошибки</span></div>
+          <div><strong data-summary-blocked>0</strong><span>заблокировано</span></div>
+        </div>
+
+        <div class="form__status qa-global-status" role="status" aria-live="polite" aria-atomic="true" tabindex="-1" data-qa-global-status></div>
+      </div>
+    </section>
+
+    <section class="qa-workspace">
+      <div class="container">
+        <div class="section__head">
+          <span class="eyebrow">14 сценариев</span>
+          <h2 data-qa-device-title>Проверка на компьютере</h2>
+          <p>Открывайте сценарий, проходите десять проверок и фиксируйте только обезличенные evidence.</p>
+        </div>
+        <div class="qa-scenario-list" data-qa-scenarios aria-busy="true">
+          <div class="qa-loading">Загружаем матрицу тестирования…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section--soft qa-resilience-section">
+      <div class="container">
+        <div class="section__head">
+          <span class="eyebrow">Устойчивость браузера</span>
+          <h2>Проверки хранилищ</h2>
+          <p>Каждый сценарий выполняется один раз на выбранном устройстве. Эти результаты входят в отдельный QA evidence export и не подменяют 42 слота форм.</p>
+        </div>
+        <div class="grid grid--2" data-qa-resilience></div>
+      </div>
+    </section>
+
+    <section class="qa-help-section">
+      <div class="container article">
+        <h2>Как завершить проверку</h2>
+        <ol class="qa-instructions">
+          <li>Выберите фактическое устройство и укажите браузер и ОС.</li>
+          <li>Откройте сценарий. Убедитесь, что сверху показан красный баннер тестового режима.</li>
+          <li>Используйте только синтетические данные и выполните все десять проверок.</li>
+          <li>Сохраните обезличенный скриншот или запись и локальный event log.</li>
+          <li>Укажите ссылку на evidence, включите отметку event log и выберите итог.</li>
+          <li>Скачайте JSON. Сам экспорт не является доказательством прохождения без приложенных evidence.</li>
+        </ol>
+        <p><a href="../docs/portal/FORM_QA_RUNNER.md">Документация инструмента</a> · <a href="../data/qa/form-scenarios.json">Матрица сценариев</a> · <a href="../data/qa/form-execution-contract.json">Контракт проверки</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div><strong>Внутренний QA-инструмент</strong><br>Не предназначен для покупателей и поисковой индексации.</div>
+      <div>Прогресс хранится только в текущем браузере. Персональные данные вводить запрещено.</div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/page-accessibility.js"></script>
+  <script src="../assets/js/form-qa-runner.js"></script>
+</body>
+</html>
