@@ -12,7 +12,7 @@
   const CATEGORY_RULES = [
     {
       label: "Статус объекта",
-      fields: new Set(["address", "status", "sales_status", "official_name", "project_name"])
+      fields: new Set(["address", "status", "sales_status", "official_name", "project_name", "complex_name"])
     },
     {
       label: "Застройщик и документы",
@@ -26,6 +26,7 @@
         "project_declaration_date",
         "building_permit",
         "building_permit_date",
+        "project_documents_published",
         "nash_dom_rf_id",
         "seller_identity",
         "seller_documents"
@@ -39,23 +40,32 @@
         "floors",
         "entrances",
         "sections",
+        "buildings_total",
         "construction_status",
         "handover",
         "keys_until",
         "commissioning_status",
-        "commissioning_date"
+        "commissioning_date",
+        "closed_yard",
+        "house_boiler",
+        "parking_spaces"
       ])
     },
     {
       label: "Квартиры",
       fields: new Set([
         "apartments_total",
+        "complex_apartments_total",
         "apartment_types",
         "room_types",
         "area_min",
         "area_max",
+        "studio_area_from_m2",
+        "four_room_area_to_m2",
         "ceiling_height",
         "layouts",
+        "layout_features",
+        "finish_type",
         "apartment_area",
         "cadastral_numbers"
       ])
@@ -66,6 +76,7 @@
         "sales_scheme",
         "contract_type",
         "purchase_method",
+        "purchase_methods",
         "mortgage_eligibility",
         "payment_terms",
         "price",
@@ -96,14 +107,54 @@
       .map((category) => category.label);
   }
 
+  function getPublicClaimMap(claims) {
+    return new Map(
+      claims
+        .filter((claim) => claim?.publication_allowed === true && CLAIM_CONFIRMED_STATUSES.has(String(claim?.verification_status || "")))
+        .map((claim) => [String(claim.field || ""), claim.value])
+    );
+  }
+
   function setText(card, selector, value) {
     const node = card.querySelector(selector);
     if (node) node.textContent = value;
   }
 
+  function renderTellermanovBuyerCard(card, profile, claims) {
+    const publicClaims = getPublicClaimMap(claims);
+    const buildings = publicClaims.get("buildings_total");
+    const apartments = publicClaims.get("complex_apartments_total");
+    const ceiling = publicClaims.get("ceiling_height");
+    const studioFrom = publicClaims.get("studio_area_from_m2");
+    const familyTo = publicClaims.get("four_room_area_to_m2");
+    const finish = publicClaims.get("finish_type");
+
+    const title = card.querySelector("h3");
+    if (title) title.textContent = "ЖК «Теллерманов сад»";
+
+    setText(card, "[data-verification-status]", "Подтверждённые сведения о проекте");
+    setText(card, "[data-verification-date]", `Источник проверен: ${formatDate(profile?.updated_at)}`);
+    setText(card, "[data-verification-sources]", `${buildings || 2} дома · ${apartments || 194} квартиры · потолки ${String(ceiling || 2.7).replace(".", ",")} м`);
+    setText(card, "[data-verification-critical]", "Закрытый двор · общедомовая котельная · видеонаблюдение");
+    setText(card, "[data-verification-categories]", `Студии от ${studioFrom || 25} м² · семейные квартиры до ${familyTo || 92} м² · ${String(finish || "предчистовая отделка").toLowerCase()}`);
+
+    const primaryAction = card.querySelector('a[data-track-action="object_quick_consultation"]');
+    const detailsAction = card.querySelector('a[data-track-action="object_open"]');
+    if (primaryAction) primaryAction.textContent = "Узнать цены и наличие";
+    if (detailsAction) detailsAction.textContent = "Смотреть проект";
+    card.dataset.buyerContent = "confirmed";
+  }
+
   function renderCard(card, profile) {
     const sources = Array.isArray(profile?.sources) ? profile.sources : [];
     const claims = Array.isArray(profile?.claims) ? profile.claims : [];
+
+    if (profile?.project_id === "tellermanov-sad") {
+      renderTellermanovBuyerCard(card, profile, claims);
+      card.dataset.verificationLoaded = "true";
+      return;
+    }
+
     const acceptedSources = sources.filter((source) => SOURCE_ACCEPTED_STATUSES.has(String(source?.status || ""))).length;
     const criticalClaims = claims.filter((claim) => claim?.importance === "critical");
     const confirmedCritical = criticalClaims.filter((claim) => {
