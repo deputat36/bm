@@ -1,0 +1,55 @@
+name: Form QA results importer guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/import-form-qa-results.mjs"
+      - "tools/validate-form-qa-results-importer.mjs"
+      - "tools/fixtures/form-results-empty.json"
+      - "data/qa/form-scenarios.json"
+      - "data/qa/form-execution-contract.json"
+      - "data/qa/form-results.json"
+      - "tools/validate-form-qa-results.mjs"
+      - "docs/portal/FORM_QA_RESULTS_IMPORTER.md"
+      - ".github/workflows/form-qa-results-importer.yml"
+  pull_request:
+    paths:
+      - "tools/import-form-qa-results.mjs"
+      - "tools/validate-form-qa-results-importer.mjs"
+      - "tools/fixtures/form-results-empty.json"
+      - "data/qa/form-scenarios.json"
+      - "data/qa/form-execution-contract.json"
+      - "data/qa/form-results.json"
+      - "tools/validate-form-qa-results.mjs"
+      - "docs/portal/FORM_QA_RESULTS_IMPORTER.md"
+      - ".github/workflows/form-qa-results-importer.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-importer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check importer syntax
+        run: |
+          node --check tools/import-form-qa-results.mjs
+          node --check tools/validate-form-qa-results-importer.mjs
+
+      - name: Validate importer contract and self-test
+        run: node tools/validate-form-qa-results-importer.mjs
+
+      - name: Validate current QA result registry
+        run: node tools/validate-form-qa-results.mjs
