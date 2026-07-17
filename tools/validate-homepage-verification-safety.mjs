@@ -55,6 +55,14 @@ function validatePublicClaims(profilePath, profile, minimum) {
   return publicClaims;
 }
 
+function readCriticalProgress(documentation, heading) {
+  const headingIndex = documentation.indexOf(heading);
+  if (headingIndex < 0) return NaN;
+  const section = documentation.slice(headingIndex, headingIndex + 3000);
+  const match = section.match(/Critical claims:\s*(\d+)\s*из\s*(\d+)\s*(?:confirmed|подтверждены|подтверждён|подтвержден)/i);
+  return match ? Number(match[1]) : NaN;
+}
+
 const homepage = read(HOMEPAGE_PATH);
 const readiness = read(READINESS_PATH);
 const runtime = read(RUNTIME_PATH);
@@ -71,11 +79,9 @@ if (/name=["']robots["'][^>]*noindex/i.test(homepage)) {
 }
 
 const publicReadyMatch = readiness.match(/Готово к публичной публикации:\s*(\d+)\s*из\s*(\d+)/i);
-const tellermanovCriticalMatch = readiness.match(/ЖК «Теллерманов сад»[\s\S]*?Critical claims:\s*(\d+)\s*из\s*(\d+)\s*confirmed/i);
-const sennayaCriticalMatch = readiness.match(/Дом на Сенной 76[\s\S]*?Critical claims:\s*(\d+)\s*из\s*(\d+)\s*confirmed/i);
 const publicReady = publicReadyMatch ? Number(publicReadyMatch[1]) : NaN;
-const tellermanovConfirmedCritical = tellermanovCriticalMatch ? Number(tellermanovCriticalMatch[1]) : NaN;
-const sennayaConfirmedCritical = sennayaCriticalMatch ? Number(sennayaCriticalMatch[1]) : NaN;
+const tellermanovConfirmedCritical = readCriticalProgress(readiness, "## ЖК «Теллерманов сад»");
+const sennayaConfirmedCritical = readCriticalProgress(readiness, "## Дом на Сенной 76");
 
 if (!Number.isFinite(publicReady) || !Number.isFinite(tellermanovConfirmedCritical) || !Number.isFinite(sennayaConfirmedCritical)) {
   errors.push(`${READINESS_PATH}: readiness counters could not be parsed`);
