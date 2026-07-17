@@ -23,4 +23,25 @@ jobs:
           node-version: 22
 
       - name: Check local links and assets
-        run: node scripts/check-site.js
+        id: site_check
+        shell: bash
+        run: |
+          set +e
+          node scripts/check-site.js > site-check.log 2>&1
+          status=$?
+          cat site-check.log
+          echo "exit_code=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload site-check diagnostics
+        if: steps.site_check.outputs.exit_code != '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-check-diagnostics
+          path: site-check.log
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Fail when site check failed
+        if: steps.site_check.outputs.exit_code != '0'
+        run: exit 1
