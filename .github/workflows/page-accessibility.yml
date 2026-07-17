@@ -1,0 +1,53 @@
+name: Page accessibility guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "contacts/index.html"
+      - "404.html"
+      - "assets/js/page-accessibility.js"
+      - "assets/js/conversion-tracking.js"
+      - "assets/js/schema.js"
+      - "assets/css/accessibility.css"
+      - "tools/validate-page-accessibility.mjs"
+      - ".github/workflows/page-accessibility.yml"
+  pull_request:
+    paths:
+      - "index.html"
+      - "contacts/index.html"
+      - "404.html"
+      - "assets/js/page-accessibility.js"
+      - "assets/js/conversion-tracking.js"
+      - "assets/js/schema.js"
+      - "assets/css/accessibility.css"
+      - "tools/validate-page-accessibility.mjs"
+      - ".github/workflows/page-accessibility.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-page-accessibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check accessibility JavaScript syntax
+        run: |
+          node --check assets/js/page-accessibility.js
+          node --check assets/js/conversion-tracking.js
+          node --check tools/validate-page-accessibility.mjs
+
+      - name: Validate page accessibility contract
+        run: node tools/validate-page-accessibility.mjs
