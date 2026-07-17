@@ -3,6 +3,7 @@
   if (!scriptUrl || typeof window.fetch !== "function") return;
 
   const PROFILE_URL = new URL("../../data/verification/prostornaya-4a.json", scriptUrl).href;
+  const SENNAYA_PROFILE_URL = new URL("../../data/verification/sennaya-76.json", scriptUrl).href;
   const CONFIRMED_STATUSES = new Set(["confirmed", "verified"]);
 
   function getPublicClaims(profile) {
@@ -15,21 +16,33 @@
 
   function updateProjectOptions() {
     document.querySelectorAll("select[name='residential_complex'] option").forEach((option) => {
-      if (String(option.value || option.textContent || "").trim() !== "Просторная 4А") return;
-      option.value = "Просторная 4А";
-      option.textContent = "ЖК «Теллерманов сад» — ул. Просторная";
+      const value = String(option.value || option.textContent || "").trim();
+      if (value === "Просторная 4А") {
+        option.value = "Просторная 4А";
+        option.textContent = "ЖК «Теллерманов сад» — ул. Просторная";
+      }
+      if (value === "Сенная 76") {
+        option.value = "Сенная 76";
+        option.textContent = "Дом на Сенной 76";
+      }
     });
   }
 
-  function findHomepageProjectCard() {
+  function findHomepageProjectCard(...titles) {
     return Array.from(document.querySelectorAll("#objects article.card")).find((card) => {
       const title = card.querySelector("h3")?.textContent?.trim() || "";
-      return title === "Просторная 4А" || title === "ЖК «Теллерманов сад»";
+      return titles.includes(title);
     }) || null;
   }
 
-  function updateHomepageCard(claims) {
-    const card = findHomepageProjectCard();
+  function createListItem(text) {
+    const item = document.createElement("li");
+    item.textContent = text;
+    return item;
+  }
+
+  function updateTellermanovHomepageCard(claims) {
+    const card = findHomepageProjectCard("Просторная 4А", "ЖК «Теллерманов сад»");
     if (!card) return false;
 
     const buildings = claims.get("buildings_total") || 2;
@@ -37,7 +50,6 @@
     const ceiling = String(claims.get("ceiling_height") || 2.7).replace(".", ",");
     const studioFrom = claims.get("studio_area_from_m2") || 25;
     const familyTo = claims.get("four_room_area_to_m2") || 92;
-
     const eyebrow = card.querySelector(".eyebrow");
     const title = card.querySelector("h3");
     const description = card.querySelector("p");
@@ -61,21 +73,42 @@
     return true;
   }
 
-  function createListItem(text) {
-    const item = document.createElement("li");
-    item.textContent = text;
-    return item;
+  function updateSennayaHomepageCard(claims) {
+    const card = findHomepageProjectCard("Сенная 76", "Дом на Сенной 76");
+    if (!card || !claims.has("public_name") || !claims.has("facade_material_statement")) return false;
+
+    const eyebrow = card.querySelector(".eyebrow");
+    const title = card.querySelector("h3");
+    const description = card.querySelector("p");
+    const list = card.querySelector("ul.list");
+    const primary = card.querySelector('a[data-track-action="object_quick_consultation"]');
+    const details = card.querySelector('a[data-track-action="object_details"]');
+
+    if (eyebrow) eyebrow.textContent = "Публичные сведения о доме";
+    if (title) title.textContent = "Дом на Сенной 76";
+    if (description) description.textContent = "Дом с заявленными кирпичным фасадом, керамической кровлей, индивидуальным отоплением, благоустройством и видеонаблюдением.";
+    if (list) {
+      list.replaceChildren(
+        createListItem("Фасад из голландского кирпича и кровля из керамической черепицы — по публичному заявлению представителя застройщика."),
+        createListItem("Индивидуальное отопление, система «умный дом» и энергоэффективное освещение."),
+        createListItem("Цена, наличие, продавец и документы конкретной квартиры проверяются отдельно.")
+      );
+    }
+    if (primary) primary.textContent = "Проверить квартиры";
+    if (details) details.textContent = "Смотреть дом";
+    card.dataset.buyerContent = "confirmed-statement";
+    return true;
   }
 
-  function updateHomepageStructuredData() {
+  function updateHomepageStructuredData(pathFragment, name) {
     document.querySelectorAll('script[type="application/ld+json"]').forEach((script) => {
       try {
         const data = JSON.parse(script.textContent || "{}");
         const items = data?.mainEntity?.itemListElement;
         if (!Array.isArray(items)) return;
-        const project = items.find((item) => String(item?.url || "").includes("/catalog/prostornaya-4a/"));
+        const project = items.find((item) => String(item?.url || "").includes(pathFragment));
         if (!project) return;
-        project.name = "ЖК «Теллерманов сад»";
+        project.name = name;
         script.textContent = JSON.stringify(data);
       } catch (error) {
         // Невалидный или чужой JSON-LD не должен мешать странице.
@@ -83,20 +116,34 @@
     });
   }
 
-  fetch(PROFILE_URL, { credentials: "same-origin" })
-    .then((response) => {
+  function fetchProfile(url) {
+    return fetch(url, { credentials: "same-origin" }).then((response) => {
       if (!response.ok) throw new Error("Buyer profile unavailable");
       return response.json();
-    })
-    .then((profile) => {
-      const claims = getPublicClaims(profile);
-      if (!claims.has("complex_name") || !claims.has("complex_apartments_total")) return;
-      updateProjectOptions();
-      updateHomepageCard(claims);
-      updateHomepageStructuredData();
-      window.__NEWBUILD_BUYER_PROJECT_CONTENT__ = true;
-    })
-    .catch(() => {
-      updateProjectOptions();
     });
+  }
+
+  updateProjectOptions();
+
+  Promise.allSettled([fetchProfile(PROFILE_URL), fetchProfile(SENNAYA_PROFILE_URL)]).then((results) => {
+    const tellermanovProfile = results[0].status === "fulfilled" ? results[0].value : null;
+    const sennayaProfile = results[1].status === "fulfilled" ? results[1].value : null;
+
+    if (tellermanovProfile) {
+      const claims = getPublicClaims(tellermanovProfile);
+      if (claims.has("complex_name") && claims.has("complex_apartments_total")) {
+        updateTellermanovHomepageCard(claims);
+        updateHomepageStructuredData("/catalog/prostornaya-4a/", "ЖК «Теллерманов сад»");
+      }
+    }
+
+    if (sennayaProfile) {
+      const claims = getPublicClaims(sennayaProfile);
+      if (updateSennayaHomepageCard(claims)) {
+        updateHomepageStructuredData("/catalog/sennaya-76/", "Дом на Сенной 76");
+      }
+    }
+
+    window.__NEWBUILD_BUYER_PROJECT_CONTENT__ = true;
+  });
 })();
