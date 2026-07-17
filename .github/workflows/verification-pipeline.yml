@@ -73,7 +73,24 @@ jobs:
         run: node tools/validate-project-verification-summary.mjs
 
       - name: Validate readiness report
-        run: node tools/validate-project-readiness-report.mjs
+        id: readiness
+        continue-on-error: true
+        run: node tools/validate-project-readiness-report.mjs > readiness-diagnostics.txt 2>&1
+
+      - name: Upload readiness diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: readiness-diagnostics
+          path: readiness-diagnostics.txt
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Stop on readiness errors
+        if: steps.readiness.outcome == 'failure'
+        run: |
+          cat readiness-diagnostics.txt
+          exit 1
 
       - name: Validate source collection
         run: node tools/validate-source-collection.mjs
