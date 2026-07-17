@@ -130,7 +130,7 @@ const comparisonContracts = [
     profile: "../data/verification/sennaya-76.json",
     objectFragment: 'data-track-object="sennaya-76"',
     projectId: "sennaya-76",
-    minimumPublicClaims: 0
+    minimumPublicClaims: 14
   }
 ];
 if (count(comparisonSection, "data-catalog-verification-card") !== 3) {
@@ -212,7 +212,11 @@ for (const forbidden of [
   "sessionStorage",
   "document.cookie",
   "current_price",
-  "current_availability"
+  "current_availability",
+  "price_from",
+  "available_offers_count",
+  "seller_identity",
+  "commissioning_permit"
 ]) {
   if (runtime.includes(forbidden)) errors.push(`${runtimePath}: forbidden source detail, storage or volatile claim access: ${forbidden}`);
 }
@@ -228,6 +232,8 @@ for (const required of [
   "claim?.publication_allowed",
   "claim.value",
   'profile?.project_id === "tellermanov-sad"',
+  'profile?.project_id === "sennaya-76"',
+  "renderSennayaBuyerCard",
   "getPublicClaimMap",
   "textContent",
   'credentials: "same-origin"'
@@ -250,7 +256,7 @@ console.log(`Catalog question routes: ${qa?.routes?.length || 0}`);
 console.log(`Catalog comparison cards: ${count(comparisonSection, "data-catalog-verification-card")}`);
 console.log(`Active forms: ${activeFormIds.size}`);
 console.log("Exact characteristic filters: 0");
-console.log("Confirmed buyer claim values rendered for Tellermanov only.");
+console.log("Confirmed buyer claim values rendered for Tellermanov and Sennaya.");
 
 if (errors.length) {
   console.error("\nCatalog question route validation errors:");
