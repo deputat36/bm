@@ -39,6 +39,8 @@ const TRACKING_STORAGE_KEY = "newbuildsBorisoglebskTracking";
 const LEGACY_TRACKING_STORAGE_KEY = "prostornayaTracking";
 const DRAFT_STORAGE_KEY = "newbuildsBorisoglebskLeadsDraft";
 const LAST_LEAD_STORAGE_KEY = "newbuildsBorisoglebskLastLead";
+const TRACKING_VALUE_MAX_LENGTH = 240;
+const TRACKING_CONTROL_PATTERN = /[\u0000-\u001f\u007f]/g;
 
 function safeJsonParse(value, fallback) {
   try {
@@ -65,40 +67,105 @@ function safeStorageSet(key, value) {
   }
 }
 
+function sanitizeTrackingValue(value) {
+  return String(value || "")
+    .replace(TRACKING_CONTROL_PATTERN, "")
+    .trim()
+    .slice(0, TRACKING_VALUE_MAX_LENGTH);
+}
+
+function sanitizeLeadUrl(value) {
+  if (!value) return "";
+
+  try {
+    const url = new URL(String(value), window.location.origin);
+    url.search = "";
+    url.hash = "";
+    return url.href;
+  } catch (error) {
+    return "";
+  }
+}
+
+function sanitizeTrackingValues(values) {
+  const source = values && typeof values === "object" && !Array.isArray(values) ? values : {};
+  const sanitized = {};
+
+  TRACKING_KEYS.forEach((key) => {
+    const value = sanitizeTrackingValue(source[key]);
+    if (value) sanitized[key] = value;
+  });
+
+  return sanitized;
+}
+
+function sanitizeTrackingTouch(touch) {
+  if (!touch || typeof touch !== "object" || Array.isArray(touch)) return {};
+
+  const pageUrl = sanitizeLeadUrl(touch.page_url);
+  let pagePath = sanitizeTrackingValue(touch.page_path).split(/[?#]/)[0];
+
+  if (pageUrl) {
+    try {
+      pagePath = new URL(pageUrl).pathname;
+    } catch (error) {
+      // Keep the already sanitized path fallback.
+    }
+  }
+
+  return {
+    page_url: pageUrl,
+    page_path: pagePath,
+    page_title: sanitizeTrackingValue(touch.page_title),
+    referrer: sanitizeLeadUrl(touch.referrer),
+    captured_at: sanitizeTrackingValue(touch.captured_at),
+    values: sanitizeTrackingValues(touch.values)
+  };
+}
+
 function getTrackingData() {
   const params = new URLSearchParams(window.location.search);
-  const saved = safeJsonParse(safeStorageGet(TRACKING_STORAGE_KEY, "{}"), {});
-  const legacy = safeJsonParse(safeStorageGet(LEGACY_TRACKING_STORAGE_KEY, "{}"), {});
+  const savedRaw = safeJsonParse(safeStorageGet(TRACKING_STORAGE_KEY, "{}"), {});
+  const legacy = sanitizeTrackingValues(safeJsonParse(safeStorageGet(LEGACY_TRACKING_STORAGE_KEY, "{}"), {}));
   const incoming = {};
 
   TRACKING_KEYS.forEach((key) => {
-    const value = params.get(key);
-    if (value) incoming[key] = value.trim();
+    const value = sanitizeTrackingValue(params.get(key));
+    if (value) incoming[key] = value;
   });
 
+  const saved = {
+    first_touch: sanitizeTrackingTouch(savedRaw.first_touch),
+    last_touch: sanitizeTrackingTouch(savedRaw.last_touch),
+    current: sanitizeTrackingValues(savedRaw.current)
+  };
   const hasIncomingTracking = Object.keys(incoming).length > 0;
   const now = new Date().toISOString();
   const pageSnapshot = {
-    page_url: window.location.href,
+    page_url: sanitizeLeadUrl(window.location.href),
     page_path: window.location.pathname,
-    page_title: document.title,
-    referrer: document.referrer || "",
+    page_title: sanitizeTrackingValue(document.title),
+    referrer: sanitizeLeadUrl(document.referrer),
     captured_at: now
   };
 
-  const firstTouch = saved.first_touch || {
-    ...pageSnapshot,
-    values: { ...legacy, ...incoming }
-  };
+  const firstTouch = saved.first_touch.page_url
+    ? saved.first_touch
+    : {
+        ...pageSnapshot,
+        values: { ...legacy, ...incoming }
+      };
 
   const lastTouch = hasIncomingTracking
     ? { ...pageSnapshot, values: incoming }
-    : saved.last_touch || { ...pageSnapshot, values: { ...legacy } };
+    : saved.last_touch.page_url
+      ? saved.last_touch
+      : { ...pageSnapshot, values: { ...legacy } };
 
   const tracking = {
     first_touch: firstTouch,
     last_touch: lastTouch,
-    current: { ...legacy, ...(saved.current || {}), ...incoming }
+    current: sanitizeTrackingValues({ ...legacy, ...saved.current, ...incoming })
   };
 
   safeStorageSet(TRACKING_STORAGE_KEY, JSON.stringify(tracking));
@@ -204,9 +271,9 @@ function collectFormData(form) {
   data.phone_normalized = normalizePhone(data.phone);
   data.phone_for_contact = SITE_CONFIG.phoneDisplay;
   data.source = window.location.pathname;
-  data.page_url = window.location.href;
-  data.page_title = document.title;
-  data.referrer = document.referrer;
+  data.page_url = sanitizeLeadUrl(window.location.href);
+  data.page_title = sanitizeTrackingValue(document.title);
+  data.referrer = sanitizeLeadUrl(document.referrer);
   data.tracking = getTrackingData();
   data.lead_source = data.lead_source || data.tracking?.current?.lead_source || "";
   data.placement = data.placement || data.tracking?.current?.placement || "";
@@ -218,7 +285,6 @@ function collectFormData(form) {
   data.consent_text = getConsentText(form);
   data.policy_url = new URL(SITE_CONFIG.privacyPath, window.location.origin).href;
   data.consent_url = new URL(SITE_CONFIG.consentPath, window.location.origin).href;
-  data.user_agent = navigator.userAgent;
   data.submit_time_seconds = submitTimeSeconds;
   data.spam_check = {
     honeypot_empty: !honeypotFilled,
@@ -227,6 +293,7 @@ function collectFormData(form) {
     likely_bot: honeypotFilled
   };
   delete data.website;
+  delete data.user_agent;
   data.qualification = qualifyLead(data);
 
   return data;
