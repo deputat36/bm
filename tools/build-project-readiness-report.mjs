@@ -57,7 +57,12 @@ function buildProjectRow(indexEntry) {
   const claims = Array.isArray(verification?.claims) ? verification.claims : [];
   const criticalClaims = claims.filter((claim) => claim.importance === "critical");
   const confirmedCritical = criticalClaims.filter((claim) => claim.verification_status === "confirmed");
-  const verifiedSources = sources.filter((source) => source.status === "verified" && String(source.reference || "").trim());
+  const publicClaims = claims.filter(
+    (claim) => claim.verification_status === "confirmed" && claim.publication_allowed === true
+  );
+  const verifiedSources = sources.filter(
+    (source) => source.status === "verified" && String(source.reference || "").trim()
+  );
   const missingReferenceSources = sources.filter((source) => !String(source.reference || "").trim());
   const neededSources = Array.isArray(project.needed_sources) ? project.needed_sources : [];
   const pageNoindex = readPageNoindex(pageUrl);
@@ -70,6 +75,9 @@ function buildProjectRow(indexEntry) {
   if (!project.is_public_ready) blockers.push("project_not_public_ready");
   if (!pageNoindex && !project.is_public_ready) blockers.push("noindex_guard_missing");
   if (neededSources.length) blockers.push("needed_sources_not_collected");
+  if (claims.some((claim) => ["current_price", "current_availability"].includes(claim.field) && claim.publication_allowed !== true)) {
+    blockers.push("current_offer_unverified");
+  }
 
   const readinessStatus = project.is_public_ready
     ? "public_ready"
@@ -86,19 +94,20 @@ function buildProjectRow(indexEntry) {
     readiness_status: readinessStatus,
     is_public_ready: Boolean(project.is_public_ready),
     page_noindex: pageNoindex,
-    last_checked_at: project.last_checked_at || indexEntry.last_checked_at || "",
+    last_checked_at: verification?.updated_at || project.last_checked_at || indexEntry.last_checked_at || "",
     verification_file: verificationRelative || "",
     sources_total: sources.length,
     sources_verified: verifiedSources.length,
     sources_missing_reference: missingReferenceSources.length,
     claims_total: claims.length,
+    public_claims_total: publicClaims.length,
     critical_claims_total: criticalClaims.length,
     critical_claims_confirmed: confirmedCritical.length,
     needed_sources_total: neededSources.length,
     needed_sources: neededSources,
     blockers,
     lead_collection_allowed: Boolean(project.publication_rules?.can_collect_preliminary_leads ?? true),
-    confirmed_fact_publication_allowed: Boolean(project.is_public_ready)
+    confirmed_fact_publication_allowed: publicClaims.length > 0
   };
 }
 
@@ -112,9 +121,7 @@ const activeProjects = index.filter((item) => item.is_active !== false);
 const allRows = activeProjects.map(buildProjectRow);
 let rows = allRows;
 const statusFilter = getArg("status", "all").toLowerCase();
-if (statusFilter !== "all") {
-  rows = rows.filter((row) => row.readiness_status.toLowerCase() === statusFilter);
-}
+if (statusFilter !== "all") rows = rows.filter((row) => row.readiness_status.toLowerCase() === statusFilter);
 if (!rows.length) {
   console.error(`No project readiness rows found for status=${statusFilter}`);
   process.exit(1);
@@ -126,6 +133,7 @@ const summary = {
   requires_recheck: allRows.filter((row) => row.readiness_status === "requires_recheck").length,
   requires_sources: allRows.filter((row) => row.readiness_status === "requires_sources").length,
   projects_with_verified_sources: allRows.filter((row) => row.sources_verified > 0).length,
+  projects_with_public_claims: allRows.filter((row) => row.public_claims_total > 0).length,
   projects_with_noindex: allRows.filter((row) => row.page_noindex).length
 };
 
@@ -137,38 +145,24 @@ function renderMarkdown() {
     `Готово к публичной публикации: ${summary.public_ready}`,
     `Требует повторной проверки: ${summary.requires_recheck}`,
     `Требует первичных источников: ${summary.requires_sources}`,
+    `Имеют подтверждённые характеристики: ${summary.projects_with_public_claims}`,
     "",
-    "| Объект | Статус | Источники | Critical claims | Noindex | Блокеры |",
-    "|---|---|---:|---:|---|---|"
+    "| Объект | Статус | Источники | Подтверждённые характеристики | Critical claims | Noindex | Блокеры |",
+    "|---|---|---:|---:|---:|---|---|"
   ];
   rows.forEach((row) => {
-    lines.push(`| ${row.display_name} | ${row.readiness_status} | ${row.sources_verified}/${row.sources_total} verified | ${row.critical_claims_confirmed}/${row.critical_claims_total} confirmed | ${row.page_noindex ? "да" : "нет"} | ${row.blockers.join(", ") || "нет"} |`);
+    lines.push(`| ${row.display_name} | ${row.readiness_status} | ${row.sources_verified}/${row.sources_total} verified | ${row.public_claims_total} | ${row.critical_claims_confirmed}/${row.critical_claims_total} confirmed | ${row.page_noindex ? "да" : "нет"} | ${row.blockers.join(", ") || "нет"} |`);
   });
   return lines.join("\n");
 }
 
 function renderCsv() {
   const fields = [
-    "project_id",
-    "portal_slug",
-    "display_name",
-    "page_url",
-    "verification_status",
-    "readiness_status",
-    "is_public_ready",
-    "page_noindex",
-    "last_checked_at",
-    "verification_file",
-    "sources_total",
-    "sources_verified",
-    "sources_missing_reference",
-    "claims_total",
-    "critical_claims_total",
-    "critical_claims_confirmed",
-    "needed_sources_total",
-    "needed_sources",
-    "blockers",
-    "lead_collection_allowed",
+    "project_id", "portal_slug", "display_name", "page_url", "verification_status",
+    "readiness_status", "is_public_ready", "page_noindex", "last_checked_at",
+    "verification_file", "sources_total", "sources_verified", "sources_missing_reference",
+    "claims_total", "public_claims_total", "critical_claims_total", "critical_claims_confirmed",
+    "needed_sources_total", "needed_sources", "blockers", "lead_collection_allowed",
     "confirmed_fact_publication_allowed"
   ];
   return [
