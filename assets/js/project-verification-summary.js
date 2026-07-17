@@ -16,13 +16,17 @@
     const claims = Array.isArray(profile?.claims) ? profile.claims : [];
     const criticalClaims = claims.filter((claim) => claim?.importance === "critical");
     const confirmedCritical = criticalClaims.filter((claim) => claim?.verification_status === "confirmed");
+    const publicClaims = claims.filter(
+      (claim) => claim?.verification_status === "confirmed" && claim?.publication_allowed === true
+    );
 
     return {
       updatedAt: formatDate(profile?.updated_at),
       sourcesTotal: sources.length,
       sourcesVerified: sources.filter(isVerifiedSource).length,
       criticalTotal: criticalClaims.length,
-      criticalConfirmed: confirmedCritical.length
+      criticalConfirmed: confirmedCritical.length,
+      publicClaims: publicClaims.length
     };
   }
 
@@ -38,8 +42,10 @@
     block.setAttribute("role", "status");
     block.setAttribute("aria-label", "Статус проверки сведений об объекте");
 
-    metrics.textContent = `Внутренняя актуализация: ${summary.updatedAt}. Проверено источников: ${summary.sourcesVerified} из ${summary.sourcesTotal}. Подтверждено критических фактов: ${summary.criticalConfirmed} из ${summary.criticalTotal}.`;
-    note.textContent = "Точные характеристики не публикуются до принятия первичных источников и завершения юридической проверки.";
+    metrics.textContent = `Внутренняя актуализация: ${summary.updatedAt}. Проверено источников: ${summary.sourcesVerified} из ${summary.sourcesTotal}. Подтверждено критических фактов: ${summary.criticalConfirmed} из ${summary.criticalTotal}. Опубликовано подтверждённых характеристик: ${summary.publicClaims}.`;
+    note.textContent = summary.publicClaims > 0
+      ? "Подтверждённые характеристики показаны выше. Текущая цена, наличие квартир, акции и индивидуальные условия проверяются отдельно на дату обращения."
+      : "Характеристики объекта не публикуются до принятия первичных источников и завершения проверки.";
 
     block.append(metrics, note);
     if (heading) {
