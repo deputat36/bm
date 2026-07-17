@@ -32,66 +32,119 @@ const catalog = read(CATALOG_PATH);
 const profile = readJson(PROFILE_PATH);
 
 if (!page.includes('content="noindex,follow"')) {
-  errors.push(`${PAGE_PATH}: page must remain noindex,follow`);
+  errors.push(`${PAGE_PATH}: page must remain noindex,follow until the legal and launch gates are approved`);
 }
 if (!profile || profile.project_id !== "tellermanov-sad" || profile.portal_slug !== "prostornaya-4a") {
   errors.push(`${PROFILE_PATH}: profile identity mismatch`);
 }
+if (profile?.overall_status !== "requires_recheck") {
+  errors.push(`${PROFILE_PATH}: overall status must remain requires_recheck while current prices and availability are absent`);
+}
 
+const sources = Array.isArray(profile?.sources) ? profile.sources : [];
+const sourceMap = new Map(sources.map((source) => [source.id, source]));
 const claims = Array.isArray(profile?.claims) ? profile.claims : [];
 const publicClaims = claims.filter((claim) => claim.publication_allowed === true);
 const confirmedCritical = claims.filter(
   (claim) => claim.importance === "critical" && claim.verification_status === "confirmed"
 );
+const publicFields = new Set(publicClaims.map((claim) => claim.field));
 
-if (claims.length !== 23) errors.push(`${PROFILE_PATH}: expected 23 claims`);
-if (publicClaims.length !== 0) {
-  errors.push(`${PROFILE_PATH}: page validator must be reviewed when any claim becomes public`);
+for (const sourceId of ["official-developer-project-page", "official-developer-project-list", "project-declaration", "building-permit"]) {
+  const source = sourceMap.get(sourceId);
+  if (!source || source.status !== "verified" || !String(source.reference || "").startsWith("https://")) {
+    errors.push(`${PROFILE_PATH}: verified official source missing or invalid: ${sourceId}`);
+  }
 }
-if (confirmedCritical.length !== 0) {
-  errors.push(`${PROFILE_PATH}: page validator must be reviewed when a critical claim becomes confirmed`);
+
+const requiredPublicFields = [
+  "complex_name",
+  "address",
+  "builder_name",
+  "class",
+  "buildings_total",
+  "complex_apartments_total",
+  "ceiling_height",
+  "yard_area_m2",
+  "parking_spaces",
+  "handover",
+  "closed_yard",
+  "house_boiler",
+  "barrier_free_environment",
+  "video_surveillance",
+  "studio_area_from_m2",
+  "four_room_area_to_m2",
+  "energy_efficiency",
+  "finish_type",
+  "finish_includes",
+  "purchase_methods",
+  "project_documents_published"
+];
+for (const field of requiredPublicFields) {
+  if (!publicFields.has(field)) errors.push(`${PROFILE_PATH}: required buyer-facing public claim missing: ${field}`);
+}
+if (publicClaims.length < 21) errors.push(`${PROFILE_PATH}: expected at least 21 publication-allowed buyer claims`);
+if (confirmedCritical.length < 6) errors.push(`${PROFILE_PATH}: expected at least 6 confirmed critical claims`);
+
+for (const claim of publicClaims) {
+  if (claim.verification_status !== "confirmed") {
+    errors.push(`${PROFILE_PATH}: public claim ${claim.field} must be confirmed`);
+  }
+  for (const sourceId of claim.source_ids || []) {
+    if (sourceMap.get(sourceId)?.status !== "verified") {
+      errors.push(`${PROFILE_PATH}: public claim ${claim.field} uses non-verified source ${sourceId}`);
+    }
+  }
+}
+
+for (const field of ["current_price", "current_availability"]) {
+  const claim = claims.find((item) => item.field === field);
+  if (!claim || claim.publication_allowed !== false) {
+    errors.push(`${PROFILE_PATH}: ${field} must remain unpublished`);
+  }
 }
 
 const requiredPageFragments = [
-  "Собираем и проверяем сведения по адресу Просторная 4А",
-  "Что проверяется по объекту",
-  "Рабочие характеристики не публикуются как подтверждённые",
-  "Какие источники ещё нужны",
-  "Номера из старой рабочей карточки не выводятся как публичные реквизиты",
+  "ЖК «Теллерманов сад»",
+  "два дома на 194 квартиры",
+  "Закрытый двор",
+  "Своя котельная",
+  "От компактной студии до семейной квартиры",
+  "Улучшенная предчистовая отделка",
+  "Семейная ипотека",
+  "Проектная декларация",
+  "Официальная страница проекта",
+  "Портал является независимым каталогом",
+  "Цена, наличие и применимость программ покупки уточняются",
   'data-form-id="catalog_prostornaya_4a_quick_consultation"',
   'data-form-id="catalog_prostornaya_4a_priority_lead"',
-  'data-track-object="prostornaya-4a"'
+  'data-track-object="prostornaya-4a"',
+  'data-verification-profile="../../data/verification/prostornaya-4a.json"'
 ];
 for (const fragment of requiredPageFragments) {
-  if (!page.includes(fragment)) errors.push(`${PAGE_PATH}: missing safe fragment ${fragment}`);
+  if (!page.includes(fragment)) errors.push(`${PAGE_PATH}: missing buyer-content fragment ${fragment}`);
 }
 
-const forbiddenPageFragments = [
-  'data-schema-floors="9"',
-  "ЖК «Теллерманов сад»",
-  "9 этажей",
-  "1 подъезд",
-  "70 квартир",
-  "27,71",
-  "63,76",
-  "I квартал 2028",
-  "I квартале 2028",
-  "30.09.2028",
-  "36-001139",
-  "72480",
-  "36-04-13-2026",
-  "08.06.2026",
-  "26.06.2026",
-  "пассажирский лифт",
-  "кирпич / мелкоштучные каменные материалы"
+const forbiddenPagePatterns = [
+  /(?:цена|стоимость)\s*(?:от|=|:)\s*[\d\s]+(?:₽|руб)/i,
+  /(?:в наличии|свободно)\s+\d+\s+квартир/i,
+  /гарантированн(?:ая|ый|ое)\s+(?:сдача|одобрение|ставка|бронь)/i,
+  /официальный сайт ЖК/i,
+  /бесплатн(?:ая|ое) бронирован/i,
+  /фиксируем цену/i
 ];
-for (const fragment of forbiddenPageFragments) {
-  if (page.includes(fragment)) errors.push(`${PAGE_PATH}: unverified public fragment remains: ${fragment}`);
+for (const pattern of forbiddenPagePatterns) {
+  if (pattern.test(page)) errors.push(`${PAGE_PATH}: forbidden sales claim matched ${pattern}`);
+}
+
+const formIds = [...page.matchAll(/data-form-id="([^"]+)"/g)].map((match) => match[1]);
+if (formIds.length !== 2) errors.push(`${PAGE_PATH}: expected exactly 2 lead forms, found ${formIds.length}`);
+if (!page.includes('href="https://bm36.ru/projects/tellermanov-sad/"')) {
+  errors.push(`${PAGE_PATH}: official project source link is missing`);
 }
 
 const requiredCatalogFragments = [
   'data-catalog-verification-card data-verification-profile="../data/verification/prostornaya-4a.json"',
-  '<span class="eyebrow" data-verification-status>Загружаем статус проверки</span><h3>Просторная 4А</h3>',
   'data-verification-date',
   'data-verification-sources',
   'data-verification-critical',
@@ -100,26 +153,21 @@ const requiredCatalogFragments = [
 ];
 for (const fragment of requiredCatalogFragments) {
   if (!catalog.includes(fragment)) {
-    errors.push(`${CATALOG_PATH}: missing safe verification comparison fragment ${fragment}`);
+    errors.push(`${CATALOG_PATH}: missing verification comparison fragment ${fragment}`);
   }
-}
-if (catalog.includes('<span class="eyebrow">Данные частично подтверждены</span><h3>Просторная 4А</h3>')) {
-  errors.push(`${CATALOG_PATH}: outdated partially-confirmed label is forbidden`);
-}
-if (catalog.includes('<span class="eyebrow">Данные уточняются</span><h3>Просторная 4А</h3>')) {
-  errors.push(`${CATALOG_PATH}: static verification label must not replace profile-backed status`);
 }
 
 console.log(`Prostornaya claims checked: ${claims.length}`);
 console.log(`Publication-allowed claims: ${publicClaims.length}`);
 console.log(`Confirmed critical claims: ${confirmedCritical.length}`);
+console.log("Buyer content sections: advantages, apartments, finish, purchase, documents, FAQ");
 console.log("Project forms preserved: 2");
-console.log("Catalog status source: verification profile aggregate");
+console.log("Current price and availability remain unpublished");
 
 if (errors.length) {
-  console.error("\nProstornaya page verification safety errors:");
+  console.error("\nProstornaya buyer-content safety errors:");
   errors.forEach((error) => console.error(`- ${error}`));
   process.exit(1);
 }
 
-console.log("Prostornaya page verification safety validation passed.");
+console.log("Prostornaya buyer-content safety validation passed.");
