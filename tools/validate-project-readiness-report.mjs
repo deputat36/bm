@@ -7,7 +7,7 @@ const DOC_PATH = "docs/portal/PROJECT_VERIFICATION_READINESS.md";
 const EXPECTED = {
   "tellermanov-sad": { sourcesMin: 5, claimsMin: 30, criticalMin: 8, verifiedMin: 4, confirmedMin: 6, publicMin: 21 },
   "aerodromnaya-18g": { sources: 6, claims: 13, critical: 8, verified: 0, confirmed: 0, public: 0 },
-  "sennaya-76": { sources: 7, claims: 19, critical: 13, verified: 0, confirmed: 0, public: 0 }
+  "sennaya-76": { sourcesMin: 8, claimsMin: 32, criticalMin: 13, verifiedMin: 1, confirmedMin: 1, publicMin: 14 }
 };
 const errors = [];
 
@@ -118,6 +118,7 @@ for (const fragment of [
   "Требует первичных источников: 0",
   "Все три страницы сохраняют noindex,follow",
   "Подтверждённые характеристики разрешено показывать до полной готовности",
+  "Подтверждённые сведения есть у 2 из 3 объектов",
   "tellermanov-sad",
   "/catalog/prostornaya-4a/",
   "Источники: 4 из 5 проверены",
@@ -126,8 +127,11 @@ for (const fragment of [
   "Текущая цена и наличие не подтверждены",
   "Аэродромная 18Г",
   "Источники: 0 из 6 проверены",
-  "Сенная 76",
-  "Источники: 0 из 7 проверены"
+  "Дом на Сенной 76",
+  "Источники: 1 из 8 проверены",
+  "Critical claims: 1 из 13 подтверждён",
+  "Подтверждённые характеристики: 14",
+  "Интервью не заменяет разрешение на ввод, ЕГРН и документы продавца"
 ]) {
   if (!documentation.includes(fragment)) errors.push(`${DOC_PATH}: отсутствует актуальная сводка «${fragment}»`);
 }
@@ -137,7 +141,7 @@ if (documentation.includes("готово к индексации") || documentat
 }
 
 console.log(`Active projects checked: ${activeProjects.length}`);
-console.log("Projects with confirmed buyer facts: 1");
+console.log("Projects with confirmed buyer facts: 2");
 console.log("Public-ready projects: 0");
 
 if (errors.length) {

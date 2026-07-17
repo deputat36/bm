@@ -10,19 +10,19 @@ const PROJECTS = [
     page: "catalog/prostornaya-4a/index.html",
     profile: "data/verification/prostornaya-4a.json",
     htmlProfile: "../../data/verification/prostornaya-4a.json",
-    expected: { sourcesMin: 5, claimsMin: 30, criticalMin: 8, confirmedCriticalMin: 6, publicClaimsMin: 21 }
+    expected: { sourcesMin: 5, claimsMin: 30, criticalMin: 8, confirmedCriticalMin: 6, publicClaimsMin: 21, verifiedSourcesMin: 4 }
   },
   {
     page: "catalog/aerodromnaya-18g/index.html",
     profile: "data/verification/aerodromnaya-18g.json",
     htmlProfile: "../../data/verification/aerodromnaya-18g.json",
-    expected: { sources: 6, claims: 13, critical: 8, confirmedCritical: 0, publicClaims: 0 }
+    expected: { sources: 6, claims: 13, critical: 8, confirmedCritical: 0, publicClaims: 0, verifiedSources: 0 }
   },
   {
     page: "catalog/sennaya-76/index.html",
     profile: "data/verification/sennaya-76.json",
     htmlProfile: "../../data/verification/sennaya-76.json",
-    expected: { sources: 7, claims: 19, critical: 13, confirmedCritical: 0, publicClaims: 0 }
+    expected: { sourcesMin: 8, claimsMin: 32, criticalMin: 13, confirmedCriticalMin: 1, publicClaimsMin: 14, verifiedSourcesMin: 1 }
   }
 ];
 
@@ -131,14 +131,14 @@ for (const project of PROJECTS) {
     if (critical.length < project.expected.criticalMin) errors.push(`${project.profile}: expected at least ${project.expected.criticalMin} critical claims`);
     if (confirmedCritical.length < project.expected.confirmedCriticalMin) errors.push(`${project.profile}: expected confirmed critical progress`);
     if (publicClaims.length < project.expected.publicClaimsMin) errors.push(`${project.profile}: expected confirmed buyer claims`);
-    if (verifiedSources.length < 4) errors.push(`${project.profile}: expected verified official sources`);
+    if (verifiedSources.length < project.expected.verifiedSourcesMin) errors.push(`${project.profile}: expected verified source progress`);
   } else {
     if (sources.length !== project.expected.sources) errors.push(`${project.profile}: expected ${project.expected.sources} sources, found ${sources.length}`);
     if (claims.length !== project.expected.claims) errors.push(`${project.profile}: expected ${project.expected.claims} claims, found ${claims.length}`);
     if (critical.length !== project.expected.critical) errors.push(`${project.profile}: expected ${project.expected.critical} critical claims, found ${critical.length}`);
     if (confirmedCritical.length !== project.expected.confirmedCritical) errors.push(`${project.profile}: unexpected critical confirmation progress`);
     if (publicClaims.length !== project.expected.publicClaims) errors.push(`${project.profile}: unverified project must not expose public claims`);
-    if (verifiedSources.length !== 0) errors.push(`${project.profile}: unexpected verified source progress`);
+    if (verifiedSources.length !== project.expected.verifiedSources) errors.push(`${project.profile}: unexpected verified source progress`);
   }
 
   publicClaims.forEach((claim) => {

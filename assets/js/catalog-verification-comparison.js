@@ -12,7 +12,7 @@
   const CATEGORY_RULES = [
     {
       label: "Статус объекта",
-      fields: new Set(["address", "status", "sales_status", "official_name", "project_name", "complex_name"])
+      fields: new Set(["address", "status", "sales_status", "official_name", "project_name", "complex_name", "public_name"])
     },
     {
       label: "Застройщик и документы",
@@ -48,7 +48,12 @@
         "commissioning_date",
         "closed_yard",
         "house_boiler",
-        "parking_spaces"
+        "parking_spaces",
+        "facade_material_statement",
+        "roof_material_statement",
+        "individual_heating_statement",
+        "smart_home_statement",
+        "video_surveillance_statement"
       ])
     },
     {
@@ -145,12 +150,38 @@
     card.dataset.buyerContent = "confirmed";
   }
 
+  function renderSennayaBuyerCard(card, profile, claims) {
+    const publicClaims = getPublicClaimMap(claims);
+    if (!publicClaims.has("public_name") || !publicClaims.has("facade_material_statement")) return false;
+
+    const title = card.querySelector("h3");
+    if (title) title.textContent = "Дом на Сенной 76";
+
+    setText(card, "[data-verification-status]", "Публичные сведения представителя застройщика");
+    setText(card, "[data-verification-date]", `Источник проверен: ${formatDate(profile?.updated_at)}`);
+    setText(card, "[data-verification-sources]", "Кирпичный фасад · керамическая кровля · утепление фасада");
+    setText(card, "[data-verification-critical]", "Индивидуальное отопление · система «умный дом» · видеонаблюдение");
+    setText(card, "[data-verification-categories]", "Ландшафтный дизайн · автополив · энергоэффективное освещение; документы квартиры проверяются отдельно");
+
+    const primaryAction = card.querySelector('a[data-track-action="object_quick_consultation"]');
+    const detailsAction = card.querySelector('a[data-track-action="object_open"]');
+    if (primaryAction) primaryAction.textContent = "Проверить квартиры";
+    if (detailsAction) detailsAction.textContent = "Смотреть дом";
+    card.dataset.buyerContent = "confirmed-statement";
+    return true;
+  }
+
   function renderCard(card, profile) {
     const sources = Array.isArray(profile?.sources) ? profile.sources : [];
     const claims = Array.isArray(profile?.claims) ? profile.claims : [];
 
     if (profile?.project_id === "tellermanov-sad") {
       renderTellermanovBuyerCard(card, profile, claims);
+      card.dataset.verificationLoaded = "true";
+      return;
+    }
+
+    if (profile?.project_id === "sennaya-76" && renderSennayaBuyerCard(card, profile, claims)) {
       card.dataset.verificationLoaded = "true";
       return;
     }
