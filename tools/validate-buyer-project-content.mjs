@@ -51,7 +51,7 @@ requireFragments(runtimePath, runtime, [
   'select[name=\'residential_complex\'] option',
   'ЖК «Теллерманов сад» — ул. Просторная',
   'findHomepageProjectCard',
-  '2 дома · ${apartments} квартиры',
+  '${buildings} дома · ${apartments} квартиры',
   'Узнать цены и наличие',
   'window.__NEWBUILD_BUYER_PROJECT_CONTENT__ = true'
 ]);
