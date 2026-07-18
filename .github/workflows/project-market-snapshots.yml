@@ -1,0 +1,47 @@
+name: Project market snapshots
+
+on:
+  pull_request:
+    paths:
+      - "data/market-snapshots/**"
+      - "assets/js/project-market-snapshot.js"
+      - "assets/js/project-verification-summary.js"
+      - "catalog/aerodromnaya-18g/**"
+      - "catalog/sennaya-76/**"
+      - "tools/validate-project-market-snapshots.mjs"
+      - ".github/workflows/project-market-snapshots.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "data/market-snapshots/**"
+      - "assets/js/project-market-snapshot.js"
+      - "assets/js/project-verification-summary.js"
+      - "catalog/aerodromnaya-18g/**"
+      - "catalog/sennaya-76/**"
+      - "tools/validate-project-market-snapshots.mjs"
+      - ".github/workflows/project-market-snapshots.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-market-snapshots:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/project-market-snapshot.js
+          node --check assets/js/project-verification-summary.js
+          node --check tools/validate-project-market-snapshots.mjs
+
+      - name: Validate buyer market snapshots
+        run: node tools/validate-project-market-snapshots.mjs
