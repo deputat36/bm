@@ -1,25 +1,27 @@
 (() => {
+  const scriptUrl = document.currentScript?.src || "";
+  if (scriptUrl && !document.querySelector("script[data-project-market-snapshot-script]")) {
+    const script = document.createElement("script");
+    script.src = new URL("project-market-snapshot.js", scriptUrl).href;
+    script.async = true;
+    script.dataset.projectMarketSnapshotScript = "true";
+    document.head.appendChild(script);
+  }
+
   const sections = Array.from(document.querySelectorAll("[data-verification-summary]"));
   if (!sections.length) return;
-
-  function formatDate(value) {
+  const formatDate = (value) => {
     const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
     return match ? `${match[3]}.${match[2]}.${match[1]}` : "дата уточняется";
-  }
-
-  function isVerifiedSource(source) {
-    return source?.status === "verified" && /^https:\/\//i.test(String(source.reference || ""));
-  }
+  };
+  const isVerifiedSource = (source) => source?.status === "verified" && /^https:\/\//i.test(String(source.reference || ""));
 
   function createSummary(profile) {
     const sources = Array.isArray(profile?.sources) ? profile.sources : [];
     const claims = Array.isArray(profile?.claims) ? profile.claims : [];
     const criticalClaims = claims.filter((claim) => claim?.importance === "critical");
     const confirmedCritical = criticalClaims.filter((claim) => claim?.verification_status === "confirmed");
-    const publicClaims = claims.filter(
-      (claim) => claim?.verification_status === "confirmed" && claim?.publication_allowed === true
-    );
-
+    const publicClaims = claims.filter((claim) => claim?.verification_status === "confirmed" && claim?.publication_allowed === true);
     return {
       updatedAt: formatDate(profile?.updated_at),
       sourcesTotal: sources.length,
@@ -30,64 +32,45 @@
     };
   }
 
-  function renderSummary(section, summary) {
+  function insertBlock(section, block) {
     const container = section.querySelector(":scope > .container") || section;
     const heading = container.querySelector(":scope > .section__head");
+    if (heading) heading.insertAdjacentElement("afterend", block);
+    else container.prepend(block);
+  }
+
+  function renderSummary(section, summary) {
     const block = document.createElement("div");
     const metrics = document.createElement("p");
     const note = document.createElement("p");
-
     block.className = "notice project-verification-summary";
     block.dataset.verificationSummaryRendered = "true";
     block.setAttribute("role", "status");
     block.setAttribute("aria-label", "Статус проверки сведений об объекте");
-
     metrics.textContent = `Внутренняя актуализация: ${summary.updatedAt}. Проверено источников: ${summary.sourcesVerified} из ${summary.sourcesTotal}. Подтверждено критических фактов: ${summary.criticalConfirmed} из ${summary.criticalTotal}. Опубликовано подтверждённых характеристик: ${summary.publicClaims}.`;
     note.textContent = summary.publicClaims > 0
       ? "Подтверждённые характеристики показаны выше. Текущая цена, наличие квартир, акции и индивидуальные условия проверяются отдельно на дату обращения."
       : "Характеристики объекта не публикуются до принятия первичных источников и завершения проверки.";
-
     block.append(metrics, note);
-    if (heading) {
-      heading.insertAdjacentElement("afterend", block);
-    } else {
-      container.prepend(block);
-    }
+    insertBlock(section, block);
   }
 
   function renderUnavailable(section) {
-    const container = section.querySelector(":scope > .container") || section;
-    const heading = container.querySelector(":scope > .section__head");
     const block = document.createElement("div");
-
     block.className = "notice project-verification-summary";
     block.dataset.verificationSummaryRendered = "unavailable";
     block.setAttribute("role", "status");
     block.textContent = "Статус проверки временно недоступен. Уточните актуальные сведения перед консультацией.";
-
-    if (heading) {
-      heading.insertAdjacentElement("afterend", block);
-    } else {
-      container.prepend(block);
-    }
+    insertBlock(section, block);
   }
 
   sections.forEach(async (section) => {
     const profileUrl = String(section.dataset.verificationProfile || "").trim();
-    if (!profileUrl) {
-      renderUnavailable(section);
-      return;
-    }
-
+    if (!profileUrl) return renderUnavailable(section);
     try {
-      const response = await fetch(new URL(profileUrl, window.location.href), {
-        cache: "no-store",
-        credentials: "same-origin"
-      });
+      const response = await fetch(new URL(profileUrl, window.location.href), { cache: "no-store", credentials: "same-origin" });
       if (!response.ok) throw new Error(`Verification profile request failed: ${response.status}`);
-
-      const profile = await response.json();
-      renderSummary(section, createSummary(profile));
+      renderSummary(section, createSummary(await response.json()));
     } catch (error) {
       renderUnavailable(section);
     }
