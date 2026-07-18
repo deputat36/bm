@@ -6,7 +6,7 @@ const INDEX_PATH = "data/projects/index.json";
 const DOC_PATH = "docs/portal/PROJECT_VERIFICATION_READINESS.md";
 const EXPECTED = {
   "tellermanov-sad": { sourcesMin: 5, claimsMin: 30, criticalMin: 8, verifiedMin: 4, confirmedMin: 6, publicMin: 21 },
-  "aerodromnaya-18g": { sources: 6, claims: 13, critical: 8, verified: 0, confirmed: 0, public: 0 },
+  "aerodromnaya-18g": { sourcesMin: 8, claimsMin: 22, criticalMin: 8, verifiedMin: 2, confirmedMin: 1, publicMin: 9 },
   "sennaya-76": { sourcesMin: 8, claimsMin: 32, criticalMin: 13, verifiedMin: 1, confirmedMin: 1, publicMin: 14 }
 };
 const errors = [];
@@ -58,18 +58,14 @@ for (const [projectId, expected] of Object.entries(EXPECTED)) {
   const project = readJson(projectPath);
   if (!project) continue;
   if (project.id !== entry.id) errors.push(`${projectPath}: id не совпадает с индексом`);
-  if (project.is_public_ready !== false || entry.is_public_ready !== false) {
-    errors.push(`${projectId}: до полного запуска is_public_ready должен быть false`);
-  }
+  if (project.is_public_ready !== false || entry.is_public_ready !== false) errors.push(`${projectId}: до полного запуска is_public_ready должен быть false`);
 
   const verificationPath = repoPath(entry.verification_file || project.verification_file);
   if (!verificationPath) {
     errors.push(`${projectId}: verification_file обязателен`);
     continue;
   }
-  if (entry.verification_file !== project.verification_file) {
-    errors.push(`${projectId}: verification_file в индексе и проекте должен совпадать`);
-  }
+  if (entry.verification_file !== project.verification_file) errors.push(`${projectId}: verification_file в индексе и проекте должен совпадать`);
 
   const verification = readJson(verificationPath);
   if (!verification) continue;
@@ -77,39 +73,29 @@ for (const [projectId, expected] of Object.entries(EXPECTED)) {
   const claims = Array.isArray(verification.claims) ? verification.claims : [];
   const criticalClaims = claims.filter((claim) => claim.importance === "critical");
   const confirmedCritical = criticalClaims.filter((claim) => claim.verification_status === "confirmed");
-  const verifiedSources = sources.filter(
-    (source) => source.status === "verified" && /^https:\/\//i.test(String(source.reference || ""))
-  );
-  const publicClaims = claims.filter(
-    (claim) => claim.verification_status === "confirmed" && claim.publication_allowed === true
-  );
+  const verifiedSources = sources.filter((source) => source.status === "verified" && /^https:\/\//i.test(String(source.reference || "")));
+  const publicClaims = claims.filter((claim) => claim.verification_status === "confirmed" && claim.publication_allowed === true);
 
-  if (verification.overall_status !== "requires_recheck") {
-    errors.push(`${verificationPath}: overall_status должен оставаться requires_recheck`);
-  }
+  if (verification.overall_status !== "requires_recheck") errors.push(`${verificationPath}: overall_status должен оставаться requires_recheck`);
+  if (sources.length < expected.sourcesMin) errors.push(`${verificationPath}: недостаточно источников`);
+  if (claims.length < expected.claimsMin) errors.push(`${verificationPath}: недостаточно claims`);
+  if (criticalClaims.length < expected.criticalMin) errors.push(`${verificationPath}: недостаточно critical claims`);
+  if (verifiedSources.length < expected.verifiedMin) errors.push(`${verificationPath}: недостаточно verified sources`);
+  if (confirmedCritical.length < expected.confirmedMin) errors.push(`${verificationPath}: недостаточно confirmed critical claims`);
+  if (publicClaims.length < expected.publicMin) errors.push(`${verificationPath}: недостаточно buyer-facing public claims`);
 
-  if (expected.sourcesMin !== undefined) {
-    if (sources.length < expected.sourcesMin) errors.push(`${verificationPath}: недостаточно источников`);
-    if (claims.length < expected.claimsMin) errors.push(`${verificationPath}: недостаточно claims`);
-    if (criticalClaims.length < expected.criticalMin) errors.push(`${verificationPath}: недостаточно critical claims`);
-    if (verifiedSources.length < expected.verifiedMin) errors.push(`${verificationPath}: недостаточно verified sources`);
-    if (confirmedCritical.length < expected.confirmedMin) errors.push(`${verificationPath}: недостаточно confirmed critical claims`);
-    if (publicClaims.length < expected.publicMin) errors.push(`${verificationPath}: недостаточно buyer-facing public claims`);
-  } else {
-    if (sources.length !== expected.sources) errors.push(`${verificationPath}: ожидалось ${expected.sources} источников`);
-    if (claims.length !== expected.claims) errors.push(`${verificationPath}: ожидалось ${expected.claims} claims`);
-    if (criticalClaims.length !== expected.critical) errors.push(`${verificationPath}: ожидалось ${expected.critical} critical claims`);
-    if (verifiedSources.length !== expected.verified) errors.push(`${verificationPath}: неожиданный прогресс источников`);
-    if (confirmedCritical.length !== expected.confirmed) errors.push(`${verificationPath}: неожиданный прогресс critical claims`);
-    if (publicClaims.length !== expected.public) errors.push(`${verificationPath}: неподтверждённый объект не должен иметь public claims`);
+  for (const claim of publicClaims) {
+    const allVerified = (claim.source_ids || []).every((sourceId) => {
+      const source = sources.find((item) => item.id === sourceId);
+      return source?.status === "verified" && /^https:\/\//i.test(String(source.reference || ""));
+    });
+    if (!allVerified) errors.push(`${verificationPath}:${claim.field}: public claim требует verified HTTPS-источники`);
   }
 
   const pageUrl = entry.portal_detail_url || entry.detail_url || project.detail_url;
   const pageFile = resolvePageFile(pageUrl);
   const html = read(pageFile);
-  if (html && !html.includes('content="noindex,follow"') && !html.includes("content='noindex,follow'")) {
-    errors.push(`${pageFile}: страница должна оставаться noindex,follow`);
-  }
+  if (html && !html.includes('content="noindex,follow"') && !html.includes("content='noindex,follow'")) errors.push(`${pageFile}: страница должна оставаться noindex,follow`);
 }
 
 for (const fragment of [
@@ -118,15 +104,20 @@ for (const fragment of [
   "Требует первичных источников: 0",
   "Все три страницы сохраняют noindex,follow",
   "Подтверждённые характеристики разрешено показывать до полной готовности",
-  "Подтверждённые сведения есть у 2 из 3 объектов",
+  "Подтверждённые сведения есть у 3 из 3 объектов",
+  "Статус `verified` у источника означает, что проверено содержание конкретной публикации",
   "tellermanov-sad",
   "/catalog/prostornaya-4a/",
   "Источники: 4 из 5 проверены",
   "Critical claims: 6 из 8 подтверждены",
   "Подтверждённые характеристики: 25",
   "Текущая цена и наличие не подтверждены",
-  "Аэродромная 18Г",
-  "Источники: 0 из 6 проверены",
+  "ЖК «Чкалов» на Аэродромной 18Г",
+  "Источники: 2 из 8 проверены",
+  "Critical claims: 1 из 8 подтверждён",
+  "Подтверждённые характеристики: 9",
+  "не заменяют официальный источник",
+  "Рабочая информация о восьми секциях",
   "Дом на Сенной 76",
   "Источники: 1 из 8 проверены",
   "Critical claims: 1 из 13 подтверждён",
@@ -136,12 +127,10 @@ for (const fragment of [
   if (!documentation.includes(fragment)) errors.push(`${DOC_PATH}: отсутствует актуальная сводка «${fragment}»`);
 }
 
-if (documentation.includes("готово к индексации") || documentation.includes("данные полностью подтверждены")) {
-  errors.push(`${DOC_PATH}: нельзя заявлять полную готовность`);
-}
+if (documentation.includes("готово к индексации") || documentation.includes("данные полностью подтверждены")) errors.push(`${DOC_PATH}: нельзя заявлять полную готовность`);
 
 console.log(`Active projects checked: ${activeProjects.length}`);
-console.log("Projects with confirmed buyer facts: 2");
+console.log("Projects with confirmed buyer facts: 3");
 console.log("Public-ready projects: 0");
 
 if (errors.length) {
