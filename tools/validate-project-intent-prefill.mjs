@@ -21,9 +21,9 @@ const PROJECTS = [
   {
     page: "catalog/aerodromnaya-18g/index.html",
     objectId: "aerodromnaya-18g",
-    interest: "Схема покупки и договор",
-    label: "Проверить схему покупки",
-    placement: "project_purchase_scheme",
+    interest: "Продавец и договор",
+    label: "Проверить вариант",
+    placement: "project_faq",
     optionCount: 2,
     formIds: [
       "catalog_aerodromnaya_18g_quick_consultation",
@@ -92,9 +92,9 @@ for (const forbidden of [
 for (const project of PROJECTS) {
   const html = read(project.page);
   const ctaFragments = [
-    `href="#quick-lead"`,
+    'href="#quick-lead"',
     `data-prefill-interest="${project.interest}"`,
-    `data-track-action="intent_prefill"`,
+    'data-track-action="intent_prefill"',
     `data-track-placement="${project.placement}"`,
     `data-track-object="${project.objectId}"`,
     `>${project.label}</a>`
