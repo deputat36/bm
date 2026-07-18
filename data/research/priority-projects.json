@@ -27,7 +27,7 @@
     {
       "id": "aerodromnaya-18g",
       "portal_slug": "aerodromnaya-18g",
-      "display_name": "ЖК «Чкалов» на Аэродромной 18Г",
+      "display_name": "ЖК «Патриот» на Аэродромной 18Г",
       "address": "ул. Аэродромная, 18Г",
       "commercial_role": "priority_lead",
       "lead_type": "project_consultation",
@@ -36,7 +36,7 @@
       "is_public_ready": false,
       "data_file": "/data/projects/aerodromnaya-18g.json",
       "page_url": "/catalog/aerodromnaya-18g/",
-      "next_action": "Получить официальную карточку объекта, разрешения на ввод секций, ЕГРН, документы продавца и проект договора."
+      "next_action": "Получить официальный документ с названием ЖК «Патриот», карточку объекта, разрешения на ввод секций, ЕГРН, документы продавца и проект договора."
     },
     {
       "id": "sennaya-76",
