@@ -78,7 +78,7 @@ if (/name=["']robots["'][^>]*noindex/i.test(homepage)) errors.push(`${HOMEPAGE_P
 const publicReadyMatch = readiness.match(/Готово к публичной публикации:\s*(\d+)\s*из\s*(\d+)/i);
 const publicReady = publicReadyMatch ? Number(publicReadyMatch[1]) : NaN;
 const tellermanovConfirmedCritical = readCriticalProgress(readiness, "## ЖК «Теллерманов сад»");
-const aerodromnayaConfirmedCritical = readCriticalProgress(readiness, "## ЖК «Чкалов» на Аэродромной 18Г");
+const aerodromnayaConfirmedCritical = readCriticalProgress(readiness, "## ЖК «Патриот» на Аэродромной 18Г");
 const sennayaConfirmedCritical = readCriticalProgress(readiness, "## Дом на Сенной 76");
 
 if (![publicReady, tellermanovConfirmedCritical, aerodromnayaConfirmedCritical, sennayaConfirmedCritical].every(Number.isFinite)) {
@@ -99,7 +99,7 @@ for (const project of ["Просторная 4А", "Аэродромная 18Г"
 }
 
 const tellermanovPublicClaims = validatePublicClaims(TELLERMANOV_PROFILE_PATH, tellermanovProfile, 21);
-const aerodromnayaPublicClaims = validatePublicClaims(AERODROMNAYA_PROFILE_PATH, aerodromnayaProfile, 9);
+const aerodromnayaPublicClaims = validatePublicClaims(AERODROMNAYA_PROFILE_PATH, aerodromnayaProfile, 10);
 const sennayaPublicClaims = validatePublicClaims(SENNAYA_PROFILE_PATH, sennayaProfile, 14);
 
 for (const fragment of [
@@ -107,15 +107,16 @@ for (const fragment of [
   'CONFIRMED_STATUSES.has',
   'findHomepageProjectCard',
   'ЖК «Теллерманов сад»',
-  'ЖК «Чкалов»',
+  'ЖК «Патриот»',
   'Дом на Сенной 76',
   'updateTellermanovHomepageCard',
   'updateAerodromnayaHomepageCard',
   'updateSennayaHomepageCard',
-  'Публичные сведения площадки',
-  'Название и общие характеристики приведены по карточке ЦИАН.',
+  'Название подтверждено владельцем проекта',
+  'Название ЖК «Патриот» подтверждено владельцем проекта.',
   'Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире.',
   'Цена, наличие, продавец и документы конкретной квартиры проверяются отдельно.',
+  'updateHomepageStructuredData("/catalog/aerodromnaya-18g/", "ЖК «Патриот»")',
   'window.__NEWBUILD_BUYER_PROJECT_CONTENT__ = true'
 ]) {
   if (!runtime.includes(fragment)) errors.push(`${RUNTIME_PATH}: missing safe buyer fragment ${fragment}`);
@@ -126,7 +127,9 @@ for (const forbidden of [
   "api.web3forms.com", "WEB3FORMS_ACCESS_KEY", "current_price", "current_availability", "price_from",
   "available_offers_count", "seller_identity", "commissioning_permit", "commissioning_permits",
   "uncommissioned_sections_probable", "sales_status_uncommissioned", "contract_type", "developer_name",
-  "mortgage_availability", "area_max", "localStorage.setItem", "sessionStorage.setItem", "navigator.userAgent"
+  "mortgage_availability", "area_max", "localStorage.setItem", "sessionStorage.setItem", "navigator.userAgent",
+  'if (title) title.textContent = "ЖК «Чкалов»"',
+  'updateHomepageStructuredData("/catalog/aerodromnaya-18g/", "ЖК «Чкалов»")'
 ]) {
   if (runtime.includes(forbidden)) errors.push(`${RUNTIME_PATH}: forbidden token ${forbidden}`);
 }
@@ -141,7 +144,7 @@ for (const fragment of [
 console.log(`Public-ready projects: ${publicReady}`);
 console.log(`Confirmed critical claims: Tellermanov=${tellermanovConfirmedCritical}; Aerodromnaya=${aerodromnayaConfirmedCritical}; Sennaya=${sennayaConfirmedCritical}`);
 console.log(`Homepage confirmed buyer claims: Tellermanov=${tellermanovPublicClaims.length}; Aerodromnaya=${aerodromnayaPublicClaims.length}; Sennaya=${sennayaPublicClaims.length}`);
-console.log("Static fallback cards remain cautious; attributed buyer content loads from profiles.");
+console.log("Static fallback cards remain cautious; Patriot buyer content loads from the owner-confirmed verification profile.");
 
 if (errors.length) {
   console.error("\nHomepage verification safety errors:");
