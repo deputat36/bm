@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-07-17",
+  "updated_at": "2026-07-18",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "recommended_draft_not_operational",
   "purpose": "Рекомендательная карта первого контакта и следующего шага без CRM, действующего SLA и назначения ответственных.",
@@ -105,10 +105,10 @@
     {
       "id": "aerodromnaya-18g",
       "project_registry_id": "aerodromnaya-18g",
-      "verification_status": "requires_check",
+      "verification_status": "partially_confirmed",
       "source_check_required": true,
-      "first_contact_focus": "Зафиксировать интерес и не сообщать неподтверждённые характеристики как факт.",
-      "blocked_claim_categories": ["застройщик", "цены", "планировки", "сроки", "статус продаж"]
+      "first_contact_focus": "Уточнить конкретную квартиру и секцию, отделить сведения площадок о ЖК «Чкалов» от разрешений на ввод, ЕГРН, продавца, договора, цены и условий покупки.",
+      "blocked_claim_categories": ["официальное название", "нумерация секций", "разрешения на ввод", "ЕГРН", "застройщик конкретной секции", "продавец", "договорная схема", "точные площади", "актуальная цена", "наличие", "ипотека по конкретной квартире"]
     },
     {
       "id": "sennaya-76",

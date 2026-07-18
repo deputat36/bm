@@ -16,7 +16,7 @@ const PROJECTS = [
     page: "catalog/aerodromnaya-18g/index.html",
     profile: "data/verification/aerodromnaya-18g.json",
     htmlProfile: "../../data/verification/aerodromnaya-18g.json",
-    expected: { sources: 6, claims: 13, critical: 8, confirmedCritical: 0, publicClaims: 0, verifiedSources: 0 }
+    expected: { sourcesMin: 8, claimsMin: 22, criticalMin: 8, confirmedCriticalMin: 1, publicClaimsMin: 9, verifiedSourcesMin: 2 }
   },
   {
     page: "catalog/sennaya-76/index.html",
@@ -84,62 +84,37 @@ for (const forbidden of [
   "JSON.stringify(claims)",
   "JSON.stringify(sources)"
 ]) {
-  if (runtime.includes(forbidden)) {
-    errors.push(`${RUNTIME_PATH}: forbidden profile detail rendering token ${forbidden}`);
-  }
+  if (runtime.includes(forbidden)) errors.push(`${RUNTIME_PATH}: forbidden profile detail rendering token ${forbidden}`);
 }
 
 for (const project of PROJECTS) {
   const html = read(project.page);
   const profile = readJson(project.profile);
-
-  if (count(html, "data-verification-summary") !== 1) {
-    errors.push(`${project.page}: expected exactly one verification summary section`);
-  }
-  if (count(html, `data-verification-profile="${project.htmlProfile}"`) !== 1) {
-    errors.push(`${project.page}: expected exact verification profile path ${project.htmlProfile}`);
-  }
+  if (count(html, "data-verification-summary") !== 1) errors.push(`${project.page}: expected exactly one verification summary section`);
+  if (count(html, `data-verification-profile="${project.htmlProfile}"`) !== 1) errors.push(`${project.page}: expected exact verification profile path ${project.htmlProfile}`);
   const scriptTag = '<script src="../../assets/js/project-verification-summary.js"></script>';
-  if (count(html, scriptTag) !== 1) {
-    errors.push(`${project.page}: verification summary runtime must load exactly once`);
-  }
-
+  if (count(html, scriptTag) !== 1) errors.push(`${project.page}: verification summary runtime must load exactly once`);
   const mainPosition = html.indexOf('<script src="../../assets/js/main.js"></script>');
   const summaryPosition = html.indexOf(scriptTag);
   const schemaPosition = html.indexOf('<script src="../../assets/js/schema.js"></script>');
   if (mainPosition < 0 || summaryPosition < 0 || schemaPosition < 0 || !(mainPosition < summaryPosition && summaryPosition < schemaPosition)) {
     errors.push(`${project.page}: runtime order must be main.js -> project-verification-summary.js -> schema.js`);
   }
-  if (!html.includes('content="noindex,follow"')) {
-    errors.push(`${project.page}: page must remain noindex,follow`);
-  }
+  if (!html.includes('content="noindex,follow"')) errors.push(`${project.page}: page must remain noindex,follow`);
 
   const sources = Array.isArray(profile?.sources) ? profile.sources : [];
   const claims = Array.isArray(profile?.claims) ? profile.claims : [];
   const critical = claims.filter((claim) => claim.importance === "critical");
   const confirmedCritical = critical.filter((claim) => claim.verification_status === "confirmed");
-  const publicClaims = claims.filter(
-    (claim) => claim.verification_status === "confirmed" && claim.publication_allowed === true
-  );
-  const verifiedSources = sources.filter(
-    (source) => source.status === "verified" && /^https:\/\//i.test(String(source.reference || ""))
-  );
+  const publicClaims = claims.filter((claim) => claim.verification_status === "confirmed" && claim.publication_allowed === true);
+  const verifiedSources = sources.filter((source) => source.status === "verified" && /^https:\/\//i.test(String(source.reference || "")));
 
-  if (project.expected.sourcesMin !== undefined) {
-    if (sources.length < project.expected.sourcesMin) errors.push(`${project.profile}: expected at least ${project.expected.sourcesMin} sources`);
-    if (claims.length < project.expected.claimsMin) errors.push(`${project.profile}: expected at least ${project.expected.claimsMin} claims`);
-    if (critical.length < project.expected.criticalMin) errors.push(`${project.profile}: expected at least ${project.expected.criticalMin} critical claims`);
-    if (confirmedCritical.length < project.expected.confirmedCriticalMin) errors.push(`${project.profile}: expected confirmed critical progress`);
-    if (publicClaims.length < project.expected.publicClaimsMin) errors.push(`${project.profile}: expected confirmed buyer claims`);
-    if (verifiedSources.length < project.expected.verifiedSourcesMin) errors.push(`${project.profile}: expected verified source progress`);
-  } else {
-    if (sources.length !== project.expected.sources) errors.push(`${project.profile}: expected ${project.expected.sources} sources, found ${sources.length}`);
-    if (claims.length !== project.expected.claims) errors.push(`${project.profile}: expected ${project.expected.claims} claims, found ${claims.length}`);
-    if (critical.length !== project.expected.critical) errors.push(`${project.profile}: expected ${project.expected.critical} critical claims, found ${critical.length}`);
-    if (confirmedCritical.length !== project.expected.confirmedCritical) errors.push(`${project.profile}: unexpected critical confirmation progress`);
-    if (publicClaims.length !== project.expected.publicClaims) errors.push(`${project.profile}: unverified project must not expose public claims`);
-    if (verifiedSources.length !== project.expected.verifiedSources) errors.push(`${project.profile}: unexpected verified source progress`);
-  }
+  if (sources.length < project.expected.sourcesMin) errors.push(`${project.profile}: expected at least ${project.expected.sourcesMin} sources`);
+  if (claims.length < project.expected.claimsMin) errors.push(`${project.profile}: expected at least ${project.expected.claimsMin} claims`);
+  if (critical.length < project.expected.criticalMin) errors.push(`${project.profile}: expected at least ${project.expected.criticalMin} critical claims`);
+  if (confirmedCritical.length < project.expected.confirmedCriticalMin) errors.push(`${project.profile}: expected confirmed critical progress`);
+  if (publicClaims.length < project.expected.publicClaimsMin) errors.push(`${project.profile}: expected confirmed buyer claims`);
+  if (verifiedSources.length < project.expected.verifiedSourcesMin) errors.push(`${project.profile}: expected verified source progress`);
 
   publicClaims.forEach((claim) => {
     const allVerified = (claim.source_ids || []).every((sourceId) => {

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "updated_at": "2026-07-16",
+  "updated_at": "2026-07-18",
   "project_id": "aerodromnaya-18g",
   "portal_slug": "aerodromnaya-18g",
   "page_url": "/catalog/aerodromnaya-18g/",
@@ -31,13 +31,31 @@
       "notes": "Сообщено, что большинство секций введено и продано, а две семиэтажные секции предположительно №3 и №5 ещё не введены и продаются за наличные. Требуется документальное подтверждение."
     },
     {
+      "id": "cian-complex-card",
+      "source_type": "verified_secondary_marketplace_profile",
+      "title": "Карточка ЖК «Чкалов» на ЦИАН",
+      "reference": "https://zhk-chkalov-voronezh-i.cian.ru/",
+      "status": "verified",
+      "last_checked_at": "2026-07-18",
+      "notes": "Источник подтверждает, какие сведения о названии, адресе, застройщике и характеристиках публикует ЦИАН. Не заменяет официальную карточку наш.дом.рф, разрешения на строительство или ввод, проектную декларацию, ЕГРН и документы продавца. Данные о цене, наличии и сроках считаются изменяемыми и не публикуются из verification-профиля."
+    },
+    {
+      "id": "yandex-address-listings",
+      "source_type": "verified_secondary_marketplace_listings",
+      "title": "Объявления по адресу Аэродромная 18Г на Яндекс Недвижимости",
+      "reference": "https://realty.yandex.ru/borisoglebsk/kupit/kvartira/st-aehrodromnaya-ulica-115486/",
+      "status": "verified",
+      "last_checked_at": "2026-07-18",
+      "notes": "Источник подтверждает наличие рыночных объявлений по адресу и показывает неоднородные сведения о квартирах и частях дома. Он не подтверждает юридический статус секций, продавца, договорную схему, актуальность конкретного предложения или допустимость ипотеки."
+    },
+    {
       "id": "public-object-registry",
       "source_type": "public_object_registry",
       "title": "Официальная карточка объекта или здания",
       "reference": "",
       "status": "reference_required",
-      "last_checked_at": "2026-07-15",
-      "notes": "Нужна точная официальная ссылка по адресу, кадастровому номеру или разрешению."
+      "last_checked_at": "2026-07-18",
+      "notes": "Нужна точная официальная ссылка по адресу, кадастровому номеру или разрешению. Поиск 18 июля 2026 года не дал проверяемой карточки наш.дом.рф или ГИС ЖКХ по точному объекту."
     },
     {
       "id": "commissioning-documents",
@@ -45,7 +63,7 @@
       "title": "Разрешения на ввод секций или подъездов",
       "reference": "",
       "status": "reference_required",
-      "last_checked_at": "2026-07-15",
+      "last_checked_at": "2026-07-18",
       "notes": "Нужны документы с официальной нумерацией и составом введённых частей объекта."
     },
     {
@@ -54,7 +72,7 @@
       "title": "Продавец и действующая договорная схема",
       "reference": "",
       "status": "reference_required",
-      "last_checked_at": "2026-07-15",
+      "last_checked_at": "2026-07-18",
       "notes": "Нужны реквизиты продавца, образец договора, основание распоряжения квартирами и получатель оплаты."
     },
     {
@@ -63,7 +81,7 @@
       "title": "Права на фотографии, планы и схемы",
       "reference": "",
       "status": "reference_required",
-      "last_checked_at": "2026-07-15",
+      "last_checked_at": "2026-07-18",
       "notes": "Материалы нельзя публиковать без подтверждения правообладателя и допустимых каналов использования."
     }
   ],
@@ -72,10 +90,82 @@
       "field": "address",
       "value": "ул. Аэродромная, 18Г",
       "importance": "critical",
-      "verification_status": "secondary_only",
-      "source_ids": ["working-due-diligence-report"],
-      "checked_at": "2026-07-15",
-      "publication_allowed": false
+      "verification_status": "confirmed",
+      "source_ids": ["cian-complex-card", "yandex-address-listings"],
+      "checked_at": "2026-07-18",
+      "publication_allowed": true
+    },
+    {
+      "field": "public_name",
+      "value": "ЖК «Чкалов»",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["cian-complex-card"],
+      "checked_at": "2026-07-18",
+      "publication_allowed": true
+    },
+    {
+      "field": "developer_attribution_statement",
+      "value": "ЦИАН указывает застройщиком ООО «Первая Строительная Компания»",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["cian-complex-card"],
+      "checked_at": "2026-07-18",
+      "publication_allowed": true
+    },
+    {
+      "field": "building_type_statement",
+      "value": "В карточке ЦИАН объект указан как кирпичный",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["cian-complex-card"],
+      "checked_at": "2026-07-18",
+      "publication_allowed": true
+    },
+    {
+      "field": "floor_range_statement",
+      "value": "В карточке ЦИАН указана этажность 3–7",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["cian-complex-card"],
+      "checked_at": "2026-07-18",
+      "publication_allowed": true
+    },
+    {
+      "field": "ceiling_height_statement",
+      "value": "В карточке ЦИАН указана высота потолков 2,7 м",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["cian-complex-card"],
+      "checked_at": "2026-07-18",
+      "publication_allowed": true
+    },
+    {
+      "field": "finish_statement",
+      "value": "В карточке ЦИАН указана черновая отделка",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["cian-complex-card"],
+      "checked_at": "2026-07-18",
+      "publication_allowed": true
+    },
+    {
+      "field": "guest_parking_statement",
+      "value": "В карточке ЦИАН указана гостевая парковка",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["cian-complex-card"],
+      "checked_at": "2026-07-18",
+      "publication_allowed": true
+    },
+    {
+      "field": "territory_features_statement",
+      "value": "В карточке ЦИАН перечислены детская и спортивная площадки и места отдыха",
+      "importance": "standard",
+      "verification_status": "confirmed",
+      "source_ids": ["cian-complex-card"],
+      "checked_at": "2026-07-18",
+      "publication_allowed": true
     },
     {
       "field": "sections_total",
@@ -137,7 +227,7 @@
       "importance": "critical",
       "verification_status": "not_found",
       "source_ids": ["seller-contract"],
-      "checked_at": "2026-07-15",
+      "checked_at": "2026-07-18",
       "publication_allowed": false
     },
     {
@@ -146,7 +236,7 @@
       "importance": "critical",
       "verification_status": "not_found",
       "source_ids": ["seller-contract"],
-      "checked_at": "2026-07-15",
+      "checked_at": "2026-07-18",
       "publication_allowed": false
     },
     {
@@ -155,7 +245,7 @@
       "importance": "critical",
       "verification_status": "not_found",
       "source_ids": ["commissioning-documents"],
-      "checked_at": "2026-07-15",
+      "checked_at": "2026-07-18",
       "publication_allowed": false
     },
     {
@@ -164,7 +254,7 @@
       "importance": "critical",
       "verification_status": "not_found",
       "source_ids": ["public-object-registry"],
-      "checked_at": "2026-07-15",
+      "checked_at": "2026-07-18",
       "publication_allowed": false
     },
     {
@@ -173,7 +263,7 @@
       "importance": "volatile",
       "verification_status": "not_found",
       "source_ids": ["seller-contract"],
-      "checked_at": "2026-07-15",
+      "checked_at": "2026-07-18",
       "publication_allowed": false
     },
     {
@@ -182,7 +272,16 @@
       "importance": "volatile",
       "verification_status": "not_found",
       "source_ids": ["seller-contract"],
-      "checked_at": "2026-07-15",
+      "checked_at": "2026-07-18",
+      "publication_allowed": false
+    },
+    {
+      "field": "current_market_listings",
+      "value": "На площадках присутствуют объявления по адресу",
+      "importance": "volatile",
+      "verification_status": "confirmed",
+      "source_ids": ["cian-complex-card", "yandex-address-listings"],
+      "checked_at": "2026-07-18",
       "publication_allowed": false
     }
   ],
@@ -191,13 +290,23 @@
       "id": "section-numbering-and-commissioning",
       "status": "requires_document_confirmation",
       "summary": "Нужно сопоставить рабочую нумерацию секций с разрешениями на ввод и кадастровыми данными."
+    },
+    {
+      "id": "public-project-name",
+      "status": "requires_document_confirmation",
+      "summary": "ЦИАН использует название ЖК «Чкалов», в рыночных объявлениях также встречается ЖК «Патриот». Официальное наименование нужно подтвердить документом застройщика или ЕИСЖС."
+    },
+    {
+      "id": "marketplace-characteristics-scope",
+      "status": "requires_document_confirmation",
+      "summary": "Площадки могут объединять введённые и строящиеся части под одним адресом. Этажность, отделка и другие характеристики нельзя автоматически переносить на каждую секцию."
     }
   ],
   "legal_gates": [
-    "Подтвердить официальную нумерацию секций",
+    "Подтвердить официальное название и нумерацию секций",
     "Получить разрешения на ввод уже введённых частей",
     "Подтвердить статус предполагаемых секций №3 и №5",
-    "Проверить продавца и основание распоряжения квартирами",
+    "Проверить застройщика, продавца и основание распоряжения квартирами",
     "Проверить договор, получателя денег и момент возникновения права покупателя"
   ],
   "excluded_claims": [
