@@ -25,9 +25,9 @@ function readJson(relativePath) {
 }
 
 function requireFragments(relativePath, content, fragments) {
-  fragments.forEach((fragment) => {
+  for (const fragment of fragments) {
     if (!content.includes(fragment)) errors.push(`${relativePath}: missing fragment ${fragment}`);
-  });
+  }
 }
 
 function validatePublicClaims(profilePath, profile, expectedValues, minimumPublicClaims) {
@@ -37,21 +37,21 @@ function validatePublicClaims(profilePath, profile, expectedValues, minimumPubli
   const publicClaims = claims.filter((claim) => claim.publication_allowed === true);
   const publicMap = new Map(publicClaims.map((claim) => [claim.field, claim.value]));
 
-  expectedValues.forEach((expected, field) => {
+  for (const [field, expected] of expectedValues) {
     if (publicMap.get(field) !== expected) errors.push(`${profilePath}: ${field} must equal ${JSON.stringify(expected)}`);
-  });
+  }
   if (publicClaims.length < minimumPublicClaims) errors.push(`${profilePath}: buyer profile must expose at least ${minimumPublicClaims} confirmed claims`);
 
-  publicClaims.forEach((claim) => {
+  for (const claim of publicClaims) {
     if (claim.verification_status !== "confirmed") errors.push(`${profilePath}: public claim ${claim.field} is not confirmed`);
     if (!Array.isArray(claim.source_ids) || !claim.source_ids.length) errors.push(`${profilePath}: public claim ${claim.field} needs sources`);
-    (claim.source_ids || []).forEach((sourceId) => {
+    for (const sourceId of claim.source_ids || []) {
       const source = sourceMap.get(sourceId);
       if (!source || source.status !== "verified" || !String(source.reference || "").startsWith("https://")) {
         errors.push(`${profilePath}: public claim ${claim.field} has invalid source ${sourceId}`);
       }
-    });
-  });
+    }
+  }
   return { claims, sources, publicClaims };
 }
 
@@ -63,16 +63,23 @@ const configs = {
   tellermanov: {
     profilePath: "data/verification/prostornaya-4a.json",
     pagePath: "catalog/prostornaya-4a/index.html",
+    minimum: 21,
     expected: new Map([
-      ["complex_name", "ЖК «Теллерманов сад»"], ["buildings_total", 2], ["complex_apartments_total", 194],
-      ["ceiling_height", 2.7], ["yard_area_m2", 1730], ["parking_spaces", 130],
-      ["studio_area_from_m2", 25], ["four_room_area_to_m2", 92], ["energy_efficiency", "A"]
-    ]),
-    minimum: 21
+      ["complex_name", "ЖК «Теллерманов сад»"],
+      ["buildings_total", 2],
+      ["complex_apartments_total", 194],
+      ["ceiling_height", 2.7],
+      ["yard_area_m2", 1730],
+      ["parking_spaces", 130],
+      ["studio_area_from_m2", 25],
+      ["four_room_area_to_m2", 92],
+      ["energy_efficiency", "A"]
+    ])
   },
   aerodromnaya: {
     profilePath: "data/verification/aerodromnaya-18g.json",
     pagePath: "catalog/aerodromnaya-18g/index.html",
+    minimum: 9,
     expected: new Map([
       ["address", "ул. Аэродромная, 18Г"],
       ["public_name", "ЖК «Чкалов»"],
@@ -83,22 +90,22 @@ const configs = {
       ["finish_statement", "В карточке ЦИАН указана черновая отделка"],
       ["guest_parking_statement", "В карточке ЦИАН указана гостевая парковка"],
       ["territory_features_statement", "В карточке ЦИАН перечислены детская и спортивная площадки и места отдыха"]
-    ]),
-    minimum: 9
+    ])
   },
   sennaya: {
     profilePath: "data/verification/sennaya-76.json",
     pagePath: "catalog/sennaya-76/index.html",
+    minimum: 14,
     expected: new Map([
-      ["address", "ул. Сенная, 76"], ["public_name", "Дом на Сенной 76"],
+      ["address", "ул. Сенная, 76"],
+      ["public_name", "Дом на Сенной 76"],
       ["developer_representative_role", "Главный инженер компании-застройщика"],
       ["facade_material_statement", "В публичном интервью заявлен фасад из голландского кирпича"],
       ["roof_material_statement", "В публичном интервью заявлена кровля из керамической черепицы"],
       ["individual_heating_statement", "Представитель застройщика сообщил об индивидуальном отоплении"],
-      ["smart_home_statement", "В публичном интервью заявлена система «умный дом»],
+      ["smart_home_statement", "В публичном интервью заявлена система «умный дом»"],
       ["video_surveillance_statement", "В публичном интервью заявлены камеры видеонаблюдения внутри и снаружи дома"]
-    ]),
-    minimum: 14
+    ])
   }
 };
 
@@ -106,10 +113,12 @@ const runtime = read(runtimePath);
 const loader = read(loaderPath);
 const catalogRuntime = read(catalogRuntimePath);
 const home = read(homePath);
-const loaded = Object.fromEntries(Object.entries(configs).map(([key, config]) => [key, {
-  page: read(config.pagePath),
-  profile: readJson(config.profilePath)
-}]));
+const loaded = Object.fromEntries(
+  Object.entries(configs).map(([key, config]) => [key, {
+    page: read(config.pagePath),
+    profile: readJson(config.profilePath)
+  }])
+);
 
 requireFragments(runtimePath, runtime, [
   'new URL("../../data/verification/prostornaya-4a.json", scriptUrl).href',
@@ -117,7 +126,7 @@ requireFragments(runtimePath, runtime, [
   'new URL("../../data/verification/sennaya-76.json", scriptUrl).href',
   'claim?.publication_allowed === true',
   'CONFIRMED_STATUSES.has',
-  'select[name=\'residential_complex\'] option',
+  "select[name='residential_complex'] option",
   'ЖК «Теллерманов сад» — ул. Просторная',
   'ЖК «Чкалов» — Аэродромная 18Г',
   'Дом на Сенной 76',
@@ -146,39 +155,57 @@ requireFragments(catalogRuntimePath, catalogRuntime, [
 ]);
 
 requireFragments(configs.tellermanov.pagePath, loaded.tellermanov.page, [
-  '<h1>ЖК «Теллерманов сад»</h1>', 'два дома на 194 квартиры', 'Комфорт не только внутри квартиры',
-  'Улучшенная предчистовая отделка', 'Покупатель может проверить первичные документы',
-  'href="https://bm36.ru/projects/tellermanov-sad/"', 'Цена, наличие и применимость программ покупки уточняются'
+  '<h1>ЖК «Теллерманов сад»</h1>',
+  'два дома на 194 квартиры',
+  'Улучшенная предчистовая отделка',
+  'Покупатель может проверить первичные документы',
+  'href="https://bm36.ru/projects/tellermanov-sad/"',
+  'Цена, наличие и применимость программ покупки уточняются'
 ]);
 requireFragments(configs.aerodromnaya.pagePath, loaded.aerodromnaya.page, [
   '<h1>ЖК «Чкалов» на Аэродромной 18Г</h1>',
   'ЦИАН ведёт объект по адресу Аэродромная, 18Г как ЖК «Чкалов»',
-  'Что опубликовано о комплексе', 'Один адрес может объединять разные части дома',
+  'Что опубликовано о комплексе',
+  'Один адрес может объединять разные части дома',
   'href="https://zhk-chkalov-voronezh-i.cian.ru/"',
   'href="https://realty.yandex.ru/borisoglebsk/kupit/kvartira/st-aehrodromnaya-ulica-115486/"',
-  'Сведения площадок отделены от юридических фактов', 'Нужны первичные документы',
+  'Сведения площадок отделены от юридических фактов',
+  'Нужны первичные документы',
   'Цена, наличие, секция и юридический статус квартиры проверяются отдельно'
 ]);
 requireFragments(configs.sennaya.pagePath, loaded.sennaya.page, [
-  '<h1>Дом на Сенной 76</h1>', 'Характеристики ниже основаны на публичном интервью главного инженера компании-застройщика',
-  'Материалы и долговечность', 'Инженерия и расходы', 'Двор и безопасность',
+  '<h1>Дом на Сенной 76</h1>',
+  'Характеристики ниже основаны на публичном интервью главного инженера компании-застройщика',
+  'Материалы и долговечность',
+  'Инженерия и расходы',
+  'Двор и безопасность',
   'href="https://ria-glas.ru/2024/blagoustroistvo/novyj-dom-na-ulicze-sennaya-76-chto-za-fasadom/"',
-  'Постоянные сведения отделены от сделки', 'Цена, наличие и юридический статус конкретной квартиры проверяются отдельно'
+  'Постоянные сведения отделены от сделки',
+  'Цена, наличие и юридический статус конкретной квартиры проверяются отдельно'
 ]);
 
 for (const objectId of ["prostornaya-4a", "aerodromnaya-18g", "sennaya-76"]) {
   if (!home.includes(`data-track-object="${objectId}"`)) errors.push(`${homePath}: homepage CTA missing for ${objectId}`);
 }
 
-const results = Object.fromEntries(Object.entries(configs).map(([key, config]) => [key,
-  validatePublicClaims(config.profilePath, loaded[key].profile, config.expected, config.minimum)
-]));
+const results = Object.fromEntries(
+  Object.entries(configs).map(([key, config]) => [key, validatePublicClaims(
+    config.profilePath,
+    loaded[key].profile,
+    config.expected,
+    config.minimum
+  )])
+);
 
 for (const field of ["current_price", "current_availability"]) {
   const claim = results.tellermanov.claims.find((item) => item.field === field);
   if (!claim || claim.publication_allowed !== false) errors.push(`${configs.tellermanov.profilePath}: ${field} must remain private`);
 }
-for (const field of ["sections_total", "commissioning_model", "uncommissioned_sections_probable", "sales_status_uncommissioned", "contract_type", "seller_identity", "commissioning_permits", "developer_name", "mortgage_availability", "price", "current_market_listings"]) {
+for (const field of [
+  "sections_total", "commissioning_model", "uncommissioned_sections_probable", "sales_status_uncommissioned",
+  "contract_type", "seller_identity", "commissioning_permits", "developer_name", "mortgage_availability",
+  "price", "current_market_listings"
+]) {
   const claim = results.aerodromnaya.claims.find((item) => item.field === field);
   if (!claim || claim.publication_allowed !== false) errors.push(`${configs.aerodromnaya.profilePath}: ${field} must remain private`);
 }
@@ -207,7 +234,8 @@ for (const [key, config] of Object.entries(configs)) {
 
 for (const fragment of [
   "api.web3forms.com", "WEB3FORMS_ACCESS_KEY", "sendLead(", "collectFormData(", "navigator.userAgent",
-  "localStorage.setItem", "sessionStorage.setItem", "price_from", "available_offers_count", "seller_identity", "commissioning_permit"
+  "localStorage.setItem", "sessionStorage.setItem", "price_from", "available_offers_count",
+  "seller_identity", "commissioning_permit"
 ]) {
   if (runtime.includes(fragment)) errors.push(`${runtimePath}: buyer runtime must not contain ${fragment}`);
 }
