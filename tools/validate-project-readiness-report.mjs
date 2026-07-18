@@ -6,7 +6,7 @@ const INDEX_PATH = "data/projects/index.json";
 const DOC_PATH = "docs/portal/PROJECT_VERIFICATION_READINESS.md";
 const EXPECTED = {
   "tellermanov-sad": { sourcesMin: 5, claimsMin: 30, criticalMin: 8, verifiedMin: 4, confirmedMin: 6, publicMin: 21 },
-  "aerodromnaya-18g": { sourcesMin: 8, claimsMin: 22, criticalMin: 8, verifiedMin: 2, confirmedMin: 1, publicMin: 9 },
+  "aerodromnaya-18g": { sourcesMin: 9, claimsMin: 23, criticalMin: 8, verifiedMin: 3, confirmedMin: 1, publicMin: 10 },
   "sennaya-76": { sourcesMin: 8, claimsMin: 32, criticalMin: 13, verifiedMin: 1, confirmedMin: 1, publicMin: 14 }
 };
 const errors = [];
@@ -112,10 +112,12 @@ for (const fragment of [
   "Critical claims: 6 из 8 подтверждены",
   "Подтверждённые характеристики: 25",
   "Текущая цена и наличие не подтверждены",
-  "ЖК «Чкалов» на Аэродромной 18Г",
-  "Источники: 2 из 8 проверены",
+  "ЖК «Патриот» на Аэродромной 18Г",
+  "Источники: 3 из 9 проверены",
   "Critical claims: 1 из 8 подтверждён",
-  "Подтверждённые характеристики: 9",
+  "Подтверждённые характеристики: 10",
+  "Название «Патриот» подтверждено владельцем проекта",
+  "ЦИАН ошибочно использует название ЖК «Чкалов»",
   "не заменяют официальный источник",
   "Рабочая информация о восьми секциях",
   "Дом на Сенной 76",
