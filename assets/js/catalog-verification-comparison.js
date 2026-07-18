@@ -102,9 +102,9 @@
     const publicClaims = getPublicClaimMap(claims);
     if (!publicClaims.has("public_name") || !publicClaims.has("building_type_statement")) return false;
     const title = card.querySelector("h3");
-    if (title) title.textContent = "ЖК «Чкалов»";
-    setText(card, "[data-verification-status]", "Публичные сведения карточки ЦИАН");
-    setText(card, "[data-verification-date]", `Площадки проверены: ${formatDate(profile?.updated_at)}`);
+    if (title) title.textContent = "ЖК «Патриот»";
+    setText(card, "[data-verification-status]", "Название подтверждено владельцем проекта; характеристики — по ЦИАН");
+    setText(card, "[data-verification-date]", `Профиль обновлён: ${formatDate(profile?.updated_at)}`);
     setText(card, "[data-verification-sources]", "Кирпичный дом · этажность 3–7 · потолки 2,7 м");
     setText(card, "[data-verification-critical]", "Черновая отделка · гостевая парковка · площадки и места отдыха");
     setText(card, "[data-verification-categories]", "Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире");
@@ -112,7 +112,7 @@
     const detailsAction = card.querySelector('a[data-track-action="object_open"]');
     if (primaryAction) primaryAction.textContent = "Проверить квартиру";
     if (detailsAction) detailsAction.textContent = "Смотреть ЖК";
-    card.dataset.buyerContent = "confirmed-marketplace-statement";
+    card.dataset.buyerContent = "owner-confirmed-name-marketplace-characteristics";
     return true;
   }
 
