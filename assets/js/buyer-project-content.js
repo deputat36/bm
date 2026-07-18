@@ -24,7 +24,7 @@
       }
       if (value === "Аэродромная 18Г") {
         option.value = "Аэродромная 18Г";
-        option.textContent = "ЖК «Чкалов» — Аэродромная 18Г";
+        option.textContent = "ЖК «Патриот» — Аэродромная 18Г";
       }
       if (value === "Сенная 76") {
         option.value = "Сенная 76";
@@ -75,7 +75,7 @@
   }
 
   function updateAerodromnayaHomepageCard(claims) {
-    const card = findHomepageProjectCard("Аэродромная 18Г", "ЖК «Чкалов»", "ЖК «Чкалов» на Аэродромной 18Г");
+    const card = findHomepageProjectCard("Аэродромная 18Г", "ЖК «Патриот»", "ЖК «Патриот» на Аэродромной 18Г");
     if (!card || !claims.has("public_name") || !claims.has("building_type_statement")) return false;
     const eyebrow = card.querySelector(".eyebrow");
     const title = card.querySelector("h3");
@@ -83,17 +83,17 @@
     const list = card.querySelector("ul.list");
     const primary = card.querySelector('a[data-track-action="object_quick_consultation"]');
     const details = card.querySelector('a[data-track-action="object_details"]');
-    if (eyebrow) eyebrow.textContent = "Публичные сведения площадки";
-    if (title) title.textContent = "ЖК «Чкалов»";
-    if (description) description.textContent = "ЦИАН указывает кирпичный дом на Аэродромной 18Г с этажностью 3–7, потолками 2,7 м и черновой отделкой.";
+    if (eyebrow) eyebrow.textContent = "Название подтверждено владельцем проекта";
+    if (title) title.textContent = "ЖК «Патриот»";
+    if (description) description.textContent = "ЖК «Патриот» на Аэродромной 18Г. Общие характеристики дома приведены по карточке ЦИАН и требуют сверки по выбранной секции.";
     if (list) list.replaceChildren(
-      createListItem("Название и общие характеристики приведены по карточке ЦИАН."),
-      createListItem("Указаны гостевая парковка, детская и спортивная площадки и места отдыха."),
+      createListItem("Название ЖК «Патриот» подтверждено владельцем проекта."),
+      createListItem("ЦИАН указывает кирпичный дом, этажность 3–7, потолки 2,7 м и черновую отделку."),
       createListItem("Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире.")
     );
     if (primary) primary.textContent = "Проверить квартиру";
     if (details) details.textContent = "Смотреть ЖК";
-    card.dataset.buyerContent = "confirmed-marketplace-statement";
+    card.dataset.buyerContent = "owner-confirmed-name-marketplace-characteristics";
     return true;
   }
 
@@ -159,7 +159,7 @@
     if (aerodromnayaProfile) {
       const claims = getPublicClaims(aerodromnayaProfile);
       if (updateAerodromnayaHomepageCard(claims)) {
-        updateHomepageStructuredData("/catalog/aerodromnaya-18g/", "ЖК «Чкалов»");
+        updateHomepageStructuredData("/catalog/aerodromnaya-18g/", "ЖК «Патриот»");
       }
     }
     if (sennayaProfile) {

@@ -79,10 +79,11 @@ const configs = {
   aerodromnaya: {
     profilePath: "data/verification/aerodromnaya-18g.json",
     pagePath: "catalog/aerodromnaya-18g/index.html",
-    minimum: 9,
+    minimum: 10,
     expected: new Map([
       ["address", "ул. Аэродромная, 18Г"],
-      ["public_name", "ЖК «Чкалов»"],
+      ["public_name", "ЖК «Патриот»"],
+      ["marketplace_incorrect_name_statement", "ЦИАН ошибочно использует для объекта название ЖК «Чкалов»"],
       ["developer_attribution_statement", "ЦИАН указывает застройщиком ООО «Первая Строительная Компания»"],
       ["building_type_statement", "В карточке ЦИАН объект указан как кирпичный"],
       ["floor_range_statement", "В карточке ЦИАН указана этажность 3–7"],
@@ -128,11 +129,12 @@ requireFragments(runtimePath, runtime, [
   'CONFIRMED_STATUSES.has',
   "select[name='residential_complex'] option",
   'ЖК «Теллерманов сад» — ул. Просторная',
-  'ЖК «Чкалов» — Аэродромная 18Г',
+  'ЖК «Патриот» — Аэродромная 18Г',
   'Дом на Сенной 76',
   'updateAerodromnayaHomepageCard',
-  'Название и общие характеристики приведены по карточке ЦИАН.',
+  'Название ЖК «Патриот» подтверждено владельцем проекта.',
   'Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире.',
+  'updateHomepageStructuredData("/catalog/aerodromnaya-18g/", "ЖК «Патриот»")',
   'Promise.allSettled',
   'window.__NEWBUILD_BUYER_PROJECT_CONTENT__ = true'
 ]);
@@ -148,7 +150,7 @@ requireFragments(catalogRuntimePath, catalogRuntime, [
   'profile?.project_id === "aerodromnaya-18g"',
   'profile?.project_id === "sennaya-76"',
   'renderAerodromnayaBuyerCard',
-  'Публичные сведения карточки ЦИАН',
+  'Название подтверждено владельцем проекта; характеристики — по ЦИАН',
   'Кирпичный дом · этажность 3–7 · потолки 2,7 м',
   'Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире',
   'primaryAction.textContent = "Проверить квартиру"'
@@ -163,16 +165,21 @@ requireFragments(configs.tellermanov.pagePath, loaded.tellermanov.page, [
   'Цена, наличие и применимость программ покупки уточняются'
 ]);
 requireFragments(configs.aerodromnaya.pagePath, loaded.aerodromnaya.page, [
-  '<h1>ЖК «Чкалов» на Аэродромной 18Г</h1>',
-  'ЦИАН ведёт объект по адресу Аэродромная, 18Г как ЖК «Чкалов»',
-  'Что опубликовано о комплексе',
-  'Один адрес может объединять разные части дома',
+  '<title>ЖК «Патриот» на Аэродромной 18Г',
+  'data-schema-project-name="ЖК Патриот на Аэродромной 18Г"',
+  '<h1>ЖК «Патриот» на Аэродромной 18Г</h1>',
+  'Название «Патриот» подтверждено владельцем проекта',
+  'Карточка ЦИАН использует название ЖК «Чкалов»',
+  'href="https://github.com/deputat36/bm/issues/110#issuecomment-5010781446"',
   'href="https://zhk-chkalov-voronezh-i.cian.ru/"',
   'href="https://realty.yandex.ru/borisoglebsk/kupit/kvartira/st-aehrodromnaya-ulica-115486/"',
-  'Сведения площадок отделены от юридических фактов',
+  'Название отделено от юридических фактов сделки',
   'Нужны первичные документы',
   'Цена, наличие, секция и юридический статус квартиры проверяются отдельно'
 ]);
+if (loaded.aerodromnaya.page.includes('<h1>ЖК «Чкалов»') || loaded.aerodromnaya.page.includes('<title>ЖК «Чкалов»') || loaded.aerodromnaya.page.includes('data-schema-project-name="ЖК Чкалов')) {
+  errors.push(`${configs.aerodromnaya.pagePath}: incorrect marketplace name must not be used as primary page identity`);
+}
 requireFragments(configs.sennaya.pagePath, loaded.sennaya.page, [
   '<h1>Дом на Сенной 76</h1>',
   'Характеристики ниже основаны на публичном интервью главного инженера компании-застройщика',
@@ -214,11 +221,15 @@ for (const field of ["price_from", "available_offers_count", "seller_identity", 
   if (!claim || claim.publication_allowed !== false) errors.push(`${configs.sennaya.profilePath}: ${field} must remain private`);
 }
 
-for (const sourceId of ["cian-complex-card", "yandex-address-listings"]) {
+for (const sourceId of ["owner-project-name-confirmation", "cian-complex-card", "yandex-address-listings"]) {
   const source = results.aerodromnaya.sources.find((item) => item.id === sourceId);
   if (!source || source.status !== "verified" || !String(source.reference || "").startsWith("https://")) {
-    errors.push(`${configs.aerodromnaya.profilePath}: verified secondary source ${sourceId} is required`);
+    errors.push(`${configs.aerodromnaya.profilePath}: verified source ${sourceId} is required`);
   }
+}
+const ownerConfirmation = results.aerodromnaya.sources.find((source) => source.id === "owner-project-name-confirmation");
+if (!String(ownerConfirmation?.reference || "").includes("issues/110#issuecomment-5010781446")) {
+  errors.push(`${configs.aerodromnaya.profilePath}: owner confirmation must reference issue #110 correction`);
 }
 const sennayaInterview = results.sennaya.sources.find((source) => source.id === "developer-engineer-interview");
 if (!sennayaInterview || sennayaInterview.status !== "verified" || !String(sennayaInterview.reference || "").includes("ria-glas.ru/2024/")) {
@@ -245,6 +256,7 @@ if (fetchCalls.length !== 1 || !fetchCalls[0].includes("url")) errors.push(`${ru
 console.log(`Tellermanov public claims: ${results.tellermanov.publicClaims.length}`);
 console.log(`Aerodromnaya public claims: ${results.aerodromnaya.publicClaims.length}`);
 console.log(`Sennaya public claims: ${results.sennaya.publicClaims.length}`);
+console.log("Patriot is the canonical project name; the CIAN name is retained only as a documented source error.");
 console.log("Prices, availability, seller identity, section commissioning and legal status remain unpublished.");
 
 if (errors.length) {
