@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "design_name": "Городской навигатор",
+  "figma_file": "https://www.figma.com/design/rhFYa5gPDhF009hZsfEGSX",
+  "updated_at": "2026-07-19",
+  "principles": [
+    "Независимый городской портал, а не сайт одного застройщика",
+    "Доверие и проверка важнее рекламной агрессии",
+    "Контрастный следующий шаг без давления и ложного дефицита",
+    "Один визуальный язык на главной, в каталоге и карточках ЖК",
+    "Доступность, крупные зоны нажатия и мобильная читаемость"
+  ],
+  "color": {
+    "primitive": {
+      "navy_950": "#0B2233",
+      "navy_900": "#102A43",
+      "navy_800": "#173F55",
+      "slate_700": "#3F5665",
+      "slate_500": "#6B7D88",
+      "slate_300": "#B8C5C8",
+      "slate_200": "#DCE4E3",
+      "slate_100": "#EEF3F2",
+      "ivory_50": "#F8F8F4",
+      "white": "#FFFFFF",
+      "coral_600": "#D94C34",
+      "coral_500": "#E85D3F",
+      "coral_100": "#FCE8E3",
+      "amber_500": "#F4B860",
+      "amber_100": "#FFF2D8",
+      "sage_700": "#245448",
+      "sage_600": "#2F6B5E",
+      "sage_100": "#E6F1ED"
+    },
+    "semantic": {
+      "background_page": "#FFFFFF",
+      "background_soft": "#F4F7F5",
+      "background_hero": "#102A43",
+      "surface_primary": "#FFFFFF",
+      "surface_emphasis": "#0B2233",
+      "text_primary": "#102A43",
+      "text_body": "#2D4350",
+      "text_muted": "#667985",
+      "text_inverse": "#FFFFFF",
+      "border_default": "#DCE4E3",
+      "border_strong": "#B8C5C8",
+      "action_primary": "#E85D3F",
+      "action_primary_hover": "#D94C34",
+      "action_secondary": "#102A43",
+      "status_verified": "#2F6B5E",
+      "status_pending": "#A96D13",
+      "focus_ring": "#F4B860"
+    }
+  },
+  "typography": {
+    "font_family": "system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif",
+    "display": {"size_min": 44, "size_max": 80, "line_height": 0.98, "weight": 900, "letter_spacing_em": -0.045},
+    "h1": {"size_min": 40, "size_max": 68, "line_height": 1.02, "weight": 900, "letter_spacing_em": -0.035},
+    "h2": {"size_min": 30, "size_max": 48, "line_height": 1.08, "weight": 900, "letter_spacing_em": -0.025},
+    "h3": {"size": 22, "line_height": 1.18, "weight": 900},
+    "body_large": {"size": 20, "line_height": 1.55, "weight": 500},
+    "body": {"size": 16, "line_height": 1.6, "weight": 400},
+    "label": {"size": 13, "line_height": 1.3, "weight": 800, "letter_spacing_em": 0.04}
+  },
+  "spacing": {
+    "2xs": 4,
+    "xs": 8,
+    "sm": 12,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "2xl": 48,
+    "3xl": 64,
+    "4xl": 88
+  },
+  "radius": {
+    "sm": 10,
+    "md": 14,
+    "lg": 18,
+    "xl": 24,
+    "2xl": 32,
+    "pill": 999
+  },
+  "shadow": {
+    "card": "0 14px 36px rgba(16, 42, 67, 0.08)",
+    "card_hover": "0 22px 56px rgba(16, 42, 67, 0.14)",
+    "floating": "0 28px 72px rgba(11, 34, 51, 0.20)",
+    "focus": "0 0 0 4px rgba(244, 184, 96, 0.34)"
+  },
+  "layout": {
+    "container_max": 1200,
+    "desktop_columns": 12,
+    "desktop_gutter": 24,
+    "tablet_breakpoint": 980,
+    "mobile_breakpoint": 640,
+    "minimum_touch_target": 48
+  },
+  "components_v1": [
+    "Brand",
+    "Top navigation",
+    "Button primary",
+    "Button secondary",
+    "Eyebrow badge",
+    "Project card",
+    "Fact card",
+    "Lead form card",
+    "Input and select",
+    "Verification status",
+    "FAQ accordion",
+    "Mobile action bar"
+  ]
+}

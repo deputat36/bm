@@ -1,0 +1,40 @@
+name: Portal design system v2
+
+on:
+  pull_request:
+    paths:
+      - "assets/css/home-polish.css"
+      - "assets/css/leadgen.css"
+      - "assets/css/project-conversion.css"
+      - "data/design/portal-v2.tokens.json"
+      - "docs/design/PORTAL_DESIGN_V2.md"
+      - "tools/validate-portal-design-v2.mjs"
+      - ".github/workflows/portal-design-system-v2.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "assets/css/home-polish.css"
+      - "assets/css/leadgen.css"
+      - "assets/css/project-conversion.css"
+      - "data/design/portal-v2.tokens.json"
+      - "docs/design/PORTAL_DESIGN_V2.md"
+      - "tools/validate-portal-design-v2.mjs"
+      - ".github/workflows/portal-design-system-v2.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-design-system:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate design tokens and CSS contracts
+        run: node tools/validate-portal-design-v2.mjs

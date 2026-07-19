@@ -1,12 +1,15 @@
+/* Карточки ЖК, проверка и FAQ в Design System v2. */
+
 .project-hero__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
-  gap: 32px;
+  grid-template-columns: minmax(0, 1.12fr) minmax(360px, .78fr);
+  gap: 40px;
   align-items: start;
 }
 
 .project-hero__content {
   min-width: 0;
+  padding-top: 8px;
 }
 
 .project-hero__content .lead {
@@ -16,20 +19,21 @@
 .project-quick-card {
   position: relative;
   overflow: hidden;
-  border-radius: 22px;
-  box-shadow: 0 24px 64px rgba(18, 18, 18, 0.14);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  box-shadow: var(--shadow-floating);
 }
 
 .project-quick-card::before {
   content: "";
   position: absolute;
   inset: 0 0 auto;
-  height: 5px;
-  background: linear-gradient(90deg, var(--red), #7250b8);
+  height: 6px;
+  background: linear-gradient(90deg, var(--coral-500), var(--amber-500), var(--sage-600));
 }
 
 .project-quick-card h2 {
-  font-size: clamp(26px, 3vw, 34px);
+  font-size: clamp(26px, 3vw, 35px);
 }
 
 .project-quick-card .form {
@@ -48,49 +52,64 @@
 .project-status-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  gap: 22px;
 }
 
 .project-status-card {
-  padding: 26px;
+  position: relative;
+  overflow: hidden;
+  padding: 28px;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 22px;
   background: #fff;
-  box-shadow: 0 14px 34px rgba(18, 18, 18, 0.06);
+  box-shadow: var(--shadow);
 }
 
-.project-status-card--available {
-  border-top: 5px solid #27835d;
+.project-status-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 6px;
 }
 
+.project-status-card--available::before {
+  background: var(--sage-600);
+}
+
+.project-status-card--pending::before {
+  background: var(--amber-500);
+}
+
+.project-status-card--available,
 .project-status-card--pending {
-  border-top: 5px solid #c27a18;
+  border-top: 1px solid var(--line);
 }
 
 .project-status-badge {
   display: inline-flex;
-  margin-bottom: 12px;
-  padding: 6px 10px;
+  margin-bottom: 13px;
+  padding: 7px 11px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
-  letter-spacing: 0.03em;
+  letter-spacing: .05em;
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
 .project-status-card--available .project-status-badge {
-  color: #1d6247;
-  background: #eaf7f1;
+  color: var(--sage-700);
+  background: var(--sage-100);
 }
 
 .project-status-card--pending .project-status-badge {
-  color: #80500e;
-  background: #fff4df;
+  color: #81500c;
+  background: var(--amber-100);
 }
 
 .project-status-card h3 {
   margin-top: 0;
-  font-size: clamp(22px, 2.4vw, 30px);
+  font-size: clamp(23px, 2.4vw, 30px);
 }
 
 .project-status-card .list {
@@ -98,32 +117,48 @@
 }
 
 .project-status-note {
-  margin: 18px 0 0;
-  padding-top: 16px;
+  margin: 20px 0 0;
+  padding-top: 17px;
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-size: 14px;
+  line-height: 1.5;
+}
+
+.project-verification-summary {
+  max-width: none;
+  border-left-color: var(--sage-600);
+  background: linear-gradient(135deg, var(--sage-100), #fff);
 }
 
 .project-faq {
   display: grid;
-  gap: 12px;
-  max-width: 920px;
+  gap: 13px;
+  max-width: 960px;
 }
 
 .project-faq details {
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 17px;
   background: #fff;
-  box-shadow: 0 10px 24px rgba(18, 18, 18, 0.04);
+  box-shadow: 0 9px 24px rgba(16,42,67,.045);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.project-faq details:hover,
+.project-faq details[open] {
+  border-color: var(--slate-300);
+  box-shadow: 0 15px 34px rgba(16,42,67,.08);
 }
 
 .project-faq summary {
   position: relative;
-  padding: 20px 54px 20px 22px;
+  padding: 21px 58px 21px 23px;
+  color: var(--navy-900);
   cursor: pointer;
   font-weight: 900;
+  line-height: 1.35;
   list-style: none;
 }
 
@@ -135,33 +170,45 @@
   content: "+";
   position: absolute;
   top: 50%;
-  right: 22px;
-  width: 26px;
-  height: 26px;
+  right: 21px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: #fff3f3;
-  color: var(--red);
-  font-size: 22px;
-  line-height: 24px;
-  text-align: center;
+  color: var(--navy-900);
+  background: var(--amber-100);
+  font-size: 21px;
+  line-height: 1;
   transform: translateY(-50%);
 }
 
 .project-faq details[open] summary::after {
   content: "−";
+  color: #fff;
+  background: var(--sage-600);
 }
 
 .project-faq details p {
   margin: 0;
-  padding: 0 22px 22px;
+  padding: 0 23px 23px;
   color: var(--muted);
+  line-height: 1.6;
 }
 
 .project-faq__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 26px;
+}
+
+[data-market-snapshot-rendered] {
+  position: relative;
+}
+
+[data-market-snapshot-rendered] .card {
+  border-top: 4px solid var(--sage-600);
 }
 
 @media (max-width: 980px) {
@@ -171,19 +218,19 @@
   }
 
   .project-quick-card {
-    max-width: 680px;
+    max-width: 700px;
   }
 }
 
 @media (max-width: 640px) {
   .project-hero__grid {
-    gap: 24px;
+    gap: 26px;
   }
 
   .project-quick-card,
   .project-status-card {
     padding: 22px;
-    border-radius: 18px;
+    border-radius: 19px;
   }
 
   .project-quick-card input,
@@ -192,11 +239,15 @@
   }
 
   .project-faq summary {
-    padding: 18px 50px 18px 18px;
+    padding: 19px 52px 19px 18px;
+  }
+
+  .project-faq summary::after {
+    right: 16px;
   }
 
   .project-faq details p {
-    padding: 0 18px 18px;
+    padding: 0 18px 19px;
   }
 
   .project-faq__actions .button {

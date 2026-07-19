@@ -1,31 +1,37 @@
+/* Формы и лидогенерация в Design System v2. */
+
 .leadgen-hero {
-  background: linear-gradient(135deg, #fff8ef 0%, #ffffff 55%, #fff3f3 100%);
+  background:
+    radial-gradient(circle at 88% 16%, rgba(244,184,96,.2), transparent 25%),
+    linear-gradient(135deg, #f4f7f5 0%, #fff 58%, #fff7ed 100%);
 }
 
 .leadgen-note {
-  margin-top: 18px;
-  padding: 16px 18px;
-  border-radius: var(--radius);
-  background: #fff;
+  margin-top: 20px;
+  padding: 17px 20px;
   border: 1px solid var(--line);
+  border-left: 5px solid var(--sage-600);
+  border-radius: 14px;
   color: var(--muted);
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(16,42,67,.06);
 }
 
 .leadgen-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px;
+  gap: 24px;
 }
 
 .lead-form-card {
   display: grid;
-  gap: 18px;
+  gap: 20px;
   align-content: start;
-  padding: 26px;
-  border-radius: var(--radius);
-  background: #fff;
+  padding: 28px;
   border: 1px solid var(--line);
-  box-shadow: 0 16px 36px rgba(18, 18, 18, 0.08);
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--shadow);
 }
 
 .lead-form-card__head {
@@ -36,6 +42,7 @@
 .lead-form-card__head p {
   margin: 0;
   color: var(--muted);
+  line-height: 1.55;
 }
 
 .lead-type-tag {
@@ -43,54 +50,132 @@
   width: fit-content;
   align-items: center;
   justify-content: center;
-  padding: 6px 10px;
+  padding: 7px 11px;
   border-radius: 999px;
-  background: #fff3f3;
-  color: var(--red);
-  font-size: 12px;
+  color: var(--coral-600);
+  background: var(--coral-100);
+  font-size: 11px;
   font-weight: 900;
+  letter-spacing: .06em;
   text-transform: uppercase;
+}
+
+.form {
+  gap: 14px;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  color: var(--text);
+  background: #fff;
+  box-shadow: var(--shadow);
 }
 
 .form--compact {
   padding: 0;
-  box-shadow: none;
   border: 0;
+  box-shadow: none;
+}
+
+.form label {
+  gap: 7px;
+  color: var(--navy-900);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.form input,
+.form select,
+.form textarea {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 1px solid var(--slate-300);
+  border-radius: 13px;
+  color: var(--text);
+  background: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.4;
+  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.form input::placeholder,
+.form textarea::placeholder {
+  color: #8999a2;
+}
+
+.form input:hover,
+.form select:hover,
+.form textarea:hover {
+  border-color: #93a7ab;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+  outline: none;
+  border-color: var(--amber-500);
+  box-shadow: var(--focus-ring);
+  background: #fffefb;
+}
+
+.form textarea {
+  min-height: 112px;
+  resize: vertical;
+}
+
+.form .button {
+  margin-top: 2px;
 }
 
 .form__row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 .form__hint {
-  margin: -4px 0 0;
+  margin: -2px 0 0;
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.45;
+}
+
+.form__status {
+  display: none;
+  padding: 14px 16px;
+  border: 1px solid #b8dbce;
+  border-radius: 13px;
+  color: var(--sage-700);
+  background: var(--sage-100);
+  font-weight: 800;
+}
+
+.form__status.is-visible {
+  display: block;
 }
 
 .consent-field {
   display: grid;
-  grid-template-columns: 18px 1fr;
+  grid-template-columns: 20px 1fr;
   gap: 10px;
   align-items: start;
-  font-size: 12px !important;
-  line-height: 1.35;
   color: var(--muted) !important;
+  font-size: 12px !important;
   font-weight: 400 !important;
+  line-height: 1.42;
 }
 
 .consent-field input {
-  width: 18px;
-  min-height: 18px;
-  margin: 0;
+  width: 20px;
+  min-height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--coral-500);
 }
 
 .consent-field a {
-  color: var(--red);
-  font-weight: 700;
+  color: var(--sage-700);
+  font-weight: 800;
 }
 
 .honeypot-field {
@@ -107,23 +192,34 @@
 .lead-process {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  gap: 18px;
 }
 
 .lead-process__item {
-  padding: 20px;
-  border-radius: var(--radius);
-  background: #fff;
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
   border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(16,42,67,.05);
+}
+
+.lead-process__item::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--sage-600), var(--amber-500));
 }
 
 .lead-process__item strong {
   display: block;
-  margin-bottom: 8px;
-  color: var(--red);
-  font-size: 28px;
-  line-height: 1;
+  margin-bottom: 9px;
+  color: var(--coral-500);
+  font-size: 30px;
   font-weight: 900;
+  line-height: 1;
 }
 
 .lead-process__item p {
@@ -132,37 +228,40 @@
 }
 
 .thankyou-card {
-  max-width: 840px;
-  padding: 34px;
-  border-radius: var(--radius);
-  background: #fff;
+  max-width: 860px;
+  padding: 36px;
   border: 1px solid var(--line);
-  box-shadow: var(--shadow);
+  border-radius: 26px;
+  background: #fff;
+  box-shadow: var(--shadow-floating);
 }
 
 .thankyou-meta {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 24px;
+  gap: 14px;
+  margin-top: 26px;
 }
 
 .thankyou-meta__item {
-  padding: 16px;
-  border-radius: var(--radius);
-  background: #fff8ef;
+  padding: 17px;
   border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--slate-100);
 }
 
 .thankyou-meta__item span {
   display: block;
   margin-bottom: 6px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
 }
 
 .thankyou-meta__item strong {
-  color: var(--black);
+  color: var(--navy-900);
   font-size: 16px;
 }
 
@@ -180,7 +279,12 @@
   }
 
   .lead-form-card,
-  .thankyou-card {
-    padding: 20px;
+  .thankyou-card,
+  .form {
+    padding: 22px;
+  }
+
+  .form--compact {
+    padding: 0;
   }
 }
