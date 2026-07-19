@@ -19,8 +19,16 @@ function count(source, fragment) {
   return source.split(fragment).length - 1;
 }
 
+function compactCss(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\s+/g, "")
+    .replace(/;}/g, "}");
+}
+
 const homepage = read(HOME_PATH);
 const css = read(CSS_PATH);
+const compact = compactCss(css);
 
 if (!homepage || !css) process.exit(1);
 
@@ -53,28 +61,28 @@ for (const fragment of [
   "@media(max-width:760px)",
   "body:has(.hero__content--conversion)",
   "env(safe-area-inset-bottom,0px)",
-  '.nav .button[href="#quick-lead"]',
-  '.hero__pitch .hero__actions a[href^="tel:"]',
+  '.nav.button[href="#quick-lead"]',
+  '.hero__pitch.hero__actionsa[href^="tel:"]',
   "position:fixed",
   "z-index:999",
   "scroll-margin-bottom:100px",
   'content:"Позвонить"'
 ]) {
-  if (!css.includes(fragment)) errors.push(`${CSS_PATH}: missing ${fragment}`);
+  if (!compact.includes(fragment)) errors.push(`${CSS_PATH}: missing semantic mobile fragment ${fragment}`);
 }
 
-const mobileSectionStart = css.indexOf("/* Главная: мобильная панель быстрого звонка и заявки. */");
-if (mobileSectionStart < 0) {
-  errors.push(`${CSS_PATH}: mobile conversion section marker is missing`);
+const mobileMediaStart = compact.indexOf("@media(max-width:760px)");
+if (mobileMediaStart < 0) {
+  errors.push(`${CSS_PATH}: mobile conversion media query is missing`);
 } else {
-  const mobileSection = css.slice(mobileSectionStart);
+  const mobileSection = compact.slice(mobileMediaStart);
   if (!mobileSection.includes("body:has(.hero__content--conversion)::after")) {
     errors.push(`${CSS_PATH}: fixed action background must be scoped to the homepage`);
   }
   if (!mobileSection.includes("pointer-events:none")) {
     errors.push(`${CSS_PATH}: background layer must not block taps`);
   }
-  if (!mobileSection.includes("width:calc(50% - 18px)")) {
+  if (!mobileSection.includes("width:calc(50%-18px)")) {
     errors.push(`${CSS_PATH}: phone and lead controls must share the mobile width`);
   }
 }
@@ -83,6 +91,7 @@ console.log("Homepage mobile CTA controls: 2");
 console.log("New forms: 0");
 console.log("Homepage-only scope: enabled");
 console.log("Safe-area support: enabled");
+console.log("CSS formatting dependency: removed");
 
 if (errors.length) {
   console.error("\nHomepage mobile CTA validation errors:");
