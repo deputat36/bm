@@ -1,0 +1,48 @@
+name: Design system preview
+
+on:
+  pull_request:
+    paths:
+      - "design-system/**"
+      - "assets/css/design-system-preview.css"
+      - "assets/css/home-polish.css"
+      - "assets/css/leadgen.css"
+      - "assets/css/project-conversion.css"
+      - "data/design/portal-v2.tokens.json"
+      - "tools/validate-design-system-preview.mjs"
+      - ".github/workflows/design-system-preview.yml"
+      - "sitemap.xml"
+  push:
+    branches:
+      - main
+    paths:
+      - "design-system/**"
+      - "assets/css/design-system-preview.css"
+      - "assets/css/home-polish.css"
+      - "assets/css/leadgen.css"
+      - "assets/css/project-conversion.css"
+      - "data/design/portal-v2.tokens.json"
+      - "tools/validate-design-system-preview.mjs"
+      - ".github/workflows/design-system-preview.yml"
+      - "sitemap.xml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-design-system-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check validator syntax
+        run: node --check tools/validate-design-system-preview.mjs
+
+      - name: Validate design system preview
+        run: node tools/validate-design-system-preview.mjs
