@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Design System v2 — Новостройки Борисоглебска</title>
+  <meta name="description" content="Закрытая живая витрина дизайн-системы портала Новостройки Борисоглебска.">
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/home-polish.css">
+  <link rel="stylesheet" href="../assets/css/leadgen.css">
+  <link rel="stylesheet" href="../assets/css/project-conversion.css">
+  <link rel="stylesheet" href="../assets/css/design-system-preview.css">
+</head>
+<body class="ds-page">
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <a class="brand" href="../" aria-label="Вернуться на портал"><strong>Новостройки Борисоглебска</strong></a>
+      <nav class="nav" aria-label="Навигация по дизайн-системе">
+        <a href="#foundations">Основы</a>
+        <a href="#components">Компоненты</a>
+        <a href="#mobile">Mobile</a>
+        <a class="button" href="https://www.figma.com/design/rhFYa5gPDhF009hZsfEGSX">Открыть Figma</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="ds-hero">
+      <div class="container">
+        <span class="eyebrow">Design System v2</span>
+        <h1>Городской навигатор</h1>
+        <p class="lead">Живая визуальная спецификация независимого портала новостроек Борисоглебска. Компоненты на этой странице используют те же CSS-токены и классы, что и рабочий сайт.</p>
+        <div class="hero__actions">
+          <a class="button" href="#components">Посмотреть компоненты</a>
+          <a class="button button--ghost" href="https://github.com/deputat36/bm/issues/116">Задача синхронизации</a>
+        </div>
+        <div class="ds-meta">
+          <span>Источник: portal-v2.tokens.json</span>
+          <span>Сетка: 1200 px / 12 колонок</span>
+          <span>Touch target: от 48 px</span>
+          <span>Статус: внедрено в CSS</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <nav class="ds-anchor-nav" aria-label="Разделы витрины">
+        <a href="#principles">Принципы</a>
+        <a href="#colors">Цвета</a>
+        <a href="#typography">Типографика</a>
+        <a href="#buttons">Кнопки</a>
+        <a href="#cards">Карточки</a>
+        <a href="#forms">Формы</a>
+        <a href="#statuses">Статусы</a>
+        <a href="#faq">FAQ</a>
+        <a href="#mobile">Mobile action bar</a>
+      </nav>
+    </div>
+
+    <section class="ds-section ds-section--white" id="principles">
+      <div class="container">
+        <div class="section__head">
+          <span class="eyebrow">Направление</span>
+          <h2>Пять принципов интерфейса</h2>
+          <p>Визуальные решения должны помогать покупателю сравнивать, проверять и принимать решение, а не имитировать официальный сайт застройщика.</p>
+        </div>
+        <div class="ds-principles">
+          <article class="ds-principle"><strong>01</strong><p>Независимый городской портал, а не витрина одного застройщика.</p></article>
+          <article class="ds-principle"><strong>02</strong><p>Подтверждённые данные визуально отделяются от сведений на проверке.</p></article>
+          <article class="ds-principle"><strong>03</strong><p>Один главный следующий шаг без ложного дефицита и давления.</p></article>
+          <article class="ds-principle"><strong>04</strong><p>Крупные зоны нажатия и полноценная мобильная версия.</p></article>
+          <article class="ds-principle"><strong>05</strong><p>Одинаковые компоненты на главной, в каталоге и карточках ЖК.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="ds-section" id="foundations">
+      <div class="container">
+        <div class="section__head">
+          <span class="eyebrow">Foundations</span>
+          <h2>Цвет и типографика</h2>
+          <p>Тёмно-синий отвечает за экспертность, коралловый — за действие, зелёный — за подтверждённые данные, янтарный — за предупреждения и фокус.</p>
+        </div>
+
+        <div id="colors">
+          <h3>Основная палитра</h3>
+          <div class="ds-swatch-grid" style="margin-top:20px">
+            <article class="ds-swatch" style="--swatch:#0B2233"><div class="ds-swatch__color"></div><div class="ds-swatch__meta"><strong>Navy 950</strong><code>#0B2233</code></div></article>
+            <article class="ds-swatch" style="--swatch:#102A43"><div class="ds-swatch__color"></div><div class="ds-swatch__meta"><strong>Navy 900</strong><code>#102A43</code></div></article>
+            <article class="ds-swatch" style="--swatch:#173F55"><div class="ds-swatch__color"></div><div class="ds-swatch__meta"><strong>Navy 800</strong><code>#173F55</code></div></article>
+            <article class="ds-swatch" style="--swatch:#E85D3F"><div class="ds-swatch__color"></div><div class="ds-swatch__meta"><strong>Coral 500</strong><code>#E85D3F</code></div></article>
+            <article class="ds-swatch" style="--swatch:#D94C34"><div class="ds-swatch__color"></div><div class="ds-swatch__meta"><strong>Coral 600</strong><code>#D94C34</code></div></article>
+            <article class="ds-swatch" style="--swatch:#2F6B5E"><div class="ds-swatch__color"></div><div class="ds-swatch__meta"><strong>Sage 600</strong><code>#2F6B5E</code></div></article>
+            <article class="ds-swatch" style="--swatch:#F4B860"><div class="ds-swatch__color"></div><div class="ds-swatch__meta"><strong>Amber 500</strong><code>#F4B860</code></div></article>
+            <article class="ds-swatch" style="--swatch:#DCE4E3"><div class="ds-swatch__color"></div><div class="ds-swatch__meta"><strong>Slate 200</strong><code>#DCE4E3</code></div></article>
+            <article class="ds-swatch" style="--swatch:#EEF3F2"><div class="ds-swatch__color"></div><div class="ds-swatch__meta"><strong>Slate 100</strong><code>#EEF3F2</code></div></article>
+            <article class="ds-swatch" style="--swatch:#FFFFFF"><div class="ds-swatch__color"></div><div class="ds-swatch__meta"><strong>White</strong><code>#FFFFFF</code></div></article>
+          </div>
+        </div>
+
+        <div id="typography" style="margin-top:58px">
+          <h3>Типографическая шкала</h3>
+          <div class="ds-type-stack">
+            <div class="ds-type-sample"><span class="ds-type-label">Display / 900</span><div class="ds-display">Новый дом начинается с проверки</div></div>
+            <div class="ds-type-sample"><span class="ds-type-label">H1 / 900</span><h1>Новостройки Борисоглебска</h1></div>
+            <div class="ds-type-sample"><span class="ds-type-label">H2 / 900</span><h2>Выберите подходящий объект</h2></div>
+            <div class="ds-type-sample"><span class="ds-type-label">H3 / 900</span><h3>ЖК «Патриот»</h3></div>
+            <div class="ds-type-sample"><span class="ds-type-label">Body large / 500</span><p class="ds-body-large">Сравните дома, планировки, документы и способы покупки в одном городском каталоге.</p></div>
+            <div class="ds-type-sample"><span class="ds-type-label">Body / 400</span><p>Цена, наличие и юридический статус выбранной квартиры уточняются на дату обращения.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ds-section ds-section--white" id="components">
+      <div class="container">
+        <div class="section__head">
+          <span class="eyebrow">Components</span>
+          <h2>Рабочие компоненты портала</h2>
+          <p>Это не статичные картинки: элементы используют существующие классы сайта и сразу отражают изменения production CSS.</p>
+        </div>
+
+        <div class="ds-component-grid">
+          <article class="ds-component" id="buttons">
+            <div class="ds-component__head"><h3>Button</h3><p>Основное и вторичное действие. Минимальная высота — 50 px.</p></div>
+            <div class="ds-inline-demo">
+              <a class="button" href="#forms">Получить консультацию</a>
+              <a class="button button--ghost" href="#cards">Подробнее</a>
+            </div>
+          </article>
+
+          <article class="ds-component">
+            <div class="ds-component__head"><h3>Eyebrow badge</h3><p>Короткий контекст раздела или статус источника.</p></div>
+            <div class="ds-inline-demo">
+              <span class="eyebrow">Городской каталог</span>
+              <span class="lead-type-tag">Заявка за 30 секунд</span>
+              <span class="project-status-badge" style="color:#1d6247;background:#eaf7f1">Подтверждено</span>
+            </div>
+          </article>
+
+          <article class="ds-component ds-component--wide" id="cards">
+            <div class="ds-component__head"><h3>Project cards</h3><p>Карточка сообщает не только название, но и статус проверки, полезный контекст и следующий шаг.</p></div>
+            <div class="ds-card-demo">
+              <article class="card card--shadow"><span class="eyebrow">Старт продаж</span><h3>ЖК «Теллерманов сад»</h3><p>Новый жилой проект на Просторной 4А. Характеристики публикуются с указанием статуса источника.</p><ul class="list"><li>Планировки и способы покупки.</li><li>Проверка документов.</li><li>Консультация без брони.</li></ul><div class="hero__actions"><a class="button" href="../catalog/prostornaya-4a/">Открыть карточку</a></div></article>
+              <article class="card card--shadow"><span class="eyebrow">Рыночный срез</span><h3>ЖК «Патриот»</h3><p>Примеры квартир и площадей показываются отдельно от актуального наличия и цены.</p><ul class="list"><li>1- и 2-комнатные форматы.</li><li>Окружение и инфраструктура.</li><li>Проверка секции и продавца.</li></ul><div class="hero__actions"><a class="button" href="../catalog/aerodromnaya-18g/">Открыть карточку</a></div></article>
+              <article class="card card--shadow"><span class="eyebrow">Данные уточняются</span><h3>Дом на Сенной 76</h3><p>Публичные планировочные примеры сопровождаются датой проверки и ссылками на источники.</p><ul class="list"><li>Центральная часть города.</li><li>Примеры площадей.</li><li>Юридический чек-лист.</li></ul><div class="hero__actions"><a class="button" href="../catalog/sennaya-76/">Открыть карточку</a></div></article>
+            </div>
+          </article>
+
+          <article class="ds-component">
+            <div class="ds-component__head"><h3>Fact card</h3><p>Короткая цифра или ориентир без рекламного преувеличения.</p></div>
+            <div class="facts" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:0">
+              <div class="fact"><strong>3</strong><span>приоритетных объекта</span></div>
+              <div class="fact"><strong>0</strong><span>непроверенных цен в карточках</span></div>
+            </div>
+          </article>
+
+          <article class="ds-component" id="forms">
+            <div class="ds-component__head"><h3>Lead form card</h3><p>Демонстрация полей. На этой странице данные не отправляются.</p></div>
+            <div class="form ds-form-demo" role="group" aria-label="Демонстрация формы">
+              <label>Имя<input name="demo_name" autocomplete="off" placeholder="Как к вам обращаться"></label>
+              <label>Телефон<input name="demo_phone" autocomplete="off" inputmode="tel" placeholder="+7 ___ ___-__-__"></label>
+              <label>Интересующий объект<select name="demo_object"><option>Выберите объект</option><option>ЖК «Теллерманов сад»</option><option>ЖК «Патриот»</option><option>Сенная 76</option></select></label>
+              <label>Комментарий<textarea name="demo_comment" placeholder="Что важно учесть"></textarea></label>
+              <button class="button" type="button">Получить консультацию</button>
+              <p class="form__hint">Демонстрационный компонент: отправка отключена.</p>
+            </div>
+          </article>
+
+          <article class="ds-component ds-component--wide" id="statuses">
+            <div class="ds-component__head"><h3>Verification status</h3><p>Зелёный означает подтверждённый опубликованный факт. Янтарный — сведения ещё требуют проверки или документа.</p></div>
+            <div class="project-status-grid">
+              <article class="project-status-card project-status-card--available"><span class="project-status-badge">Подтверждено</span><h3>Можно использовать при выборе</h3><ul class="list"><li>Есть источник и дата проверки.</li><li>Формулировка не выходит за пределы источника.</li><li>Данные разрешены для публикации.</li></ul><p class="project-status-note">Пример: адрес объекта или подтверждённый формат квартиры.</p></article>
+              <article class="project-status-card project-status-card--pending"><span class="project-status-badge">Требует проверки</span><h3>Нельзя выдавать за актуальный факт</h3><ul class="list"><li>Цена и наличие меняются.</li><li>Не получен первичный документ.</li><li>Не подтверждены продавец или договор.</li></ul><p class="project-status-note">Такой вопрос переводится в консультацию или запрос документов.</p></article>
+            </div>
+          </article>
+
+          <article class="ds-component ds-component--wide" id="faq">
+            <div class="ds-component__head"><h3>FAQ accordion</h3><p>Ответы на вопросы, которые снижают неопределённость перед обращением.</p></div>
+            <div class="project-faq">
+              <details><summary>Портал является сайтом застройщика?</summary><p>Нет. Это независимый городской каталог, который собирает и проверяет сведения из доступных источников.</p></details>
+              <details><summary>Почему на сайте нет неподтверждённой цены?</summary><p>Цена и наличие быстро меняются. Перед консультацией они проверяются на конкретную дату и по конкретной квартире.</p></details>
+              <details><summary>Что проверить до передачи денег?</summary><p>Продавца, договор, объект, разрешительные документы, порядок оплаты и полномочия стороны сделки.</p></details>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="ds-section ds-section--dark" id="mobile">
+      <div class="container">
+        <div class="section__head">
+          <span class="eyebrow">Mobile</span>
+          <h2>Нижняя панель действий</h2>
+          <p>На небольшом экране два главных действия всегда остаются доступными: звонок и заявка.</p>
+        </div>
+        <div class="ds-mobile-shell">
+          <div class="ds-mobile-shell__content">
+            <span class="eyebrow">Карточка ЖК</span>
+            <h3>Проверить квартиру перед покупкой</h3>
+            <p>Уточним документы, продавца, секцию, площадь и способ расчёта.</p>
+            <div class="card"><strong>Информация по объекту</strong><p>Основной контент остаётся читаемым над фиксированной панелью.</p></div>
+          </div>
+          <div class="ds-mobile-shell__bar">
+            <a class="button button--ghost" href="tel:+79038576909">Позвонить</a>
+            <a class="button" href="#forms">Оставить заявку</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ds-section ds-section--white">
+      <div class="container">
+        <div class="section__head"><span class="eyebrow">Design handoff</span><h2>Как синхронизировать с Figma</h2></div>
+        <p class="ds-code-note">Источником значений остаётся <code>data/design/portal-v2.tokens.json</code>. После восстановления Figma MCP страница может быть импортирована как визуальный эталон, а компоненты должны быть пересобраны нативно с variables и auto-layout.</p>
+        <div class="hero__actions">
+          <a class="button" href="https://www.figma.com/design/rhFYa5gPDhF009hZsfEGSX">Открыть Figma-файл</a>
+          <a class="button button--ghost" href="https://github.com/deputat36/bm/issues/116">Открыть план синхронизации</a>
+          <a class="button button--ghost" href="../">Вернуться на портал</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div><strong>Новостройки Борисоглебска</strong><br>Живая витрина Design System v2.</div>
+      <div>Страница закрыта от индексации и не содержит рабочих форм отправки.</div>
+    </div>
+  </footer>
+</body>
+</html>
