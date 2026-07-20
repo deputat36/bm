@@ -83,7 +83,7 @@ for (const [key, value] of Object.entries(tokens.radius || {})) {
   if (!css.includes(`${name}: ${value}px`)) errors.push(`${CSS_PATH}: missing ${name}: ${value}px`);
 }
 
-const shadowPattern = /^-?\d+px\s+-?\d+px\s+\d+px(?:\s+\d+px)?\s+rgba\(\d+,\s*\d+,\s*\d+,\s*[\d.]+\)$/;
+const shadowPattern = /^-?\d+(?:\.\d+)?(?:px)?\s+-?\d+(?:\.\d+)?(?:px)?\s+\d+(?:\.\d+)?(?:px)?(?:\s+\d+(?:\.\d+)?(?:px)?)?\s+rgba\(\d+,\s*\d+,\s*\d+,\s*[\d.]+\)$/;
 for (const [key, value] of Object.entries(tokens.shadow || {})) {
   if (!shadowPattern.test(value)) errors.push(`${TOKEN_PATH}: unsupported shadow ${key}: ${value}`);
 }
