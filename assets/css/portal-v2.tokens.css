@@ -1,0 +1,80 @@
+/*
+ * Новостройки Борисоглебска — Design System v2.
+ * Машиночитаемый CSS-контракт для синхронизации кода и Figma.
+ * Значения должны совпадать с data/design/portal-v2.tokens.json.
+ */
+
+:root {
+  /* Primitive colors */
+  --color-navy-950: #0b2233;
+  --color-navy-900: #102a43;
+  --color-navy-800: #173f55;
+  --color-slate-750: #2d4350;
+  --color-slate-700: #3f5665;
+  --color-slate-550: #667985;
+  --color-slate-500: #6b7d88;
+  --color-slate-300: #b8c5c8;
+  --color-slate-200: #dce4e3;
+  --color-slate-100: #eef3f2;
+  --color-surface-50: #f4f7f5;
+  --color-ivory-50: #f8f8f4;
+  --color-white: #ffffff;
+  --color-coral-600: #d94c34;
+  --color-coral-500: #e85d3f;
+  --color-coral-100: #fce8e3;
+  --color-amber-700: #a96d13;
+  --color-amber-500: #f4b860;
+  --color-amber-100: #fff2d8;
+  --color-sage-700: #245448;
+  --color-sage-600: #2f6b5e;
+  --color-sage-100: #e6f1ed;
+
+  /* Semantic colors */
+  --color-background-page: var(--color-white);
+  --color-background-soft: var(--color-surface-50);
+  --color-background-hero: var(--color-navy-900);
+  --color-surface-primary: var(--color-white);
+  --color-surface-emphasis: var(--color-navy-950);
+  --color-text-primary: var(--color-navy-900);
+  --color-text-body: var(--color-slate-750);
+  --color-text-muted: var(--color-slate-550);
+  --color-text-inverse: var(--color-white);
+  --color-border-default: var(--color-slate-200);
+  --color-border-strong: var(--color-slate-300);
+  --color-action-primary: var(--color-coral-500);
+  --color-action-primary-hover: var(--color-coral-600);
+  --color-action-secondary: var(--color-navy-900);
+  --color-status-verified: var(--color-sage-600);
+  --color-status-pending: var(--color-amber-700);
+  --color-focus-ring: var(--color-amber-500);
+
+  /* Spacing */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+  --space-4xl: 88px;
+
+  /* Radius */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-pill: 999px;
+
+  /* Layout */
+  --layout-container-max: 1200px;
+  --layout-desktop-gutter: 24px;
+  --layout-minimum-touch-target: 48px;
+
+  /* Effects */
+  --shadow-card: 0 14px 36px rgba(16, 42, 67, 0.08);
+  --shadow-card-hover: 0 22px 56px rgba(16, 42, 67, 0.14);
+  --shadow-floating: 0 28px 72px rgba(11, 34, 51, 0.2);
+  --shadow-focus: 0 0 0 4px rgba(244, 184, 96, 0.34);
+}
