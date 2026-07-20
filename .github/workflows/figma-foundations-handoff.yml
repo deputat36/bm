@@ -1,0 +1,46 @@
+name: Figma foundations handoff
+
+on:
+  pull_request:
+    paths:
+      - "data/design/portal-v2.tokens.json"
+      - "assets/css/portal-v2.tokens.css"
+      - "tools/figma/generate-portal-v2-foundations.mjs"
+      - "tools/validate-figma-foundations-handoff.mjs"
+      - "docs/design/**"
+      - ".github/workflows/figma-foundations-handoff.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "data/design/portal-v2.tokens.json"
+      - "assets/css/portal-v2.tokens.css"
+      - "tools/figma/generate-portal-v2-foundations.mjs"
+      - "tools/validate-figma-foundations-handoff.mjs"
+      - "docs/design/**"
+      - ".github/workflows/figma-foundations-handoff.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-figma-foundations-handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check source syntax
+        run: |
+          node --check tools/figma/generate-portal-v2-foundations.mjs
+          node --check tools/validate-figma-foundations-handoff.mjs
+
+      - name: Validate Figma handoff
+        run: node tools/validate-figma-foundations-handoff.mjs

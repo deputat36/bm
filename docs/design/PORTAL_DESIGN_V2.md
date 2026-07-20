@@ -8,6 +8,18 @@
 
 Figma Starter временно блокирует MCP-чтения и записи по лимиту. До восстановления доступа код и `data/design/portal-v2.tokens.json` являются источником правды. После открытия лимита переменные, компоненты и экраны должны быть перенесены в Figma без изменения значений.
 
+### Подготовленный Foundations handoff
+
+Для автоматического создания нативных Figma Variables, Text Styles и Effect Styles подготовлены:
+
+- `assets/css/portal-v2.tokens.css` — WEB Code Syntax и CSS-контракт;
+- `tools/figma/generate-portal-v2-foundations.mjs` — генератор идемпотентного `use_figma`-кода;
+- `tools/validate-figma-foundations-handoff.mjs` — проверка aliases, scopes, CSS и Plugin API-кода;
+- `docs/design/FIGMA_FOUNDATIONS_HANDOFF.md` — инструкция запуска и критерии проверки;
+- `.github/workflows/figma-foundations-handoff.yml` — отдельный CI-guard.
+
+Semantic colors имеют явную связь с primitive colors через `semantic_aliases`. Это исключает raw HEX в semantic collection и позволяет менять тему из одного primitive-слоя.
+
 ## Живая витрина
 
 В репозитории есть закрытая браузерная страница:
@@ -148,6 +160,7 @@ Figma Starter временно блокирует MCP-чтения и запис
 
 Специализированные слои:
 
+- `assets/css/portal-v2.tokens.css` — машиночитаемый контракт кода и Figma;
 - `assets/css/leadgen.css` — формы и лидогенерация;
 - `assets/css/project-conversion.css` — карточки ЖК, статусы и FAQ;
 - `assets/css/design-system-preview.css` — только закрытая живая витрина.
