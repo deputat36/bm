@@ -1,0 +1,53 @@
+name: Figma documentation handoff
+
+on:
+  pull_request:
+    paths:
+      - "data/design/portal-v2.tokens.json"
+      - "tools/figma/portal-v2-doc-runtime.mjs"
+      - "tools/figma/generate-portal-v2-page-skeleton.mjs"
+      - "tools/figma/generate-portal-v2-cover.mjs"
+      - "tools/figma/generate-portal-v2-getting-started.mjs"
+      - "tools/figma/generate-portal-v2-foundations-page.mjs"
+      - "tools/figma/generate-portal-v2-index-page.mjs"
+      - "tools/validate-figma-documentation-handoff.mjs"
+      - "docs/design/FIGMA_DOCUMENTATION_HANDOFF.md"
+      - ".github/workflows/figma-documentation-handoff.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "data/design/portal-v2.tokens.json"
+      - "tools/figma/portal-v2-doc-runtime.mjs"
+      - "tools/figma/generate-portal-v2-page-skeleton.mjs"
+      - "tools/figma/generate-portal-v2-cover.mjs"
+      - "tools/figma/generate-portal-v2-getting-started.mjs"
+      - "tools/figma/generate-portal-v2-foundations-page.mjs"
+      - "tools/figma/generate-portal-v2-index-page.mjs"
+      - "tools/validate-figma-documentation-handoff.mjs"
+      - "docs/design/FIGMA_DOCUMENTATION_HANDOFF.md"
+      - ".github/workflows/figma-documentation-handoff.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-figma-documentation-handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check generator syntax
+        run: |
+          node --check tools/figma/portal-v2-doc-runtime.mjs
+          node --check tools/figma/generate-portal-v2-page-skeleton.mjs
+          node --check tools/figma/generate-portal-v2-cover.mjs
+          node --check tools/figma/generate-portal-v2-getting-started.mjs
+          node --check tools/figma/generate-portal-v2-foundations-page.mjs
+          node --check tools/figma/generate-portal-v2-index-page.mjs
+      - name: Validate documentation handoff
+        run: node tools/validate-figma-documentation-handoff.mjs
