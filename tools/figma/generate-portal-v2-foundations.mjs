@@ -183,7 +183,7 @@ for (const [name, size, definition] of textStyleDefinitions) {
 
 function parseShadow(value) {
   const match = String(value).match(
-    /^(-?\d+)px\s+(-?\d+)px\s+(\d+)px(?:\s+(\d+)px)?\s+rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/
+    /^(-?\d+(?:\.\d+)?)(?:px)?\s+(-?\d+(?:\.\d+)?)(?:px)?\s+(\d+(?:\.\d+)?)(?:px)?(?:\s+(\d+(?:\.\d+)?)(?:px)?)?\s+rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/
   );
   if (!match) throw new Error("Unsupported shadow token: " + value);
   return {
