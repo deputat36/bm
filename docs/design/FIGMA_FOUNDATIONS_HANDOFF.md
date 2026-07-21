@@ -66,8 +66,11 @@ Primitive colors имеют пустой `scopes` и скрыты из property 
 3. `Effects/Floating`
 4. `Effects/Focus`
 5. `Effects/Brand Mark`
+6. `Effects/Header`
 
 `Effects/Brand Mark` повторяет production-тень фирменного знака: `0 10px 24px rgba(232, 93, 63, 0.25)`.
+
+`Effects/Header` повторяет лёгкое отделение sticky-шапки от страницы: `0 8px 28px rgba(16, 42, 67, 0.06)`. Оно не заменяется более тяжёлым `Effects/Card`.
 
 ## Создание use_figma-кода
 
@@ -129,7 +132,7 @@ skillNames: resource:figma-use,resource:figma-generate-library
 - отсутствие `ALL_SCOPES`;
 - Code Syntax на каждой variable;
 - 8 text styles;
-- 5 effect styles;
+- 6 effect styles;
 - отсутствие semantic colors с raw HEX вместо alias.
 
 После этого можно переходить к Phase 2:
