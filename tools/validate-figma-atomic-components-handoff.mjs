@@ -6,8 +6,16 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const runtimePath = path.join(ROOT, "tools/figma/portal-v2-component-runtime.mjs");
+const target = process.argv[2] || "all";
+const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "docs"]);
+if (!allowedTargets.has(target)) {
+  console.error(`Unknown validation target: ${target}`);
+  process.exit(2);
+}
+
 const generators = [
   {
+    id: "button",
     path: "tools/figma/generate-portal-v2-button-components.mjs",
     page: "05 Component · Button",
     componentSet: "Button",
@@ -19,6 +27,7 @@ const generators = [
     tokens: ["action/primary", "action/primary/hover", "action/secondary", "focus/ring"]
   },
   {
+    id: "status",
     path: "tools/figma/generate-portal-v2-verification-status-components.mjs",
     page: "06 Component · Verification Status",
     componentSet: "Verification Status",
@@ -30,6 +39,7 @@ const generators = [
     tokens: ["status/verified", "status/pending", "sage/100", "amber/100"]
   },
   {
+    id: "field",
     path: "tools/figma/generate-portal-v2-form-field-components.mjs",
     page: "07 Component · Form Field",
     componentSet: "Form Field",
@@ -47,14 +57,16 @@ function assert(condition, message) {
   if (!condition) errors.push(message);
 }
 
-const runtime = fs.readFileSync(runtimePath, "utf8");
-assert(runtime.includes("figma.createComponent()"), "Runtime must create real ComponentNode objects");
-assert(runtime.includes("figma.combineAsVariants"), "Runtime must combine variants into ComponentSetNode");
-assert(runtime.includes("figma.variables.setBoundVariableForPaint"), "Runtime must bind paints to variables");
-assert(runtime.includes("node.setBoundVariable"), "Runtime must bind dimensions to variables");
-assert(runtime.includes("addComponentProperty"), "Runtime must expose component properties");
-assert(runtime.includes("componentPropertyReferences"), "Runtime must connect properties to child nodes");
-assert(runtime.includes("setSharedPluginData"), "Runtime must tag generated nodes for idempotency");
+function validateRuntime() {
+  const runtime = fs.readFileSync(runtimePath, "utf8");
+  assert(runtime.includes("figma.createComponent()"), "Runtime must create real ComponentNode objects");
+  assert(runtime.includes("figma.combineAsVariants"), "Runtime must combine variants into ComponentSetNode");
+  assert(runtime.includes("figma.variables.setBoundVariableForPaint"), "Runtime must bind paints to variables");
+  assert(runtime.includes("node.setBoundVariable"), "Runtime must bind dimensions to variables");
+  assert(runtime.includes("addComponentProperty"), "Runtime must expose component properties");
+  assert(runtime.includes("componentPropertyReferences"), "Runtime must connect properties to child nodes");
+  assert(runtime.includes("setSharedPluginData"), "Runtime must tag generated nodes for idempotency");
+}
 
 const disallowed = [
   "figma.notify(",
@@ -65,12 +77,10 @@ const disallowed = [
   ".setPluginData("
 ];
 
-let totalExpectedVariants = 0;
-for (const definition of generators) {
-  totalExpectedVariants += definition.expectedVariantCount;
+function validateGenerator(definition) {
   const absolute = path.join(ROOT, definition.path);
   assert(fs.existsSync(absolute), `Missing generator: ${definition.path}`);
-  if (!fs.existsSync(absolute)) continue;
+  if (!fs.existsSync(absolute)) return;
 
   const run = spawnSync(process.execPath, [absolute], {
     cwd: ROOT,
@@ -79,7 +89,7 @@ for (const definition of generators) {
   });
   assert(run.status === 0, `${definition.path} failed to generate code: ${run.stderr.trim()}`);
   const code = run.stdout;
-  if (!code) continue;
+  if (!code) return;
 
   assert(code.length <= 50000, `${definition.path} exceeds Figma.use_figma 50,000 character limit`);
   assert(code.includes(definition.page), `${definition.path} has wrong page name`);
@@ -104,20 +114,20 @@ for (const definition of generators) {
     assert(!code.includes(pattern), `${definition.path} uses unsupported API: ${pattern}`);
   }
 
-  const tempFile = path.join(os.tmpdir(), `portal-v2-${path.basename(definition.path)}-${process.pid}.mjs`);
+  const tempFile = path.join(os.tmpdir(), `portal-v2-${definition.id}-${process.pid}.mjs`);
   const wrappedCode = `async function __figmaUseWrapper() {\n${code}\n}\n`;
   fs.writeFileSync(tempFile, wrappedCode, "utf8");
   const syntax = spawnSync(process.execPath, ["--check", tempFile], { encoding: "utf8" });
   fs.rmSync(tempFile, { force: true });
   assert(syntax.status === 0, `${definition.path} generated invalid JavaScript: ${syntax.stderr.trim()}`);
 }
-assert(totalExpectedVariants === 21, `Expected 21 variants, got ${totalExpectedVariants}`);
 
-const docsPath = path.join(ROOT, "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md");
-const workflowPath = path.join(ROOT, ".github/workflows/figma-atomic-components-handoff.yml");
-assert(fs.existsSync(docsPath), "Missing atomic components handoff documentation");
-assert(fs.existsSync(workflowPath), "Missing atomic components handoff workflow");
-if (fs.existsSync(docsPath)) {
+function validateDocs() {
+  const docsPath = path.join(ROOT, "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md");
+  const workflowPath = path.join(ROOT, ".github/workflows/figma-atomic-components-handoff.yml");
+  assert(fs.existsSync(docsPath), "Missing atomic components handoff documentation");
+  assert(fs.existsSync(workflowPath), "Missing atomic components handoff workflow");
+  if (!fs.existsSync(docsPath)) return;
   const docs = fs.readFileSync(docsPath, "utf8");
   for (const required of [
     "05 Component · Button",
@@ -131,9 +141,18 @@ if (fs.existsSync(docsPath)) {
   }
 }
 
+if (target === "all" || target === "runtime") validateRuntime();
+for (const definition of generators) {
+  if (target === "all" || target === definition.id) validateGenerator(definition);
+}
+if (target === "all" || target === "docs") validateDocs();
+if (target === "all") {
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 21, "Expected 21 variants");
+}
+
 if (errors.length) {
-  console.error("Figma atomic components handoff validation failed:\n- " + errors.join("\n- "));
+  console.error(`Figma atomic components validation failed for ${target}:\n- ${errors.join("\n- ")}`);
   process.exit(1);
 }
 
-console.log("Figma atomic components handoff is valid: 3 families, 21 variants, variable-bound and idempotent.");
+console.log(`Figma atomic components validation passed for ${target}.`);
