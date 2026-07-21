@@ -68,12 +68,12 @@ Desktop-поля не масштабируются и не обрезаются.
 - `Footer note` — TEXT;
 - `Show footer note` — BOOLEAN.
 
-Текст CTA редактируется через `Label` вложенного Button instance. Фиктивное внешнее свойство для вложенного текста не создаётся.
+Текст CTA редактируется через `Label` вложенного Button `Context=Light` instance. Фиктивное внешнее свойство для вложенного текста не создаётся.
 
 ## Зависимости
 
 - локальный ComponentSet `Form Field`;
-- локальный ComponentSet `Button`;
+- локальный ComponentSet `Button`, вариант `Context=Light`;
 - `Effects/Floating` для Quick;
 - `Effects/Card` для Detailed;
 - semantic colors поверхности, текста и границ;
@@ -107,9 +107,10 @@ Lead Form Card не обещает:
 
 ## Генераторы
 
-Сначала обновить Form Field:
+Сначала обновить Button и Form Field:
 
 ```bash
+node tools/figma/generate-portal-v2-button-components.mjs
 node tools/figma/generate-portal-v2-form-field-components.mjs
 ```
 
@@ -131,15 +132,16 @@ skillNames: resource:figma-use,resource:figma-generate-library
 
 После физического запуска в Figma:
 
-1. проверить 27 вариантов Form Field;
-2. проверить все 4 варианта Lead Form Card;
-3. проверить отсутствие обрезки русских текстов;
-4. проверить ширины 520, 378 и 292 px;
-5. проверить, что согласие видно перед CTA;
-6. проверить, что Quick содержит 3 поля, Detailed — 8;
-7. проверить вложенные Form Field/Button instances;
-8. проверить TEXT и BOOLEAN properties;
-9. сравнить с главной, каталогом и `assets/css/leadgen.css`;
-10. записать page ID, root ID и component set ID в issue №116.
+1. проверить 16 вариантов Button;
+2. проверить 27 вариантов Form Field;
+3. проверить все 4 варианта Lead Form Card;
+4. проверить отсутствие обрезки русских текстов;
+5. проверить ширины 520, 378 и 292 px;
+6. проверить, что согласие видно перед CTA;
+7. проверить, что Quick содержит 3 поля, Detailed — 8;
+8. проверить вложенные Form Field/Button instances;
+9. проверить TEXT и BOOLEAN properties;
+10. сравнить с главной, каталогом и `assets/css/leadgen.css`;
+11. записать page ID, root ID и component set ID в issue №116.
 
 До Visual QA компонент считается подготовленным в GitHub, но не завершённым в Figma.
