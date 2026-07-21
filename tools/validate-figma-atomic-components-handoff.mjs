@@ -91,7 +91,8 @@ for (const definition of generators) {
   }
 
   const tempFile = path.join(os.tmpdir(), `portal-v2-${path.basename(definition.path)}-${process.pid}.mjs`);
-  fs.writeFileSync(tempFile, code, "utf8");
+  const wrappedCode = `async function __figmaUseWrapper() {\n${code}\n}\n`;
+  fs.writeFileSync(tempFile, wrappedCode, "utf8");
   const syntax = spawnSync(process.execPath, ["--check", tempFile], { encoding: "utf8" });
   fs.rmSync(tempFile, { force: true });
   assert(syntax.status === 0, `${definition.path} generated invalid JavaScript: ${syntax.stderr.trim()}`);
