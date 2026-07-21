@@ -18,6 +18,7 @@ on:
       - "tools/figma/generate-portal-v2-fact-card-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
+      - "docs/design/FIGMA_FACT_CARD_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
       - ".github/workflows/figma-atomic-components-handoff.yml"
   push:
@@ -39,6 +40,7 @@ on:
       - "tools/figma/generate-portal-v2-fact-card-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
+      - "docs/design/FIGMA_FACT_CARD_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
       - ".github/workflows/figma-atomic-components-handoff.yml"
 
