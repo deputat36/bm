@@ -8,7 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const runtimePath = path.join(ROOT, "tools/figma/portal-v2-component-runtime.mjs");
 const target = process.argv[2] || "all";
 const section = process.argv[3] || "all";
-const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "docs"]);
+const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "navigation", "docs"]);
 const allowedSections = new Set(["all", "generation", "api", "variants", "tokens", "syntax"]);
 if (!allowedTargets.has(target)) {
   console.error(`Unknown validation target: ${target}`);
@@ -87,6 +87,19 @@ const generators = [
     ],
     expectedVariantCount: 4,
     tokens: ["text/primary", "text/inverse", "Typography/Brand", "Effects/Brand Mark"]
+  },
+  {
+    id: "navigation",
+    path: "tools/figma/generate-portal-v2-top-navigation-components.mjs",
+    page: "10 Component · Top Navigation",
+    componentSet: "Top Navigation",
+    variantMarkers: [
+      "for (const layout of [\"Desktop\", \"Mobile\"])",
+      "const activePages = [\"None\", \"Catalog\", \"Developers\", \"Mortgage\", \"Guide\", \"News\", \"Contacts\"]"
+    ],
+    expectedVariantCount: 14,
+    tokens: ["surface/primary", "background/soft", "border/default", "Typography/Label", "Effects/Header"],
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties("]
   }
 ];
 
@@ -154,6 +167,9 @@ function validateGenerator(definition) {
     assert(code.includes("setSharedPluginData"), `${definition.path} is not idempotently tagged`);
     assert(code.includes("figma.variables.setBoundVariableForPaint"), `${definition.path} has no paint variable bindings`);
     assert(code.includes("setBoundVariable"), `${definition.path} has no dimension variable bindings`);
+    for (const marker of definition.apiMarkers || []) {
+      assert(code.includes(marker), `${definition.path} misses dependency API marker ${marker}`);
+    }
   }
 
   if (inSection("variants")) {
@@ -191,6 +207,7 @@ function validateDocs() {
     "07 Component · Form Field",
     "08 Component · FAQ Accordion",
     "09 Component · Brand",
+    "10 Component · Top Navigation",
     "Figma.use_figma",
     "Visual QA",
     "issue №116"
@@ -205,7 +222,7 @@ for (const definition of generators) {
 }
 if (target === "all" || target === "docs") validateDocs();
 if (target === "all") {
-  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 29, "Expected 29 variants");
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 43, "Expected 43 variants");
 }
 
 if (errors.length) {
