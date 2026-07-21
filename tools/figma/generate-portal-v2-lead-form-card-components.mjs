@@ -151,15 +151,10 @@ for (const layout of ["Desktop", "Mobile"]) {
 
     const submit = primaryButton.createInstance();
     submit.name = "Submit action";
-    const submitValue = quick ? "Получить консультацию" : "Получить подробную консультацию";
-    setInstanceText(submit, "Label", submitValue);
+    setInstanceText(submit, "Label", quick ? "Получить консультацию" : "Получить подробную консультацию");
     node.appendChild(submit);
     submit.layoutSizingHorizontal = "FILL";
     createdNodeIds.push(submit.id);
-    const submitProperty = property(node, "Submit label", "TEXT", submitValue);
-    const submitKey = nestedPropertyKey(submit, "Label");
-    submit.componentProperties[submitKey];
-    node.setSharedPluginData("portal-v2", "submit-label-property", submitProperty);
 
     const hintValue = "Заявка не является бронью и не фиксирует цену.";
     const hintProperty = property(node, "Hint", "TEXT", hintValue);
@@ -203,7 +198,7 @@ const notes = auto("Usage notes", "VERTICAL");
 notes.itemSpacing = 12;
 root.appendChild(notes);
 await text(notes, "Правила использования", { name: "Notes title", styleName: "Typography/H3", width: 1080 });
-await text(notes, "Quick используется в hero и карточках объекта: только имя, телефон и выбор объекта. Detailed применяется после того, как пользователь готов указать параметры покупки. Согласие на обработку данных обязательно в обоих вариантах и располагается перед CTA. Форма не обещает цену, наличие, бронь, одобрение ипотеки или юридический результат. На мобильной ширине используются настоящие Form Field Size=Mobile, а не масштабированные desktop-поля.", {
+await text(notes, "Quick используется в hero и карточках объекта: только имя, телефон и выбор объекта. Detailed применяется после того, как пользователь готов указать параметры покупки. Согласие на обработку данных обязательно в обоих вариантах и располагается перед CTA. Текст CTA редактируется через Label вложенного Button instance. Форма не обещает цену, наличие, бронь, одобрение ипотеки или юридический результат. На мобильной ширине используются настоящие Form Field Size=Mobile, а не масштабированные desktop-поля.", {
   name: "Notes body",
   styleName: "Typography/Body",
   width: 1080,
