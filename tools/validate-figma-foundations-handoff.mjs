@@ -125,6 +125,7 @@ for (const fragment of [
   "getLocalEffectStylesAsync",
   "Typography/Brand",
   "brand_mark",
+  "header",
   "variable.scopes = []",
   "variable.scopes = [\"GAP\"]",
   "variable.scopes = [\"CORNER_RADIUS\"]",

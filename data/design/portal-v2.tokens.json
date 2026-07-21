@@ -111,7 +111,8 @@
     "card_hover": "0 22px 56px rgba(16, 42, 67, 0.14)",
     "floating": "0 28px 72px rgba(11, 34, 51, 0.20)",
     "focus": "0 0 0 4px rgba(244, 184, 96, 0.34)",
-    "brand_mark": "0 10px 24px rgba(232, 93, 63, 0.25)"
+    "brand_mark": "0 10px 24px rgba(232, 93, 63, 0.25)",
+    "header": "0 8px 28px rgba(16, 42, 67, 0.06)"
   },
   "layout": {
     "container_max": 1200,
