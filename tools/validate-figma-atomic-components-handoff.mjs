@@ -8,7 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const runtimePath = path.join(ROOT, "tools/figma/portal-v2-component-runtime.mjs");
 const target = process.argv[2] || "all";
 const section = process.argv[3] || "all";
-const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "navigation", "docs"]);
+const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "navigation", "project", "docs"]);
 const allowedSections = new Set(["all", "generation", "api", "variants", "tokens", "syntax"]);
 if (!allowedTargets.has(target)) {
   console.error(`Unknown validation target: ${target}`);
@@ -100,6 +100,36 @@ const generators = [
     expectedVariantCount: 14,
     tokens: ["surface/primary", "background/soft", "border/default", "Typography/Label", "Effects/Header"],
     apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties("]
+  },
+  {
+    id: "project",
+    path: "tools/figma/generate-portal-v2-project-card-components.mjs",
+    page: "11 Component · Project Card",
+    componentSet: "Project Card",
+    variantMarkers: [
+      "for (const layout of [\"Desktop\", \"Mobile\"])",
+      "for (const verification of [\"Verified\", \"Pending\"])",
+      "for (const state of [\"Default\", \"Hover\"])"
+    ],
+    expectedVariantCount: 8,
+    tokens: [
+      "surface/primary",
+      "border/default",
+      "border/strong",
+      "status/verified",
+      "text/primary",
+      "text/muted",
+      "Effects/Card",
+      "Effects/Card Hover"
+    ],
+    apiMarkers: [
+      "getLocalComponentsAsync",
+      ".createInstance()",
+      "componentProperties",
+      "setProperties(",
+      "Verification Status",
+      "Button"
+    ]
   }
 ];
 
@@ -208,6 +238,7 @@ function validateDocs() {
     "08 Component · FAQ Accordion",
     "09 Component · Brand",
     "10 Component · Top Navigation",
+    "11 Component · Project Card",
     "Figma.use_figma",
     "Visual QA",
     "issue №116"
@@ -222,7 +253,7 @@ for (const definition of generators) {
 }
 if (target === "all" || target === "docs") validateDocs();
 if (target === "all") {
-  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 43, "Expected 43 variants");
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 51, "Expected 51 variants");
 }
 
 if (errors.length) {
