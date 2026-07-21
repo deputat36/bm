@@ -154,7 +154,8 @@ const textStyleDefinitions = [
   ["Typography/H3", TOKENS.typography.h3.size, TOKENS.typography.h3],
   ["Typography/Body Large", TOKENS.typography.body_large.size, TOKENS.typography.body_large],
   ["Typography/Body", TOKENS.typography.body.size, TOKENS.typography.body],
-  ["Typography/Label", TOKENS.typography.label.size, TOKENS.typography.label]
+  ["Typography/Label", TOKENS.typography.label.size, TOKENS.typography.label],
+  ["Typography/Brand", TOKENS.typography.brand.size, TOKENS.typography.brand]
 ];
 
 const localTextStyles = await figma.getLocalTextStylesAsync();

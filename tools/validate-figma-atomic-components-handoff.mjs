@@ -8,7 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const runtimePath = path.join(ROOT, "tools/figma/portal-v2-component-runtime.mjs");
 const target = process.argv[2] || "all";
 const section = process.argv[3] || "all";
-const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "docs"]);
+const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "docs"]);
 const allowedSections = new Set(["all", "generation", "api", "variants", "tokens", "syntax"]);
 if (!allowedTargets.has(target)) {
   console.error(`Unknown validation target: ${target}`);
@@ -75,6 +75,18 @@ const generators = [
       "Effects/Card",
       "Effects/Card Hover"
     ]
+  },
+  {
+    id: "brand",
+    path: "tools/figma/generate-portal-v2-brand-components.mjs",
+    page: "09 Component · Brand",
+    componentSet: "Brand",
+    variantMarkers: [
+      "for (const context of [\"Light\", \"Dark\"])",
+      "for (const size of [\"Desktop\", \"Mobile\"])"
+    ],
+    expectedVariantCount: 4,
+    tokens: ["text/primary", "text/inverse", "Typography/Brand", "Effects/Brand Mark"]
   }
 ];
 
@@ -178,6 +190,7 @@ function validateDocs() {
     "06 Component · Verification Status",
     "07 Component · Form Field",
     "08 Component · FAQ Accordion",
+    "09 Component · Brand",
     "Figma.use_figma",
     "Visual QA",
     "issue №116"
@@ -192,7 +205,7 @@ for (const definition of generators) {
 }
 if (target === "all" || target === "docs") validateDocs();
 if (target === "all") {
-  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 25, "Expected 25 variants");
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 29, "Expected 29 variants");
 }
 
 if (errors.length) {

@@ -4,7 +4,7 @@ Figma-файл:
 
 `https://www.figma.com/design/rhFYa5gPDhF009hZsfEGSX`
 
-Этот handoff продолжает Phase 3 issue №116 и создаёт первые атомарные компоненты Design System v2 «Городской навигатор».
+Этот handoff продолжает Phase 3 issue №116 и создаёт атомарные компоненты Design System v2 «Городской навигатор».
 
 ## Предварительные условия
 
@@ -138,6 +138,34 @@ Production-связь:
 - desktop padding — 24 px;
 - mobile padding — 16 px.
 
+### 09 Component · Brand
+
+Component set `Brand` содержит 4 варианта:
+
+- Context: `Light`, `Dark`
+- Size: `Desktop`, `Mobile`
+
+Component properties:
+
+- `Title` — TEXT
+- `Show title` — BOOLEAN
+
+Правила:
+
+- название всегда остаётся «Новостройки Борисоглебска» и не подменяется брендом застройщика;
+- Light используется на светлом header и нейтральных поверхностях;
+- Dark применяется на тёмном hero, footer и контрастных секциях;
+- Desktop повторяет production mark 42 px, Mobile — 36 px;
+- `Typography/Brand` фиксирует 16 px, weight 900, line-height 105%, letter-spacing −2.5%;
+- `Effects/Brand Mark` повторяет production-тень;
+- фирменный знак является закрытым SVG-artwork с точным коралловым градиентом и сеткой и не перекрашивается статусными цветами.
+
+Генератор:
+
+```bash
+node tools/figma/generate-portal-v2-brand-components.mjs
+```
+
 ## Порядок запуска
 
 Каждая команда выводит готовый JavaScript для отдельного последовательного вызова `Figma.use_figma`.
@@ -152,6 +180,8 @@ Production-связь:
 8. Получить metadata и screenshot страницы Form Field.
 9. Выполнить генератор FAQ Accordion.
 10. Получить metadata и screenshot страницы FAQ Accordion.
+11. Выполнить генератор Brand.
+12. Получить metadata и screenshot страницы Brand.
 
 Параметр навыков:
 
@@ -180,6 +210,8 @@ key: component-key
 - shadows и focus — через `Effects/*`;
 - тексты и видимость — через component properties.
 
+Исключение — закрытый SVG-artwork фирменного знака. Его градиент является частью идентичности, а не семантическим интерфейсным цветом. Вокруг artwork все размеры, текстовые цвета, typography и effect style управляются Foundations.
+
 Hardcoded HEX, неподписанные варианты и случайные локальные стили запрещены.
 
 ## Проверка
@@ -205,21 +237,22 @@ Figma atomic components handoff
 - отсутствие `notify`, `closePlugin`, sync currentPage и pluginData API;
 - создание реальных ComponentNode и ComponentSetNode;
 - наличие variants, component properties и variable bindings;
-- полный набор из 25 вариантов.
+- полный набор из 29 вариантов.
 
 ## Visual QA
 
 После физического запуска в Figma необходимо:
 
 1. проверить metadata каждой страницы;
-2. сделать screenshot всех четырёх component sets;
+2. сделать screenshot всех пяти component sets;
 3. убедиться, что variants не накладываются друг на друга;
 4. проверить русские переносы и отсутствие обрезанного текста;
 5. проверить минимальные зоны нажатия;
-6. проверить контраст Default, Hover, Focus, Disabled, Closed и Open;
+6. проверить контраст Default, Hover, Focus, Disabled, Closed, Open, Light и Dark;
 7. проверить component properties на экземплярах;
 8. сравнить компоненты с `/design-system/` и production CSS;
-9. проверить FAQ на ширине Desktop и Mobile;
-10. записать page IDs, root IDs и component set IDs в issue №116.
+9. проверить FAQ и Brand на ширине Desktop и Mobile;
+10. проверить точность градиента, сетки и тени Brand mark;
+11. записать page IDs, root IDs и component set IDs в issue №116.
 
 До Visual QA компоненты считаются подготовленными в GitHub, но не завершёнными в Figma.
