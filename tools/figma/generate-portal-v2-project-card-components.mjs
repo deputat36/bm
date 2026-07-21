@@ -50,8 +50,8 @@ async function factRow(parent, owner, index, value, width) {
 
 const verifiedStatus = localVariant("Verification Status", ["Tone=Verified", "Layout=Compact"]);
 const pendingStatus = localVariant("Verification Status", ["Tone=Pending", "Layout=Compact"]);
-const primaryButton = localVariant("Button", ["Type=Primary", "State=Default"]);
-const secondaryButton = localVariant("Button", ["Type=Secondary", "State=Default"]);
+const primaryButton = localVariant("Button", ["Context=Light", "Type=Primary", "State=Default"]);
+const secondaryButton = localVariant("Button", ["Context=Light", "Type=Secondary", "State=Default"]);
 const variants = [];
 
 for (const layout of ["Desktop", "Mobile"]) {
@@ -141,13 +141,13 @@ for (const layout of ["Desktop", "Mobile"]) {
 }
 
 const set = combine(variants, stage, "Project Card");
-set.description = "Portal v2 Project Card · Layout × Verification × State · built from Verification Status and Button instances";
+set.description = "Portal v2 Project Card · Layout × Verification × State · built from Verification Status and Light Button instances";
 
 const notes = auto("Usage notes", "VERTICAL");
 notes.itemSpacing = 12;
 root.appendChild(notes);
 await text(notes, "Правила использования", { name: "Notes title", styleName: "Typography/H3", width: 1080 });
-await text(notes, "Карточка сообщает статус проверки до описания объекта. Verified применяется только после сверки с первичным или официально предоставленным источником. Pending объясняет, что уточняется, и не создаёт ложной срочности. Изображение не является обязательной частью компонента до появления единого production-контракта для медиаматериалов. Основной CTA ведёт к карточке или запросу обновления, а не обещает бронь, цену или наличие.", {
+await text(notes, "Карточка сообщает статус проверки до описания объекта. Verified применяется только после сверки с первичным или официально предоставленным источником. Pending объясняет, что уточняется, и не создаёт ложной срочности. Изображение не является обязательной частью компонента до появления единого production-контракта для медиаматериалов. Основной CTA ведёт к карточке или запросу обновления, а не обещает бронь, цену или наличие. Вложенные кнопки всегда используют Context=Light.", {
   name: "Notes body",
   styleName: "Typography/Body",
   width: 1080,

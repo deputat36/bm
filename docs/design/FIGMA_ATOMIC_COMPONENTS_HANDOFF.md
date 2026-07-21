@@ -28,14 +28,15 @@ Figma-файл:
 
 ### 05 Component · Button
 
-8 вариантов:
+16 вариантов:
 
+- Context: `Light`, `Hero`;
 - Type: `Primary`, `Secondary`;
 - State: `Default`, `Hover`, `Focus`, `Disabled`.
 
 Property: `Label` — TEXT.
 
-Primary используется для одного главного действия. Secondary не конкурирует с ним. Focus обязателен.
+Light используется на белых и нейтральных поверхностях. Hero используется на тёмном первом экране и CTA-секциях. Primary остаётся одним главным действием, Secondary не конкурирует с ним, Focus обязателен.
 
 ### 06 Component · Verification Status
 
@@ -107,7 +108,7 @@ Properties:
 - Layout: `Desktop`, `Mobile`;
 - Active: `None`, `Catalog`, `Developers`, `Mortgage`, `Guide`, `News`, `Contacts`.
 
-Использует настоящие Brand и Button instances. Mobile содержит горизонтальный viewport 336 px.
+Использует настоящие Brand и Button `Context=Light` instances. Mobile содержит горизонтальный viewport 336 px.
 
 ### 11 Component · Project Card
 
@@ -117,7 +118,7 @@ Properties:
 - Verification: `Verified`, `Pending`;
 - State: `Default`, `Hover`.
 
-Использует Verification Status и Button instances. Не публикует неподтверждённые цены, наличие и сроки.
+Использует Verification Status и Button `Context=Light` instances. Не публикует неподтверждённые цены, наличие и сроки.
 
 ### 12 Component · Fact Card
 
@@ -137,9 +138,23 @@ Properties: `Value`, `Label` — TEXT.
 - Layout: `Desktop`, `Mobile`;
 - Scope: `Quick`, `Detailed`.
 
-Quick содержит 3 поля, Detailed — 8. Оба варианта содержат обязательное согласие перед CTA и используют реальные Form Field/Button instances.
+Quick содержит 3 поля, Detailed — 8. Оба варианта содержат обязательное согласие перед CTA и используют реальные Form Field/Button `Context=Light` instances.
 
 Подробности: `docs/design/FIGMA_LEAD_FORM_CARD_HANDOFF.md`.
+
+## Итог
+
+Подготовлено 9 ComponentSet и 85 вариантов:
+
+- Button — 16;
+- Verification Status — 4;
+- Form Field — 27;
+- FAQ Accordion — 4;
+- Brand — 4;
+- Top Navigation — 14;
+- Project Card — 8;
+- Fact Card — 4;
+- Lead Form Card — 4.
 
 ## Порядок запуска
 
@@ -163,7 +178,9 @@ Project Card запускается после Verification Status и Button.
 
 Lead Form Card запускается после обновлённого Form Field и Button.
 
-Параметр навыков:
+После компонентов создаётся `14 Screen · Homepage Hero` по инструкции `docs/design/FIGMA_HOMEPAGE_HERO_HANDOFF.md`.
+
+Параметр навыков для компонентов:
 
 ```text
 skillNames: resource:figma-use,resource:figma-generate-library
@@ -193,7 +210,7 @@ key: component-key
 
 Исключения допускаются только для точных production-размеров, которые пока не входят в общую шкалу, и закрытого SVG-artwork Brand.
 
-Hardcoded HEX, неподписанные варианты и фиктивные properties запрещены.
+Hardcoded HEX, неподписанные варианты, неоднозначный nested variant lookup и фиктивные properties запрещены.
 
 ## Проверка
 
@@ -218,7 +235,8 @@ Figma atomic components handoff
 - создание ComponentNode/ComponentSetNode;
 - variants, properties и variable bindings;
 - вложенные component instances;
-- полный набор из 77 вариантов.
+- явный Light Button context в Top Navigation, Project Card и Lead Form Card;
+- полный набор из 85 вариантов.
 
 ## Visual QA
 
@@ -232,9 +250,10 @@ Figma atomic components handoff
 6. проверить TEXT/BOOLEAN properties;
 7. проверить вложенные instances;
 8. сравнить с `/design-system/` и production CSS;
-9. проверить Form Field на ширинах 520, 378 и 292 px;
-10. проверить Quick/Detailed Lead Form Card на Desktop/Mobile;
-11. проверить обязательное согласие перед CTA;
-12. записать page IDs, root IDs и component set IDs в issue №116.
+9. проверить Button в Light и Hero contexts;
+10. проверить Form Field на ширинах 520, 378 и 292 px;
+11. проверить Quick/Detailed Lead Form Card на Desktop/Mobile;
+12. проверить обязательное согласие перед CTA;
+13. записать page IDs, root IDs и component set IDs в issue №116.
 
 До Visual QA компоненты считаются подготовленными в GitHub, но не завершёнными в Figma.

@@ -26,11 +26,12 @@ const generators = [
     page: "05 Component · Button",
     componentSet: "Button",
     variantMarkers: [
+      "const contexts = [\"Light\", \"Hero\"]",
       "const types = [\"Primary\", \"Secondary\"]",
       "const states = [\"Default\", \"Hover\", \"Focus\", \"Disabled\"]"
     ],
-    expectedVariantCount: 8,
-    tokens: ["action/primary", "action/primary/hover", "action/secondary", "Effects/Focus"]
+    expectedVariantCount: 16,
+    tokens: ["action/primary", "action/primary/hover", "action/secondary", "background/hero", "surface/primary", "text/inverse", "Effects/Focus"]
   },
   {
     id: "status",
@@ -92,7 +93,7 @@ const generators = [
     ],
     expectedVariantCount: 14,
     tokens: ["surface/primary", "background/soft", "border/default", "Typography/Label", "Effects/Header"],
-    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties("]
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Context=Light"]
   },
   {
     id: "project",
@@ -106,7 +107,7 @@ const generators = [
     ],
     expectedVariantCount: 8,
     tokens: ["surface/primary", "border/default", "border/strong", "status/verified", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
-    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Verification Status", "Button"]
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Verification Status", "Button", "Context=Light"]
   },
   {
     id: "fact",
@@ -131,7 +132,7 @@ const generators = [
     ],
     expectedVariantCount: 4,
     tokens: ["surface/primary", "border/default", "border/strong", "action/primary/hover", "coral/100", "text/primary", "text/muted", "Effects/Floating", "Effects/Card"],
-    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Form Field", "Button", "Consent text", "Show footer note"]
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Form Field", "Button", "Consent text", "Show footer note", "Context=Light"]
   }
 ];
 
@@ -238,9 +239,11 @@ function validateDocs() {
     "11 Component · Project Card",
     "12 Component · Fact Card",
     "13 Component · Lead Form Card",
+    "16 вариантов",
     "27 вариантов",
-    "77 вариантов",
+    "85 вариантов",
     "обязательное согласие",
+    "Context: `Light`, `Hero`",
     "Figma.use_figma",
     "Visual QA",
     "issue №116"
@@ -253,7 +256,7 @@ for (const definition of generators) {
 }
 if (target === "all" || target === "docs") validateDocs();
 if (target === "all") {
-  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 77, "Expected 77 variants");
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 85, "Expected 85 variants");
 }
 
 if (errors.length) {
