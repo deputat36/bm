@@ -95,7 +95,7 @@ if (fs.existsSync(docsPath)) {
     "Homepage Hero / Desktop",
     "Homepage Hero / Mobile",
     "Code Connect",
-    "изображения",
+    "### Изображения",
     "16 вариантов",
     "Visual QA",
     "issue №116",
