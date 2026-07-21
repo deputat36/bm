@@ -133,28 +133,28 @@
 
 .project-faq {
   display: grid;
-  gap: 13px;
+  gap: 12px;
   max-width: 960px;
 }
 
 .project-faq details {
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 17px;
+  border-radius: 18px;
   background: #fff;
-  box-shadow: 0 9px 24px rgba(16,42,67,.045);
+  box-shadow: var(--shadow);
   transition: border-color .2s ease, box-shadow .2s ease;
 }
 
 .project-faq details:hover,
 .project-faq details[open] {
   border-color: var(--slate-300);
-  box-shadow: 0 15px 34px rgba(16,42,67,.08);
+  box-shadow: var(--shadow-hover);
 }
 
 .project-faq summary {
   position: relative;
-  padding: 21px 58px 21px 23px;
+  padding: 24px 64px 24px 24px;
   color: var(--navy-900);
   cursor: pointer;
   font-weight: 900;
@@ -170,11 +170,11 @@
   content: "+";
   position: absolute;
   top: 50%;
-  right: 21px;
+  right: 24px;
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   color: var(--navy-900);
   background: var(--amber-100);
@@ -191,7 +191,7 @@
 
 .project-faq details p {
   margin: 0;
-  padding: 0 23px 23px;
+  padding: 0 24px 24px;
   color: var(--muted);
   line-height: 1.6;
 }
@@ -239,7 +239,7 @@
   }
 
   .project-faq summary {
-    padding: 19px 52px 19px 18px;
+    padding: 16px 48px 16px 16px;
   }
 
   .project-faq summary::after {
@@ -247,7 +247,7 @@
   }
 
   .project-faq details p {
-    padding: 0 18px 19px;
+    padding: 0 16px 16px;
   }
 
   .project-faq__actions .button {
