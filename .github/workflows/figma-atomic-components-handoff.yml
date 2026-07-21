@@ -6,6 +6,8 @@ on:
       - "data/design/portal-v2.tokens.json"
       - "assets/css/portal-v2.tokens.css"
       - "assets/css/project-conversion.css"
+      - "assets/css/leadgen.css"
+      - "assets/js/main.js"
       - "tools/figma/portal-v2-component-runtime.mjs"
       - "tools/figma/generate-portal-v2-foundations.mjs"
       - "tools/figma/generate-portal-v2-button-components.mjs"
@@ -16,9 +18,11 @@ on:
       - "tools/figma/generate-portal-v2-top-navigation-components.mjs"
       - "tools/figma/generate-portal-v2-project-card-components.mjs"
       - "tools/figma/generate-portal-v2-fact-card-components.mjs"
+      - "tools/figma/generate-portal-v2-lead-form-card-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
       - "docs/design/FIGMA_FACT_CARD_HANDOFF.md"
+      - "docs/design/FIGMA_LEAD_FORM_CARD_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
       - ".github/workflows/figma-atomic-components-handoff.yml"
   push:
@@ -28,6 +32,8 @@ on:
       - "data/design/portal-v2.tokens.json"
       - "assets/css/portal-v2.tokens.css"
       - "assets/css/project-conversion.css"
+      - "assets/css/leadgen.css"
+      - "assets/js/main.js"
       - "tools/figma/portal-v2-component-runtime.mjs"
       - "tools/figma/generate-portal-v2-foundations.mjs"
       - "tools/figma/generate-portal-v2-button-components.mjs"
@@ -38,9 +44,11 @@ on:
       - "tools/figma/generate-portal-v2-top-navigation-components.mjs"
       - "tools/figma/generate-portal-v2-project-card-components.mjs"
       - "tools/figma/generate-portal-v2-fact-card-components.mjs"
+      - "tools/figma/generate-portal-v2-lead-form-card-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
       - "docs/design/FIGMA_FACT_CARD_HANDOFF.md"
+      - "docs/design/FIGMA_LEAD_FORM_CARD_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
       - ".github/workflows/figma-atomic-components-handoff.yml"
 
@@ -69,57 +77,36 @@ jobs:
           node --check tools/figma/generate-portal-v2-top-navigation-components.mjs
           node --check tools/figma/generate-portal-v2-project-card-components.mjs
           node --check tools/figma/generate-portal-v2-fact-card-components.mjs
+          node --check tools/figma/generate-portal-v2-lead-form-card-components.mjs
           node --check tools/validate-figma-atomic-components-handoff.mjs
       - name: Validate component runtime
         run: node tools/validate-figma-atomic-components-handoff.mjs runtime
-      - name: Validate Button generation contract
-        run: node tools/validate-figma-atomic-components-handoff.mjs button generation
-      - name: Validate Button Plugin API contract
-        run: node tools/validate-figma-atomic-components-handoff.mjs button api
-      - name: Validate Button variant axes
-        run: node tools/validate-figma-atomic-components-handoff.mjs button variants
-      - name: Validate Button token bindings
-        run: node tools/validate-figma-atomic-components-handoff.mjs button tokens
-      - name: Validate Button generated syntax
-        run: node tools/validate-figma-atomic-components-handoff.mjs button syntax
+      - name: Validate Button component
+        run: node tools/validate-figma-atomic-components-handoff.mjs button
       - name: Validate Verification Status component
         run: node tools/validate-figma-atomic-components-handoff.mjs status
-      - name: Validate Form Field component
+      - name: Validate responsive Form Field component
         run: node tools/validate-figma-atomic-components-handoff.mjs field
       - name: Validate FAQ Accordion component
         run: node tools/validate-figma-atomic-components-handoff.mjs faq
       - name: Validate Brand component
         run: node tools/validate-figma-atomic-components-handoff.mjs brand
-      - name: Validate Top Navigation generation contract
-        run: node tools/validate-figma-atomic-components-handoff.mjs navigation generation
-      - name: Validate Top Navigation dependency API
-        run: node tools/validate-figma-atomic-components-handoff.mjs navigation api
-      - name: Validate Top Navigation variant axes
-        run: node tools/validate-figma-atomic-components-handoff.mjs navigation variants
-      - name: Validate Top Navigation token bindings
-        run: node tools/validate-figma-atomic-components-handoff.mjs navigation tokens
-      - name: Validate Top Navigation generated syntax
-        run: node tools/validate-figma-atomic-components-handoff.mjs navigation syntax
-      - name: Validate Project Card generation contract
-        run: node tools/validate-figma-atomic-components-handoff.mjs project generation
-      - name: Validate Project Card dependency API
-        run: node tools/validate-figma-atomic-components-handoff.mjs project api
-      - name: Validate Project Card variant axes
-        run: node tools/validate-figma-atomic-components-handoff.mjs project variants
-      - name: Validate Project Card token bindings
-        run: node tools/validate-figma-atomic-components-handoff.mjs project tokens
-      - name: Validate Project Card generated syntax
-        run: node tools/validate-figma-atomic-components-handoff.mjs project syntax
-      - name: Validate Fact Card generation contract
-        run: node tools/validate-figma-atomic-components-handoff.mjs fact generation
-      - name: Validate Fact Card Plugin API contract
-        run: node tools/validate-figma-atomic-components-handoff.mjs fact api
-      - name: Validate Fact Card variant axes
-        run: node tools/validate-figma-atomic-components-handoff.mjs fact variants
-      - name: Validate Fact Card token bindings
-        run: node tools/validate-figma-atomic-components-handoff.mjs fact tokens
-      - name: Validate Fact Card generated syntax
-        run: node tools/validate-figma-atomic-components-handoff.mjs fact syntax
+      - name: Validate Top Navigation component
+        run: node tools/validate-figma-atomic-components-handoff.mjs navigation
+      - name: Validate Project Card component
+        run: node tools/validate-figma-atomic-components-handoff.mjs project
+      - name: Validate Fact Card component
+        run: node tools/validate-figma-atomic-components-handoff.mjs fact
+      - name: Validate Lead Form Card generation contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs lead generation
+      - name: Validate Lead Form Card dependency API
+        run: node tools/validate-figma-atomic-components-handoff.mjs lead api
+      - name: Validate Lead Form Card variant axes
+        run: node tools/validate-figma-atomic-components-handoff.mjs lead variants
+      - name: Validate Lead Form Card token bindings
+        run: node tools/validate-figma-atomic-components-handoff.mjs lead tokens
+      - name: Validate Lead Form Card generated syntax
+        run: node tools/validate-figma-atomic-components-handoff.mjs lead syntax
       - name: Validate handoff documentation
         run: node tools/validate-figma-atomic-components-handoff.mjs docs
       - name: Validate complete component set
