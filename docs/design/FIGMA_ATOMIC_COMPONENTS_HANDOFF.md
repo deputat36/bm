@@ -102,6 +102,42 @@ Component properties:
 node tools/figma/generate-portal-v2-form-field-components.mjs
 ```
 
+### 08 Component · FAQ Accordion
+
+Component set `FAQ Accordion` содержит 4 варианта:
+
+- State: `Closed`, `Open`
+- Size: `Desktop`, `Mobile`
+
+Component properties:
+
+- `Question` — TEXT
+- `Answer` — TEXT
+
+Правила:
+
+- один элемент отвечает на один конкретный вопрос;
+- закрытый вопрос остаётся читаемым и имеет крупную зону нажатия;
+- открытый ответ не обещает цену, наличие, ипотеку или юридический результат без проверки;
+- знак `+` используется для закрытого состояния, `−` — для открытого;
+- размеры синхронизированы с production CSS через общую шкалу 12/16/24/32/48/64 px;
+- desktop и mobile variants не зависят от ручного изменения внутренних отступов.
+
+Генератор:
+
+```bash
+node tools/figma/generate-portal-v2-faq-accordion-components.mjs
+```
+
+Production-связь:
+
+- `assets/css/project-conversion.css` использует radius 18 px;
+- Closed использует `Effects/Card`;
+- Open и hover используют `Effects/Card Hover`;
+- icon size — 32 px;
+- desktop padding — 24 px;
+- mobile padding — 16 px.
+
 ## Порядок запуска
 
 Каждая команда выводит готовый JavaScript для отдельного последовательного вызова `Figma.use_figma`.
@@ -114,6 +150,8 @@ node tools/figma/generate-portal-v2-form-field-components.mjs
 6. Получить metadata и screenshot страницы Verification Status.
 7. Выполнить генератор Form Field.
 8. Получить metadata и screenshot страницы Form Field.
+9. Выполнить генератор FAQ Accordion.
+10. Получить metadata и screenshot страницы FAQ Accordion.
 
 Параметр навыков:
 
@@ -167,20 +205,21 @@ Figma atomic components handoff
 - отсутствие `notify`, `closePlugin`, sync currentPage и pluginData API;
 - создание реальных ComponentNode и ComponentSetNode;
 - наличие variants, component properties и variable bindings;
-- полный набор из 21 варианта.
+- полный набор из 25 вариантов.
 
 ## Visual QA
 
 После физического запуска в Figma необходимо:
 
 1. проверить metadata каждой страницы;
-2. сделать screenshot всех трёх component sets;
+2. сделать screenshot всех четырёх component sets;
 3. убедиться, что variants не накладываются друг на друга;
 4. проверить русские переносы и отсутствие обрезанного текста;
 5. проверить минимальные зоны нажатия;
-6. проверить контраст Default, Hover, Focus и Disabled;
+6. проверить контраст Default, Hover, Focus, Disabled, Closed и Open;
 7. проверить component properties на экземплярах;
 8. сравнить компоненты с `/design-system/` и production CSS;
-9. записать page IDs, root IDs и component set IDs в issue №116.
+9. проверить FAQ на ширине Desktop и Mobile;
+10. записать page IDs, root IDs и component set IDs в issue №116.
 
 До Visual QA компоненты считаются подготовленными в GitHub, но не завершёнными в Figma.
