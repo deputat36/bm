@@ -30,7 +30,7 @@ const generators = [
       "const states = [\"Default\", \"Hover\", \"Focus\", \"Disabled\"]"
     ],
     expectedVariantCount: 8,
-    tokens: ["action/primary", "action/primary/hover", "action/secondary", "focus/ring"]
+    tokens: ["action/primary", "action/primary/hover", "action/secondary", "Effects/Focus"]
   },
   {
     id: "status",
