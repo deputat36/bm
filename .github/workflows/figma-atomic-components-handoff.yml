@@ -44,5 +44,15 @@ jobs:
           node --check tools/figma/generate-portal-v2-verification-status-components.mjs
           node --check tools/figma/generate-portal-v2-form-field-components.mjs
           node --check tools/validate-figma-atomic-components-handoff.mjs
-      - name: Validate generated Figma code
-        run: node tools/validate-figma-atomic-components-handoff.mjs
+      - name: Validate component runtime
+        run: node tools/validate-figma-atomic-components-handoff.mjs runtime
+      - name: Validate Button component
+        run: node tools/validate-figma-atomic-components-handoff.mjs button
+      - name: Validate Verification Status component
+        run: node tools/validate-figma-atomic-components-handoff.mjs status
+      - name: Validate Form Field component
+        run: node tools/validate-figma-atomic-components-handoff.mjs field
+      - name: Validate handoff documentation
+        run: node tools/validate-figma-atomic-components-handoff.mjs docs
+      - name: Validate complete component set
+        run: node tools/validate-figma-atomic-components-handoff.mjs all
