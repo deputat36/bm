@@ -4,7 +4,7 @@ Figma-файл:
 
 `https://www.figma.com/design/rhFYa5gPDhF009hZsfEGSX`
 
-Этот handoff продолжает Phase 3 issue №116 и создаёт атомарные компоненты Design System v2 «Городской навигатор».
+Этот handoff продолжает Phase 3 issue №116 и создаёт компоненты Design System v2 «Городской навигатор».
 
 ## Предварительные условия
 
@@ -166,6 +166,48 @@ Component properties:
 node tools/figma/generate-portal-v2-brand-components.mjs
 ```
 
+### 10 Component · Top Navigation
+
+Component set `Top Navigation` содержит 14 вариантов:
+
+- Layout: `Desktop`, `Mobile`
+- Active: `None`, `Catalog`, `Developers`, `Mortgage`, `Guide`, `News`, `Contacts`
+
+Component properties:
+
+- `Catalog label` — TEXT
+- `Developers label` — TEXT
+- `Mortgage label` — TEXT
+- `Guide label` — TEXT
+- `News label` — TEXT
+- `Contacts label` — TEXT
+- `Show CTA` — BOOLEAN
+
+Зависимости:
+
+- локальный ComponentSet `Brand`;
+- локальный ComponentSet `Button`;
+- `Typography/Label`;
+- `Effects/Header`.
+
+Правила:
+
+- Brand ведёт на главную страницу, поэтому отдельный пункт «Главная» не создаётся;
+- на внутренних страницах используется ровно один Active variant;
+- `None` используется на главной странице и нейтральных служебных экранах;
+- Desktop повторяет контейнер 1200 px и шапку высотой 84 px;
+- Mobile использует ширину 360 px и прокручиваемый viewport 336 px;
+- пункты меню не сжимаются до нечитаемого размера;
+- внутри используются реальные instances Brand и Button, а не копии их слоёв;
+- главный CTA остаётся один и не обещает цену, наличие, бронь или одобрение ипотеки;
+- `Effects/Header` легче карточной тени и используется только для верхней навигации.
+
+Генератор:
+
+```bash
+node tools/figma/generate-portal-v2-top-navigation-components.mjs
+```
+
 ## Порядок запуска
 
 Каждая команда выводит готовый JavaScript для отдельного последовательного вызова `Figma.use_figma`.
@@ -182,6 +224,10 @@ node tools/figma/generate-portal-v2-brand-components.mjs
 10. Получить metadata и screenshot страницы FAQ Accordion.
 11. Выполнить генератор Brand.
 12. Получить metadata и screenshot страницы Brand.
+13. Выполнить генератор Top Navigation.
+14. Получить metadata и screenshot страницы Top Navigation.
+
+Top Navigation запускается только после Button и Brand, поскольку получает их через `getLocalComponentsAsync()` и создаёт вложенные instances.
 
 Параметр навыков:
 
@@ -208,7 +254,8 @@ key: component-key
 - spacing и radius — через `setBoundVariable`;
 - typography — через `Typography/*`;
 - shadows и focus — через `Effects/*`;
-- тексты и видимость — через component properties.
+- тексты и видимость — через component properties;
+- зависимости — через локальные component instances.
 
 Исключение — закрытый SVG-artwork фирменного знака. Его градиент является частью идентичности, а не семантическим интерфейсным цветом. Вокруг artwork все размеры, текстовые цвета, typography и effect style управляются Foundations.
 
@@ -237,22 +284,25 @@ Figma atomic components handoff
 - отсутствие `notify`, `closePlugin`, sync currentPage и pluginData API;
 - создание реальных ComponentNode и ComponentSetNode;
 - наличие variants, component properties и variable bindings;
-- полный набор из 29 вариантов.
+- использование локальных Brand/Button instances в Top Navigation;
+- полный набор из 43 вариантов.
 
 ## Visual QA
 
 После физического запуска в Figma необходимо:
 
 1. проверить metadata каждой страницы;
-2. сделать screenshot всех пяти component sets;
+2. сделать screenshot всех шести component sets;
 3. убедиться, что variants не накладываются друг на друга;
 4. проверить русские переносы и отсутствие обрезанного текста;
 5. проверить минимальные зоны нажатия;
 6. проверить контраст Default, Hover, Focus, Disabled, Closed, Open, Light и Dark;
 7. проверить component properties на экземплярах;
 8. сравнить компоненты с `/design-system/` и production CSS;
-9. проверить FAQ и Brand на ширине Desktop и Mobile;
+9. проверить FAQ, Brand и Top Navigation на ширине Desktop и Mobile;
 10. проверить точность градиента, сетки и тени Brand mark;
-11. записать page IDs, root IDs и component set IDs в issue №116.
+11. проверить все семь значений Active в Top Navigation;
+12. проверить горизонтальный mobile viewport и доступность CTA;
+13. записать page IDs, root IDs и component set IDs в issue №116.
 
 До Visual QA компоненты считаются подготовленными в GitHub, но не завершёнными в Figma.
