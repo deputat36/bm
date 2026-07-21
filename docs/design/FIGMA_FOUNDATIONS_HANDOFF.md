@@ -45,6 +45,9 @@ Primitive colors имеют пустой `scopes` и скрыты из property 
 5. `Typography/Body Large`
 6. `Typography/Body`
 7. `Typography/Label`
+8. `Typography/Brand`
+
+`Typography/Brand` соответствует рабочему названию портала: 16 px, weight 900, line-height 105%, letter-spacing −2.5%.
 
 Код сайта использует системный font stack. Поскольку Figma не поддерживает CSS font stacks, скрипт выбирает первый реально доступный шрифт из списка:
 
@@ -62,6 +65,9 @@ Primitive colors имеют пустой `scopes` и скрыты из property 
 2. `Effects/Card Hover`
 3. `Effects/Floating`
 4. `Effects/Focus`
+5. `Effects/Brand Mark`
+
+`Effects/Brand Mark` повторяет production-тень фирменного знака: `0 10px 24px rgba(232, 93, 63, 0.25)`.
 
 ## Создание use_figma-кода
 
@@ -122,8 +128,8 @@ skillNames: resource:figma-use,resource:figma-generate-library
 - 53 variables;
 - отсутствие `ALL_SCOPES`;
 - Code Syntax на каждой variable;
-- 7 text styles;
-- 4 effect styles;
+- 8 text styles;
+- 5 effect styles;
 - отсутствие semantic colors с raw HEX вместо alias.
 
 После этого можно переходить к Phase 2:
@@ -138,4 +144,4 @@ skillNames: resource:figma-use,resource:figma-generate-library
 
 ## Текущая блокировка
 
-На 20 июля 2026 года Figma MCP для подключённой команды Starter возвращает `tool call limit` даже при чтении metadata. До снятия лимита генератор и CI являются подготовленным, проверяемым handoff, но не доказательством фактического создания объектов в Figma.
+На 21 июля 2026 года Figma MCP для подключённой команды Starter возвращает `tool call limit` даже при чтении metadata. До снятия лимита генератор и CI являются подготовленным, проверяемым handoff, но не доказательством фактического создания объектов в Figma.
