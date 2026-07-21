@@ -248,11 +248,13 @@ function validateGenerator(definition) {
 
 function validateDocs() {
   const docsPath = path.join(ROOT, "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md");
+  const factDocsPath = path.join(ROOT, "docs/design/FIGMA_FACT_CARD_HANDOFF.md");
   const workflowPath = path.join(ROOT, ".github/workflows/figma-atomic-components-handoff.yml");
   assert(fs.existsSync(docsPath), "Missing atomic components handoff documentation");
+  assert(fs.existsSync(factDocsPath), "Missing Fact Card handoff documentation");
   assert(fs.existsSync(workflowPath), "Missing atomic components handoff workflow");
-  if (!fs.existsSync(docsPath)) return;
-  const docs = fs.readFileSync(docsPath, "utf8");
+  if (!fs.existsSync(docsPath) || !fs.existsSync(factDocsPath)) return;
+  const docs = fs.readFileSync(docsPath, "utf8") + "\n" + fs.readFileSync(factDocsPath, "utf8");
   for (const required of [
     "05 Component · Button",
     "06 Component · Verification Status",
