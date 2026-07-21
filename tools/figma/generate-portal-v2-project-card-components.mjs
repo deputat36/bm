@@ -120,7 +120,7 @@ for (const layout of ["Desktop", "Mobile"]) {
 
       const primary = primaryButton.createInstance();
       primary.name = "Primary action";
-      setInstanceText(primary, "Label", verified ? "Открыть карточку" : "Получить обновление");
+      setInstanceText(primary, "Label", verified ? "Открыть карточку" : "Оставить заявку");
       actions.appendChild(primary);
       createdNodeIds.push(primary.id);
 
@@ -134,7 +134,7 @@ for (const layout of ["Desktop", "Mobile"]) {
 
       node.description = verified
         ? "Карточка объекта с подтверждённым статусом. Verified не заменяет повторную проверку перед консультацией."
-        : "Карточка объекта на проверке. Не публикует цену, наличие или сроки как подтверждённые факты.";
+        : "Карточка объекта на проверке. CTA предлагает оставить обращение, но не обещает цену, наличие, бронь или сроки.";
       variants.push(node);
     }
   }
@@ -147,7 +147,7 @@ const notes = auto("Usage notes", "VERTICAL");
 notes.itemSpacing = 12;
 root.appendChild(notes);
 await text(notes, "Правила использования", { name: "Notes title", styleName: "Typography/H3", width: 1080 });
-await text(notes, "Карточка сообщает статус проверки до описания объекта. Verified применяется только после сверки с первичным или официально предоставленным источником. Pending объясняет, что уточняется, и не создаёт ложной срочности. Изображение не является обязательной частью компонента до появления единого production-контракта для медиаматериалов. Основной CTA ведёт к карточке или запросу обновления, а не обещает бронь, цену или наличие. Вложенные кнопки всегда используют Context=Light.", {
+await text(notes, "Карточка сообщает статус проверки до описания объекта. Verified применяется только после сверки с первичным или официально предоставленным источником. Pending объясняет, что уточняется, и не создаёт ложной срочности. Изображение не является обязательной частью компонента до появления единого production-контракта для медиаматериалов. Основной CTA Pending — «Оставить заявку»: это обращение за консультацией, а не бронь, фиксация цены или подтверждение наличия. Вложенные кнопки всегда используют Context=Light.", {
   name: "Notes body",
   styleName: "Typography/Body",
   width: 1080,
