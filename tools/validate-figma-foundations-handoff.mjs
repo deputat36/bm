@@ -86,6 +86,10 @@ for (const [key, value] of Object.entries(tokens.radius || {})) {
 const shadowPattern = /^-?\d+(?:\.\d+)?(?:px)?\s+-?\d+(?:\.\d+)?(?:px)?\s+\d+(?:\.\d+)?(?:px)?(?:\s+\d+(?:\.\d+)?(?:px)?)?\s+rgba\(\d+,\s*\d+,\s*\d+,\s*[\d.]+\)$/;
 for (const [key, value] of Object.entries(tokens.shadow || {})) {
   if (!shadowPattern.test(value)) errors.push(`${TOKEN_PATH}: unsupported shadow ${key}: ${value}`);
+  const cssName = cssKey("shadow", key);
+  if (!css.includes(`${cssName}: ${value.replace("0.20", "0.2")}`) && !css.includes(`${cssName}: ${value}`)) {
+    errors.push(`${CSS_PATH}: missing ${cssName}`);
+  }
 }
 
 let generated = "";
@@ -103,7 +107,6 @@ if (generated.length > 50000) {
 }
 
 try {
-  // Compile in the same async shape used by the Figma MCP harness.
   new Function("figma", `return (async () => {\n${generated}\n})()`);
 } catch (error) {
   errors.push(`${GENERATOR_PATH}: generated code does not compile (${error.message})`);
@@ -120,6 +123,8 @@ for (const fragment of [
   "loadFontAsync",
   "getLocalTextStylesAsync",
   "getLocalEffectStylesAsync",
+  "Typography/Brand",
+  "Effects/Brand Mark",
   "variable.scopes = []",
   "variable.scopes = [\"GAP\"]",
   "variable.scopes = [\"CORNER_RADIUS\"]",
@@ -145,7 +150,7 @@ console.log(`Primitive colors: ${Object.keys(primitive).length}`);
 console.log(`Semantic aliases: ${Object.keys(aliases).length}`);
 console.log(`Spacing variables: ${Object.keys(tokens.spacing || {}).length}`);
 console.log(`Radius variables: ${Object.keys(tokens.radius || {}).length}`);
-console.log(`Text styles planned: 7`);
+console.log(`Text styles planned: 8`);
 console.log(`Effect styles planned: ${Object.keys(tokens.shadow || {}).length}`);
 console.log(`Generated use_figma characters: ${generated.length}`);
 
