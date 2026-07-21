@@ -15,8 +15,10 @@ on:
       - "tools/figma/generate-portal-v2-brand-components.mjs"
       - "tools/figma/generate-portal-v2-top-navigation-components.mjs"
       - "tools/figma/generate-portal-v2-project-card-components.mjs"
+      - "tools/figma/generate-portal-v2-fact-card-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
+      - "docs/design/FIGMA_FACT_CARD_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
       - ".github/workflows/figma-atomic-components-handoff.yml"
   push:
@@ -35,8 +37,10 @@ on:
       - "tools/figma/generate-portal-v2-brand-components.mjs"
       - "tools/figma/generate-portal-v2-top-navigation-components.mjs"
       - "tools/figma/generate-portal-v2-project-card-components.mjs"
+      - "tools/figma/generate-portal-v2-fact-card-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
+      - "docs/design/FIGMA_FACT_CARD_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
       - ".github/workflows/figma-atomic-components-handoff.yml"
 
@@ -64,6 +68,7 @@ jobs:
           node --check tools/figma/generate-portal-v2-brand-components.mjs
           node --check tools/figma/generate-portal-v2-top-navigation-components.mjs
           node --check tools/figma/generate-portal-v2-project-card-components.mjs
+          node --check tools/figma/generate-portal-v2-fact-card-components.mjs
           node --check tools/validate-figma-atomic-components-handoff.mjs
       - name: Validate component runtime
         run: node tools/validate-figma-atomic-components-handoff.mjs runtime
@@ -105,6 +110,16 @@ jobs:
         run: node tools/validate-figma-atomic-components-handoff.mjs project tokens
       - name: Validate Project Card generated syntax
         run: node tools/validate-figma-atomic-components-handoff.mjs project syntax
+      - name: Validate Fact Card generation contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs fact generation
+      - name: Validate Fact Card Plugin API contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs fact api
+      - name: Validate Fact Card variant axes
+        run: node tools/validate-figma-atomic-components-handoff.mjs fact variants
+      - name: Validate Fact Card token bindings
+        run: node tools/validate-figma-atomic-components-handoff.mjs fact tokens
+      - name: Validate Fact Card generated syntax
+        run: node tools/validate-figma-atomic-components-handoff.mjs fact syntax
       - name: Validate handoff documentation
         run: node tools/validate-figma-atomic-components-handoff.mjs docs
       - name: Validate complete component set
