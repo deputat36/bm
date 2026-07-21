@@ -44,7 +44,7 @@ async function navigationItem(parent, owner, label, propertyName, width, active)
 
 const brandDesktop = localVariant("Brand", ["Context=Light", "Size=Desktop"]);
 const brandMobile = localVariant("Brand", ["Context=Light", "Size=Mobile"]);
-const primaryButton = localVariant("Button", ["Type=Primary", "State=Default"]);
+const primaryButton = localVariant("Button", ["Context=Light", "Type=Primary", "State=Default"]);
 const activePages = ["None", "Catalog", "Developers", "Mortgage", "Guide", "News", "Contacts"];
 const variants = [];
 
@@ -104,20 +104,20 @@ for (const layout of ["Desktop", "Mobile"]) {
     bindVisibilityProperty(cta, showCtaProperty);
 
     node.description = desktop
-      ? "Desktop header 1200 px: Brand, six navigation routes and one primary CTA."
+      ? "Desktop header 1200 px: Brand, six navigation routes and one Light Primary CTA."
       : "Mobile header 360 px: Brand above a clipped horizontal navigation viewport.";
     variants.push(node);
   }
 }
 
 const set = combine(variants, stage, "Top Navigation");
-set.description = "Portal v2 Top Navigation · Layout × Active page · built from Brand and Button instances";
+set.description = "Portal v2 Top Navigation · Layout × Active page · built from Brand and Light Button instances";
 
 const notes = auto("Usage notes", "VERTICAL");
 notes.itemSpacing = 12;
 root.appendChild(notes);
 await text(notes, "Правила использования", { name: "Notes title", styleName: "Typography/H3", width: 1080 });
-await text(notes, "Brand ведёт на главную страницу и не дублируется пунктом меню. В каждой внутренней странице используется ровно один Active variant. На мобильной ширине пункты не сжимаются до нечитаемого состояния, а находятся в горизонтально прокручиваемом viewport. Главный CTA один и не заменяется обещанием цены, брони или одобрения ипотеки.", {
+await text(notes, "Brand ведёт на главную страницу и не дублируется пунктом меню. В каждой внутренней странице используется ровно один Active variant. На мобильной ширине пункты не сжимаются до нечитаемого состояния, а находятся в горизонтально прокручиваемом viewport. Главный CTA использует Button Context=Light и не заменяется обещанием цены, брони или одобрения ипотеки.", {
   name: "Notes body",
   styleName: "Typography/Body",
   width: 1080,
