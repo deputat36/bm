@@ -13,6 +13,7 @@ on:
       - "tools/figma/generate-portal-v2-form-field-components.mjs"
       - "tools/figma/generate-portal-v2-faq-accordion-components.mjs"
       - "tools/figma/generate-portal-v2-brand-components.mjs"
+      - "tools/figma/generate-portal-v2-top-navigation-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
@@ -31,6 +32,7 @@ on:
       - "tools/figma/generate-portal-v2-form-field-components.mjs"
       - "tools/figma/generate-portal-v2-faq-accordion-components.mjs"
       - "tools/figma/generate-portal-v2-brand-components.mjs"
+      - "tools/figma/generate-portal-v2-top-navigation-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
@@ -58,6 +60,7 @@ jobs:
           node --check tools/figma/generate-portal-v2-form-field-components.mjs
           node --check tools/figma/generate-portal-v2-faq-accordion-components.mjs
           node --check tools/figma/generate-portal-v2-brand-components.mjs
+          node --check tools/figma/generate-portal-v2-top-navigation-components.mjs
           node --check tools/validate-figma-atomic-components-handoff.mjs
       - name: Validate component runtime
         run: node tools/validate-figma-atomic-components-handoff.mjs runtime
@@ -79,6 +82,16 @@ jobs:
         run: node tools/validate-figma-atomic-components-handoff.mjs faq
       - name: Validate Brand component
         run: node tools/validate-figma-atomic-components-handoff.mjs brand
+      - name: Validate Top Navigation generation contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs navigation generation
+      - name: Validate Top Navigation dependency API
+        run: node tools/validate-figma-atomic-components-handoff.mjs navigation api
+      - name: Validate Top Navigation variant axes
+        run: node tools/validate-figma-atomic-components-handoff.mjs navigation variants
+      - name: Validate Top Navigation token bindings
+        run: node tools/validate-figma-atomic-components-handoff.mjs navigation tokens
+      - name: Validate Top Navigation generated syntax
+        run: node tools/validate-figma-atomic-components-handoff.mjs navigation syntax
       - name: Validate handoff documentation
         run: node tools/validate-figma-atomic-components-handoff.mjs docs
       - name: Validate complete component set
