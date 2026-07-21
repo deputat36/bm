@@ -11,21 +11,33 @@ const generators = [
     path: "tools/figma/generate-portal-v2-button-components.mjs",
     page: "05 Component · Button",
     componentSet: "Button",
-    variants: ["Type=Primary, State=Default", "Type=Secondary, State=Disabled"],
+    variantMarkers: [
+      "const types = [\"Primary\", \"Secondary\"]",
+      "const states = [\"Default\", \"Hover\", \"Focus\", \"Disabled\"]"
+    ],
+    expectedVariantCount: 8,
     tokens: ["action/primary", "action/primary/hover", "action/secondary", "focus/ring"]
   },
   {
     path: "tools/figma/generate-portal-v2-verification-status-components.mjs",
     page: "06 Component · Verification Status",
     componentSet: "Verification Status",
-    variants: ["Tone=Verified, Layout=Compact", "Tone=Pending, Layout=Card"],
+    variantMarkers: [
+      "for (const tone of [\"Verified\", \"Pending\"])",
+      "for (const layout of [\"Compact\", \"Card\"])"
+    ],
+    expectedVariantCount: 4,
     tokens: ["status/verified", "status/pending", "sage/100", "amber/100"]
   },
   {
     path: "tools/figma/generate-portal-v2-form-field-components.mjs",
     page: "07 Component · Form Field",
     componentSet: "Form Field",
-    variants: ["Control=Input, State=Default", "Control=Textarea, State=Disabled"],
+    variantMarkers: [
+      "for (const controlType of [\"Input\", \"Select\", \"Textarea\"])",
+      "for (const state of [\"Default\", \"Focus\", \"Disabled\"])"
+    ],
+    expectedVariantCount: 9,
     tokens: ["surface/primary", "border/default", "focus/ring", "background/soft"]
   }
 ];
@@ -53,7 +65,9 @@ const disallowed = [
   ".setPluginData("
 ];
 
+let totalExpectedVariants = 0;
 for (const definition of generators) {
+  totalExpectedVariants += definition.expectedVariantCount;
   const absolute = path.join(ROOT, definition.path);
   assert(fs.existsSync(absolute), `Missing generator: ${definition.path}`);
   if (!fs.existsSync(absolute)) continue;
@@ -80,8 +94,8 @@ for (const definition of generators) {
   assert(code.includes("figma.variables.setBoundVariableForPaint"), `${definition.path} has no paint variable bindings`);
   assert(code.includes("setBoundVariable"), `${definition.path} has no dimension variable bindings`);
 
-  for (const item of definition.variants) {
-    assert(code.includes(item), `${definition.path} misses variant ${item}`);
+  for (const marker of definition.variantMarkers) {
+    assert(code.includes(marker), `${definition.path} misses variant axis marker ${marker}`);
   }
   for (const token of definition.tokens) {
     assert(code.includes(token), `${definition.path} misses token ${token}`);
@@ -97,6 +111,7 @@ for (const definition of generators) {
   fs.rmSync(tempFile, { force: true });
   assert(syntax.status === 0, `${definition.path} generated invalid JavaScript: ${syntax.stderr.trim()}`);
 }
+assert(totalExpectedVariants === 21, `Expected 21 variants, got ${totalExpectedVariants}`);
 
 const docsPath = path.join(ROOT, "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md");
 const workflowPath = path.join(ROOT, ".github/workflows/figma-atomic-components-handoff.yml");
