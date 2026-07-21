@@ -46,8 +46,16 @@ jobs:
           node --check tools/validate-figma-atomic-components-handoff.mjs
       - name: Validate component runtime
         run: node tools/validate-figma-atomic-components-handoff.mjs runtime
-      - name: Validate Button component
-        run: node tools/validate-figma-atomic-components-handoff.mjs button
+      - name: Validate Button generation contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs button generation
+      - name: Validate Button Plugin API contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs button api
+      - name: Validate Button variant axes
+        run: node tools/validate-figma-atomic-components-handoff.mjs button variants
+      - name: Validate Button token bindings
+        run: node tools/validate-figma-atomic-components-handoff.mjs button tokens
+      - name: Validate Button generated syntax
+        run: node tools/validate-figma-atomic-components-handoff.mjs button syntax
       - name: Validate Verification Status component
         run: node tools/validate-figma-atomic-components-handoff.mjs status
       - name: Validate Form Field component
