@@ -84,6 +84,7 @@ for (const layout of ["Desktop", "Mobile"]) {
   const hero = auto("Hero", "VERTICAL");
   hero.counterAxisSizingMode = "FIXED";
   hero.primaryAxisSizingMode = "AUTO";
+  hero.counterAxisAlignItems = "CENTER";
   hero.resize(screenWidth, desktop ? 1120 : 2100);
   hero.paddingTop = desktop ? 72 : 42;
   hero.paddingBottom = desktop ? 82 : 54;
