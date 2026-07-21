@@ -1,0 +1,66 @@
+name: Figma atomic components handoff
+
+on:
+  pull_request:
+    paths:
+      - "data/design/portal-v2.tokens.json"
+      - "tools/figma/portal-v2-component-runtime.mjs"
+      - "tools/figma/generate-portal-v2-button-components.mjs"
+      - "tools/figma/generate-portal-v2-verification-status-components.mjs"
+      - "tools/figma/generate-portal-v2-form-field-components.mjs"
+      - "tools/validate-figma-atomic-components-handoff.mjs"
+      - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
+      - ".github/workflows/figma-atomic-components-handoff.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "data/design/portal-v2.tokens.json"
+      - "tools/figma/portal-v2-component-runtime.mjs"
+      - "tools/figma/generate-portal-v2-button-components.mjs"
+      - "tools/figma/generate-portal-v2-verification-status-components.mjs"
+      - "tools/figma/generate-portal-v2-form-field-components.mjs"
+      - "tools/validate-figma-atomic-components-handoff.mjs"
+      - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
+      - ".github/workflows/figma-atomic-components-handoff.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-figma-atomic-components-handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check source syntax
+        run: |
+          node --check tools/figma/portal-v2-component-runtime.mjs
+          node --check tools/figma/generate-portal-v2-button-components.mjs
+          node --check tools/figma/generate-portal-v2-verification-status-components.mjs
+          node --check tools/figma/generate-portal-v2-form-field-components.mjs
+          node --check tools/validate-figma-atomic-components-handoff.mjs
+      - name: Validate component runtime
+        run: node tools/validate-figma-atomic-components-handoff.mjs runtime
+      - name: Validate Button generation contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs button generation
+      - name: Validate Button Plugin API contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs button api
+      - name: Validate Button variant axes
+        run: node tools/validate-figma-atomic-components-handoff.mjs button variants
+      - name: Validate Button token bindings
+        run: node tools/validate-figma-atomic-components-handoff.mjs button tokens
+      - name: Validate Button generated syntax
+        run: node tools/validate-figma-atomic-components-handoff.mjs button syntax
+      - name: Validate Verification Status component
+        run: node tools/validate-figma-atomic-components-handoff.mjs status
+      - name: Validate Form Field component
+        run: node tools/validate-figma-atomic-components-handoff.mjs field
+      - name: Validate handoff documentation
+        run: node tools/validate-figma-atomic-components-handoff.mjs docs
+      - name: Validate complete component set
+        run: node tools/validate-figma-atomic-components-handoff.mjs all
