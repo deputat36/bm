@@ -8,7 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const runtimePath = path.join(ROOT, "tools/figma/portal-v2-component-runtime.mjs");
 const target = process.argv[2] || "all";
 const section = process.argv[3] || "all";
-const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "navigation", "project", "docs"]);
+const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "navigation", "project", "fact", "docs"]);
 const allowedSections = new Set(["all", "generation", "api", "variants", "tokens", "syntax"]);
 if (!allowedTargets.has(target)) {
   console.error(`Unknown validation target: ${target}`);
@@ -130,6 +130,28 @@ const generators = [
       "Verification Status",
       "Button"
     ]
+  },
+  {
+    id: "fact",
+    path: "tools/figma/generate-portal-v2-fact-card-components.mjs",
+    page: "12 Component · Fact Card",
+    componentSet: "Fact Card",
+    variantMarkers: [
+      "for (const context of [\"Light\", \"Hero\"])",
+      "for (const size of [\"Desktop\", \"Mobile\"])"
+    ],
+    expectedVariantCount: 4,
+    tokens: [
+      "surface/primary",
+      "surface/emphasis",
+      "border/default",
+      "border/strong",
+      "action/primary",
+      "coral/100",
+      "text/body",
+      "text/inverse",
+      "Effects/Card"
+    ]
   }
 ];
 
@@ -239,6 +261,7 @@ function validateDocs() {
     "09 Component · Brand",
     "10 Component · Top Navigation",
     "11 Component · Project Card",
+    "12 Component · Fact Card",
     "Figma.use_figma",
     "Visual QA",
     "issue №116"
@@ -253,7 +276,7 @@ for (const definition of generators) {
 }
 if (target === "all" || target === "docs") validateDocs();
 if (target === "all") {
-  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 51, "Expected 51 variants");
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 55, "Expected 55 variants");
 }
 
 if (errors.length) {
