@@ -208,6 +208,58 @@ Component properties:
 node tools/figma/generate-portal-v2-top-navigation-components.mjs
 ```
 
+### 11 Component · Project Card
+
+Component set `Project Card` содержит 8 вариантов:
+
+- Layout: `Desktop`, `Mobile`
+- Verification: `Verified`, `Pending`
+- State: `Default`, `Hover`
+
+Component properties:
+
+- `Project title` — TEXT
+- `Description` — TEXT
+- `Fact 1` — TEXT
+- `Fact 2` — TEXT
+- `Fact 3` — TEXT
+- `Show secondary action` — BOOLEAN
+
+Зависимости:
+
+- локальный ComponentSet `Verification Status`;
+- локальный ComponentSet `Button`;
+- `Typography/H3` и `Typography/Body`;
+- `Effects/Card` и `Effects/Card Hover`;
+- semantic colors статуса, текста, поверхности и границы.
+
+Правила:
+
+- статус проверки расположен до названия и описания объекта;
+- Verified применяется только после сверки с первичным или официально предоставленным источником;
+- Pending объясняет, какие сведения уточняются, и не создаёт искусственную срочность;
+- описание и три факта не содержат неподтверждённых цен, наличия, сроков или гарантий;
+- основной CTA для Verified открывает карточку, для Pending запрашивает обновление;
+- вторичный CTA можно скрыть через `Show secondary action`;
+- Desktop имеет ширину 384 px, Mobile — 336 px;
+- Default использует `Effects/Card`, Hover — `Effects/Card Hover` и усиленную границу;
+- вложенные Verification Status и Button являются настоящими instances;
+- media-слот намеренно не включён, пока в production нет единого обязательного контракта изображений для всех объектов.
+
+Production-связь:
+
+- структура соответствует карточкам объектов на главной, в каталоге и `/design-system/`;
+- desktop padding 26 px и radius 22 px повторяют текущий production `.card`;
+- mobile padding 22 px и radius 18 px повторяют мобильное состояние;
+- список использует зелёный маркер без интерпретации его как подтверждения всех сведений карточки;
+- карточка не заменяет страницу объекта и не является офертой.
+
+Генератор:
+
+```bash
+node tools/figma/generate-portal-v2-project-card-components.mjs
+```
+
 ## Порядок запуска
 
 Каждая команда выводит готовый JavaScript для отдельного последовательного вызова `Figma.use_figma`.
@@ -226,8 +278,12 @@ node tools/figma/generate-portal-v2-top-navigation-components.mjs
 12. Получить metadata и screenshot страницы Brand.
 13. Выполнить генератор Top Navigation.
 14. Получить metadata и screenshot страницы Top Navigation.
+15. Выполнить генератор Project Card.
+16. Получить metadata и screenshot страницы Project Card.
 
 Top Navigation запускается только после Button и Brand, поскольку получает их через `getLocalComponentsAsync()` и создаёт вложенные instances.
+
+Project Card запускается только после Verification Status и Button. Генератор прекращает работу с понятной ошибкой, если нужные локальные варианты отсутствуют.
 
 Параметр навыков:
 
@@ -251,13 +307,16 @@ key: component-key
 Компоненты используют локальные variables и styles:
 
 - colors — через `setBoundVariableForPaint`;
-- spacing и radius — через `setBoundVariable`;
+- spacing и системные radius — через `setBoundVariable`;
 - typography — через `Typography/*`;
 - shadows и focus — через `Effects/*`;
 - тексты и видимость — через component properties;
 - зависимости — через локальные component instances.
 
-Исключение — закрытый SVG-artwork фирменного знака. Его градиент является частью идентичности, а не семантическим интерфейсным цветом. Вокруг artwork все размеры, текстовые цвета, typography и effect style управляются Foundations.
+Исключения:
+
+- закрытый SVG-artwork фирменного знака: градиент является частью идентичности, а не семантическим интерфейсным цветом;
+- Project Card сохраняет точные production padding/radius 26/22 px desktop и 22/18 px mobile, пока эти значения остаются в рабочем CSS вне общей шкалы.
 
 Hardcoded HEX, неподписанные варианты и случайные локальные стили запрещены.
 
@@ -285,24 +344,28 @@ Figma atomic components handoff
 - создание реальных ComponentNode и ComponentSetNode;
 - наличие variants, component properties и variable bindings;
 - использование локальных Brand/Button instances в Top Navigation;
-- полный набор из 43 вариантов.
+- использование локальных Verification Status/Button instances в Project Card;
+- полный набор из 51 варианта.
 
 ## Visual QA
 
 После физического запуска в Figma необходимо:
 
 1. проверить metadata каждой страницы;
-2. сделать screenshot всех шести component sets;
+2. сделать screenshot всех семи component sets;
 3. убедиться, что variants не накладываются друг на друга;
 4. проверить русские переносы и отсутствие обрезанного текста;
 5. проверить минимальные зоны нажатия;
 6. проверить контраст Default, Hover, Focus, Disabled, Closed, Open, Light и Dark;
 7. проверить component properties на экземплярах;
 8. сравнить компоненты с `/design-system/` и production CSS;
-9. проверить FAQ, Brand и Top Navigation на ширине Desktop и Mobile;
+9. проверить FAQ, Brand, Top Navigation и Project Card на ширине Desktop и Mobile;
 10. проверить точность градиента, сетки и тени Brand mark;
 11. проверить все семь значений Active в Top Navigation;
 12. проверить горизонтальный mobile viewport и доступность CTA;
-13. записать page IDs, root IDs и component set IDs в issue №116.
+13. проверить оба Verification и оба State в Project Card;
+14. убедиться, что длинные русские названия и факты не обрезаются;
+15. проверить скрытие secondary action;
+16. записать page IDs, root IDs и component set IDs в issue №116.
 
 До Visual QA компоненты считаются подготовленными в GitHub, но не завершёнными в Figma.
