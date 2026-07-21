@@ -8,7 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const runtimePath = path.join(ROOT, "tools/figma/portal-v2-component-runtime.mjs");
 const target = process.argv[2] || "all";
 const section = process.argv[3] || "all";
-const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "navigation", "project", "fact", "lead", "docs"]);
+const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "navigation", "project", "fact", "lead", "scenario", "docs"]);
 const allowedSections = new Set(["all", "generation", "api", "variants", "tokens", "syntax"]);
 if (!allowedTargets.has(target)) {
   console.error(`Unknown validation target: ${target}`);
@@ -107,7 +107,7 @@ const generators = [
     ],
     expectedVariantCount: 8,
     tokens: ["surface/primary", "border/default", "border/strong", "status/verified", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
-    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Verification Status", "Button", "Context=Light"]
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Verification Status", "Button", "Context=Light", "Оставить заявку"]
   },
   {
     id: "fact",
@@ -133,6 +133,20 @@ const generators = [
     expectedVariantCount: 4,
     tokens: ["surface/primary", "border/default", "border/strong", "action/primary/hover", "coral/100", "text/primary", "text/muted", "Effects/Floating", "Effects/Card"],
     apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Form Field", "Button", "Consent text", "Show footer note", "Context=Light"]
+  },
+  {
+    id: "scenario",
+    path: "tools/figma/generate-portal-v2-scenario-card-components.mjs",
+    page: "15 Component · Scenario Card",
+    componentSet: "Scenario Card",
+    variantMarkers: [
+      "for (const layout of [\"Desktop\", \"Mobile\"])",
+      "const intents = [\"Object\", \"Selection\", \"Mortgage\"]",
+      "for (const state of [\"Default\", \"Hover\"])"
+    ],
+    expectedVariantCount: 12,
+    tokens: ["surface/primary", "border/default", "border/strong", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Button", "Context=Light", "Show action"]
   }
 ];
 
@@ -222,7 +236,8 @@ function validateDocs() {
   const docsPaths = [
     "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md",
     "docs/design/FIGMA_FACT_CARD_HANDOFF.md",
-    "docs/design/FIGMA_LEAD_FORM_CARD_HANDOFF.md"
+    "docs/design/FIGMA_LEAD_FORM_CARD_HANDOFF.md",
+    "docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md"
   ];
   const workflowPath = path.join(ROOT, ".github/workflows/figma-atomic-components-handoff.yml");
   for (const item of docsPaths) assert(fs.existsSync(path.join(ROOT, item)), `Missing documentation: ${item}`);
@@ -239,11 +254,15 @@ function validateDocs() {
     "11 Component · Project Card",
     "12 Component · Fact Card",
     "13 Component · Lead Form Card",
+    "15 Component · Scenario Card",
     "16 вариантов",
     "27 вариантов",
-    "85 вариантов",
+    "12 вариантов",
+    "97 вариантов",
+    "10 ComponentSet",
     "обязательное согласие",
     "Context: `Light`, `Hero`",
+    "Оставить заявку",
     "Figma.use_figma",
     "Visual QA",
     "issue №116"
@@ -256,7 +275,7 @@ for (const definition of generators) {
 }
 if (target === "all" || target === "docs") validateDocs();
 if (target === "all") {
-  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 85, "Expected 85 variants");
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 97, "Expected 97 variants");
 }
 
 if (errors.length) {
