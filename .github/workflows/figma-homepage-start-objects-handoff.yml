@@ -1,0 +1,51 @@
+name: Figma homepage start objects handoff
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "assets/css/home-polish.css"
+      - "tools/figma/portal-v2-component-runtime.mjs"
+      - "tools/figma/generate-portal-v2-scenario-card-components.mjs"
+      - "tools/figma/generate-portal-v2-project-card-components.mjs"
+      - "tools/figma/generate-portal-v2-homepage-start-objects-screen.mjs"
+      - "tools/validate-figma-homepage-start-objects-handoff.mjs"
+      - "docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md"
+      - "docs/design/FIGMA_HOMEPAGE_START_OBJECTS_HANDOFF.md"
+      - ".github/workflows/figma-homepage-start-objects-handoff.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "assets/css/home-polish.css"
+      - "tools/figma/portal-v2-component-runtime.mjs"
+      - "tools/figma/generate-portal-v2-scenario-card-components.mjs"
+      - "tools/figma/generate-portal-v2-project-card-components.mjs"
+      - "tools/figma/generate-portal-v2-homepage-start-objects-screen.mjs"
+      - "tools/validate-figma-homepage-start-objects-handoff.mjs"
+      - "docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md"
+      - "docs/design/FIGMA_HOMEPAGE_START_OBJECTS_HANDOFF.md"
+      - ".github/workflows/figma-homepage-start-objects-handoff.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-figma-homepage-start-objects-handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check source syntax
+        run: |
+          node --check tools/figma/generate-portal-v2-scenario-card-components.mjs
+          node --check tools/figma/generate-portal-v2-project-card-components.mjs
+          node --check tools/figma/generate-portal-v2-homepage-start-objects-screen.mjs
+          node --check tools/validate-figma-homepage-start-objects-handoff.mjs
+      - name: Validate Homepage Start & Objects handoff
+        run: node tools/validate-figma-homepage-start-objects-handoff.mjs
