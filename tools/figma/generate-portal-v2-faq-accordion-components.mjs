@@ -11,7 +11,7 @@ for (const size of ["Desktop", "Mobile"]) {
     const node = component("State=" + state + ", Size=" + size, "VERTICAL");
     node.itemSpacing = 0;
     node.counterAxisSizingMode = "FIXED";
-    node.resize(isMobile ? 360 : 760, 96);
+    node.resize(isMobile ? 336 : 760, 96);
     fill(node, semantic("surface/primary"));
     stroke(node, semantic(isOpen ? "border/strong" : "border/default"));
     radius(node, radiusToken("lg"));
@@ -33,7 +33,7 @@ for (const size of ["Desktop", "Mobile"]) {
     const question = await text(header, defaultQuestion, {
       name: "Question",
       styleName: "Typography/Body",
-      width: isMobile ? 280 : 664,
+      width: isMobile ? 256 : 664,
       color: semantic("text/primary")
     });
     question.fontName = black;
@@ -73,7 +73,7 @@ for (const size of ["Desktop", "Mobile"]) {
     const answer = await text(answerWrap, defaultAnswer, {
       name: "Answer",
       styleName: "Typography/Body",
-      width: isMobile ? 328 : 712,
+      width: isMobile ? 304 : 712,
       color: semantic("text/muted")
     });
     bindTextProperty(answer, answerProperty);
@@ -86,12 +86,12 @@ for (const size of ["Desktop", "Mobile"]) {
   }
 }
 const set = combine(variants, stage, "FAQ Accordion");
-set.description = "Portal v2 FAQ Accordion · State × Size";
+set.description = "Portal v2 FAQ Accordion · State × Size · Desktop 760 px / Mobile 336 px";
 const notes = auto("Usage notes", "VERTICAL");
 notes.itemSpacing = 12;
 root.appendChild(notes);
 await text(notes, "Правила использования", { name: "Notes title", styleName: "Typography/H3", width: 1080 });
-await text(notes, "Один вопрос должен снимать одну конкретную неопределённость. Ответ не должен обещать актуальную цену, наличие, одобрение ипотеки или юридический результат без повторной проверки.", {
+await text(notes, "Один вопрос должен снимать одну конкретную неопределённость. Desktop использует ширину 760 px, Mobile — системную ширину контента 336 px. Ответ не должен обещать актуальную цену, наличие, одобрение ипотеки или юридический результат без повторной проверки.", {
   name: "Notes body",
   styleName: "Typography/Body",
   width: 1080,
