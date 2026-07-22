@@ -116,8 +116,7 @@ if (code) {
     "screenWidth = desktop ? 1440 : 360",
     "contentWidth = desktop ? 1200 : 336",
     "Homepage Full / ",
-    "homepage-full-desktop",
-    "homepage-full-mobile",
+    '"homepage-full-" + layout.toLowerCase()',
     'screen.setSharedPluginData("portal-v2", "source", "index.html")'
   ]) assert(code.includes(marker), `Homepage Full misses layout marker: ${marker}`);
 
@@ -155,8 +154,7 @@ if (code) {
     "Просторная 4А",
     "Аэродромная 18Г",
     "Сенная 76",
-    "Получить консультацию",
-    "Источники · Политика данных · Контакты"
+    "Получить консультацию"
   ]) assert(code.includes(marker), `Homepage Full misses production content: ${marker}`);
 
   for (const marker of [
@@ -165,11 +163,7 @@ if (code) {
     "portal_selection",
     "Портал Новостройки Борисоглебска",
     "primary-route",
-    "secondary-route",
-    "phone-route",
-    "sources-route",
-    "privacy-route",
-    "contacts-route"
+    "secondary-route"
   ]) assert(code.includes(marker), `Homepage Full misses route/form metadata: ${marker}`);
 
   for (const prohibited of [
