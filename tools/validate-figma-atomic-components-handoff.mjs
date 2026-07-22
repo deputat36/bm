@@ -84,7 +84,7 @@ const generators = [
     ],
     expectedVariantCount: 14,
     tokens: ["surface/primary", "background/soft", "border/default", "Typography/Label", "Effects/Header"],
-    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Context=Light"]
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "Context=Light"]
   },
   {
     id: "project",
@@ -166,6 +166,19 @@ const generators = [
     expectedVariantCount: 8,
     tokens: ["surface/primary", "border/default", "border/strong", "coral/100", "action/primary", "action/primary/hover", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
     apiMarkers: ["Step label", "Show step label", "componentPropertyReferences"]
+  },
+  {
+    id: "link",
+    path: "tools/figma/generate-portal-v2-link-card-components.mjs",
+    page: "21 Component · Link Card",
+    componentSet: "Link Card",
+    variantMarkers: [
+      "for (const layout of [\"Desktop\", \"Mobile\"])",
+      "for (const state of [\"Default\", \"Hover\"])"
+    ],
+    expectedVariantCount: 4,
+    tokens: ["surface/primary", "border/default", "border/strong", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
+    apiMarkers: ["Title", "Description", "componentPropertyReferences", "portal-v2/route"]
   }
 ];
 
@@ -272,7 +285,8 @@ function validateDocs() {
     "docs/design/FIGMA_LEAD_FORM_CARD_HANDOFF.md",
     "docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md",
     "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md",
-    "docs/design/FIGMA_STEP_CARD_HANDOFF.md"
+    "docs/design/FIGMA_STEP_CARD_HANDOFF.md",
+    "docs/design/FIGMA_LINK_CARD_HANDOFF.md"
   ];
   for (const item of docsPaths) assert(fs.existsSync(path.join(ROOT, item)), `Missing documentation: ${item}`);
   if (docsPaths.some((item) => !fs.existsSync(path.join(ROOT, item)))) return;
@@ -290,12 +304,15 @@ function validateDocs() {
     "15 Component · Scenario Card",
     "17 Component · Content Card",
     "19 Component · Step Card",
-    "113 вариантов",
-    "12 ComponentSet",
+    "21 Component · Link Card",
+    "117 вариантов",
+    "13 ComponentSet",
     "обязательное согласие",
     "Context: `Light`, `Hero`",
     "exposed instance",
     "Show step label",
+    "portal-v2",
+    "route",
     "Оставить заявку",
     "Figma.use_figma",
     "Visual QA",
@@ -309,7 +326,7 @@ for (const definition of generators) {
 }
 if (target === "all" || target === "docs") validateDocs();
 if (target === "all") {
-  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 113, "Expected 113 variants");
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 117, "Expected 117 variants");
 }
 
 if (errors.length) {
