@@ -8,7 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const runtimePath = path.join(ROOT, "tools/figma/portal-v2-component-runtime.mjs");
 const target = process.argv[2] || "all";
 const section = process.argv[3] || "all";
-const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "navigation", "project", "fact", "lead", "scenario", "docs"]);
+const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "navigation", "project", "fact", "lead", "scenario", "content", "docs"]);
 const allowedSections = new Set(["all", "generation", "api", "variants", "tokens", "syntax"]);
 if (!allowedTargets.has(target)) {
   console.error(`Unknown validation target: ${target}`);
@@ -147,6 +147,20 @@ const generators = [
     expectedVariantCount: 12,
     tokens: ["surface/primary", "border/default", "border/strong", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
     apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Button", "Context=Light", "Show action"]
+  },
+  {
+    id: "content",
+    path: "tools/figma/generate-portal-v2-content-card-components.mjs",
+    page: "17 Component · Content Card",
+    componentSet: "Content Card",
+    variantMarkers: [
+      "for (const layout of [\"Desktop\", \"Mobile\"])",
+      "for (const purpose of [\"Selection\", \"Outcome\"])",
+      "for (const state of [\"Default\", \"Hover\"])"
+    ],
+    expectedVariantCount: 8,
+    tokens: ["surface/primary", "border/default", "border/strong", "status/verified", "amber/500", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Button", "Context=Light", "Show action", "isExposedInstance"]
   }
 ];
 
@@ -237,7 +251,8 @@ function validateDocs() {
     "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md",
     "docs/design/FIGMA_FACT_CARD_HANDOFF.md",
     "docs/design/FIGMA_LEAD_FORM_CARD_HANDOFF.md",
-    "docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md"
+    "docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md",
+    "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md"
   ];
   const workflowPath = path.join(ROOT, ".github/workflows/figma-atomic-components-handoff.yml");
   for (const item of docsPaths) assert(fs.existsSync(path.join(ROOT, item)), `Missing documentation: ${item}`);
@@ -255,13 +270,16 @@ function validateDocs() {
     "12 Component · Fact Card",
     "13 Component · Lead Form Card",
     "15 Component · Scenario Card",
+    "17 Component · Content Card",
     "16 вариантов",
     "27 вариантов",
     "12 вариантов",
-    "97 вариантов",
-    "10 ComponentSet",
+    "8 вариантов",
+    "105 вариантов",
+    "11 ComponentSet",
     "обязательное согласие",
     "Context: `Light`, `Hero`",
+    "exposed instance",
     "Оставить заявку",
     "Figma.use_figma",
     "Visual QA",
@@ -275,7 +293,7 @@ for (const definition of generators) {
 }
 if (target === "all" || target === "docs") validateDocs();
 if (target === "all") {
-  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 97, "Expected 97 variants");
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 105, "Expected 105 variants");
 }
 
 if (errors.length) {
