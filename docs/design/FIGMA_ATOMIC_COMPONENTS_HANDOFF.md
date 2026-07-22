@@ -160,9 +160,27 @@ Scenario Card используется только для выбора след
 
 Подробности: `docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md`.
 
+### 17 Component · Content Card
+
+8 вариантов:
+
+- Layout: `Desktop`, `Mobile`;
+- Purpose: `Selection`, `Outcome`;
+- State: `Default`, `Hover`.
+
+Properties:
+
+- `Title` — TEXT;
+- `Description` — TEXT;
+- `Show action` — BOOLEAN.
+
+Selection использует Button `Context=Light` как exposed instance, поэтому Label вложенной кнопки меняется без фиктивного свойства родительского компонента. Outcome содержит токенизированный вертикальный акцент и не имеет собственного CTA.
+
+Подробности: `docs/design/FIGMA_CONTENT_CARD_HANDOFF.md`.
+
 ## Итог
 
-Подготовлено 10 ComponentSet и 97 вариантов:
+Подготовлено 11 ComponentSet и 105 вариантов:
 
 - Button — 16;
 - Verification Status — 4;
@@ -173,7 +191,8 @@ Scenario Card используется только для выбора след
 - Project Card — 8;
 - Fact Card — 4;
 - Lead Form Card — 4;
-- Scenario Card — 12.
+- Scenario Card — 12;
+- Content Card — 8.
 
 ## Порядок запуска
 
@@ -191,18 +210,21 @@ Scenario Card используется только для выбора след
 10. Fact Card.
 11. Lead Form Card.
 12. Scenario Card.
+13. Content Card.
 
 Зависимости:
 
 - Top Navigation запускается после Button и Brand;
 - Project Card запускается после Verification Status и Button;
 - Lead Form Card запускается после Form Field и Button;
-- Scenario Card запускается после Button.
+- Scenario Card запускается после Button;
+- Content Card запускается после Button.
 
 После компонентов создаются составные экраны:
 
 - `14 Screen · Homepage Hero` по `docs/design/FIGMA_HOMEPAGE_HERO_HANDOFF.md`;
-- `16 Screen · Homepage Start & Objects` по `docs/design/FIGMA_HOMEPAGE_START_OBJECTS_HANDOFF.md`.
+- `16 Screen · Homepage Start & Objects` по `docs/design/FIGMA_HOMEPAGE_START_OBJECTS_HANDOFF.md`;
+- `18 Screen · Homepage Apartments & Outcomes` по `docs/design/FIGMA_HOMEPAGE_APARTMENTS_OUTCOMES_HANDOFF.md`.
 
 Параметр навыков для компонентов:
 
@@ -259,15 +281,16 @@ Figma atomic components handoff
 - создание ComponentNode/ComponentSetNode;
 - variants, properties и variable bindings;
 - вложенные component instances;
-- явный Light Button context в Top Navigation, Project Card, Lead Form Card и Scenario Card;
-- полный набор из 97 вариантов.
+- явный Light Button context в Top Navigation, Project Card, Lead Form Card, Scenario Card и Content Card;
+- exposed Button instance в Content Card;
+- полный набор из 105 вариантов.
 
 ## Visual QA
 
 После физического запуска в Figma необходимо:
 
 1. проверить metadata всех страниц;
-2. сделать screenshots всех десяти component sets;
+2. сделать screenshots всех одиннадцати component sets;
 3. проверить переносы и отсутствие обрезки;
 4. проверить minimum touch target;
 5. проверить все variant axes;
@@ -280,6 +303,9 @@ Figma atomic components handoff
 12. проверить обязательное согласие перед CTA;
 13. проверить Scenario Card во всех Intent и State;
 14. проверить Pending CTA Project Card «Оставить заявку»;
-15. записать page IDs, root IDs и component set IDs в issue №116.
+15. проверить Content Card в Selection и Outcome;
+16. проверить exposed Button Label на комнатных карточках;
+17. проверить вертикальный акцент Outcome;
+18. записать page IDs, root IDs и component set IDs в issue №116.
 
 До Visual QA компоненты считаются подготовленными в GitHub, но не завершёнными в Figma.
