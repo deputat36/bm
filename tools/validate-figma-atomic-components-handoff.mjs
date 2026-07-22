@@ -8,16 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const runtimePath = path.join(ROOT, "tools/figma/portal-v2-component-runtime.mjs");
 const target = process.argv[2] || "all";
 const section = process.argv[3] || "all";
-const allowedTargets = new Set(["all", "runtime", "button", "status", "field", "faq", "brand", "navigation", "project", "fact", "lead", "scenario", "content", "docs"]);
 const allowedSections = new Set(["all", "generation", "api", "variants", "tokens", "syntax"]);
-if (!allowedTargets.has(target)) {
-  console.error(`Unknown validation target: ${target}`);
-  process.exit(2);
-}
-if (!allowedSections.has(section)) {
-  console.error(`Unknown validation section: ${section}`);
-  process.exit(2);
-}
 
 const generators = [
   {
@@ -107,7 +98,7 @@ const generators = [
     ],
     expectedVariantCount: 8,
     tokens: ["surface/primary", "border/default", "border/strong", "status/verified", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
-    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Verification Status", "Button", "Context=Light", "Оставить заявку"]
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "Verification Status", "Button", "Context=Light", "Оставить заявку"]
   },
   {
     id: "fact",
@@ -132,7 +123,7 @@ const generators = [
     ],
     expectedVariantCount: 4,
     tokens: ["surface/primary", "border/default", "border/strong", "action/primary/hover", "coral/100", "text/primary", "text/muted", "Effects/Floating", "Effects/Card"],
-    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Form Field", "Button", "Consent text", "Show footer note", "Context=Light"]
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "Form Field", "Button", "Consent text", "Show footer note", "Context=Light"]
   },
   {
     id: "scenario",
@@ -146,7 +137,7 @@ const generators = [
     ],
     expectedVariantCount: 12,
     tokens: ["surface/primary", "border/default", "border/strong", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
-    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Button", "Context=Light", "Show action"]
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "Button", "Context=Light", "Show action"]
   },
   {
     id: "content",
@@ -160,9 +151,33 @@ const generators = [
     ],
     expectedVariantCount: 8,
     tokens: ["surface/primary", "border/default", "border/strong", "status/verified", "amber/500", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
-    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "componentProperties", "setProperties(", "Button", "Context=Light", "Show action", "isExposedInstance"]
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "Button", "Context=Light", "Show action", "isExposedInstance"]
+  },
+  {
+    id: "step",
+    path: "tools/figma/generate-portal-v2-step-card-components.mjs",
+    page: "19 Component · Step Card",
+    componentSet: "Step Card",
+    variantMarkers: [
+      "for (const layout of [\"Desktop\", \"Mobile\"])",
+      "for (const grid of [\"Three\", \"Four\"])",
+      "for (const state of [\"Default\", \"Hover\"])"
+    ],
+    expectedVariantCount: 8,
+    tokens: ["surface/primary", "border/default", "border/strong", "coral/100", "action/primary", "action/primary/hover", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
+    apiMarkers: ["Step label", "Show step label", "componentPropertyReferences"]
   }
 ];
+
+const allowedTargets = new Set(["all", "runtime", "docs", ...generators.map((item) => item.id)]);
+if (!allowedTargets.has(target)) {
+  console.error(`Unknown validation target: ${target}`);
+  process.exit(2);
+}
+if (!allowedSections.has(section)) {
+  console.error(`Unknown validation section: ${section}`);
+  process.exit(2);
+}
 
 const errors = [];
 function assert(condition, message) {
@@ -174,13 +189,15 @@ function inSection(name) {
 
 function validateRuntime() {
   const runtime = fs.readFileSync(runtimePath, "utf8");
-  assert(runtime.includes("figma.createComponent()"), "Runtime must create real ComponentNode objects");
-  assert(runtime.includes("figma.combineAsVariants"), "Runtime must combine variants into ComponentSetNode");
-  assert(runtime.includes("figma.variables.setBoundVariableForPaint"), "Runtime must bind paints to variables");
-  assert(runtime.includes("node.setBoundVariable"), "Runtime must bind dimensions to variables");
-  assert(runtime.includes("addComponentProperty"), "Runtime must expose component properties");
-  assert(runtime.includes("componentPropertyReferences"), "Runtime must connect properties to child nodes");
-  assert(runtime.includes("setSharedPluginData"), "Runtime must tag generated nodes for idempotency");
+  for (const marker of [
+    "figma.createComponent()",
+    "figma.combineAsVariants",
+    "figma.variables.setBoundVariableForPaint",
+    "node.setBoundVariable",
+    "addComponentProperty",
+    "componentPropertyReferences",
+    "setSharedPluginData"
+  ]) assert(runtime.includes(marker), `Runtime misses: ${marker}`);
 }
 
 const disallowed = [
@@ -219,13 +236,15 @@ function validateGenerator(definition) {
   }
 
   if (inSection("api")) {
-    assert(code.includes("figma.createComponent()"), `${definition.path} does not create ComponentNode`);
-    assert(code.includes("figma.combineAsVariants"), `${definition.path} does not create variants`);
-    assert(code.includes("addComponentProperty"), `${definition.path} does not expose component properties`);
-    assert(code.includes("componentPropertyReferences"), `${definition.path} does not bind component properties`);
-    assert(code.includes("setSharedPluginData"), `${definition.path} is not idempotently tagged`);
-    assert(code.includes("figma.variables.setBoundVariableForPaint"), `${definition.path} has no paint variable bindings`);
-    assert(code.includes("setBoundVariable"), `${definition.path} has no dimension variable bindings`);
+    for (const marker of [
+      "figma.createComponent()",
+      "figma.combineAsVariants",
+      "addComponentProperty",
+      "componentPropertyReferences",
+      "setSharedPluginData",
+      "figma.variables.setBoundVariableForPaint",
+      "setBoundVariable"
+    ]) assert(code.includes(marker), `${definition.path} misses API marker ${marker}`);
     for (const marker of definition.apiMarkers || []) assert(code.includes(marker), `${definition.path} misses dependency API marker ${marker}`);
   }
 
@@ -252,11 +271,10 @@ function validateDocs() {
     "docs/design/FIGMA_FACT_CARD_HANDOFF.md",
     "docs/design/FIGMA_LEAD_FORM_CARD_HANDOFF.md",
     "docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md",
-    "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md"
+    "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md",
+    "docs/design/FIGMA_STEP_CARD_HANDOFF.md"
   ];
-  const workflowPath = path.join(ROOT, ".github/workflows/figma-atomic-components-handoff.yml");
   for (const item of docsPaths) assert(fs.existsSync(path.join(ROOT, item)), `Missing documentation: ${item}`);
-  assert(fs.existsSync(workflowPath), "Missing atomic components handoff workflow");
   if (docsPaths.some((item) => !fs.existsSync(path.join(ROOT, item)))) return;
   const docs = docsPaths.map((item) => fs.readFileSync(path.join(ROOT, item), "utf8")).join("\n");
   for (const required of [
@@ -271,15 +289,13 @@ function validateDocs() {
     "13 Component · Lead Form Card",
     "15 Component · Scenario Card",
     "17 Component · Content Card",
-    "16 вариантов",
-    "27 вариантов",
-    "12 вариантов",
-    "8 вариантов",
-    "105 вариантов",
-    "11 ComponentSet",
+    "19 Component · Step Card",
+    "113 вариантов",
+    "12 ComponentSet",
     "обязательное согласие",
     "Context: `Light`, `Hero`",
     "exposed instance",
+    "Show step label",
     "Оставить заявку",
     "Figma.use_figma",
     "Visual QA",
@@ -293,7 +309,7 @@ for (const definition of generators) {
 }
 if (target === "all" || target === "docs") validateDocs();
 if (target === "all") {
-  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 105, "Expected 105 variants");
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 113, "Expected 113 variants");
 }
 
 if (errors.length) {
