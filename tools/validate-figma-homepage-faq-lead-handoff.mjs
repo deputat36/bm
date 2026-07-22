@@ -55,7 +55,7 @@ if (leadCode) {
     "submit.isExposedInstance = true",
     "exposed Light submit Button",
     "Consent text",
-    "Scope=Detailed"
+    "for (const scope of [\"Quick\", \"Detailed\"])"
   ]) assert(leadCode.includes(marker), `Lead Form Card misses exposed submit contract: ${marker}`);
 }
 
