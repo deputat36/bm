@@ -20,11 +20,13 @@ on:
       - "tools/figma/generate-portal-v2-fact-card-components.mjs"
       - "tools/figma/generate-portal-v2-lead-form-card-components.mjs"
       - "tools/figma/generate-portal-v2-scenario-card-components.mjs"
+      - "tools/figma/generate-portal-v2-content-card-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
       - "docs/design/FIGMA_FACT_CARD_HANDOFF.md"
       - "docs/design/FIGMA_LEAD_FORM_CARD_HANDOFF.md"
       - "docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md"
+      - "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
       - ".github/workflows/figma-atomic-components-handoff.yml"
   push:
@@ -48,11 +50,13 @@ on:
       - "tools/figma/generate-portal-v2-fact-card-components.mjs"
       - "tools/figma/generate-portal-v2-lead-form-card-components.mjs"
       - "tools/figma/generate-portal-v2-scenario-card-components.mjs"
+      - "tools/figma/generate-portal-v2-content-card-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
       - "docs/design/FIGMA_FACT_CARD_HANDOFF.md"
       - "docs/design/FIGMA_LEAD_FORM_CARD_HANDOFF.md"
       - "docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md"
+      - "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
       - ".github/workflows/figma-atomic-components-handoff.yml"
 
@@ -83,6 +87,7 @@ jobs:
           node --check tools/figma/generate-portal-v2-fact-card-components.mjs
           node --check tools/figma/generate-portal-v2-lead-form-card-components.mjs
           node --check tools/figma/generate-portal-v2-scenario-card-components.mjs
+          node --check tools/figma/generate-portal-v2-content-card-components.mjs
           node --check tools/validate-figma-atomic-components-handoff.mjs
       - name: Validate component runtime
         run: node tools/validate-figma-atomic-components-handoff.mjs runtime
@@ -104,16 +109,18 @@ jobs:
         run: node tools/validate-figma-atomic-components-handoff.mjs fact
       - name: Validate Lead Form Card component
         run: node tools/validate-figma-atomic-components-handoff.mjs lead
-      - name: Validate Scenario Card generation contract
-        run: node tools/validate-figma-atomic-components-handoff.mjs scenario generation
-      - name: Validate Scenario Card dependency API
-        run: node tools/validate-figma-atomic-components-handoff.mjs scenario api
-      - name: Validate Scenario Card variant axes
-        run: node tools/validate-figma-atomic-components-handoff.mjs scenario variants
-      - name: Validate Scenario Card token bindings
-        run: node tools/validate-figma-atomic-components-handoff.mjs scenario tokens
-      - name: Validate Scenario Card generated syntax
-        run: node tools/validate-figma-atomic-components-handoff.mjs scenario syntax
+      - name: Validate Scenario Card component
+        run: node tools/validate-figma-atomic-components-handoff.mjs scenario
+      - name: Validate Content Card generation contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs content generation
+      - name: Validate Content Card dependency API
+        run: node tools/validate-figma-atomic-components-handoff.mjs content api
+      - name: Validate Content Card variant axes
+        run: node tools/validate-figma-atomic-components-handoff.mjs content variants
+      - name: Validate Content Card token bindings
+        run: node tools/validate-figma-atomic-components-handoff.mjs content tokens
+      - name: Validate Content Card generated syntax
+        run: node tools/validate-figma-atomic-components-handoff.mjs content syntax
       - name: Validate handoff documentation
         run: node tools/validate-figma-atomic-components-handoff.mjs docs
       - name: Validate complete component set
