@@ -23,6 +23,7 @@ on:
       - "tools/figma/generate-portal-v2-content-card-components.mjs"
       - "tools/figma/generate-portal-v2-step-card-components.mjs"
       - "tools/figma/generate-portal-v2-link-card-components.mjs"
+      - "tools/figma/generate-portal-v2-site-footer-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
       - "docs/design/FIGMA_FACT_CARD_HANDOFF.md"
@@ -31,6 +32,7 @@ on:
       - "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md"
       - "docs/design/FIGMA_STEP_CARD_HANDOFF.md"
       - "docs/design/FIGMA_LINK_CARD_HANDOFF.md"
+      - "docs/design/FIGMA_SITE_FOOTER_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
       - ".github/workflows/figma-atomic-components-handoff.yml"
   push:
@@ -57,6 +59,7 @@ on:
       - "tools/figma/generate-portal-v2-content-card-components.mjs"
       - "tools/figma/generate-portal-v2-step-card-components.mjs"
       - "tools/figma/generate-portal-v2-link-card-components.mjs"
+      - "tools/figma/generate-portal-v2-site-footer-components.mjs"
       - "tools/validate-figma-atomic-components-handoff.mjs"
       - "docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md"
       - "docs/design/FIGMA_FACT_CARD_HANDOFF.md"
@@ -65,6 +68,7 @@ on:
       - "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md"
       - "docs/design/FIGMA_STEP_CARD_HANDOFF.md"
       - "docs/design/FIGMA_LINK_CARD_HANDOFF.md"
+      - "docs/design/FIGMA_SITE_FOOTER_HANDOFF.md"
       - "docs/design/FIGMA_FOUNDATIONS_HANDOFF.md"
       - ".github/workflows/figma-atomic-components-handoff.yml"
 
@@ -98,24 +102,25 @@ jobs:
           node --check tools/figma/generate-portal-v2-content-card-components.mjs
           node --check tools/figma/generate-portal-v2-step-card-components.mjs
           node --check tools/figma/generate-portal-v2-link-card-components.mjs
+          node --check tools/figma/generate-portal-v2-site-footer-components.mjs
           node --check tools/validate-figma-atomic-components-handoff.mjs
       - name: Validate component runtime
         run: node tools/validate-figma-atomic-components-handoff.mjs runtime
       - name: Validate established component families
         run: |
-          for target in button status field faq brand navigation project fact lead scenario content step; do
+          for target in button status field faq brand navigation project fact lead scenario content step link; do
             node tools/validate-figma-atomic-components-handoff.mjs "$target"
           done
-      - name: Validate Link Card generation contract
-        run: node tools/validate-figma-atomic-components-handoff.mjs link generation
-      - name: Validate Link Card API contract
-        run: node tools/validate-figma-atomic-components-handoff.mjs link api
-      - name: Validate Link Card variant axes
-        run: node tools/validate-figma-atomic-components-handoff.mjs link variants
-      - name: Validate Link Card token bindings
-        run: node tools/validate-figma-atomic-components-handoff.mjs link tokens
-      - name: Validate Link Card generated syntax
-        run: node tools/validate-figma-atomic-components-handoff.mjs link syntax
+      - name: Validate Site Footer generation contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs footer generation
+      - name: Validate Site Footer API contract
+        run: node tools/validate-figma-atomic-components-handoff.mjs footer api
+      - name: Validate Site Footer variant axes
+        run: node tools/validate-figma-atomic-components-handoff.mjs footer variants
+      - name: Validate Site Footer token bindings
+        run: node tools/validate-figma-atomic-components-handoff.mjs footer tokens
+      - name: Validate Site Footer generated syntax
+        run: node tools/validate-figma-atomic-components-handoff.mjs footer syntax
       - name: Validate handoff documentation
         run: node tools/validate-figma-atomic-components-handoff.mjs docs
       - name: Validate complete component set
