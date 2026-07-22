@@ -151,6 +151,7 @@ for (const layout of ["Desktop", "Mobile"]) {
 
     const submit = primaryButton.createInstance();
     submit.name = "Submit action";
+    submit.isExposedInstance = true;
     setInstanceText(submit, "Label", quick ? "Получить консультацию" : "Получить подробную консультацию");
     node.appendChild(submit);
     submit.layoutSizingHorizontal = "FILL";
@@ -192,13 +193,13 @@ for (const layout of ["Desktop", "Mobile"]) {
 }
 
 const set = combine(variants, stage, "Lead Form Card");
-set.description = "Portal v2 Lead Form Card · Layout × Scope · built from responsive Form Field and Light Button instances";
+set.description = "Portal v2 Lead Form Card · Layout × Scope · responsive Form Field instances and exposed Light submit Button";
 
 const notes = auto("Usage notes", "VERTICAL");
 notes.itemSpacing = 12;
 root.appendChild(notes);
 await text(notes, "Правила использования", { name: "Notes title", styleName: "Typography/H3", width: 1080 });
-await text(notes, "Quick используется в hero и карточках объекта: только имя, телефон и выбор объекта. Detailed применяется после того, как пользователь готов указать параметры покупки. Согласие на обработку данных обязательно в обоих вариантах и располагается перед CTA. Текст CTA редактируется через Label вложенного Button Context=Light instance. Форма не обещает цену, наличие, бронь, одобрение ипотеки или юридический результат. На мобильной ширине используются настоящие Form Field Size=Mobile, а не масштабированные desktop-поля.", {
+await text(notes, "Quick используется в hero и карточках объекта: только имя, телефон и выбор объекта. Detailed применяется после того, как пользователь готов указать параметры покупки. Согласие на обработку данных обязательно в обоих вариантах и располагается перед CTA. Submit action является exposed Button Context=Light instance, поэтому экран может безопасно менять Label без фиктивного свойства родителя. Форма не обещает цену, наличие, бронь, одобрение ипотеки или юридический результат. На мобильной ширине используются настоящие Form Field Size=Mobile, а не масштабированные desktop-поля.", {
   name: "Notes body",
   styleName: "Typography/Body",
   width: 1080,
