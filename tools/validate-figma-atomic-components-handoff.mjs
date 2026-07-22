@@ -17,9 +17,9 @@ const generators = [
     page: "05 Component · Button",
     componentSet: "Button",
     variantMarkers: [
-      "const contexts = [\"Light\", \"Hero\"]",
-      "const types = [\"Primary\", \"Secondary\"]",
-      "const states = [\"Default\", \"Hover\", \"Focus\", \"Disabled\"]"
+      'const contexts = ["Light", "Hero"]',
+      'const types = ["Primary", "Secondary"]',
+      'const states = ["Default", "Hover", "Focus", "Disabled"]'
     ],
     expectedVariantCount: 16,
     tokens: ["action/primary", "action/primary/hover", "action/secondary", "background/hero", "surface/primary", "text/inverse", "Effects/Focus"]
@@ -30,8 +30,8 @@ const generators = [
     page: "06 Component · Verification Status",
     componentSet: "Verification Status",
     variantMarkers: [
-      "for (const tone of [\"Verified\", \"Pending\"])",
-      "for (const layout of [\"Compact\", \"Card\"])"
+      'for (const tone of ["Verified", "Pending"])',
+      'for (const layout of ["Compact", "Card"])'
     ],
     expectedVariantCount: 4,
     tokens: ["status/verified", "status/pending", "sage/100", "amber/100"]
@@ -42,9 +42,9 @@ const generators = [
     page: "07 Component · Form Field",
     componentSet: "Form Field",
     variantMarkers: [
-      "for (const size of [\"Wide\", \"Compact\", \"Mobile\"])",
-      "for (const controlType of [\"Input\", \"Select\", \"Textarea\"])",
-      "for (const state of [\"Default\", \"Focus\", \"Disabled\"])"
+      'for (const size of ["Wide", "Compact", "Mobile"])',
+      'for (const controlType of ["Input", "Select", "Textarea"])',
+      'for (const state of ["Default", "Focus", "Disabled"])'
     ],
     expectedVariantCount: 27,
     tokens: ["surface/primary", "border/default", "focus/ring", "background/soft", "Effects/Focus"]
@@ -55,8 +55,8 @@ const generators = [
     page: "08 Component · FAQ Accordion",
     componentSet: "FAQ Accordion",
     variantMarkers: [
-      "for (const size of [\"Desktop\", \"Mobile\"])",
-      "for (const state of [\"Closed\", \"Open\"])"
+      'for (const size of ["Desktop", "Mobile"])',
+      'for (const state of ["Closed", "Open"])'
     ],
     expectedVariantCount: 4,
     tokens: ["surface/primary", "border/default", "border/strong", "status/verified", "amber/100", "Effects/Card", "Effects/Card Hover"]
@@ -67,8 +67,8 @@ const generators = [
     page: "09 Component · Brand",
     componentSet: "Brand",
     variantMarkers: [
-      "for (const context of [\"Light\", \"Dark\"])",
-      "for (const size of [\"Desktop\", \"Mobile\"])"
+      'for (const context of ["Light", "Dark"])',
+      'for (const size of ["Desktop", "Mobile"])'
     ],
     expectedVariantCount: 4,
     tokens: ["text/primary", "text/inverse", "Typography/Brand", "Effects/Brand Mark"]
@@ -79,8 +79,8 @@ const generators = [
     page: "10 Component · Top Navigation",
     componentSet: "Top Navigation",
     variantMarkers: [
-      "for (const layout of [\"Desktop\", \"Mobile\"])",
-      "const activePages = [\"None\", \"Catalog\", \"Developers\", \"Mortgage\", \"Guide\", \"News\", \"Contacts\"]"
+      'for (const layout of ["Desktop", "Mobile"])',
+      'const activePages = ["None", "Catalog", "Developers", "Mortgage", "Guide", "News", "Contacts"]'
     ],
     expectedVariantCount: 14,
     tokens: ["surface/primary", "background/soft", "border/default", "Typography/Label", "Effects/Header"],
@@ -92,9 +92,9 @@ const generators = [
     page: "11 Component · Project Card",
     componentSet: "Project Card",
     variantMarkers: [
-      "for (const layout of [\"Desktop\", \"Mobile\"])",
-      "for (const verification of [\"Verified\", \"Pending\"])",
-      "for (const state of [\"Default\", \"Hover\"])"
+      'for (const layout of ["Desktop", "Mobile"])',
+      'for (const verification of ["Verified", "Pending"])',
+      'for (const state of ["Default", "Hover"])'
     ],
     expectedVariantCount: 8,
     tokens: ["surface/primary", "border/default", "border/strong", "status/verified", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
@@ -106,8 +106,8 @@ const generators = [
     page: "12 Component · Fact Card",
     componentSet: "Fact Card",
     variantMarkers: [
-      "for (const context of [\"Light\", \"Hero\"])",
-      "for (const size of [\"Desktop\", \"Mobile\"])"
+      'for (const context of ["Light", "Hero"])',
+      'for (const size of ["Desktop", "Mobile"])'
     ],
     expectedVariantCount: 4,
     tokens: ["surface/primary", "surface/emphasis", "border/default", "border/strong", "action/primary", "coral/100", "text/body", "text/inverse", "Effects/Card"]
@@ -118,12 +118,12 @@ const generators = [
     page: "13 Component · Lead Form Card",
     componentSet: "Lead Form Card",
     variantMarkers: [
-      "for (const layout of [\"Desktop\", \"Mobile\"])",
-      "for (const scope of [\"Quick\", \"Detailed\"])"
+      'for (const layout of ["Desktop", "Mobile"])',
+      'for (const scope of ["Quick", "Detailed"])'
     ],
     expectedVariantCount: 4,
     tokens: ["surface/primary", "border/default", "border/strong", "action/primary/hover", "coral/100", "text/primary", "text/muted", "Effects/Floating", "Effects/Card"],
-    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "Form Field", "Button", "Consent text", "Show footer note", "Context=Light"]
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "Form Field", "Button", "Consent text", "Show footer note", "Context=Light", "isExposedInstance"]
   },
   {
     id: "scenario",
@@ -131,9 +131,9 @@ const generators = [
     page: "15 Component · Scenario Card",
     componentSet: "Scenario Card",
     variantMarkers: [
-      "for (const layout of [\"Desktop\", \"Mobile\"])",
-      "const intents = [\"Object\", \"Selection\", \"Mortgage\"]",
-      "for (const state of [\"Default\", \"Hover\"])"
+      'for (const layout of ["Desktop", "Mobile"])',
+      'const intents = ["Object", "Selection", "Mortgage"]',
+      'for (const state of ["Default", "Hover"])'
     ],
     expectedVariantCount: 12,
     tokens: ["surface/primary", "border/default", "border/strong", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
@@ -145,9 +145,9 @@ const generators = [
     page: "17 Component · Content Card",
     componentSet: "Content Card",
     variantMarkers: [
-      "for (const layout of [\"Desktop\", \"Mobile\"])",
-      "for (const purpose of [\"Selection\", \"Outcome\"])",
-      "for (const state of [\"Default\", \"Hover\"])"
+      'for (const layout of ["Desktop", "Mobile"])',
+      'for (const purpose of ["Selection", "Outcome"])',
+      'for (const state of ["Default", "Hover"])'
     ],
     expectedVariantCount: 8,
     tokens: ["surface/primary", "border/default", "border/strong", "status/verified", "amber/500", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
@@ -159,9 +159,9 @@ const generators = [
     page: "19 Component · Step Card",
     componentSet: "Step Card",
     variantMarkers: [
-      "for (const layout of [\"Desktop\", \"Mobile\"])",
-      "for (const grid of [\"Three\", \"Four\"])",
-      "for (const state of [\"Default\", \"Hover\"])"
+      'for (const layout of ["Desktop", "Mobile"])',
+      'for (const grid of ["Three", "Four"])',
+      'for (const state of ["Default", "Hover"])'
     ],
     expectedVariantCount: 8,
     tokens: ["surface/primary", "border/default", "border/strong", "coral/100", "action/primary", "action/primary/hover", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
@@ -173,12 +173,22 @@ const generators = [
     page: "21 Component · Link Card",
     componentSet: "Link Card",
     variantMarkers: [
-      "for (const layout of [\"Desktop\", \"Mobile\"])",
-      "for (const state of [\"Default\", \"Hover\"])"
+      'for (const layout of ["Desktop", "Mobile"])',
+      'for (const state of ["Default", "Hover"])'
     ],
     expectedVariantCount: 4,
     tokens: ["surface/primary", "border/default", "border/strong", "text/primary", "text/muted", "Effects/Card", "Effects/Card Hover"],
     apiMarkers: ["Title", "Description", "componentPropertyReferences", "portal-v2/route"]
+  },
+  {
+    id: "footer",
+    path: "tools/figma/generate-portal-v2-site-footer-components.mjs",
+    page: "24 Component · Site Footer",
+    componentSet: "Site Footer",
+    variantMarkers: ['for (const layout of ["Desktop", "Mobile"])'],
+    expectedVariantCount: 2,
+    tokens: ["surface/emphasis", "text/inverse", "coral/100", "Typography/Body", "Typography/Label"],
+    apiMarkers: ["getLocalComponentsAsync", ".createInstance()", "Brand", "Context=Dark", "Tagline", "Phone", "Disclaimer", "Links", "phone-route", "sources-route", "privacy-route", "contacts-route"]
   }
 ];
 
@@ -199,7 +209,6 @@ function assert(condition, message) {
 function inSection(name) {
   return section === "all" || section === name;
 }
-
 function validateRuntime() {
   const runtime = fs.readFileSync(runtimePath, "utf8");
   for (const marker of [
@@ -286,7 +295,8 @@ function validateDocs() {
     "docs/design/FIGMA_SCENARIO_CARD_HANDOFF.md",
     "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md",
     "docs/design/FIGMA_STEP_CARD_HANDOFF.md",
-    "docs/design/FIGMA_LINK_CARD_HANDOFF.md"
+    "docs/design/FIGMA_LINK_CARD_HANDOFF.md",
+    "docs/design/FIGMA_SITE_FOOTER_HANDOFF.md"
   ];
   for (const item of docsPaths) assert(fs.existsSync(path.join(ROOT, item)), `Missing documentation: ${item}`);
   if (docsPaths.some((item) => !fs.existsSync(path.join(ROOT, item)))) return;
@@ -305,14 +315,17 @@ function validateDocs() {
     "17 Component · Content Card",
     "19 Component · Step Card",
     "21 Component · Link Card",
-    "117 вариантов",
-    "13 ComponentSet",
+    "24 Component · Site Footer",
+    "119 вариантов",
+    "14 ComponentSet",
     "обязательное согласие",
     "Context: `Light`, `Hero`",
     "exposed instance",
     "Show step label",
     "portal-v2",
     "route",
+    "phone-route",
+    "sources-route",
     "Оставить заявку",
     "Figma.use_figma",
     "Visual QA",
@@ -326,7 +339,8 @@ for (const definition of generators) {
 }
 if (target === "all" || target === "docs") validateDocs();
 if (target === "all") {
-  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 117, "Expected 117 variants");
+  assert(generators.length === 14, "Expected 14 ComponentSet definitions");
+  assert(generators.reduce((sum, item) => sum + item.expectedVariantCount, 0) === 119, "Expected 119 variants");
 }
 
 if (errors.length) {
