@@ -1,0 +1,53 @@
+name: Figma homepage apartments outcomes handoff
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "assets/css/home-polish.css"
+      - "assets/css/portal-v2.tokens.css"
+      - "tools/figma/portal-v2-component-runtime.mjs"
+      - "tools/figma/generate-portal-v2-button-components.mjs"
+      - "tools/figma/generate-portal-v2-content-card-components.mjs"
+      - "tools/figma/generate-portal-v2-homepage-apartments-outcomes-screen.mjs"
+      - "tools/validate-figma-homepage-apartments-outcomes-handoff.mjs"
+      - "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md"
+      - "docs/design/FIGMA_HOMEPAGE_APARTMENTS_OUTCOMES_HANDOFF.md"
+      - ".github/workflows/figma-homepage-apartments-outcomes-handoff.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "assets/css/home-polish.css"
+      - "assets/css/portal-v2.tokens.css"
+      - "tools/figma/portal-v2-component-runtime.mjs"
+      - "tools/figma/generate-portal-v2-button-components.mjs"
+      - "tools/figma/generate-portal-v2-content-card-components.mjs"
+      - "tools/figma/generate-portal-v2-homepage-apartments-outcomes-screen.mjs"
+      - "tools/validate-figma-homepage-apartments-outcomes-handoff.mjs"
+      - "docs/design/FIGMA_CONTENT_CARD_HANDOFF.md"
+      - "docs/design/FIGMA_HOMEPAGE_APARTMENTS_OUTCOMES_HANDOFF.md"
+      - ".github/workflows/figma-homepage-apartments-outcomes-handoff.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-figma-homepage-apartments-outcomes-handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check source syntax
+        run: |
+          node --check tools/figma/portal-v2-component-runtime.mjs
+          node --check tools/figma/generate-portal-v2-content-card-components.mjs
+          node --check tools/figma/generate-portal-v2-homepage-apartments-outcomes-screen.mjs
+          node --check tools/validate-figma-homepage-apartments-outcomes-handoff.mjs
+      - name: Validate Homepage Apartments & Outcomes handoff
+        run: node tools/validate-figma-homepage-apartments-outcomes-handoff.mjs
