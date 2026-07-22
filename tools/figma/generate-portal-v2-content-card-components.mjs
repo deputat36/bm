@@ -127,6 +127,7 @@ for (const layout of ["Desktop", "Mobile"]) {
       setInstanceText(action, "Label", content.action);
       action.visible = selection;
       body.appendChild(action);
+      action.isExposedInstance = true;
       createdNodeIds.push(action.id);
       const showActionProperty = property(node, "Show action", "BOOLEAN", selection);
       bindVisibilityProperty(action, showActionProperty);
@@ -140,13 +141,13 @@ for (const layout of ["Desktop", "Mobile"]) {
 }
 
 const set = combine(variants, stage, "Content Card");
-set.description = "Portal v2 Content Card · Layout × Purpose × State · Selection uses Light Button; Outcome uses token-bound accent";
+set.description = "Portal v2 Content Card · Layout × Purpose × State · Selection uses exposed Light Button; Outcome uses token-bound accent";
 
 const notes = auto("Usage notes", "VERTICAL");
 notes.itemSpacing = 12;
 root.appendChild(notes);
 await text(notes, "Правила использования", { name: "Notes title", styleName: "Typography/H3", width: 1080 });
-await text(notes, "Selection используется для выбора комнатности или другого понятного направления с одним Primary CTA Context=Light. Outcome кратко описывает результат консультации и не содержит отдельного действия. Компонент не публикует неподтверждённые цены, наличие, ставки или гарантии. Вертикальный акцент Outcome собран из status/verified и amber/500, а не из hardcoded градиента. Desktop повторяет production-сетки 384 и 284 px, Mobile — 336 px.", {
+await text(notes, "Selection используется для выбора комнатности или другого понятного направления с одним Primary CTA Context=Light. Вложенный Button помечен как exposed instance, поэтому его Label можно менять без фиктивного свойства родительской карточки. Outcome кратко описывает результат консультации и не содержит отдельного действия. Компонент не публикует неподтверждённые цены, наличие, ставки или гарантии. Вертикальный акцент Outcome собран из status/verified и amber/500, а не из hardcoded градиента. Desktop повторяет production-сетки 384 и 284 px, Mobile — 336 px.", {
   name: "Notes body",
   styleName: "Typography/Body",
   width: 1080,
