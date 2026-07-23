@@ -4,10 +4,14 @@ on:
   pull_request:
     paths:
       - "index.html"
+      - "catalog/**/index.html"
       - "assets/css/styles.css"
       - "assets/css/home-polish.css"
       - "assets/css/leadgen.css"
+      - "assets/css/project-conversion.css"
       - "assets/js/main.js"
+      - "assets/js/project-intent-prefill.js"
+      - "assets/js/project-verification-summary.js"
       - "data/design/portal-v2.source-map.json"
       - "tools/figma/**"
       - "tools/build-figma-code-connect-readiness.mjs"
@@ -19,10 +23,14 @@ on:
       - main
     paths:
       - "index.html"
+      - "catalog/**/index.html"
       - "assets/css/styles.css"
       - "assets/css/home-polish.css"
       - "assets/css/leadgen.css"
+      - "assets/css/project-conversion.css"
       - "assets/js/main.js"
+      - "assets/js/project-intent-prefill.js"
+      - "assets/js/project-verification-summary.js"
       - "data/design/portal-v2.source-map.json"
       - "tools/figma/**"
       - "tools/build-figma-code-connect-readiness.mjs"
@@ -53,7 +61,7 @@ jobs:
         run: node tools/build-figma-code-connect-readiness.mjs build/figma-code-connect-readiness
       - name: Inspect readiness manifest
         run: |
-          node -e 'const fs=require("fs"); const m=JSON.parse(fs.readFileSync("build/figma-code-connect-readiness/manifest.json","utf8")); if(m.componentCount!==14||m.screenCount!==7||m.codeConnectStatus!=="blocked") process.exit(1); console.log(JSON.stringify(m,null,2));'
+          node -e 'const fs=require("fs"); const m=JSON.parse(fs.readFileSync("build/figma-code-connect-readiness/manifest.json","utf8")); if(m.componentCount!==14||m.screenCount!==9||m.codeConnectStatus!=="blocked") process.exit(1); console.log(JSON.stringify(m,null,2));'
       - name: Upload Code Connect readiness
         uses: actions/upload-artifact@v4
         with:
