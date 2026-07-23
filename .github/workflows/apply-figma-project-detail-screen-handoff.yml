@@ -31,11 +31,31 @@ jobs:
           fetch-depth: 1
           show-progress: false
       - name: Apply Project Detail handoff integration
+        id: apply
         run: |
-          node --check tools/apply-figma-project-detail-screen-handoff.mjs
-          node --check tools/apply-figma-project-detail-workflow-counts.mjs
-          node tools/apply-figma-project-detail-screen-handoff.mjs
-          node tools/apply-figma-project-detail-workflow-counts.mjs
+          status=0
+          {
+            node --check tools/apply-figma-project-detail-screen-handoff.mjs
+            node --check tools/apply-figma-project-detail-workflow-counts.mjs
+            node tools/apply-figma-project-detail-screen-handoff.mjs
+            node tools/apply-figma-project-detail-workflow-counts.mjs
+          } > project-detail-migration.log 2>&1 || status=$?
+          cat project-detail-migration.log
+          echo "$status" > project-detail-migration.status
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+      - name: Upload migration diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-detail-migration-diagnostic
+          path: |
+            project-detail-migration.log
+            project-detail-migration.status
+          if-no-files-found: error
+          retention-days: 7
+      - name: Stop after migration failure
+        if: steps.apply.outputs.status != '0'
+        run: exit 1
       - name: Validate integrated result
         run: |
           node tools/validate-figma-project-detail-screen-handoff.mjs
