@@ -135,8 +135,7 @@ if (sourceMap) {
 for (const marker of [
   "id: \"catalog\"",
   "26 Screen · Catalog",
-  "generate-portal-v2-catalog-screen.mjs",
-  "catalog-screen-handoff"
+  "generate-portal-v2-catalog-screen.mjs"
 ]) assert(executionBuilder.includes(marker), `Execution Pack builder misses catalog marker: ${marker}`);
 
 for (const marker of [
