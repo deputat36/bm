@@ -747,7 +747,7 @@
           "path": "assets/js/project-verification-summary.js",
           "markers": [
             "data-verification-summary",
-            "data-verification-profile"
+            "section.dataset.verificationProfile"
           ]
         }
       ],
