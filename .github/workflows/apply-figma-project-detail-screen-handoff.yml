@@ -62,7 +62,7 @@ jobs:
           retention-days: 7
       - name: Validate integrated result
         id: validate
-        if: steps.apply.outcome == 'success'
+        if: steps.apply.conclusion == 'success'
         continue-on-error: true
         run: |
           status=0
@@ -75,7 +75,7 @@ jobs:
           echo "$status" > project-detail-validation.status
           exit "$status"
       - name: Upload validation diagnostic
-        if: always() && steps.apply.outcome == 'success'
+        if: always() && steps.apply.conclusion == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: project-detail-validation-diagnostic
@@ -85,7 +85,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
       - name: Commit generated changes
-        if: steps.apply.outcome == 'success' && steps.validate.outcome == 'success'
+        if: steps.apply.conclusion == 'success' && steps.validate.conclusion == 'success'
         run: |
           git restore tools/apply-figma-project-detail-screen-handoff.mjs
           if git diff --quiet; then
@@ -98,5 +98,5 @@ jobs:
           git commit -m "Интегрировать Project Detail в Figma handoff"
           git push origin HEAD:agent/figma-project-detail-screen-handoff
       - name: Fail workflow when apply or validation failed
-        if: always() && (steps.apply.outcome != 'success' || steps.validate.outcome != 'success')
+        if: always() && (steps.apply.conclusion != 'success' || steps.validate.conclusion != 'success')
         run: exit 1
