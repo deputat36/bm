@@ -51,7 +51,7 @@ jobs:
           node - <<'NODE'
           const fs = require('node:fs');
           const manifest = JSON.parse(fs.readFileSync('build/figma-execution-pack/manifest.json', 'utf8'));
-          if (manifest.stepCount !== 27) throw new Error(`Expected 27 steps, got ${manifest.stepCount}`);
+          if (manifest.stepCount !== 29) throw new Error(`Expected 29 steps, got ${manifest.stepCount}`);
           const totalCharacters = manifest.steps.reduce((sum, step) => sum + step.characters, 0);
           const largest = [...manifest.steps].sort((a, b) => b.characters - a.characters)[0];
           console.log(JSON.stringify({
