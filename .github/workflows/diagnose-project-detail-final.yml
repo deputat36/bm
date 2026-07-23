@@ -1,16 +1,6 @@
 name: Diagnose Project Detail final validators
 
 on:
-  push:
-    branches:
-      - agent/figma-project-detail-screen-handoff
-    paths:
-      - ".github/workflows/diagnose-project-detail-final.yml"
-      - "tools/validate-figma-execution-pack.mjs"
-      - "tools/validate-figma-source-map-readiness.mjs"
-      - "tools/validate-figma-catalog-screen-handoff.mjs"
-      - "tools/validate-homepage-faq-accordion.mjs"
-      - "tools/validate-figma-project-detail-screen-handoff.mjs"
   pull_request:
     branches:
       - main
@@ -29,17 +19,20 @@ jobs:
   diagnose:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout branch
+      - name: Checkout PR merge ref
         uses: actions/checkout@v4
         with:
-          ref: agent/figma-project-detail-screen-handoff
           fetch-depth: 1
           show-progress: false
+      - name: Record checkout
+        run: |
+          mkdir -p diagnostic
+          git rev-parse HEAD > diagnostic/head.txt
+          git log -1 --format='%H %P %s' > diagnostic/commit.txt
       - name: Run validators and capture logs
         id: validators
         continue-on-error: true
         run: |
-          mkdir -p diagnostic
           overall=0
           for entry in \
             execution:tools/validate-figma-execution-pack.mjs \
