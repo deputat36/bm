@@ -5,5 +5,6 @@ node_modules/
 dist/
 build/figma-execution-pack/
 build/figma-visual-qa-pack/
+build/figma-code-connect-readiness/
 .env
 .env.*
