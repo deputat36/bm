@@ -1,0 +1,57 @@
+name: Diagnose Project Detail final validators
+
+on:
+  push:
+    branches:
+      - agent/figma-project-detail-screen-handoff
+    paths:
+      - ".github/workflows/diagnose-project-detail-final.yml"
+      - "tools/validate-figma-execution-pack.mjs"
+      - "tools/validate-figma-source-map-readiness.mjs"
+      - "tools/validate-figma-catalog-screen-handoff.mjs"
+      - "tools/validate-homepage-faq-accordion.mjs"
+      - "tools/validate-figma-project-detail-screen-handoff.mjs"
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/figma-project-detail-screen-handoff
+          fetch-depth: 1
+          show-progress: false
+      - name: Run validators and capture logs
+        id: validators
+        continue-on-error: true
+        run: |
+          mkdir -p diagnostic
+          overall=0
+          for entry in \
+            execution:tools/validate-figma-execution-pack.mjs \
+            source-map:tools/validate-figma-source-map-readiness.mjs \
+            catalog:tools/validate-figma-catalog-screen-handoff.mjs \
+            faq:tools/validate-homepage-faq-accordion.mjs \
+            project-detail:tools/validate-figma-project-detail-screen-handoff.mjs
+          do
+            name="${entry%%:*}"
+            file="${entry#*:}"
+            status=0
+            node "$file" > "diagnostic/${name}.log" 2>&1 || status=$?
+            echo "$status" > "diagnostic/${name}.status"
+            if [ "$status" -ne 0 ]; then overall=1; fi
+          done
+          printf 'overall=%s\n' "$overall" > diagnostic/summary.txt
+          exit "$overall"
+      - name: Upload diagnostic artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-detail-final-validator-diagnostic
+          path: diagnostic/
+          if-no-files-found: error
+          retention-days: 7
