@@ -1,0 +1,45 @@
+name: Homepage FAQ accordion
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "assets/css/faq-accordion.css"
+      - "data/design/portal-v2.source-map.json"
+      - "tools/build-figma-code-connect-readiness.mjs"
+      - "tools/validate-homepage-faq-accordion.mjs"
+      - "tools/validate-figma-source-map-readiness.mjs"
+      - "docs/design/FIGMA_SOURCE_MAP_AND_CODE_CONNECT_READINESS.md"
+      - ".github/workflows/homepage-faq-accordion.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "assets/css/faq-accordion.css"
+      - "data/design/portal-v2.source-map.json"
+      - "tools/build-figma-code-connect-readiness.mjs"
+      - "tools/validate-homepage-faq-accordion.mjs"
+      - "tools/validate-figma-source-map-readiness.mjs"
+      - "docs/design/FIGMA_SOURCE_MAP_AND_CODE_CONNECT_READINESS.md"
+      - ".github/workflows/homepage-faq-accordion.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-homepage-faq-accordion:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check validator syntax
+        run: node --check tools/validate-homepage-faq-accordion.mjs
+      - name: Validate accessible FAQ accordion
+        run: node tools/validate-homepage-faq-accordion.mjs
+      - name: Validate Figma source map readiness
+        run: node tools/validate-figma-source-map-readiness.mjs
