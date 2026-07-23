@@ -65,7 +65,7 @@ jobs:
         run: node tools/validate-figma-source-map-readiness.mjs
       - name: Check generated payload size
         run: |
-          # Final PR-head check: generator, all pack integrations and size limit must agree.
+          # Final synchronized PR-head check: all four validators and size limit must agree.
           node tools/figma/generate-portal-v2-catalog-screen.mjs > /tmp/catalog-screen.js
           characters=$(wc -m < /tmp/catalog-screen.js)
           bytes=$(wc -c < /tmp/catalog-screen.js)
