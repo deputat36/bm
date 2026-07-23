@@ -1,0 +1,45 @@
+name: Apply FAQ accordion migration
+
+on:
+  push:
+    branches:
+      - agent/accessible-faq-accordion
+    paths:
+      - "tools/apply-homepage-faq-accordion.mjs"
+      - ".github/workflows/apply-faq-accordion-migration.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply-migration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/accessible-faq-accordion
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check migration syntax
+        run: node --check tools/apply-homepage-faq-accordion.mjs
+      - name: Apply FAQ migration
+        run: node tools/apply-homepage-faq-accordion.mjs
+      - name: Validate migrated result
+        run: |
+          node tools/validate-homepage-faq-accordion.mjs
+          node tools/validate-figma-source-map-readiness.mjs
+      - name: Commit generated changes
+        run: |
+          if git diff --quiet; then
+            echo "Migration is already applied"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html data/design/portal-v2.source-map.json tools/build-figma-code-connect-readiness.mjs tools/validate-figma-source-map-readiness.mjs docs/design/FIGMA_SOURCE_MAP_AND_CODE_CONNECT_READINESS.md
+          git commit -m "Внедрить доступный FAQ-аккордеон"
+          git push origin HEAD:agent/accessible-faq-accordion
