@@ -60,7 +60,72 @@
     return true;
   }
 
+  function enablePrimaryLeadDelivery() {
+    if (window.__NEWBUILD_PRIMARY_LEAD_DELIVERY__ === true) return true;
+    if (
+      typeof SITE_CONFIG === "undefined"
+      || typeof sendLead !== "function"
+      || typeof sendCustomLead !== "function"
+      || typeof sendWeb3FormsLead !== "function"
+    ) return false;
+
+    SITE_CONFIG.LEAD_ENDPOINT = "https://ofewxuqfjhamgerwzull.supabase.co/functions/v1/newbuild-lead";
+    const endpoint = SITE_CONFIG.LEAD_ENDPOINT;
+
+    sendLead = async function sendLeadWithPrimaryStorage(data) {
+      if (data.spam_check?.likely_bot) return { blocked: true };
+
+      let primaryResult;
+      try {
+        primaryResult = await sendCustomLead(data);
+        if (!primaryResult || primaryResult.success === false) {
+          throw new Error(primaryResult?.error || "Primary lead storage rejected the request");
+        }
+      } catch (primaryError) {
+        if (SITE_CONFIG.WEB3FORMS_ACCESS_KEY && SITE_CONFIG.SEND_EMAIL_COPY) {
+          try {
+            await sendWeb3FormsLead(data);
+          } catch (emailError) {
+            console.error("Lead backup email failed", emailError);
+          }
+        }
+        throw primaryError;
+      }
+
+      let emailCopySent = false;
+      if (
+        !primaryResult.blocked
+        && !primaryResult.duplicate
+        && SITE_CONFIG.WEB3FORMS_ACCESS_KEY
+        && SITE_CONFIG.SEND_EMAIL_COPY
+      ) {
+        try {
+          await sendWeb3FormsLead(data);
+          emailCopySent = true;
+        } catch (emailError) {
+          console.error("Lead email copy failed", emailError);
+        }
+      }
+
+      return {
+        ...primaryResult,
+        primary_destination: "supabase_newbuild_leads",
+        endpoint,
+        email_copy_sent: emailCopySent
+      };
+    };
+
+    window.__NEWBUILD_PRIMARY_LEAD_DELIVERY__ = true;
+    window.__NEWBUILD_LEAD_DELIVERY_STATUS__ = {
+      primary_destination: "supabase_newbuild_leads",
+      endpoint_configured: true,
+      email_copy_enabled: Boolean(SITE_CONFIG.WEB3FORMS_ACCESS_KEY && SITE_CONFIG.SEND_EMAIL_COPY)
+    };
+    return true;
+  }
+
   enableInternalLeadIdPrivacy();
+  enablePrimaryLeadDelivery();
 
   if (document.querySelector("[data-mobile-lead-bar]")) return;
 
