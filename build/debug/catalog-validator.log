@@ -1,0 +1,5 @@
+Figma catalog screen handoff validation failed:
+- Generated catalog payload misses: Catalog / Desktop
+- Generated catalog payload misses: Catalog / Mobile
+- Generated catalog payload misses: catalog-desktop
+- Generated catalog payload misses: catalog-mobile
