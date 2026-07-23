@@ -3,5 +3,6 @@ Thumbs.db
 *.log
 node_modules/
 dist/
+build/figma-execution-pack/
 .env
 .env.*
