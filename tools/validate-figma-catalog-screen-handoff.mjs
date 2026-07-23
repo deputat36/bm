@@ -123,7 +123,7 @@ for (const marker of [
 if (sourceMap) {
   assert(sourceMap.figma?.componentSetsExpected === 14, "Source map must preserve 14 ComponentSet");
   assert(sourceMap.figma?.variantsExpected === 119, "Source map must preserve 119 variants");
-  assert(sourceMap.figma?.screensExpected === 8, `Source map must expect 8 screens, found ${sourceMap.figma?.screensExpected}`);
+  assert(sourceMap.figma?.screensExpected >= 8, `Source map must retain Catalog among at least 8 screens, found ${sourceMap.figma?.screensExpected}`);
   const catalogScreen = (sourceMap.screens || []).find((item) => item.id === "catalog");
   assert(Boolean(catalogScreen), "Source map misses catalog screen");
   assert(catalogScreen?.figmaPage === "26 Screen · Catalog", "Catalog source-map entry has wrong page");

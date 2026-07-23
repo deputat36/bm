@@ -7,7 +7,7 @@
     "issue": 116,
     "componentSetsExpected": 14,
     "variantsExpected": 119,
-    "screensExpected": 8
+    "screensExpected": 9
   },
   "codeConnect": {
     "status": "blocked",
@@ -694,6 +694,64 @@
         }
       ],
       "notes": "Composed Figma screen mirrors the production catalog initial state. Quiz steps and result behavior remain implemented by catalog-rule-quiz.js and are documented through metadata rather than simulated as a false static interaction."
+    },
+    {
+      "id": "project-detail",
+      "figmaPage": "27 Screen · Project Detail",
+      "generator": "tools/figma/generate-portal-v2-project-detail-screen.mjs",
+      "mapping": "composed",
+      "sources": [
+        {
+          "path": "catalog/prostornaya-4a/index.html",
+          "markers": [
+            "data-schema-project=\"prostornaya-4a\"",
+            "catalog_prostornaya_4a_quick_consultation",
+            "catalog_prostornaya_4a_priority_lead",
+            "data-verification-profile=\"../../data/verification/prostornaya-4a.json\""
+          ]
+        },
+        {
+          "path": "catalog/aerodromnaya-18g/index.html",
+          "markers": [
+            "data-schema-project=\"aerodromnaya-18g\"",
+            "catalog_aerodromnaya_18g_quick_consultation",
+            "catalog_aerodromnaya_18g_priority_lead",
+            "data-verification-profile=\"../../data/verification/aerodromnaya-18g.json\""
+          ]
+        },
+        {
+          "path": "catalog/sennaya-76/index.html",
+          "markers": [
+            "data-schema-project=\"sennaya-76\"",
+            "catalog_sennaya_76_quick_consultation",
+            "catalog_sennaya_76_priority_lead",
+            "data-verification-profile=\"../../data/verification/sennaya-76.json\""
+          ]
+        },
+        {
+          "path": "assets/css/project-conversion.css",
+          "markers": [
+            ".project-hero__grid {",
+            ".project-status-grid {",
+            ".project-faq {"
+          ]
+        },
+        {
+          "path": "assets/js/project-intent-prefill.js",
+          "markers": [
+            "data-prefill-interest",
+            "scrollIntoView"
+          ]
+        },
+        {
+          "path": "assets/js/project-verification-summary.js",
+          "markers": [
+            "data-verification-summary",
+            "section.dataset.verificationProfile"
+          ]
+        }
+      ],
+      "notes": "Six composed frames preserve three evidence profiles instead of flattening verified project facts, owner-corrected marketplace data and public interview claims into one confidence level."
     }
   ]
 }

@@ -14,11 +14,11 @@ Execution Pack создаёт foundations, документационные ст
 
 ## Состав
 
-Всего формируется 23 audit payload:
+Всего формируется 24 audit payload:
 
 - 1 глобальная проверка foundations и общей библиотеки;
 - 14 компонентных страниц;
-- 8 экранных страниц.
+- 9 экранных страниц.
 
 Глобальная проверка ожидает:
 
@@ -54,7 +54,9 @@ Execution Pack создаёт foundations, документационные ст
 4. Homepage Process & Purchase;
 5. Homepage Purchase & Resources;
 6. Homepage FAQ & Lead;
-7. Homepage Full.
+7. Homepage Full;
+8. Catalog;
+9. Project Detail.
 
 ## Сборка
 
@@ -79,11 +81,11 @@ node tools/build-figma-visual-qa-pack.mjs /tmp/figma-visual-qa-pack
 - `manifest.json` — порядок, ожидаемые страницы, варианты, screen-key, section-key, размеры payload и SHA-256;
 - `ledger.template.json` — журнал выполнения и screenshot QA;
 - `README.md` — краткая инструкция;
-- 22 пронумерованных JavaScript-файла.
+- 24 пронумерованных JavaScript-файла.
 
 ## Выполнение
 
-Перед началом должны быть полностью выполнены все 27 шагов Figma Execution Pack.
+Перед началом должны быть полностью выполнены все 29 шагов Figma Execution Pack.
 
 Каждый JavaScript-файл запускается отдельным вызовом:
 
@@ -135,7 +137,7 @@ skillNames: resource:figma-use
 
 ## Screenshot QA
 
-Manifest содержит 30 screenshot targets:
+Manifest содержит 36 screenshot targets:
 
 - по одному ComponentSet на каждой из 14 компонентных страниц;
 - Desktop и Mobile на каждой из семи экранных страниц.
@@ -198,8 +200,8 @@ node tools/validate-figma-visual-qa-pack.mjs
 Validator:
 
 - реально собирает пакет во временную папку;
-- проверяет 23 audit payload;
-- проверяет 30 screenshot targets;
+- проверяет 24 audit payload;
+- проверяет 36 screenshot targets;
 - пересчитывает SHA-256;
 - проверяет итоговый JavaScript;
 - ограничивает payload 50 000 символами;
@@ -237,4 +239,9 @@ Workflow публикует artifact `figma-visual-qa-pack` на 30 дней.
 
 ## Catalog audit
 
-Visual QA Pack содержит 23 audit payload: один глобальный, 14 компонентных и 8 экранных. Добавлены `catalog-desktop` и `catalog-mobile`, девять section-key и два screenshot targets. Общее количество screenshot targets — 30.
+Visual QA Pack содержит 24 audit payload: один глобальный, 14 компонентных и 8 экранных. Добавлены `catalog-desktop` и `catalog-mobile`, девять section-key и два screenshot targets. Общее количество screenshot targets — 30.
+
+
+## Project Detail QA
+
+Страница `27 Screen · Project Detail` добавляет один page-level audit и шесть screenshot targets: три доказательных профиля × Desktop/Mobile. Проверяются шесть screen-key, восемь section-key, route/form metadata, verification profile, missingFonts, detachedInstances и overflowCandidates.

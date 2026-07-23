@@ -313,7 +313,26 @@ const steps = [
       "project-card",
       "site-footer"
     ]
+  },
+  {
+    id: "project-detail",
+    phase: "screens",
+    title: "27 Screen · Project Detail",
+    page: "27 Screen · Project Detail",
+    generator: "tools/figma/generate-portal-v2-project-detail-screen.mjs",
+    args: [],
+    skillNames: "resource:figma-use,resource:figma-generate-library,resource:figma-generate-design",
+    dependsOn: [
+      "top-navigation",
+      "button",
+      "fact-card",
+      "lead-form-card",
+      "content-card",
+      "faq-accordion",
+      "site-footer"
+    ]
   }
+
 ];
 
 function runGenerator(step) {

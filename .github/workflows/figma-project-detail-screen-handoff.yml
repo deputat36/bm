@@ -1,0 +1,80 @@
+name: Figma project detail screen handoff
+
+on:
+  pull_request:
+    paths:
+      - "catalog/prostornaya-4a/index.html"
+      - "catalog/aerodromnaya-18g/index.html"
+      - "catalog/sennaya-76/index.html"
+      - "assets/css/project-conversion.css"
+      - "assets/js/project-intent-prefill.js"
+      - "assets/js/project-verification-summary.js"
+      - "data/design/portal-v2.source-map.json"
+      - "docs/design/FIGMA_PROJECT_DETAIL_SCREEN_HANDOFF.md"
+      - "docs/design/FIGMA_EXECUTION_PACK.md"
+      - "docs/design/FIGMA_VISUAL_QA_PACK.md"
+      - "docs/design/FIGMA_SOURCE_MAP_AND_CODE_CONNECT_READINESS.md"
+      - "tools/figma/generate-portal-v2-project-detail-screen.mjs"
+      - "tools/build-figma-execution-pack.mjs"
+      - "tools/validate-figma-execution-pack.mjs"
+      - "tools/build-figma-visual-qa-pack.mjs"
+      - "tools/validate-figma-visual-qa-pack.mjs"
+      - "tools/validate-figma-source-map-readiness.mjs"
+      - "tools/validate-figma-project-detail-screen-handoff.mjs"
+      - ".github/workflows/figma-project-detail-screen-handoff.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "catalog/prostornaya-4a/index.html"
+      - "catalog/aerodromnaya-18g/index.html"
+      - "catalog/sennaya-76/index.html"
+      - "assets/css/project-conversion.css"
+      - "assets/js/project-intent-prefill.js"
+      - "assets/js/project-verification-summary.js"
+      - "data/design/portal-v2.source-map.json"
+      - "docs/design/FIGMA_PROJECT_DETAIL_SCREEN_HANDOFF.md"
+      - "docs/design/FIGMA_EXECUTION_PACK.md"
+      - "docs/design/FIGMA_VISUAL_QA_PACK.md"
+      - "docs/design/FIGMA_SOURCE_MAP_AND_CODE_CONNECT_READINESS.md"
+      - "tools/figma/generate-portal-v2-project-detail-screen.mjs"
+      - "tools/build-figma-execution-pack.mjs"
+      - "tools/validate-figma-execution-pack.mjs"
+      - "tools/build-figma-visual-qa-pack.mjs"
+      - "tools/validate-figma-visual-qa-pack.mjs"
+      - "tools/validate-figma-source-map-readiness.mjs"
+      - "tools/validate-figma-project-detail-screen-handoff.mjs"
+      - ".github/workflows/figma-project-detail-screen-handoff.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-figma-project-detail-screen-handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check source syntax
+        run: |
+          node --check tools/figma/generate-portal-v2-project-detail-screen.mjs
+          node --check tools/validate-figma-project-detail-screen-handoff.mjs
+      - name: Validate Project Detail handoff
+        run: node tools/validate-figma-project-detail-screen-handoff.mjs
+      - name: Validate execution pack
+        run: node tools/validate-figma-execution-pack.mjs
+      - name: Validate visual QA pack
+        run: node tools/validate-figma-visual-qa-pack.mjs
+      - name: Validate source map readiness
+        run: node tools/validate-figma-source-map-readiness.mjs
+      - name: Check generated payload size
+        run: |
+          node tools/figma/generate-portal-v2-project-detail-screen.mjs > /tmp/project-detail-screen.js
+          characters=$(wc -m < /tmp/project-detail-screen.js)
+          bytes=$(wc -c < /tmp/project-detail-screen.js)
+          echo "Project Detail payload: ${characters} characters / ${bytes} bytes"
+          test "$characters" -le 50000
