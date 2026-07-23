@@ -6,12 +6,14 @@ on:
       - agent/figma-catalog-screen-handoff
     paths:
       - "tools/apply-figma-catalog-screen-handoff.mjs"
+      - "tools/validate-figma-catalog-screen-handoff.mjs"
       - ".github/workflows/apply-figma-catalog-screen-handoff.yml"
   pull_request:
     branches:
       - main
     paths:
       - "tools/apply-figma-catalog-screen-handoff.mjs"
+      - "tools/validate-figma-catalog-screen-handoff.mjs"
       - ".github/workflows/apply-figma-catalog-screen-handoff.yml"
       - "tools/figma/generate-portal-v2-catalog-screen.mjs"
       - "docs/design/FIGMA_CATALOG_SCREEN_HANDOFF.md"
@@ -37,12 +39,14 @@ jobs:
         run: node --check tools/apply-figma-catalog-screen-handoff.mjs
       - name: Apply Catalog handoff integration
         run: node tools/apply-figma-catalog-screen-handoff.mjs
-      - name: Validate integrated result
-        run: |
-          node tools/validate-figma-catalog-screen-handoff.mjs
-          node tools/validate-figma-execution-pack.mjs
-          node tools/validate-figma-visual-qa-pack.mjs
-          node tools/validate-figma-source-map-readiness.mjs
+      - name: Validate Catalog screen handoff
+        run: node tools/validate-figma-catalog-screen-handoff.mjs
+      - name: Validate execution pack
+        run: node tools/validate-figma-execution-pack.mjs
+      - name: Validate visual QA pack
+        run: node tools/validate-figma-visual-qa-pack.mjs
+      - name: Validate source map readiness
+        run: node tools/validate-figma-source-map-readiness.mjs
       - name: Commit generated changes
         run: |
           if git diff --quiet; then
