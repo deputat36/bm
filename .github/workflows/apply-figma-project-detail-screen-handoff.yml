@@ -33,13 +33,19 @@ jobs:
       - name: Apply Project Detail handoff integration
         id: apply
         run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('tools/apply-figma-project-detail-screen-handoff.mjs')
+          content = path.read_text(encoding='utf-8')
+          content = content.replace('Execution Pack must finish with Catalog', 'Execution pack must finish with Catalog')
+          path.write_text(content, encoding='utf-8')
+          PY
           status=0
-          {
-            node --check tools/apply-figma-project-detail-screen-handoff.mjs
-            node --check tools/apply-figma-project-detail-workflow-counts.mjs
-            node tools/apply-figma-project-detail-screen-handoff.mjs
-            node tools/apply-figma-project-detail-workflow-counts.mjs
-          } > project-detail-migration.log 2>&1 || status=$?
+          : > project-detail-migration.log
+          node --check tools/apply-figma-project-detail-screen-handoff.mjs >> project-detail-migration.log 2>&1 || status=$?
+          if [ "$status" -eq 0 ]; then node --check tools/apply-figma-project-detail-workflow-counts.mjs >> project-detail-migration.log 2>&1 || status=$?; fi
+          if [ "$status" -eq 0 ]; then node tools/apply-figma-project-detail-screen-handoff.mjs >> project-detail-migration.log 2>&1 || status=$?; fi
+          if [ "$status" -eq 0 ]; then node tools/apply-figma-project-detail-workflow-counts.mjs >> project-detail-migration.log 2>&1 || status=$?; fi
           cat project-detail-migration.log
           echo "$status" > project-detail-migration.status
           echo "status=$status" >> "$GITHUB_OUTPUT"
@@ -64,6 +70,7 @@ jobs:
           node tools/validate-figma-source-map-readiness.mjs
       - name: Commit generated changes
         run: |
+          git restore tools/apply-figma-project-detail-screen-handoff.mjs
           if git diff --quiet; then
             echo "Project Detail handoff integration is already applied"
             exit 0
