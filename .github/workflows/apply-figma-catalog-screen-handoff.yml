@@ -1,0 +1,47 @@
+name: Apply Figma catalog screen handoff
+
+on:
+  push:
+    branches:
+      - agent/figma-catalog-screen-handoff
+    paths:
+      - "tools/apply-figma-catalog-screen-handoff.mjs"
+      - ".github/workflows/apply-figma-catalog-screen-handoff.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply-catalog-handoff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/figma-catalog-screen-handoff
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check migration syntax
+        run: node --check tools/apply-figma-catalog-screen-handoff.mjs
+      - name: Apply Catalog handoff integration
+        run: node tools/apply-figma-catalog-screen-handoff.mjs
+      - name: Validate integrated result
+        run: |
+          node tools/validate-figma-catalog-screen-handoff.mjs
+          node tools/validate-figma-execution-pack.mjs
+          node tools/validate-figma-visual-qa-pack.mjs
+          node tools/validate-figma-source-map-readiness.mjs
+      - name: Commit generated changes
+        run: |
+          if git diff --quiet; then
+            echo "Catalog handoff integration is already applied"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/build-figma-execution-pack.mjs tools/validate-figma-execution-pack.mjs tools/build-figma-visual-qa-pack.mjs tools/validate-figma-visual-qa-pack.mjs data/design/portal-v2.source-map.json tools/validate-figma-source-map-readiness.mjs docs/design/FIGMA_EXECUTION_PACK.md docs/design/FIGMA_VISUAL_QA_PACK.md docs/design/FIGMA_SOURCE_MAP_AND_CODE_CONNECT_READINESS.md
+          git commit -m "Интегрировать экран каталога в Figma handoff"
+          git push origin HEAD:agent/figma-catalog-screen-handoff
