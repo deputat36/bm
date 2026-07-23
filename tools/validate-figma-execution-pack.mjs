@@ -142,13 +142,12 @@ try {
       "24 Component · Site Footer",
       "25 Screen · Homepage Full",
       "26 Screen · Catalog",
-      "27 Screen · Project Detail",
       "27 Screen · Project Detail"
     ];
     const pages = (manifest.steps || []).map((step) => step.page).filter(Boolean);
     assert(JSON.stringify(pages) === JSON.stringify(expectedPages), "Execution pack page order does not match Portal v2 handoff");
     assert(manifest.steps?.[0]?.id === "foundations", "Execution pack must start with foundations");
-    assert(manifest.steps?.at(-1)?.id === "project-detail", "Execution Pack must finish with Project Detail");
+    assert(manifest.steps?.at(-1)?.id === "project-detail", "Execution pack must finish with Project Detail");
     assert(manifest.steps?.at(-1)?.skillNames.includes("resource:figma-generate-library"), "Project Detail must load library skill");
     assert(manifest.steps?.at(-1)?.skillNames.includes("resource:figma-generate-design"), "Project Detail must load design skill");
   }
@@ -164,6 +163,7 @@ try {
       "24 Component · Site Footer",
       "25 Screen · Homepage Full",
       "26 Screen · Catalog",
+      "27 Screen · Project Detail",
       "metadata",
       "screenshots",
       "issue №116",
