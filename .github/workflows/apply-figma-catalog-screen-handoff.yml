@@ -86,3 +86,17 @@ jobs:
         run: node tools/validate-figma-visual-qa-pack.mjs
       - name: Validate source map readiness
         run: node tools/validate-figma-source-map-readiness.mjs
+      - name: Commit validation success marker
+        run: |
+          mkdir -p build/debug
+          printf '%s\n' \
+            'Catalog screen handoff: passed' \
+            'Execution Pack: passed' \
+            'Visual QA Pack: passed' \
+            'Source map readiness: passed' \
+            > build/debug/catalog-validation-success.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f build/debug/catalog-validation-success.txt
+          git commit -m "Подтвердить Catalog validators"
+          git push origin HEAD:agent/figma-catalog-screen-handoff
