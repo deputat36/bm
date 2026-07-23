@@ -1,0 +1,312 @@
+{
+  "schemaVersion": "1.0",
+  "designSystem": "Portal v2 · Городской навигатор",
+  "figma": {
+    "fileKey": "rhFYa5gPDhF009hZsfEGSX",
+    "fileUrl": "https://www.figma.com/design/rhFYa5gPDhF009hZsfEGSX",
+    "issue": 116,
+    "componentSetsExpected": 14,
+    "variantsExpected": 119,
+    "screensExpected": 7
+  },
+  "codeConnect": {
+    "status": "blocked",
+    "nodeIdsAvailable": false,
+    "componentsPublished": false,
+    "requiredPlan": "Organization or Enterprise",
+    "currentPlan": "Starter",
+    "reason": "Figma MCP monthly limit is exhausted, component node IDs are unavailable, components are not confirmed as published, and Code Connect is not available on the current plan.",
+    "rule": "Never invent or guess a nodeId. Populate nodeId only from Figma metadata after the physical library exists and is published."
+  },
+  "production": {
+    "entry": "index.html",
+    "styles": [
+      "assets/css/styles.css",
+      "assets/css/home-polish.css",
+      "assets/css/leadgen.css"
+    ],
+    "scripts": [
+      "assets/js/main.js"
+    ]
+  },
+  "components": [
+    {
+      "id": "button",
+      "figmaPage": "05 Component · Button",
+      "componentSet": "Button",
+      "generator": "tools/figma/generate-portal-v2-button-components.mjs",
+      "mapping": "direct",
+      "selectors": [".button", ".button--ghost"],
+      "sources": [
+        {"path": "index.html", "markers": ["class=\"button\"", "button--ghost"]},
+        {"path": "assets/css/styles.css", "markers": [".button,", ".button--ghost"]},
+        {"path": "assets/css/home-polish.css", "markers": [".button,", ".button:hover", ".button:focus-visible"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "verification-status",
+      "figmaPage": "06 Component · Verification Status",
+      "componentSet": "Verification Status",
+      "generator": "tools/figma/generate-portal-v2-verification-status-components.mjs",
+      "mapping": "composed",
+      "selectors": ["#objects .eyebrow"],
+      "sources": [
+        {"path": "index.html", "markers": ["id=\"objects\"", "Данные уточняются", "homepage_object_card"]},
+        {"path": "assets/css/home-polish.css", "markers": [".eyebrow {", ".hero .eyebrow"]}
+      ],
+      "notes": "Production represents the status as an eyebrow inside each object card rather than as an isolated component root.",
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "form-field",
+      "figmaPage": "07 Component · Form Field",
+      "componentSet": "Form Field",
+      "generator": "tools/figma/generate-portal-v2-form-field-components.mjs",
+      "mapping": "direct",
+      "selectors": [".form label", ".form input", ".form select", ".form textarea"],
+      "sources": [
+        {"path": "index.html", "markers": ["<label>Имя<input", "<label>Телефон<input", "<select name=\"residential_complex\""]},
+        {"path": "assets/css/leadgen.css", "markers": [".form input,", ".form select,", ".form textarea", ".form input:focus"]},
+        {"path": "assets/js/main.js", "markers": ["function collectFormData(form)", "new FormData(form)"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "faq-accordion",
+      "figmaPage": "08 Component · FAQ Accordion",
+      "componentSet": "FAQ Accordion",
+      "generator": "tools/figma/generate-portal-v2-faq-accordion-components.mjs",
+      "mapping": "gap",
+      "selectors": ["#faq .card"],
+      "sources": [
+        {"path": "index.html", "markers": ["id=\"faq\"", "Где посмотреть новостройки Борисоглебска?", "<article class=\"card\"><h3>"]},
+        {"path": "assets/css/styles.css", "markers": [".card {"]}
+      ],
+      "implementationGap": {
+        "production": "six static cards",
+        "figma": "interactive Closed/Open accordion variants",
+        "requiredAction": "Implement accessible disclosure behavior in production before declaring direct parity."
+      },
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "brand",
+      "figmaPage": "09 Component · Brand",
+      "componentSet": "Brand",
+      "generator": "tools/figma/generate-portal-v2-brand-components.mjs",
+      "mapping": "direct",
+      "selectors": [".brand", ".brand strong"],
+      "sources": [
+        {"path": "index.html", "markers": ["class=\"brand\"", "Новостройки Борисоглебска</strong>"]},
+        {"path": "assets/css/styles.css", "markers": [".brand {"]},
+        {"path": "assets/css/home-polish.css", "markers": [".brand::before", ".brand strong"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "top-navigation",
+      "figmaPage": "10 Component · Top Navigation",
+      "componentSet": "Top Navigation",
+      "generator": "tools/figma/generate-portal-v2-top-navigation-components.mjs",
+      "mapping": "direct",
+      "selectors": [".topbar", ".topbar__inner", ".nav"],
+      "sources": [
+        {"path": "index.html", "markers": ["<header class=\"topbar\">", "class=\"container topbar__inner\"", "<nav class=\"nav\""]},
+        {"path": "assets/css/styles.css", "markers": [".topbar {", ".topbar__inner {", ".nav {"]},
+        {"path": "assets/css/home-polish.css", "markers": [".topbar {", ".topbar__inner {", ".nav > a:not(.button)"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "project-card",
+      "figmaPage": "11 Component · Project Card",
+      "componentSet": "Project Card",
+      "generator": "tools/figma/generate-portal-v2-project-card-components.mjs",
+      "mapping": "composed",
+      "selectors": ["#objects .card.card--shadow"],
+      "sources": [
+        {"path": "index.html", "markers": ["id=\"objects\"", "data-track-placement=\"homepage_object_card\"", "Просторная 4А"]},
+        {"path": "assets/css/styles.css", "markers": [".card {", ".card--shadow {"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "fact-card",
+      "figmaPage": "12 Component · Fact Card",
+      "componentSet": "Fact Card",
+      "generator": "tools/figma/generate-portal-v2-fact-card-components.mjs",
+      "mapping": "direct",
+      "selectors": [".facts", ".fact", ".hero .fact"],
+      "sources": [
+        {"path": "index.html", "markers": ["class=\"facts hero__facts\"", "class=\"fact\""]},
+        {"path": "assets/css/styles.css", "markers": [".facts {", ".fact {"]},
+        {"path": "assets/css/home-polish.css", "markers": [".hero .fact {", ".fact strong {"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "lead-form-card",
+      "figmaPage": "13 Component · Lead Form Card",
+      "componentSet": "Lead Form Card",
+      "generator": "tools/figma/generate-portal-v2-lead-form-card-components.mjs",
+      "mapping": "composed",
+      "selectors": [".hero-quick-card", ".hero-quick-form", "#lead .form"],
+      "sources": [
+        {"path": "index.html", "markers": ["class=\"hero-quick-card\"", "data-form-id=\"homepage_quick_selection\"", "data-form-id=\"homepage_priority_selection\""]},
+        {"path": "assets/css/home-polish.css", "markers": [".hero-quick-card,", ".hero-quick-form.form"]},
+        {"path": "assets/css/leadgen.css", "markers": [".form {", ".form--compact {"]},
+        {"path": "assets/js/main.js", "markers": ["function collectFormData(form)", "data.form_id"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "scenario-card",
+      "figmaPage": "15 Component · Scenario Card",
+      "componentSet": "Scenario Card",
+      "generator": "tools/figma/generate-portal-v2-scenario-card-components.mjs",
+      "mapping": "composed",
+      "selectors": ["[data-homepage-routes] .card.card--shadow"],
+      "sources": [
+        {"path": "index.html", "markers": ["data-homepage-routes", "data-track-action=\"route_object\"", "data-track-action=\"route_selection\"", "data-track-action=\"route_mortgage\""]},
+        {"path": "assets/css/styles.css", "markers": [".grid--3 {", ".card {", ".card--shadow {"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "content-card",
+      "figmaPage": "17 Component · Content Card",
+      "componentSet": "Content Card",
+      "generator": "tools/figma/generate-portal-v2-content-card-components.mjs",
+      "mapping": "composed",
+      "selectors": ["#apartments .card.card--shadow", ".consultation-outcomes .card"],
+      "sources": [
+        {"path": "index.html", "markers": ["id=\"apartments\"", "class=\"consultation-outcomes\"", "homepage_one_room", "Что решим за один разговор"]},
+        {"path": "assets/css/styles.css", "markers": [".grid--3 {", ".card {"]},
+        {"path": "assets/css/home-polish.css", "markers": [".grid--4 {"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "step-card",
+      "figmaPage": "19 Component · Step Card",
+      "componentSet": "Step Card",
+      "generator": "tools/figma/generate-portal-v2-step-card-components.mjs",
+      "mapping": "composed",
+      "selectors": ["[data-homepage-consultation-process] .card", ".grid.grid--4 .card"],
+      "sources": [
+        {"path": "index.html", "markers": ["data-homepage-consultation-process", "Как купить квартиру в новостройке Борисоглебска", "Проверить документы"]},
+        {"path": "assets/css/styles.css", "markers": [".grid--3 {", ".card {"]},
+        {"path": "assets/css/home-polish.css", "markers": [".grid--4 {"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "link-card",
+      "figmaPage": "21 Component · Link Card",
+      "componentSet": "Link Card",
+      "generator": "tools/figma/generate-portal-v2-link-card-components.mjs",
+      "mapping": "direct",
+      "selectors": ["a.card.card--shadow"],
+      "sources": [
+        {"path": "index.html", "markers": ["Способы покупки", "Полезные разделы", "<a class=\"card card--shadow\" href=\"ipoteka/\""]},
+        {"path": "assets/css/styles.css", "markers": [".card {", ".card--shadow {"]}
+      ],
+      "nodeId": null,
+      "published": false
+    },
+    {
+      "id": "site-footer",
+      "figmaPage": "24 Component · Site Footer",
+      "componentSet": "Site Footer",
+      "generator": "tools/figma/generate-portal-v2-site-footer-components.mjs",
+      "mapping": "direct",
+      "selectors": [".footer", ".footer__inner"],
+      "sources": [
+        {"path": "index.html", "markers": ["<footer class=\"footer\">", "class=\"container footer__inner\"", "Источники</a> · <a href=\"privacy/\">Политика данных"]},
+        {"path": "assets/css/styles.css", "markers": [".container {"]}
+      ],
+      "nodeId": null,
+      "published": false
+    }
+  ],
+  "screens": [
+    {
+      "id": "homepage-hero",
+      "figmaPage": "14 Screen · Homepage Hero",
+      "generator": "tools/figma/generate-portal-v2-homepage-hero-screen.mjs",
+      "mapping": "composed",
+      "sources": [
+        {"path": "index.html", "markers": ["<header class=\"topbar\">", "<section class=\"hero\">", "class=\"hero-quick-card\""]},
+        {"path": "assets/css/home-polish.css", "markers": [".hero {", ".hero__content--conversion", ".hero-quick-card,"]}
+      ]
+    },
+    {
+      "id": "homepage-start-objects",
+      "figmaPage": "16 Screen · Homepage Start & Objects",
+      "generator": "tools/figma/generate-portal-v2-homepage-start-objects-screen.mjs",
+      "mapping": "composed",
+      "sources": [
+        {"path": "index.html", "markers": ["data-homepage-routes", "id=\"objects\"", "Выберите интересующий объект"]}
+      ]
+    },
+    {
+      "id": "homepage-apartments-outcomes",
+      "figmaPage": "18 Screen · Homepage Apartments & Outcomes",
+      "generator": "tools/figma/generate-portal-v2-homepage-apartments-outcomes-screen.mjs",
+      "mapping": "composed",
+      "sources": [
+        {"path": "index.html", "markers": ["id=\"apartments\"", "class=\"consultation-outcomes\"", "Что решим за один разговор"]}
+      ]
+    },
+    {
+      "id": "homepage-process-purchase",
+      "figmaPage": "20 Screen · Homepage Process & Purchase",
+      "generator": "tools/figma/generate-portal-v2-homepage-process-purchase-screen.mjs",
+      "mapping": "composed",
+      "sources": [
+        {"path": "index.html", "markers": ["data-homepage-consultation-process", "Как купить квартиру в новостройке Борисоглебска", "Начать подбор"]}
+      ]
+    },
+    {
+      "id": "homepage-purchase-resources",
+      "figmaPage": "22 Screen · Homepage Purchase & Resources",
+      "generator": "tools/figma/generate-portal-v2-homepage-purchase-resources-screen.mjs",
+      "mapping": "composed",
+      "sources": [
+        {"path": "index.html", "markers": ["Способы покупки", "Полезные разделы", "Справочник покупателя"]}
+      ]
+    },
+    {
+      "id": "homepage-faq-lead",
+      "figmaPage": "23 Screen · Homepage FAQ & Lead",
+      "generator": "tools/figma/generate-portal-v2-homepage-faq-lead-screen.mjs",
+      "mapping": "gap",
+      "sources": [
+        {"path": "index.html", "markers": ["id=\"faq\"", "id=\"lead\"", "data-form-id=\"homepage_priority_selection\""]}
+      ],
+      "notes": "The screen uses FAQ Accordion instances while production still renders static FAQ cards."
+    },
+    {
+      "id": "homepage-full",
+      "figmaPage": "25 Screen · Homepage Full",
+      "generator": "tools/figma/generate-portal-v2-homepage-full-screen.mjs",
+      "mapping": "composed",
+      "sources": [
+        {"path": "index.html", "markers": ["<main>", "<section class=\"hero\">", "data-homepage-routes", "id=\"objects\"", "id=\"apartments\"", "id=\"faq\"", "id=\"lead\"", "<footer class=\"footer\">"]}
+      ]
+    }
+  ]
+}
