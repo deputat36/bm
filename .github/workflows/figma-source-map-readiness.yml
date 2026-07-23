@@ -1,0 +1,62 @@
+name: Figma source map readiness
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "assets/css/styles.css"
+      - "assets/css/home-polish.css"
+      - "assets/css/leadgen.css"
+      - "assets/js/main.js"
+      - "data/design/portal-v2.source-map.json"
+      - "tools/figma/**"
+      - "tools/build-figma-code-connect-readiness.mjs"
+      - "tools/validate-figma-source-map-readiness.mjs"
+      - "docs/design/FIGMA_SOURCE_MAP_AND_CODE_CONNECT_READINESS.md"
+      - ".github/workflows/figma-source-map-readiness.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "assets/css/styles.css"
+      - "assets/css/home-polish.css"
+      - "assets/css/leadgen.css"
+      - "assets/js/main.js"
+      - "data/design/portal-v2.source-map.json"
+      - "tools/figma/**"
+      - "tools/build-figma-code-connect-readiness.mjs"
+      - "tools/validate-figma-source-map-readiness.mjs"
+      - "docs/design/FIGMA_SOURCE_MAP_AND_CODE_CONNECT_READINESS.md"
+      - ".github/workflows/figma-source-map-readiness.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-figma-source-map-readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check source syntax
+        run: |
+          node --check tools/build-figma-code-connect-readiness.mjs
+          node --check tools/validate-figma-source-map-readiness.mjs
+      - name: Validate source map and readiness
+        run: node tools/validate-figma-source-map-readiness.mjs
+      - name: Build Code Connect readiness artifact
+        run: node tools/build-figma-code-connect-readiness.mjs build/figma-code-connect-readiness
+      - name: Inspect readiness manifest
+        run: |
+          node -e 'const fs=require("fs"); const m=JSON.parse(fs.readFileSync("build/figma-code-connect-readiness/manifest.json","utf8")); if(m.componentCount!==14||m.screenCount!==7||m.codeConnectStatus!=="blocked") process.exit(1); console.log(JSON.stringify(m,null,2));'
+      - name: Upload Code Connect readiness
+        uses: actions/upload-artifact@v4
+        with:
+          name: figma-code-connect-readiness
+          path: build/figma-code-connect-readiness/
+          retention-days: 30
