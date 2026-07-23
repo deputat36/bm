@@ -32,6 +32,7 @@ jobs:
           show-progress: false
       - name: Apply Project Detail handoff integration
         id: apply
+        continue-on-error: true
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -48,7 +49,7 @@ jobs:
           if [ "$status" -eq 0 ]; then node tools/apply-figma-project-detail-workflow-counts.mjs >> project-detail-migration.log 2>&1 || status=$?; fi
           cat project-detail-migration.log
           echo "$status" > project-detail-migration.status
-          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
       - name: Upload migration diagnostic
         if: always()
         uses: actions/upload-artifact@v4
@@ -59,11 +60,10 @@ jobs:
             project-detail-migration.status
           if-no-files-found: error
           retention-days: 7
-      - name: Stop after migration failure
-        if: steps.apply.outputs.status != '0'
-        run: exit 1
       - name: Validate integrated result
         id: validate
+        if: steps.apply.outcome == 'success'
+        continue-on-error: true
         run: |
           status=0
           : > project-detail-validation.log
@@ -73,9 +73,9 @@ jobs:
           if [ "$status" -eq 0 ]; then node tools/validate-figma-source-map-readiness.mjs >> project-detail-validation.log 2>&1 || status=$?; fi
           cat project-detail-validation.log
           echo "$status" > project-detail-validation.status
-          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
       - name: Upload validation diagnostic
-        if: always()
+        if: always() && steps.apply.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: project-detail-validation-diagnostic
@@ -84,10 +84,8 @@ jobs:
             project-detail-validation.status
           if-no-files-found: error
           retention-days: 7
-      - name: Stop after validation failure
-        if: steps.validate.outputs.status != '0'
-        run: exit 1
       - name: Commit generated changes
+        if: steps.apply.outcome == 'success' && steps.validate.outcome == 'success'
         run: |
           git restore tools/apply-figma-project-detail-screen-handoff.mjs
           if git diff --quiet; then
@@ -99,3 +97,6 @@ jobs:
           git add tools/build-figma-execution-pack.mjs tools/validate-figma-execution-pack.mjs tools/build-figma-visual-qa-pack.mjs tools/validate-figma-visual-qa-pack.mjs data/design/portal-v2.source-map.json tools/validate-figma-source-map-readiness.mjs docs/design/FIGMA_EXECUTION_PACK.md docs/design/FIGMA_VISUAL_QA_PACK.md docs/design/FIGMA_SOURCE_MAP_AND_CODE_CONNECT_READINESS.md .github/workflows/figma-execution-pack.yml .github/workflows/figma-visual-qa-pack.yml
           git commit -m "Интегрировать Project Detail в Figma handoff"
           git push origin HEAD:agent/figma-project-detail-screen-handoff
+      - name: Fail workflow when apply or validation failed
+        if: always() && (steps.apply.outcome != 'success' || steps.validate.outcome != 'success')
+        run: exit 1
