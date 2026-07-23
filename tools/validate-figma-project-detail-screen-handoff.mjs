@@ -81,18 +81,15 @@ if (fs.existsSync(GENERATOR)) {
   includesAll(code, [
     "27 Screen · Project Detail",
     "project-detail-screen",
-    "Project Detail / Prostornaya / Desktop",
-    "Project Detail / Prostornaya / Mobile",
-    "Project Detail / Aerodromnaya / Desktop",
-    "Project Detail / Aerodromnaya / Mobile",
-    "Project Detail / Sennaya / Desktop",
-    "Project Detail / Sennaya / Mobile",
-    "project-detail-prostornaya-4a-desktop",
-    "project-detail-prostornaya-4a-mobile",
-    "project-detail-aerodromnaya-18g-desktop",
-    "project-detail-aerodromnaya-18g-mobile",
-    "project-detail-sennaya-76-desktop",
-    "project-detail-sennaya-76-mobile",
+    "short: \"Prostornaya\"",
+    "short: \"Aerodromnaya\"",
+    "short: \"Sennaya\"",
+    "id: \"prostornaya-4a\"",
+    "id: \"aerodromnaya-18g\"",
+    "id: \"sennaya-76\"",
+    "for (const layout of [\"Desktop\", \"Mobile\"])",
+    "auto(\"Project Detail / \" + profile.short + \" / \" + layout, \"VERTICAL\")",
+    "\"project-detail-\" + profile.id + \"-\" + layout.toLowerCase()",
     "catalog_prostornaya_4a_quick_consultation",
     "catalog_prostornaya_4a_priority_lead",
     "catalog_aerodromnaya_18g_quick_consultation",
@@ -122,7 +119,13 @@ if (fs.existsSync(GENERATOR)) {
     ".getPluginData(",
     ".setPluginData("
   ]) assert(!code.includes(pattern), `Project Detail payload uses unsupported API: ${pattern}`);
-  for (const promise of ["гарантирует ипотеку", "фиксирует цену", "бронирует квартиру", "официальный сайт застройщика от имени"]) {
+  for (const promise of [
+    "гарантируем одобрение ипотеки",
+    "гарантированное одобрение ипотеки",
+    "цена зафиксирована",
+    "забронируем квартиру",
+    "портал является официальным сайтом застройщика"
+  ]) {
     assert(!code.toLowerCase().includes(promise), `Project Detail payload contains prohibited promise: ${promise}`);
   }
   const tempSyntax = path.join(os.tmpdir(), `project-detail-${Date.now()}.mjs`);
