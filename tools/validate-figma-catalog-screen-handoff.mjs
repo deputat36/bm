@@ -54,10 +54,6 @@ if (code) {
 for (const marker of [
   "26 Screen · Catalog",
   "catalog-screen",
-  "Catalog / Desktop",
-  "Catalog / Mobile",
-  "catalog-desktop",
-  "catalog-mobile",
   "catalog/index.html",
   "Top Navigation",
   "Lead Form Card",
@@ -80,8 +76,12 @@ for (const marker of [
   "не обещает одобрение ипотеки"
 ]) assert(code.includes(marker), `Generated catalog payload misses: ${marker}`);
 
+assert(code.includes('for (const layout of ["Desktop", "Mobile"])'), "Catalog payload must generate Desktop and Mobile layouts");
+assert(code.includes('auto("Catalog / " + layout, "VERTICAL")'), "Catalog payload must derive screen names from Desktop/Mobile layout");
+assert(code.includes('"catalog-" + layout.toLowerCase()'), "Catalog payload must derive catalog-desktop/catalog-mobile screen keys");
+
 for (const sectionKey of ["header", "hero", "catalog-navigator", "questions", "quiz", "priority", "reference", "lead", "footer"]) {
-  assert(code.includes(`\"${sectionKey}\"`), `Generated catalog payload misses section-key: ${sectionKey}`);
+  assert(code.includes(`"${sectionKey}"`), `Generated catalog payload misses section-key: ${sectionKey}`);
 }
 
 for (const route of ["#questions", "#quiz", "#priority", "#reference", "#quick-lead", "action:catalog_quiz_start"]) {
