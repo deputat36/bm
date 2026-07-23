@@ -7,12 +7,21 @@ on:
     paths:
       - "tools/apply-figma-catalog-screen-handoff.mjs"
       - ".github/workflows/apply-figma-catalog-screen-handoff.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "tools/apply-figma-catalog-screen-handoff.mjs"
+      - ".github/workflows/apply-figma-catalog-screen-handoff.yml"
+      - "tools/figma/generate-portal-v2-catalog-screen.mjs"
+      - "docs/design/FIGMA_CATALOG_SCREEN_HANDOFF.md"
 
 permissions:
   contents: write
 
 jobs:
   apply-catalog-handoff:
+    if: github.event_name == 'push' || github.event.pull_request.head.ref == 'agent/figma-catalog-screen-handoff'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
