@@ -296,6 +296,23 @@ const steps = [
       "faq-accordion",
       "site-footer"
     ]
+  },
+  {
+    id: "catalog",
+    phase: "screens",
+    title: "26 Screen · Catalog",
+    page: "26 Screen · Catalog",
+    generator: "tools/figma/generate-portal-v2-catalog-screen.mjs",
+    args: [],
+    skillNames: "resource:figma-use,resource:figma-generate-library,resource:figma-generate-design",
+    dependsOn: [
+      "top-navigation",
+      "button",
+      "lead-form-card",
+      "link-card",
+      "project-card",
+      "site-footer"
+    ]
   }
 ];
 
@@ -392,7 +409,7 @@ const readme = [
     `| ${step.order} | ${step.id} | ${step.page || "Variables & styles"} | ${step.file} | ${step.characters} | \`${step.sha256}\` |`
   ),
   "",
-  "After the final step, collect metadata and screenshots for Homepage Full / Desktop and Homepage Full / Mobile, then record node IDs in issue #116."
+  "After the final step, collect metadata and screenshots for Homepage Full and Catalog in Desktop and Mobile, then record node IDs in issue #116."
 ].join("\n");
 
 fs.writeFileSync(path.join(OUTPUT_DIR, "README.md"), `${readme}\n`, "utf8");

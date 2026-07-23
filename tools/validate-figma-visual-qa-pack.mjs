@@ -42,8 +42,8 @@ try {
     const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
     assert(manifest.schemaVersion === "1.0", "Wrong manifest schema version");
     assert(manifest.figmaFileKey === "rhFYa5gPDhF009hZsfEGSX", "Wrong Figma file key");
-    assert(manifest.auditCount === 22, `Expected 22 audits, found ${manifest.auditCount}`);
-    assert(manifest.audits.length === 22, `Manifest must contain 22 audit entries, found ${manifest.audits.length}`);
+    assert(manifest.auditCount === 23, `Expected 23 audits, found ${manifest.auditCount}`);
+    assert(manifest.audits.length === 23, `Manifest must contain 23 audit entries, found ${manifest.audits.length}`);
     assert(manifest.expectedTotals.variableCollections === 4, "Expected 4 variable collections");
     assert(manifest.expectedTotals.variables === 53, "Expected 53 variables");
     assert(manifest.expectedTotals.textStyles === 8, "Expected 8 text styles");
@@ -51,7 +51,7 @@ try {
     assert(manifest.expectedTotals.componentSets === 14, "Expected 14 ComponentSet");
     assert(manifest.expectedTotals.variants === 119, "Expected 119 variants");
     assert(manifest.expectedTotals.componentPageAudits === 14, "Expected 14 component page audits");
-    assert(manifest.expectedTotals.screenPageAudits === 7, "Expected 7 screen page audits");
+    assert(manifest.expectedTotals.screenPageAudits === 8, "Expected 8 screen page audits");
     assert(manifest.constraints.noCanvasMutation === true, "Visual QA pack must be read-only");
     assert(manifest.constraints.maxPageSwitchesPerCall === 1, "Visual QA pack must allow at most one page switch");
 
@@ -79,7 +79,8 @@ try {
       "homepage-process-purchase",
       "homepage-purchase-resources",
       "homepage-faq-lead",
-      "homepage-full"
+      "homepage-full",
+      "catalog"
     ];
     for (const id of requiredIds) assert(ids.includes(id), `Manifest misses audit: ${id}`);
 
@@ -137,7 +138,7 @@ try {
     }
 
     const screenshotTargetCount = manifest.audits.reduce((sum, item) => sum + item.screenshotTargets.length, 0);
-    assert(screenshotTargetCount === 28, `Expected 28 screenshot targets, found ${screenshotTargetCount}`);
+    assert(screenshotTargetCount === 30, `Expected 30 screenshot targets, found ${screenshotTargetCount}`);
     const fullAudit = manifest.audits.find((item) => item.id === "homepage-full");
     assert(fullAudit?.expectedSectionKeys.length === 12, "Homepage Full audit must require 12 section keys");
     assert(fullAudit?.screenshotTargets.length === 2, "Homepage Full audit must expose Desktop and Mobile screenshot targets");
@@ -145,14 +146,14 @@ try {
 
   if (fs.existsSync(ledgerPath)) {
     const ledger = JSON.parse(fs.readFileSync(ledgerPath, "utf8"));
-    assert(ledger.audits.length === 22, "Ledger template must contain 22 audits");
+    assert(ledger.audits.length === 23, "Ledger template must contain 23 audits");
     assert(ledger.audits.every((item) => item.status === "not_started"), "Ledger audits must start as not_started");
     assert(ledger.audits.every((item) => Array.isArray(item.screenshotTargets)), "Ledger audits must contain screenshot targets");
   }
 
   if (fs.existsSync(readmePath)) {
     const readme = fs.readFileSync(readmePath, "utf8");
-    for (const marker of ["22 read-only audit payload", "14 компонентных", "7 экранных", "Figma.get_screenshot", "clipped overflow"]) {
+    for (const marker of ["23 read-only audit payload", "14 компонентных", "8 экранных", "Figma.get_screenshot", "clipped overflow"]) {
       assert(readme.includes(marker), `Generated README misses: ${marker}`);
     }
   }
@@ -161,9 +162,9 @@ try {
     const docs = fs.readFileSync(docsPath, "utf8");
     for (const marker of [
       "Figma Visual QA Pack",
-      "22 audit payload",
+      "23 audit payload",
       "14 компонентных страниц",
-      "7 экранных страниц",
+      "8 экранных страниц",
       "119 вариантов",
       "overflowCandidates",
       "missingFonts",
@@ -183,4 +184,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log("Figma Visual QA Pack validation passed: 22 read-only audits and 28 screenshot targets.");
+console.log("Figma Visual QA Pack validation passed: 23 read-only audits and 30 screenshot targets.");
