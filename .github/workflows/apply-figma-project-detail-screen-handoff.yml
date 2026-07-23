@@ -63,11 +63,30 @@ jobs:
         if: steps.apply.outputs.status != '0'
         run: exit 1
       - name: Validate integrated result
+        id: validate
         run: |
-          node tools/validate-figma-project-detail-screen-handoff.mjs
-          node tools/validate-figma-execution-pack.mjs
-          node tools/validate-figma-visual-qa-pack.mjs
-          node tools/validate-figma-source-map-readiness.mjs
+          status=0
+          : > project-detail-validation.log
+          node tools/validate-figma-project-detail-screen-handoff.mjs >> project-detail-validation.log 2>&1 || status=$?
+          if [ "$status" -eq 0 ]; then node tools/validate-figma-execution-pack.mjs >> project-detail-validation.log 2>&1 || status=$?; fi
+          if [ "$status" -eq 0 ]; then node tools/validate-figma-visual-qa-pack.mjs >> project-detail-validation.log 2>&1 || status=$?; fi
+          if [ "$status" -eq 0 ]; then node tools/validate-figma-source-map-readiness.mjs >> project-detail-validation.log 2>&1 || status=$?; fi
+          cat project-detail-validation.log
+          echo "$status" > project-detail-validation.status
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+      - name: Upload validation diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-detail-validation-diagnostic
+          path: |
+            project-detail-validation.log
+            project-detail-validation.status
+          if-no-files-found: error
+          retention-days: 7
+      - name: Stop after validation failure
+        if: steps.validate.outputs.status != '0'
+        run: exit 1
       - name: Commit generated changes
         run: |
           git restore tools/apply-figma-project-detail-screen-handoff.mjs
