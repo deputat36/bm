@@ -141,7 +141,6 @@ try {
       "23 Screen · Homepage FAQ & Lead",
       "24 Component · Site Footer",
       "25 Screen · Homepage Full",
-      "26 Screen · Catalog",
       "26 Screen · Catalog"
     ];
     const pages = (manifest.steps || []).map((step) => step.page).filter(Boolean);
@@ -162,6 +161,7 @@ try {
       "один Figma.use_figma call",
       "24 Component · Site Footer",
       "25 Screen · Homepage Full",
+      "26 Screen · Catalog",
       "metadata",
       "screenshots",
       "issue №116",
