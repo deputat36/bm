@@ -1,221 +1,99 @@
-# Figma Source Map and Code Connect Readiness
+# Figma Source Map и Code Connect Readiness
 
 Figma-файл:
 
 `https://www.figma.com/design/rhFYa5gPDhF009hZsfEGSX`
 
-Продолжает issue №116 и связывает Design System v2 «Городской навигатор» с фактической production-разметкой портала.
+Документ продолжает issue №116 и связывает Design System v2 с production-кодом портала.
 
-## Задача
+## Объём
 
-Execution Pack описывает, как физически создать дизайн. Visual QA Pack описывает, как проверить созданные страницы. Source Map отвечает на другой вопрос: где находится production-источник каждого Figma-компонента и экрана.
-
-Источник реестра:
-
-`data/design/portal-v2.source-map.json`
-
-Реестр покрывает:
+Source map содержит:
 
 - 14 ComponentSet;
 - 119 вариантов;
 - 7 экранов;
+- production selectors;
+- HTML, CSS и JavaScript sources;
+- Figma generators;
+- Code Connect prerequisites.
+
+## Типы соответствия
+
+- `direct` — самостоятельный production-аналог;
+- `composed` — паттерн собирается из общей разметки;
+- `gap` — поведение или структура ещё расходятся.
+
+После внедрения FAQ:
+
+- direct — 8 компонентов;
+- composed — 6 компонентов;
+- gap — 0 компонентов;
+- screen gaps — 0.
+
+## FAQ Accordion: gap closed
+
+FAQ Accordion теперь имеет прямое production-соответствие.
+
+Production использует semantic details/summary:
+
+- контейнер `.faq-list`;
+- элемент `.faq-item`;
+- интерактивный `summary`;
+- ответ `.faq-item__answer`;
+- первый вопрос открыт по умолчанию;
+- остальные вопросы закрыты;
+- клавиатурное управление предоставляется браузером;
+- `:focus-visible` показывает фокус;
+- текст остаётся в HTML и доступен поисковым системам;
+- FAQPage JSON-LD сохраняет те же шесть вопросов и ответов.
+
+Figma Open/Closed variants и production disclosure теперь совпадают по смыслу.
+
+## Production sources
+
+Основные источники:
+
 - `index.html`;
 - `assets/css/styles.css`;
 - `assets/css/home-polish.css`;
 - `assets/css/leadgen.css`;
-- `assets/js/main.js`;
-- все 14 component generators;
-- все 7 screen generators.
-
-## Типы соответствия
-
-### direct
-
-Figma-компонент имеет самостоятельный production-аналог с устойчивым selector или классом.
-
-Примеры:
-
-- Button — `.button`, `.button--ghost`;
-- Brand — `.brand`;
-- Top Navigation — `.topbar`, `.nav`;
-- Fact Card — `.fact`;
-- Link Card — `a.card.card--shadow`;
-- Site Footer — `.footer`;
-- Form Field — `.form input`, `.form select`, `.form textarea`.
-
-### composed
-
-Production-аналог существует, но собирается из общей карточки, сетки, eyebrow, формы или другого базового паттерна и не имеет самостоятельного корневого класса.
-
-Примеры:
-
-- Verification Status находится внутри карточек объектов как `.eyebrow`;
-- Project Card строится из `#objects .card.card--shadow`;
-- Scenario Card строится из `[data-homepage-routes] .card.card--shadow`;
-- Content Card имеет Selection и Outcome представления в разных секциях;
-- Step Card используется в сетках из трёх и четырёх карточек;
-- Lead Form Card сочетает `.hero-quick-card`, `.hero-quick-form` и подробную форму `#lead .form`.
-
-### gap
-
-Figma и production отличаются по поведению или структуре. Такое соответствие нельзя обозначать как прямое до исправления production или изменения дизайна.
-
-## Выявленный gap: FAQ Accordion
-
-В Figma:
-
-- FAQ Accordion имеет Closed/Open variants;
-- первый вопрос на экране открыт;
-- остальные вопросы закрыты;
-- предполагается disclosure interaction.
-
-В production:
-
-- FAQ представлен как six static cards;
-- все ответы постоянно видимы;
-- кнопки раскрытия отсутствуют;
-- JavaScript disclosure behavior отсутствует.
-
-Поэтому `faq-accordion` и `homepage-faq-lead` имеют mapping `gap`.
-
-До устранения разрыва запрещено утверждать, что production FAQ соответствует интерактивному Figma Accordion.
-
-## Code Connect
-
-Code Connect сейчас имеет статус `blocked`.
-
-Причины:
-
-1. текущий Figma-план — Starter;
-2. Code Connect требует Organization or Enterprise;
-3. месячный лимит Figma MCP исчерпан;
-4. ComponentSet node IDs недоступны;
-5. физическое создание библиотеки ещё не выполнено;
-6. публикация компонентов не подтверждена.
-
-Правило:
-
-`Never invent or guess a nodeId.`
-
-Поле `nodeId` для всех 14 компонентов остаётся `null` до чтения реального ID из Figma metadata.
-
-Поле `published` остаётся `false` до подтверждённой публикации библиотеки.
-
-## Почему не создаются .figma.ts файлы
-
-Шаблон Code Connect без опубликованного ComponentSet и реального nodeId будет недостоверным и непубликуемым.
-
-Кроме того, текущий production-проект использует статические HTML/CSS/JS-паттерны, а не отдельный React/Vue/Svelte component layer. Поэтому перед созданием template mappings требуется вручную подтвердить, какой source path должен считаться кодовым компонентом:
-
-- отдельный будущий Web Component;
-- HTML template fragment;
-- Markdown mapping;
-- JavaScript component abstraction;
-- или иной согласованный слой.
-
-Source Map фиксирует кандидатов, но не подменяет это решение.
-
-## Сборка readiness artifact
-
-```bash
-node tools/build-figma-code-connect-readiness.mjs
-```
-
-По умолчанию создаётся:
-
-`build/figma-code-connect-readiness/`
-
-Содержимое:
-
-- `manifest.json`;
-- `source-map.json`;
-- `pending-code-connect.json`;
-- `screen-source-map.json`;
-- `gaps.json`;
-- `README.md`.
-
-### pending-code-connect.json
-
-Содержит 14 записей.
-
-Для каждой записи:
-
-- ComponentSet;
-- Figma page;
-- generator;
-- production selectors;
-- source candidates;
-- `nodeId: null`;
-- `published: false`;
-- три блокирующих условия;
-- следующий безопасный шаг.
-
-### screen-source-map.json
-
-Содержит 7 экранов. Экраны используются для design-to-code drift и не объявляются Code Connect component mappings.
-
-### gaps.json
-
-Содержит подтверждённые несовпадения. На текущем этапе это:
-
-- FAQ Accordion;
-- Homepage FAQ & Lead.
+- `assets/css/faq-accordion.css`;
+- `assets/js/main.js`.
 
 ## Проверка
 
-```bash
-node tools/validate-figma-source-map-readiness.mjs
-```
+Локально:
 
-Validator проверяет:
+`node tools/validate-homepage-faq-accordion.mjs`
 
-- JSON schemaVersion;
-- Figma file key;
-- 14 ComponentSet;
-- 119 вариантов;
-- 7 экранов;
-- уникальность IDs и страниц;
-- существование всех production paths;
-- наличие обязательных markers в HTML/CSS/JS;
-- существование component и screen generators;
-- успешную генерацию Figma JavaScript;
-- лимит 50 000 символов;
-- один `setCurrentPageAsync` на generator;
-- 7 direct mappings;
-- 6 composed mappings;
-- один component gap;
-- обязательный FAQ gap;
-- `nodeId: null` для всех компонентов;
-- `published: false`;
-- успешную сборку readiness artifact.
+`node tools/validate-figma-source-map-readiness.mjs`
 
-## Порядок дальнейших действий
+CI workflows:
 
-1. Выполнить Figma Execution Pack.
-2. Выполнить Figma Visual QA Pack.
-3. Исправить найденные Figma-дефекты.
-4. Опубликовать ComponentSet как библиотеку.
-5. Получить реальные ComponentSet node IDs.
-6. Обновить `portal-v2.source-map.json` отдельным PR.
-7. При необходимости перейти на Organization or Enterprise.
-8. Получить Code Connect suggestions.
-9. Проверить source candidate для каждого компонента.
-10. Только после подтверждения создать mappings.
+- `Homepage FAQ accordion`;
+- `Figma source map readiness`;
+- `Figma visual QA pack`;
+- `Portal guards`.
 
-## Связанные документы
+## Code Connect
 
-- `docs/design/FIGMA_EXECUTION_PACK.md` — Figma Execution Pack;
-- `docs/design/FIGMA_VISUAL_QA_PACK.md` — Figma Visual QA Pack;
-- `docs/design/FIGMA_ATOMIC_COMPONENTS_HANDOFF.md`;
-- `docs/design/FIGMA_HOMEPAGE_FULL_HANDOFF.md`;
-- issue №116.
+Code Connect остаётся заблокирован по инфраструктурным причинам, не из-за production parity:
 
-## Ограничения
+- текущий тариф Figma — Starter;
+- требуется Organization or Enterprise;
+- месячный MCP-лимит исчерпан;
+- ComponentSet nodeId недоступны;
+- публикация библиотеки не подтверждена.
 
-Source Map не означает, что физические Figma nodes созданы.
+Правило остаётся неизменным: nodeId нельзя придумывать. Он заполняется только после физического запуска Figma Execution Pack, публикации компонентов и чтения реальной metadata.
 
-Readiness artifact не означает, что Code Connect включён.
+## Порядок после восстановления Figma MCP
 
-Production selectors не являются автоматически подтверждёнными Code Connect sources.
-
-FAQ Accordion остаётся gap до внедрения доступного disclosure behavior или пересмотра Figma-компонента.
+1. Запустить Figma Execution Pack.
+2. Запустить Figma Visual QA Pack.
+3. Проверить FAQ Accordion Open/Closed.
+4. Получить реальные ComponentSet nodeId.
+5. Опубликовать библиотеку.
+6. На подходящем плане подключить Code Connect.
+7. Записать IDs и screenshots в issue №116.
