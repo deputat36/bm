@@ -1,4 +1,0 @@
-Catalog screen handoff: passed
-Execution Pack: passed
-Visual QA Pack: passed
-Source map readiness: passed
