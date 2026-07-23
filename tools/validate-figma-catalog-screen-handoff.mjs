@@ -117,7 +117,7 @@ for (const marker of [
   "steps.length !== 5",
   "catalog-rule-v1",
   "quiz_completed",
-  "не подтверждает наличие квартиры"
+  "Каталог не обещает фактическое наличие без проверки"
 ]) assert(quiz.includes(marker), `Catalog quiz source misses marker: ${marker}`);
 
 if (sourceMap) {
