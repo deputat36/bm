@@ -16,7 +16,7 @@ Execution Pack предназначен для физического воспр
 - при ошибке выполнение нужно немедленно остановить;
 - объединение нескольких generators в один скрипт запрещено.
 
-Execution Pack превращает handoff в воспроизводимую последовательность из 28 атомарных шагов.
+Execution Pack превращает handoff в воспроизводимую последовательность из 29 атомарных шагов.
 
 ## Сборка
 
@@ -42,7 +42,7 @@ node tools/build-figma-execution-pack.mjs /tmp/figma-execution-pack
 
 - `manifest.json`;
 - `README.md`;
-- 27 пронумерованных JavaScript payload-файлов.
+- 29 пронумерованных JavaScript payload-файлов.
 
 Каждая запись `manifest.json` содержит:
 
@@ -106,7 +106,7 @@ node tools/build-figma-execution-pack.mjs /tmp/figma-execution-pack
 
 ### Screens
 
-7 шагов:
+9 шагов:
 
 - `14 Screen · Homepage Hero`;
 - `16 Screen · Homepage Start & Objects`;
@@ -114,7 +114,9 @@ node tools/build-figma-execution-pack.mjs /tmp/figma-execution-pack
 - `20 Screen · Homepage Process & Purchase`;
 - `22 Screen · Homepage Purchase & Resources`;
 - `23 Screen · Homepage FAQ & Lead`;
-- `25 Screen · Homepage Full`.
+- `25 Screen · Homepage Full`;
+- `26 Screen · Catalog`;
+- `27 Screen · Project Detail`.
 
 ## Порядок выполнения
 
@@ -163,7 +165,7 @@ Workflow:
 
 ## Visual QA после выполнения
 
-После шага `25 Screen · Homepage Full` необходимо:
+После завершения `27 Screen · Project Detail` необходимо:
 
 1. получить metadata всех созданных страниц;
 2. записать page IDs, root IDs и ComponentSet IDs;
@@ -184,4 +186,9 @@ Execution Pack не считается доказательством физич
 
 ## Расширение Catalog
 
-Execution Pack содержит 28 атомарных шагов. Финальный шаг создаёт `26 Screen · Catalog` после полной главной. Экран зависит от Top Navigation, Button, Lead Form Card, Link Card, Project Card и Site Footer. После выполнения необходимо проверить Homepage Full и Catalog в Desktop/Mobile.
+Execution Pack содержит 29 атомарных шагов. Финальный шаг создаёт `26 Screen · Catalog` после полной главной. Экран зависит от Top Navigation, Button, Lead Form Card, Link Card, Project Card и Site Footer. После выполнения необходимо проверить Homepage Full и Catalog в Desktop/Mobile.
+
+
+## Расширение Project Detail
+
+Execution Pack содержит 29 атомарных шагов. Финальный шаг создаёт `27 Screen · Project Detail` с шестью frames для Просторной 4А, Аэродромной 18Г и Сенной 76 в Desktop/Mobile. Экран зависит от Top Navigation, Button, Fact Card, Lead Form Card, Content Card, FAQ Accordion и Site Footer.

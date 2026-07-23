@@ -93,6 +93,29 @@ const screenAudits = [
     screenshotMaxDimension: 12000
   },
   {
+    id: "project-detail",
+    page: "27 Screen · Project Detail",
+    expectedScreenKeys: [
+      "project-detail-prostornaya-4a-desktop",
+      "project-detail-prostornaya-4a-mobile",
+      "project-detail-aerodromnaya-18g-desktop",
+      "project-detail-aerodromnaya-18g-mobile",
+      "project-detail-sennaya-76-desktop",
+      "project-detail-sennaya-76-mobile"
+    ],
+    expectedSectionKeys: [
+      "header",
+      "hero",
+      "highlights",
+      "evidence",
+      "verification",
+      "faq",
+      "lead",
+      "footer"
+    ],
+    screenshotMaxDimension: 16000
+  },
+  {
     id: "homepage-full",
     page: "25 Screen · Homepage Full",
     expectedScreenKeys: ["homepage-full-desktop", "homepage-full-mobile"],

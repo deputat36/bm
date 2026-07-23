@@ -12,7 +12,7 @@ Source map содержит:
 
 - 14 ComponentSet;
 - 119 вариантов;
-- 8 экранов;
+- 9 экранов;
 - production selectors;
 - HTML, CSS и JavaScript sources;
 - Figma generators;
@@ -100,4 +100,9 @@ Code Connect остаётся заблокирован по инфраструк
 
 ## Экран Catalog
 
-Source-map содержит 8 экранов. `26 Screen · Catalog` имеет mapping `composed` и связан с `catalog/index.html`, `assets/js/catalog-rule-quiz.js` и `assets/css/project-conversion.css`. Экран отслеживается для design-to-code drift; Code Connect применяется только к опубликованным ComponentSet.
+Source-map содержит 9 экранов. `26 Screen · Catalog` имеет mapping `composed` и связан с `catalog/index.html`, `assets/js/catalog-rule-quiz.js` и `assets/css/project-conversion.css`. Экран отслеживается для design-to-code drift; Code Connect применяется только к опубликованным ComponentSet.
+
+
+## Экран Project Detail
+
+Source-map содержит 9 экранов. `27 Screen · Project Detail` имеет mapping `composed` и связан с тремя production-страницами объектов, `assets/css/project-conversion.css`, `assets/js/project-intent-prefill.js` и `assets/js/project-verification-summary.js`. Шесть frames сохраняют три уровня доказательности и отслеживаются для design-to-code drift.

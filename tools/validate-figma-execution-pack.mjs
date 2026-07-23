@@ -45,7 +45,7 @@ try {
     assert(manifest.schemaVersion === "1.0", "Execution pack schemaVersion must be 1.0");
     assert(manifest.designSystem === "Portal v2 · Городской навигатор", "Execution pack has wrong design system name");
     assert(manifest.figmaFileKey === "rhFYa5gPDhF009hZsfEGSX", "Execution pack has wrong Figma file key");
-    assert(manifest.stepCount === 28, `Execution pack must contain 28 steps, got ${manifest.stepCount}`);
+    assert(manifest.stepCount === 29, `Execution pack must contain 29 steps, got ${manifest.stepCount}`);
     assert(Array.isArray(manifest.steps), "Execution pack steps must be an array");
     assert(manifest.constraints?.maxCharactersPerCall === 50000, "Execution pack must preserve 50,000 character limit");
     assert(manifest.constraints?.maxPageSwitchesPerCall === 1, "Execution pack must preserve one page switch per call");
@@ -103,7 +103,7 @@ try {
     assert(phaseCounts.foundations === 1, `Expected 1 foundations step, got ${phaseCounts.foundations}`);
     assert(phaseCounts.documentation === 5, `Expected 5 documentation steps, got ${phaseCounts.documentation}`);
     assert(phaseCounts.components === 14, `Expected 14 component steps, got ${phaseCounts.components}`);
-    assert(phaseCounts.screens === 8, `Expected 8 screen steps, got ${phaseCounts.screens}`);
+    assert(phaseCounts.screens === 9, `Expected 9 screen steps, got ${phaseCounts.screens}`);
 
     for (const step of manifest.steps || []) {
       for (const dependency of step.dependsOn || []) {
@@ -141,20 +141,22 @@ try {
       "23 Screen · Homepage FAQ & Lead",
       "24 Component · Site Footer",
       "25 Screen · Homepage Full",
-      "26 Screen · Catalog"
+      "26 Screen · Catalog",
+      "27 Screen · Project Detail",
+      "27 Screen · Project Detail"
     ];
     const pages = (manifest.steps || []).map((step) => step.page).filter(Boolean);
     assert(JSON.stringify(pages) === JSON.stringify(expectedPages), "Execution pack page order does not match Portal v2 handoff");
     assert(manifest.steps?.[0]?.id === "foundations", "Execution pack must start with foundations");
-    assert(manifest.steps?.at(-1)?.id === "catalog", "Execution pack must finish with Catalog");
-    assert(manifest.steps?.at(-1)?.skillNames.includes("resource:figma-generate-library"), "Catalog must load library skill");
-    assert(manifest.steps?.at(-1)?.skillNames.includes("resource:figma-generate-design"), "Catalog must load design skill");
+    assert(manifest.steps?.at(-1)?.id === "project-detail", "Execution Pack must finish with Project Detail");
+    assert(manifest.steps?.at(-1)?.skillNames.includes("resource:figma-generate-library"), "Project Detail must load library skill");
+    assert(manifest.steps?.at(-1)?.skillNames.includes("resource:figma-generate-design"), "Project Detail must load design skill");
   }
 
   if (fs.existsSync(docsPath)) {
     const docs = fs.readFileSync(docsPath, "utf8");
     for (const marker of [
-      "28 атомарных шагов",
+      "29 атомарных шагов",
       "manifest.json",
       "SHA-256",
       "50 000 символов",
@@ -179,4 +181,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log("Figma execution pack validation passed: 28 ordered payloads, hashes, syntax and dependencies are valid.");
+console.log("Figma execution pack validation passed: 29 ordered payloads, hashes, syntax and dependencies are valid.");
