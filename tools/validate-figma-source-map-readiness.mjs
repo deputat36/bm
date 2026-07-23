@@ -128,15 +128,17 @@ if (sourceMap) {
     validateGenerator(screen, "Screen");
   }
 
-  assert(components.filter((item) => item.mapping === "direct").length === 7, "Expected 7 direct component mappings");
+  assert(components.filter((item) => item.mapping === "direct").length === 8, "Expected 8 direct component mappings");
   assert(components.filter((item) => item.mapping === "composed").length === 6, "Expected 6 composed component mappings");
-  assert(components.filter((item) => item.mapping === "gap").length === 1, "Expected one component gap");
+  assert(components.filter((item) => item.mapping === "gap").length === 0, "Expected zero component gaps");
   const faq = components.find((item) => item.id === "faq-accordion");
-  assert(faq?.mapping === "gap", "FAQ Accordion must remain marked as a gap");
-  assert(faq?.implementationGap?.production === "six static cards", "FAQ production gap must document static cards");
-  assert(faq?.implementationGap?.figma?.includes("accordion"), "FAQ Figma gap must document accordion variants");
+  assert(faq?.mapping === "direct", "FAQ Accordion must be marked as direct");
+  assert(faq?.selectors?.includes(".faq-item"), "FAQ Accordion selectors must include .faq-item");
+  assert(faq?.selectors?.includes(".faq-item summary"), "FAQ Accordion selectors must include summary");
+  assert(!faq?.implementationGap, "FAQ Accordion must not retain implementationGap metadata");
   const faqScreen = screens.find((item) => item.id === "homepage-faq-lead");
-  assert(faqScreen?.mapping === "gap", "Homepage FAQ & Lead screen must remain marked as a gap");
+  assert(faqScreen?.mapping === "direct", "Homepage FAQ & Lead screen must be marked as direct");
+  assert(screens.filter((item) => item.mapping === "gap").length === 0, "Expected zero screen gaps");
 }
 
 if (fs.existsSync(BUILDER_PATH) && sourceMap) {
@@ -164,9 +166,9 @@ if (fs.existsSync(BUILDER_PATH) && sourceMap) {
     const manifest = readJson(path.join(tempDir, "manifest.json"));
     assert(manifest?.componentCount === 14, "Readiness manifest must contain 14 components");
     assert(manifest?.screenCount === 7, "Readiness manifest must contain 7 screens");
-    assert(manifest?.directMappings === 7, "Readiness manifest must contain 7 direct mappings");
+    assert(manifest?.directMappings === 8, "Readiness manifest must contain 8 direct mappings");
     assert(manifest?.composedMappings === 6, "Readiness manifest must contain 6 composed mappings");
-    assert(manifest?.gapMappings === 1, "Readiness manifest must contain one component gap");
+    assert(manifest?.gapMappings === 0, "Readiness manifest must contain zero component gaps");
     assert(manifest?.codeConnectStatus === "blocked", "Readiness manifest must preserve blocked status");
   }
 
@@ -183,8 +185,7 @@ if (fs.existsSync(BUILDER_PATH) && sourceMap) {
 
   if (fs.existsSync(path.join(tempDir, "gaps.json"))) {
     const gaps = readJson(path.join(tempDir, "gaps.json"));
-    assert(Array.isArray(gaps) && gaps.some((item) => item.id === "faq-accordion"), "Gaps artifact must include FAQ Accordion");
-    assert(gaps.some((item) => item.id === "homepage-faq-lead"), "Gaps artifact must include Homepage FAQ & Lead");
+    assert(Array.isArray(gaps) && gaps.length === 0, "Gaps artifact must be empty after FAQ parity is implemented");
   }
 
   fs.rmSync(tempDir, { recursive: true, force: true });
@@ -200,7 +201,8 @@ if (fs.existsSync(DOCS_PATH)) {
     "composed",
     "gap",
     "FAQ Accordion",
-    "six static cards",
+    "semantic details/summary",
+    "gap closed",
     "nodeId",
     "Organization or Enterprise",
     "Starter",

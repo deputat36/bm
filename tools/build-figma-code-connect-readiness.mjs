@@ -92,8 +92,8 @@ const readme = `# Figma Code Connect Readiness\n\n` +
   `4. Read real ComponentSet node IDs from Figma metadata.\n` +
   `5. Upgrade to an eligible Figma plan when Code Connect is required.\n` +
   `6. Review each source candidate before creating mappings.\n\n` +
-  `## Known gap\n\n` +
-  `FAQ Accordion is interactive in Figma but remains six static cards in production. Resolve this before declaring direct parity.\n`;
+  `## Production parity\n\n` +
+  `All tracked component and screen mappings are direct or composed. The FAQ uses native semantic details/summary disclosure in production.\n`;
 
 fs.writeFileSync(path.join(OUTPUT_DIR, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n", "utf8");
 fs.writeFileSync(path.join(OUTPUT_DIR, "source-map.json"), serializedSourceMap, "utf8");
