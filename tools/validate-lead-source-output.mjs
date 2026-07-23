@@ -3,6 +3,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const MAIN_PATH = "assets/js/main.js";
+const DELIVERY_RUNTIME_PATH = "assets/js/mobile-lead-bar.js";
 const TRACKING_PATH = "assets/js/conversion-tracking.js";
 const REGISTRY_PATH = "data/analytics/events.json";
 const errors = [];
@@ -36,6 +37,7 @@ function requireFragments(source, sourcePath, fragments) {
 }
 
 const main = read(MAIN_PATH);
+const deliveryRuntime = read(DELIVERY_RUNTIME_PATH);
 const tracking = read(TRACKING_PATH);
 const registry = readJson(REGISTRY_PATH);
 
@@ -68,6 +70,28 @@ if (!web3FormsBlock) {
       errors.push(`${MAIN_PATH}: Web3Forms payload не содержит ${fragment}`);
     }
   });
+}
+
+requireFragments(deliveryRuntime, DELIVERY_RUNTIME_PATH, [
+  'SITE_CONFIG.LEAD_ENDPOINT = "https://ofewxuqfjhamgerwzull.supabase.co/functions/v1/newbuild-lead";',
+  'sendLead = async function sendLeadWithPrimaryStorage(data)',
+  'primaryResult = await sendCustomLead(data);',
+  'if (!primaryResult || primaryResult.success === false)',
+  'await sendWeb3FormsLead(data);',
+  'throw primaryError;',
+  'primary_destination: "supabase_newbuild_leads"',
+  'window.__NEWBUILD_PRIMARY_LEAD_DELIVERY__ = true'
+]);
+
+const primaryDeliveryStart = deliveryRuntime.indexOf("sendLead = async function sendLeadWithPrimaryStorage");
+const primaryCallIndex = deliveryRuntime.indexOf("primaryResult = await sendCustomLead(data);", primaryDeliveryStart);
+const normalEmailCopyIndex = deliveryRuntime.indexOf("let emailCopySent = false;", primaryDeliveryStart);
+if (primaryDeliveryStart < 0 || primaryCallIndex < 0 || normalEmailCopyIndex < 0 || primaryCallIndex > normalEmailCopyIndex) {
+  errors.push(`${DELIVERY_RUNTIME_PATH}: основной Supabase-контур должен завершаться до обычной email-копии`);
+}
+
+if (!deliveryRuntime.includes("catch (primaryError)")) {
+  errors.push(`${DELIVERY_RUNTIME_PATH}: отсутствует отдельная обработка отказа основного контура`);
 }
 
 const submitStart = main.indexOf("function trackLeadEvent");
@@ -126,13 +150,14 @@ const forbiddenBindings = [
   /data\.placement\s*=\s*data\.(name|phone|email|comment|question)/
 ];
 forbiddenBindings.forEach((pattern) => {
-  if (pattern.test(main) || pattern.test(tracking)) {
+  if (pattern.test(main) || pattern.test(tracking) || pattern.test(deliveryRuntime)) {
     errors.push(`Техническая атрибуция не должна формироваться из персональных полей: ${pattern}`);
   }
 });
 
 console.log("Checked lead source normalization: lead_source, placement");
 console.log("Checked output surfaces: readable email, Web3Forms, lead_submit, lead_submit_classified");
+console.log("Checked primary delivery: Supabase storage first, email copy second");
 
 if (errors.length) {
   console.error("\nLead source output validation errors:");
