@@ -1,0 +1,74 @@
+name: Figma execution pack
+
+on:
+  pull_request:
+    paths:
+      - "data/design/portal-v2.tokens.json"
+      - "tools/figma/**"
+      - "tools/build-figma-execution-pack.mjs"
+      - "tools/validate-figma-execution-pack.mjs"
+      - "docs/design/FIGMA_EXECUTION_PACK.md"
+      - ".github/workflows/figma-execution-pack.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "data/design/portal-v2.tokens.json"
+      - "tools/figma/**"
+      - "tools/build-figma-execution-pack.mjs"
+      - "tools/validate-figma-execution-pack.mjs"
+      - "docs/design/FIGMA_EXECUTION_PACK.md"
+      - ".github/workflows/figma-execution-pack.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-figma-execution-pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check source syntax
+        run: |
+          node --check tools/build-figma-execution-pack.mjs
+          node --check tools/validate-figma-execution-pack.mjs
+
+      - name: Validate execution pack
+        run: node tools/validate-figma-execution-pack.mjs
+
+      - name: Build execution pack artifact
+        run: node tools/build-figma-execution-pack.mjs build/figma-execution-pack
+
+      - name: Inspect manifest
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const manifest = JSON.parse(fs.readFileSync('build/figma-execution-pack/manifest.json', 'utf8'));
+          if (manifest.stepCount !== 27) throw new Error(`Expected 27 steps, got ${manifest.stepCount}`);
+          const totalCharacters = manifest.steps.reduce((sum, step) => sum + step.characters, 0);
+          const largest = [...manifest.steps].sort((a, b) => b.characters - a.characters)[0];
+          console.log(JSON.stringify({
+            stepCount: manifest.stepCount,
+            totalCharacters,
+            largestPayload: {
+              id: largest.id,
+              characters: largest.characters,
+              file: largest.file
+            }
+          }, null, 2));
+          NODE
+
+      - name: Upload execution pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: figma-execution-pack
+          path: build/figma-execution-pack/
+          if-no-files-found: error
+          retention-days: 30
