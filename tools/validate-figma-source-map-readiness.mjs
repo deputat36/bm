@@ -32,7 +32,8 @@ const expectedScreenIds = [
   "homepage-process-purchase",
   "homepage-purchase-resources",
   "homepage-faq-lead",
-  "homepage-full"
+  "homepage-full",
+  "catalog"
 ];
 
 const errors = [];
@@ -93,7 +94,7 @@ if (sourceMap) {
   assert(sourceMap.figma?.fileKey === "rhFYa5gPDhF009hZsfEGSX", "Source map has wrong Figma file key");
   assert(sourceMap.figma?.componentSetsExpected === 14, "Source map must expect 14 ComponentSet");
   assert(sourceMap.figma?.variantsExpected === 119, "Source map must expect 119 variants");
-  assert(sourceMap.figma?.screensExpected === 7, "Source map must expect 7 screens");
+  assert(sourceMap.figma?.screensExpected === 8, "Source map must expect 8 screens");
   assert(sourceMap.codeConnect?.status === "blocked", "Code Connect status must remain blocked until prerequisites are met");
   assert(sourceMap.codeConnect?.nodeIdsAvailable === false, "Code Connect nodeIdsAvailable must be false");
   assert(sourceMap.codeConnect?.componentsPublished === false, "Code Connect componentsPublished must be false");
@@ -104,7 +105,7 @@ if (sourceMap) {
   const components = sourceMap.components || [];
   const screens = sourceMap.screens || [];
   assert(components.length === 14, `Expected 14 components, received ${components.length}`);
-  assert(screens.length === 7, `Expected 7 screens, received ${screens.length}`);
+  assert(screens.length === 8, `Expected 8 screens, received ${screens.length}`);
   assert(unique(components.map((item) => item.id)), "Component IDs must be unique");
   assert(unique(components.map((item) => item.figmaPage)), "Component Figma pages must be unique");
   assert(unique(screens.map((item) => item.id)), "Screen IDs must be unique");
@@ -165,7 +166,7 @@ if (fs.existsSync(BUILDER_PATH) && sourceMap) {
   if (fs.existsSync(path.join(tempDir, "manifest.json"))) {
     const manifest = readJson(path.join(tempDir, "manifest.json"));
     assert(manifest?.componentCount === 14, "Readiness manifest must contain 14 components");
-    assert(manifest?.screenCount === 7, "Readiness manifest must contain 7 screens");
+    assert(manifest?.screenCount === 8, "Readiness manifest must contain 8 screens");
     assert(manifest?.directMappings === 8, "Readiness manifest must contain 8 direct mappings");
     assert(manifest?.composedMappings === 6, "Readiness manifest must contain 6 composed mappings");
     assert(manifest?.gapMappings === 0, "Readiness manifest must contain zero component gaps");
@@ -196,7 +197,7 @@ if (fs.existsSync(DOCS_PATH)) {
   for (const marker of [
     "14 ComponentSet",
     "119 вариантов",
-    "7 экранов",
+    "8 экранов",
     "direct",
     "composed",
     "gap",

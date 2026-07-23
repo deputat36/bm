@@ -76,6 +76,23 @@ const screenAudits = [
     screenshotMaxDimension: 6144
   },
   {
+    id: "catalog",
+    page: "26 Screen · Catalog",
+    expectedScreenKeys: ["catalog-desktop", "catalog-mobile"],
+    expectedSectionKeys: [
+      "header",
+      "hero",
+      "catalog-navigator",
+      "questions",
+      "quiz",
+      "priority",
+      "reference",
+      "lead",
+      "footer"
+    ],
+    screenshotMaxDimension: 12000
+  },
+  {
     id: "homepage-full",
     page: "25 Screen · Homepage Full",
     expectedScreenKeys: ["homepage-full-desktop", "homepage-full-mobile"],

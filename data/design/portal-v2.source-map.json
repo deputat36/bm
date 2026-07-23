@@ -7,7 +7,7 @@
     "issue": 116,
     "componentSetsExpected": 14,
     "variantsExpected": 119,
-    "screensExpected": 7
+    "screensExpected": 8
   },
   "codeConnect": {
     "status": "blocked",
@@ -659,6 +659,41 @@
           ]
         }
       ]
+    },
+    {
+      "id": "catalog",
+      "figmaPage": "26 Screen · Catalog",
+      "generator": "tools/figma/generate-portal-v2-catalog-screen.mjs",
+      "mapping": "composed",
+      "sources": [
+        {
+          "path": "catalog/index.html",
+          "markers": [
+            "data-catalog-question-routes",
+            "data-catalog-rule-quiz",
+            "data-catalog-verification-comparison",
+            "data-reference-catalog",
+            "data-form-id=\"catalog_quick_selection\"",
+            "data-form-id=\"catalog_priority_selection\""
+          ]
+        },
+        {
+          "path": "assets/js/catalog-rule-quiz.js",
+          "markers": [
+            "steps.length !== 5",
+            "catalog-rule-v1",
+            "quiz_completed"
+          ]
+        },
+        {
+          "path": "assets/css/project-conversion.css",
+          "markers": [
+            ".project-hero__grid {",
+            ".project-quick-card {"
+          ]
+        }
+      ],
+      "notes": "Composed Figma screen mirrors the production catalog initial state. Quiz steps and result behavior remain implemented by catalog-rule-quiz.js and are documented through metadata rather than simulated as a false static interaction."
     }
   ]
 }

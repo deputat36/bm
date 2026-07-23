@@ -14,11 +14,11 @@ Execution Pack создаёт foundations, документационные ст
 
 ## Состав
 
-Всего формируется 22 audit payload:
+Всего формируется 23 audit payload:
 
 - 1 глобальная проверка foundations и общей библиотеки;
 - 14 компонентных страниц;
-- 7 экранных страниц.
+- 8 экранных страниц.
 
 Глобальная проверка ожидает:
 
@@ -135,7 +135,7 @@ skillNames: resource:figma-use
 
 ## Screenshot QA
 
-Manifest содержит 28 screenshot targets:
+Manifest содержит 30 screenshot targets:
 
 - по одному ComponentSet на каждой из 14 компонентных страниц;
 - Desktop и Mobile на каждой из семи экранных страниц.
@@ -198,8 +198,8 @@ node tools/validate-figma-visual-qa-pack.mjs
 Validator:
 
 - реально собирает пакет во временную папку;
-- проверяет 22 audit payload;
-- проверяет 28 screenshot targets;
+- проверяет 23 audit payload;
+- проверяет 30 screenshot targets;
 - пересчитывает SHA-256;
 - проверяет итоговый JavaScript;
 - ограничивает payload 50 000 символами;
@@ -234,3 +234,7 @@ Workflow публикует artifact `figma-visual-qa-pack` на 30 дней.
 - ссылки или имена screenshots;
 - итог сверки с `index.html`;
 - найденные исправления и связанные PR.
+
+## Catalog audit
+
+Visual QA Pack содержит 23 audit payload: один глобальный, 14 компонентных и 8 экранных. Добавлены `catalog-desktop` и `catalog-mobile`, девять section-key и два screenshot targets. Общее количество screenshot targets — 30.
