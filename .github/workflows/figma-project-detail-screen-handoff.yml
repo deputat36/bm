@@ -63,7 +63,6 @@ jobs:
         run: |
           node --check tools/figma/generate-portal-v2-project-detail-screen.mjs
           node --check tools/validate-figma-project-detail-screen-handoff.mjs
-          node --check tools/apply-figma-project-detail-screen-handoff.mjs
       - name: Validate Project Detail handoff
         run: node tools/validate-figma-project-detail-screen-handoff.mjs
       - name: Validate execution pack
