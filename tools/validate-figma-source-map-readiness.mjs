@@ -198,7 +198,7 @@ if (fs.existsSync(DOCS_PATH)) {
   for (const marker of [
     "14 ComponentSet",
     "119 вариантов",
-    "8 экранов",
+    "9 экранов",
     "direct",
     "composed",
     "gap",
