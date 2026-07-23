@@ -72,7 +72,12 @@ function updateExecutionValidator() {
   content = replaceRequired(content, "Homepage Full must load library skill", "Catalog must load library skill", file);
   content = replaceRequired(content, "Homepage Full must load design skill", "Catalog must load design skill", file);
   content = replaceRequired(content, '      "27 атомарных шагов",', '      "28 атомарных шагов",', file);
-  content = replaceRequired(content, '      "25 Screen · Homepage Full",', '      "25 Screen · Homepage Full",\n      "26 Screen · Catalog",', file);
+  content = replaceRequired(
+    content,
+    '      "24 Component · Site Footer",\n      "25 Screen · Homepage Full",\n      "metadata",',
+    '      "24 Component · Site Footer",\n      "25 Screen · Homepage Full",\n      "26 Screen · Catalog",\n      "metadata",',
+    file
+  );
   content = replaceRequired(
     content,
     'console.log("Figma execution pack validation passed: 27 ordered payloads, hashes, syntax and dependencies are valid.");',
