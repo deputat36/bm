@@ -4,5 +4,6 @@ Thumbs.db
 node_modules/
 dist/
 build/figma-execution-pack/
+build/figma-visual-qa-pack/
 .env
 .env.*

@@ -1,0 +1,67 @@
+name: Figma visual QA pack
+
+on:
+  pull_request:
+    paths:
+      - "tools/build-figma-visual-qa-pack.mjs"
+      - "tools/validate-figma-visual-qa-pack.mjs"
+      - "docs/design/FIGMA_VISUAL_QA_PACK.md"
+      - ".github/workflows/figma-visual-qa-pack.yml"
+      - ".gitignore"
+  push:
+    branches:
+      - main
+    paths:
+      - "tools/build-figma-visual-qa-pack.mjs"
+      - "tools/validate-figma-visual-qa-pack.mjs"
+      - "docs/design/FIGMA_VISUAL_QA_PACK.md"
+      - ".github/workflows/figma-visual-qa-pack.yml"
+      - ".gitignore"
+
+permissions:
+  contents: read
+
+jobs:
+  build-figma-visual-qa-pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Check source syntax
+        run: |
+          node --check tools/build-figma-visual-qa-pack.mjs
+          node --check tools/validate-figma-visual-qa-pack.mjs
+
+      - name: Validate Visual QA pack
+        run: node tools/validate-figma-visual-qa-pack.mjs
+
+      - name: Build Visual QA artifact
+        run: node tools/build-figma-visual-qa-pack.mjs
+
+      - name: Inspect manifest
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const manifest = JSON.parse(fs.readFileSync('build/figma-visual-qa-pack/manifest.json', 'utf8'));
+          if (manifest.auditCount !== 22) throw new Error(`Expected 22 audits, found ${manifest.auditCount}`);
+          if (manifest.expectedTotals.componentSets !== 14) throw new Error('Expected 14 ComponentSet');
+          if (manifest.expectedTotals.variants !== 119) throw new Error('Expected 119 variants');
+          const screenshots = manifest.audits.reduce((sum, item) => sum + item.screenshotTargets.length, 0);
+          if (screenshots !== 28) throw new Error(`Expected 28 screenshot targets, found ${screenshots}`);
+          if (!manifest.audits.every((item) => item.readOnly === true)) throw new Error('Every audit must be read-only');
+          console.log(`Validated ${manifest.auditCount} audits and ${screenshots} screenshot targets.`);
+          NODE
+
+      - name: Upload Visual QA pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: figma-visual-qa-pack
+          path: build/figma-visual-qa-pack/
+          retention-days: 30
+          if-no-files-found: error
