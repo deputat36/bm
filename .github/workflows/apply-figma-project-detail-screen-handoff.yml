@@ -30,16 +30,10 @@ jobs:
           ref: agent/figma-project-detail-screen-handoff
           fetch-depth: 1
           show-progress: false
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-      - name: Check migration syntax
+      - name: Apply Project Detail handoff integration
         run: |
           node --check tools/apply-figma-project-detail-screen-handoff.mjs
           node --check tools/apply-figma-project-detail-workflow-counts.mjs
-      - name: Apply Project Detail handoff integration
-        run: |
           node tools/apply-figma-project-detail-screen-handoff.mjs
           node tools/apply-figma-project-detail-workflow-counts.mjs
       - name: Validate integrated result
