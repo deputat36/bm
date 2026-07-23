@@ -40,7 +40,25 @@ jobs:
       - name: Apply Catalog handoff integration
         run: node tools/apply-figma-catalog-screen-handoff.mjs
       - name: Validate Catalog screen handoff
-        run: node tools/validate-figma-catalog-screen-handoff.mjs
+        id: catalog_validation
+        shell: bash
+        run: |
+          set +e
+          node tools/validate-figma-catalog-screen-handoff.mjs > catalog-validator.log 2>&1
+          status=$?
+          cat catalog-validator.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload Catalog validator log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-validator-log
+          path: catalog-validator.log
+          retention-days: 1
+      - name: Stop on Catalog validation failure
+        if: steps.catalog_validation.outputs.status != '0'
+        run: exit 1
       - name: Validate execution pack
         run: node tools/validate-figma-execution-pack.mjs
       - name: Validate visual QA pack
