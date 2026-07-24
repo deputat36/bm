@@ -60,12 +60,19 @@ for (const page of PAGES) {
   if (["privacy/index.html", "personal-data-consent/index.html"].includes(page.file)) {
     [
       "защищённый серверный реестр",
-      "резервная копия",
+      "служебн",
+      "сбой",
+      "не отменяет основную запись",
       "данные формы не отправляются",
       "аналит"
     ].forEach((fragment) => {
       if (!lower.includes(fragment)) errors.push(`${page.file}: отсутствует актуальное описание ${fragment}`);
     });
+
+    if (/резервная копия.*(?:почт|сервис обработки форм)|api\.web3forms\.com/i.test(html)) {
+      errors.push(`${page.file}: найдено устаревшее описание прямой браузерной почтовой доставки`);
+    }
+
     if (/в дальнейшем\s*[—-]\s*в crm|будущ(?:ая|ий|ее) crm/i.test(html)) {
       errors.push(`${page.file}: найдено устаревшее описание будущего вместо действующего серверного контура`);
     }
