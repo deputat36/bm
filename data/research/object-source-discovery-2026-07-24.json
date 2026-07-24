@@ -1,0 +1,325 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-07-24",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "secondary_discovery_complete_primary_acceptance_blocked",
+  "purpose": "Зафиксировать найденные поисковые ориентиры, противоречия и готовые запросы на первичные документы по Аэродромной 18Г и Сенной 76. Ни одна запись этого реестра сама по себе не разрешает публикацию критичного факта.",
+  "rules": {
+    "secondary_source_is_discovery_only": true,
+    "secondary_source_cannot_close_primary_task": true,
+    "owner_statement_may_confirm_portal_naming_only": true,
+    "absence_in_search_is_not_proof_of_absence": true,
+    "exact_address_or_land_plot_link_required": true,
+    "legal_entity_requires_primary_document_link": true,
+    "permit_requires_official_document_or_registry_record": true,
+    "sale_terms_require_current_property_level_documents": true,
+    "media_requires_explicit_rights_evidence": true,
+    "public_page_must_remain_noindex_until_gates_pass": true
+  },
+  "projects": [
+    {
+      "project_id": "aerodromnaya-18g",
+      "page_url": "/catalog/aerodromnaya-18g/",
+      "primary_source_status": "not_found_in_public_search",
+      "accepted_primary_tasks": 0,
+      "blocked_primary_tasks": 5,
+      "portal_naming": {
+        "value": "ЖК Патриот",
+        "basis": "owner_statement",
+        "scope": "portal_naming_only",
+        "does_not_confirm": [
+          "legal_project_name",
+          "developer_entity",
+          "section_numbering",
+          "permit_status",
+          "commissioning_status",
+          "seller",
+          "contract_type"
+        ]
+      },
+      "discovery_clues": [
+        {
+          "id": "aerodromnaya_cian_complex_card",
+          "source_class": "secondary_marketplace",
+          "title": "Карточка ЦИАН по адресу Аэродромная 18Г",
+          "reference": "https://voronezh.cian.ru/novostroyki-voronezhskaya-oblast-borisoglebsk-aerodromnaya-ulica-02149927/",
+          "observed_claims": [
+            "название ЖК Чкалов",
+            "кандидат застройщика ООО Первая Строительная Компания",
+            "срок сдачи 2 квартал 2027 года",
+            "кирпичный дом"
+          ],
+          "acceptance_effect": "none",
+          "reason_not_accepted": "Площадка не является первичным реестром объекта; название конфликтует с подтверждённым владельцем названием портала."
+        },
+        {
+          "id": "aerodromnaya_yandex_listings",
+          "source_class": "secondary_marketplace_listings",
+          "title": "Объявления Яндекс Недвижимости по адресу",
+          "reference": "https://realty.yandex.ru/borisoglebsk/kupit/kvartira/st-aehrodromnaya-ulica-115486/",
+          "observed_claims": [
+            "несколько квартир и площадей",
+            "разные этажи и годы постройки",
+            "индивидуальное отопление",
+            "дом с лифтом"
+          ],
+          "acceptance_effect": "none",
+          "reason_not_accepted": "Объявления не подтверждают секцию, право продавца, разрешение на ввод, актуальное наличие или договор."
+        },
+        {
+          "id": "aerodromnaya_etagi_builder_profile",
+          "source_class": "secondary_company_marketing_profile",
+          "title": "Профиль застройщика ПСК на сайте Этажей",
+          "reference": "https://borisoglebsk.etagi.com/zastr/builder/psk-15600/",
+          "observed_claims": [
+            "кандидат юридического наименования ООО Первая Строительная Компания",
+            "основание компании в сентябре 2015 года",
+            "строительство многоквартирных домов в Борисоглебске"
+          ],
+          "acceptance_effect": "none",
+          "reason_not_accepted": "Маркетинговый профиль не устанавливает ИНН, ОГРН и связь конкретного юридического лица с конкретной секцией."
+        },
+        {
+          "id": "aerodromnaya_olan_listing_cluster",
+          "source_class": "secondary_listing_aggregator",
+          "title": "Кластер объявлений Олан по адресу",
+          "reference": "https://borisoglebsk.olan.ru/ul-aerodromnaya/18g/sale-flat/newbuild",
+          "observed_claims": [
+            "много объявлений по адресу",
+            "противоречивые сроки сдачи",
+            "разные площади и цены"
+          ],
+          "acceptance_effect": "none",
+          "reason_not_accepted": "Агрегатор объединяет объявления и не доказывает юридический статус объекта."
+        }
+      ],
+      "contradictions": [
+        {
+          "id": "complex_name",
+          "values": ["ЖК Патриот", "ЖК Чкалов"],
+          "portal_rule": "Использовать ЖК Патриот как подтверждённое владельцем название портала; не утверждать его как официальное юридическое название до первичного документа."
+        },
+        {
+          "id": "commissioning_and_handover",
+          "values": ["часть секций введена", "сдача конец 2025", "сдача 2 квартал 2027"],
+          "portal_rule": "Не публиковать статус конкретной секции без разрешения на ввод и сопоставления секции с документом."
+        },
+        {
+          "id": "developer_and_seller",
+          "values": ["ООО Первая Строительная Компания", "ПСК", "разные продавцы в объявлениях"],
+          "portal_rule": "Не заполнять developer_id и продавца до первичной связи юридического лица с объектом и конкретной квартирой."
+        }
+      ],
+      "official_requests": [
+        {
+          "id": "aerodromnaya_municipality_permits",
+          "target_role": "administration_architecture",
+          "request_subject": "Сведения о разрешениях на строительство и ввод по адресу г. Борисоглебск, ул. Аэродромная, 18Г",
+          "request_fields": [
+            "номер и дата каждого разрешения на строительство",
+            "срок действия и заявитель",
+            "адресная или кадастровая привязка земельного участка",
+            "наименование объекта и состав блок-секций",
+            "номер и дата каждого разрешения на ввод",
+            "какие секции охватывает каждый документ",
+            "ссылка на официальную публикацию или заверенная электронная копия"
+          ],
+          "closes_tasks": ["aerodromnaya_18g_public_registry", "aerodromnaya_18g_building_permit"]
+        },
+        {
+          "id": "aerodromnaya_developer_identity",
+          "target_role": "candidate_developer_or_rightsholder",
+          "request_subject": "Подтверждение юридического лица и его связи с объектом на Аэродромной 18Г",
+          "request_fields": [
+            "полное наименование, ИНН и ОГРН",
+            "основание прав на земельный участок или строительства объекта",
+            "официальное наименование проекта",
+            "схема и нумерация секций",
+            "реквизиты разрешений",
+            "кто продаёт квартиры и на каком основании",
+            "официальный канал публикации документов"
+          ],
+          "closes_tasks": ["aerodromnaya_18g_developer_entity"]
+        },
+        {
+          "id": "aerodromnaya_sales_scheme",
+          "target_role": "seller_of_specific_apartment",
+          "request_subject": "Документы конкретной квартиры на Аэродромной 18Г",
+          "request_fields": [
+            "выписка ЕГРН или документ-основание права",
+            "точный адрес, секция, этаж и площадь",
+            "вид договора и получатель денежных средств",
+            "обременения и ограничения",
+            "допустимость ипотеки по конкретной квартире",
+            "актуальная цена и срок её действия"
+          ],
+          "closes_tasks": ["aerodromnaya_18g_project_declaration"]
+        },
+        {
+          "id": "aerodromnaya_media_rights",
+          "target_role": "media_rightsholder",
+          "request_subject": "Права на фотографии, планы и визуализации Аэродромной 18Г",
+          "request_fields": [
+            "перечень файлов",
+            "автор или правообладатель",
+            "разрешённые каналы использования",
+            "срок и территория разрешения",
+            "необходимость указания авторства",
+            "подтверждение связи каждого плана с нужной секцией"
+          ],
+          "closes_tasks": ["aerodromnaya_18g_media_rights"]
+        }
+      ],
+      "next_action": "send_primary_requests_and_store_responses"
+    },
+    {
+      "project_id": "sennaya-76",
+      "page_url": "/catalog/sennaya-76/",
+      "primary_source_status": "not_found_in_public_search",
+      "accepted_primary_tasks": 0,
+      "blocked_primary_tasks": 5,
+      "discovery_clues": [
+        {
+          "id": "sennaya_ria_interview",
+          "source_class": "secondary_public_interview",
+          "title": "Интервью РИА Глас-Медиа с представителем проекта",
+          "reference": "https://ria-glas.ru/2024/blagoustroistvo/novyj-dom-na-ulicze-sennaya-76-chto-za-fasadom/",
+          "observed_claims": [
+            "материалы фасада и кровли",
+            "индивидуальное отопление",
+            "умный дом",
+            "благоустройство и видеонаблюдение"
+          ],
+          "acceptance_effect": "public_attributed_marketing_claims_only",
+          "reason_not_accepted": "Интервью позволяет атрибутировать заявления представителя, но не заменяет разрешение на ввод, ЕГРН или документы продавца."
+        },
+        {
+          "id": "sennaya_etagi_complex_profile",
+          "source_class": "secondary_company_marketing_profile",
+          "title": "Карточка дома на Сенной 76 на сайте Этажей",
+          "reference": "https://borisoglebsk.etagi.com/zastr/jk/zhilojj-kompleks-na-sennojj-76-50449/",
+          "observed_claims": [
+            "кандидат застройщика ИП Тарасов М.К.",
+            "монолитный железобетонный каркас"
+          ],
+          "acceptance_effect": "none",
+          "reason_not_accepted": "Карточка не является первичным разрешительным документом и не содержит проверяемую связь ИП с правами на конкретные квартиры."
+        },
+        {
+          "id": "sennaya_yandex_comparison",
+          "source_class": "secondary_marketplace_comparison",
+          "title": "Сравнение новостроек Яндекс Недвижимости",
+          "reference": "https://realty.yandex.ru/borisoglebsk/sravnenie-novostroek/",
+          "observed_claims": [
+            "кандидат застройщика ИП Тарасов М.К.",
+            "адрес проекта на Сенной"
+          ],
+          "acceptance_effect": "none",
+          "reason_not_accepted": "Сравнительная карточка не подтверждает реквизиты лица, разрешение на ввод и продавца."
+        },
+        {
+          "id": "sennaya_olan_listing_cluster",
+          "source_class": "secondary_listing_aggregator",
+          "title": "Кластер объявлений Олан по Сенной 76",
+          "reference": "https://borisoglebsk.olan.ru/ul-sennaya/76",
+          "observed_claims": [
+            "объявления квартир в доме",
+            "площади около 61 м²",
+            "позиционирование как готового дома"
+          ],
+          "acceptance_effect": "none",
+          "reason_not_accepted": "Агрегатор не подтверждает площадь конкретной квартиры, право продавца или ввод дома."
+        }
+      ],
+      "contradictions": [
+        {
+          "id": "apartment_area",
+          "values": ["58,8 м²", "61,0 м²", "61,3 м²"],
+          "portal_rule": "Не публиковать единую площадь как характеристику проекта; принимать только площадь конкретной квартиры по ЕГРН или техническому плану."
+        },
+        {
+          "id": "developer_entity",
+          "values": ["ИП Тарасов М.К.", "компания-застройщик без реквизитов"],
+          "portal_rule": "Не заполнять developer_id до получения ИНН/ОГРНИП и первичного документа, связывающего лицо с объектом."
+        },
+        {
+          "id": "legal_and_sales_status",
+          "values": ["новый дом", "новостройка", "вторичный рынок"],
+          "portal_rule": "Определять статус только по разрешению на ввод, ЕГРН и документам конкретного продавца."
+        }
+      ],
+      "official_requests": [
+        {
+          "id": "sennaya_municipality_permits",
+          "target_role": "administration_architecture",
+          "request_subject": "Сведения о разрешениях на строительство и ввод по адресу г. Борисоглебск, ул. Сенная, 76",
+          "request_fields": [
+            "номер и дата разрешения на строительство",
+            "заявитель и кадастровая привязка участка",
+            "наименование и основные параметры объекта",
+            "номер и дата разрешения на ввод",
+            "адрес и характеристики введённого объекта",
+            "официальная ссылка или заверенная электронная копия"
+          ],
+          "closes_tasks": ["sennaya_76_public_registry", "sennaya_76_building_permit"]
+        },
+        {
+          "id": "sennaya_developer_identity",
+          "target_role": "candidate_developer_or_rightsholder",
+          "request_subject": "Подтверждение юридического лица или ИП, связанного с домом на Сенной 76",
+          "request_fields": [
+            "полное ФИО или наименование",
+            "ИНН и ОГРНИП или ОГРН",
+            "основание прав на земельный участок и объект",
+            "реквизиты разрешений",
+            "кто является собственником или продавцом квартир",
+            "официальный канал публикации документов"
+          ],
+          "closes_tasks": ["sennaya_76_developer_entity"]
+        },
+        {
+          "id": "sennaya_property_documents",
+          "target_role": "seller_of_specific_apartment",
+          "request_subject": "Документы конкретной квартиры на Сенной 76",
+          "request_fields": [
+            "выписка ЕГРН",
+            "кадастровый номер квартиры и здания",
+            "точная площадь по ЕГРН и техническому плану",
+            "право продавца и документ-основание",
+            "обременения",
+            "вид договора",
+            "возможность ипотеки по конкретной квартире",
+            "актуальная цена и наличие"
+          ],
+          "closes_tasks": ["sennaya_76_project_declaration"]
+        },
+        {
+          "id": "sennaya_media_rights",
+          "target_role": "media_rightsholder",
+          "request_subject": "Права на фотографии и планировки дома на Сенной 76",
+          "request_fields": [
+            "перечень материалов",
+            "автор или правообладатель",
+            "письменное разрешение на сайт, VK, Telegram и рекламу",
+            "условия атрибуции",
+            "подтверждение соответствия планировки конкретной квартире"
+          ],
+          "closes_tasks": ["sennaya_76_media_rights"]
+        }
+      ],
+      "next_action": "send_primary_requests_and_store_responses"
+    }
+  ],
+  "search_summary": {
+    "search_date": "2026-07-24",
+    "official_exact_object_records_found": 0,
+    "secondary_discovery_sources_recorded": 8,
+    "primary_tasks_closed": 0,
+    "public_claims_unblocked": 0,
+    "prepared_official_requests": 8,
+    "future_recheck": {
+      "date": "2026-09-01",
+      "reason": "Запланирован запуск федеральных электронных реестров разрешений на строительство и ввод в системе Стройкомплекс.РФ; это будущий дополнительный канал проверки, а не основание откладывать текущие запросы."
+    }
+  }
+}
