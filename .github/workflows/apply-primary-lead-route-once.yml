@@ -1,5 +1,6 @@
 name: Apply primary lead route once
 
+# Repeat after updating the catalog transport compatibility check.
 on:
   push:
     branches: ["agent/primary-lead-endpoint"]
