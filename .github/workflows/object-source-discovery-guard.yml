@@ -1,0 +1,42 @@
+name: Object source discovery guard
+
+on:
+  pull_request:
+    paths:
+      - "data/research/object-source-discovery-*.json"
+      - "data/research/source-collection.json"
+      - "docs/portal/OBJECT_SOURCE_REQUEST_PACK.md"
+      - "tools/validate-object-source-discovery.mjs"
+      - ".github/workflows/object-source-discovery-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "data/research/object-source-discovery-*.json"
+      - "data/research/source-collection.json"
+      - "docs/portal/OBJECT_SOURCE_REQUEST_PACK.md"
+      - "tools/validate-object-source-discovery.mjs"
+      - ".github/workflows/object-source-discovery-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-object-source-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator
+        run: node --check tools/validate-object-source-discovery.mjs
+
+      - name: Validate discovery evidence and request pack
+        run: node tools/validate-object-source-discovery.mjs
