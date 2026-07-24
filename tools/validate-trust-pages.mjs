@@ -56,6 +56,20 @@ for (const page of PAGES) {
       errors.push(`${page.file}: требуется явная пометка о рабочей редакции и юридической проверке`);
     }
   }
+
+  if (["privacy/index.html", "personal-data-consent/index.html"].includes(page.file)) {
+    [
+      "защищённый серверный реестр",
+      "резервная копия",
+      "данные формы не отправляются",
+      "аналитик"
+    ].forEach((fragment) => {
+      if (!lower.includes(fragment)) errors.push(`${page.file}: отсутствует актуальное описание ${fragment}`);
+    });
+    if (/в дальнейшем\s*[—-]\s*в crm|будущ(?:ая|ий|ее) crm/i.test(html)) {
+      errors.push(`${page.file}: найдено устаревшее описание будущего вместо действующего серверного контура`);
+    }
+  }
 }
 
 console.log(`Checked trust pages: ${PAGES.length}`);
