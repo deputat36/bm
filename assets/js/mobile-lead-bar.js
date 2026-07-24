@@ -60,7 +60,7 @@
     return true;
   }
 
-    enableInternalLeadIdPrivacy();
+  enableInternalLeadIdPrivacy();
 
   if (document.querySelector("[data-mobile-lead-bar]")) return;
 
