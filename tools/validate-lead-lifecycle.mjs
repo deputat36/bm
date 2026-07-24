@@ -77,22 +77,30 @@ if (!lifecycle || !playbook || !matrix) process.exit(1);
 if (lifecycle.portal_id !== playbook.portal_id || lifecycle.portal_id !== "newbuilds-borisoglebsk") {
   errors.push(`${LIFECYCLE_PATH}: portal_id must match playbook`);
 }
-if (lifecycle.schema_version !== "1.0") errors.push(`${LIFECYCLE_PATH}: schema_version must be 1.0`);
-if (lifecycle.status !== "draft_contract_not_connected") errors.push(`${LIFECYCLE_PATH}: invalid status`);
+if (lifecycle.schema_version !== "2.0") errors.push(`${LIFECYCLE_PATH}: schema_version must be 2.0`);
+if (lifecycle.status !== "server_connected_owner_activation_pending") errors.push(`${LIFECYCLE_PATH}: invalid status`);
 if (lifecycle.sources?.handling_playbook !== PLAYBOOK_PATH) errors.push(`${LIFECYCLE_PATH}: invalid handling_playbook source`);
 if (lifecycle.sources?.form_matrix !== MATRIX_PATH) errors.push(`${LIFECYCLE_PATH}: invalid form_matrix source`);
+if (lifecycle.sources?.system_of_record !== "public.newbuild_leads") errors.push(`${LIFECYCLE_PATH}: invalid system_of_record source`);
+if (lifecycle.sources?.event_log !== "public.newbuild_lead_events") errors.push(`${LIFECYCLE_PATH}: invalid event_log source`);
+if (lifecycle.sources?.transition_function !== "public.newbuild_lead_transition") errors.push(`${LIFECYCLE_PATH}: invalid transition_function source`);
 
 const rules = lifecycle.rules || {};
 if (rules.initial_state !== "received") errors.push(`${LIFECYCLE_PATH}: initial_state must be received`);
 [
   "crm_connected",
-  "automatic_transition_enabled",
   "approved_sla_exists",
-  "live_owner_assignment_exists"
+  "live_owner_assignment_exists",
+  "automatic_owner_assignment_enabled",
+  "operational_activation_enabled"
 ].forEach((key) => {
   if (rules[key] !== false) errors.push(`${LIFECYCLE_PATH}: rules.${key} must be false`);
 });
 [
+  "system_of_record_available",
+  "server_transition_api_available",
+  "automatic_transition_enabled",
+  "automatic_triage_only",
   "deal_pipeline_not_in_scope",
   "personal_data_in_state_reports_forbidden"
 ].forEach((key) => {
@@ -220,6 +228,13 @@ requiredTransitionIds.forEach((id) => {
   if (!transitions.has(id)) errors.push(`${LIFECYCLE_PATH}: required transition missing ${id}`);
 });
 
+if (transitions.get("receive_to_triage")?.runtime !== "automatic") {
+  errors.push(`${LIFECYCLE_PATH}: receive_to_triage must be automatic`);
+}
+if (transitions.get("triage_to_queue")?.runtime !== "owner_policy_required") {
+  errors.push(`${LIFECYCLE_PATH}: triage_to_queue must remain owner_policy_required`);
+}
+
 const activeTypes = new Set((matrix.scenarios || []).map((item) => item.lead_type).filter(Boolean));
 const playbookTypes = new Set((playbook.lead_types || []).map((item) => item.id).filter(Boolean));
 activeTypes.forEach((type) => {
@@ -230,6 +245,8 @@ console.log(`Checked lifecycle states: ${states.size}`);
 console.log(`Checked lifecycle transitions: ${transitions.size}`);
 console.log(`Checked terminal states: ${terminalStates.size}`);
 console.log(`Checked reachable states: ${reachable.size}`);
+console.log(`Automatic transition enabled: ${rules.automatic_transition_enabled === true}`);
+console.log(`Owner assignment enabled: ${rules.automatic_owner_assignment_enabled === true}`);
 
 if (errors.length) {
   console.error("\nLead lifecycle validation errors:");
