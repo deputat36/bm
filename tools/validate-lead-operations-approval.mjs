@@ -10,6 +10,8 @@ const CONTRACTS = {
   handoff: "data/operations/lead-handoff.json",
   event_log: "data/operations/lead-event-log.json"
 };
+const RUNTIME_PATH = "supabase/functions/newbuild-lead/index.ts";
+const MIGRATION_PATH = "supabase/migrations/20260724060538_newbuild_lead_operations_v2.sql";
 const errors = [];
 
 function read(relativePath) {
@@ -51,10 +53,12 @@ const handling = readJson(CONTRACTS.handling);
 const lifecycle = readJson(CONTRACTS.lifecycle);
 const handoff = readJson(CONTRACTS.handoff);
 const eventLog = readJson(CONTRACTS.event_log);
+const runtime = read(RUNTIME_PATH);
+const migration = read(MIGRATION_PATH);
 
-if (!spec || !matrix || !handling || !lifecycle || !handoff || !eventLog) process.exit(1);
+if (!spec || !matrix || !handling || !lifecycle || !handoff || !eventLog || !runtime || !migration) process.exit(1);
 
-if (spec.schema_version !== "1.0") errors.push(`${SPEC_PATH}: schema_version must be 1.0`);
+if (spec.schema_version !== "1.1") errors.push(`${SPEC_PATH}: schema_version must be 1.1`);
 if (!isIsoDate(spec.updated_at)) errors.push(`${SPEC_PATH}: updated_at must be an ISO date`);
 if (spec.portal_id !== "newbuilds-borisoglebsk") errors.push(`${SPEC_PATH}: invalid portal_id`);
 if (spec.status !== "requires_owner_approval_not_operational") {
@@ -66,7 +70,9 @@ const expectedSources = {
   lifecycle_contract: CONTRACTS.lifecycle,
   handoff_contract: CONTRACTS.handoff,
   event_log_contract: CONTRACTS.event_log,
-  form_matrix: MATRIX_PATH
+  form_matrix: MATRIX_PATH,
+  runtime_function: RUNTIME_PATH,
+  operations_migration: MIGRATION_PATH
 };
 for (const [key, value] of Object.entries(expectedSources)) {
   if (spec.sources?.[key] !== value) errors.push(`${SPEC_PATH}: sources.${key} must be ${value}`);
@@ -75,17 +81,27 @@ for (const [key, value] of Object.entries(expectedSources)) {
 const rules = spec.rules || {};
 for (const key of [
   "activation_requires_all_decisions_approved",
+  "automatic_triage_enabled",
+  "system_of_record_available",
+  "server_side_transition_api_available",
+  "health_check_available",
+  "real_leads_may_be_received_before_activation",
+  "owner_assignment_and_sla_enforcement_forbidden_before_activation",
   "real_owner_identity_in_repository_forbidden",
   "approved_owner_values_must_use_role_or_secure_reference",
   "hypotheses_are_not_approved_sla",
-  "test_leads_only_until_activation",
   "personal_data_in_decision_register_forbidden",
   "timezone_required_before_activation",
   "system_of_record_required_before_activation"
 ]) {
   if (rules[key] !== true) errors.push(`${SPEC_PATH}: rules.${key} must be true`);
 }
-for (const key of ["operational_activation_enabled", "crm_mutation_enabled"]) {
+for (const key of [
+  "operational_activation_enabled",
+  "crm_mutation_enabled",
+  "automatic_owner_assignment_enabled",
+  "test_leads_only_until_activation"
+]) {
   if (rules[key] !== false) errors.push(`${SPEC_PATH}: rules.${key} must be false`);
 }
 
@@ -139,8 +155,17 @@ exactSet(decisionIds, expectedDecisionIds, `${SPEC_PATH}: decision ids`);
 
 const pending = decisions.filter((item) => item.status === "requires_owner_decision");
 const approved = decisions.filter((item) => item.status === "approved");
-if (pending.length !== 8 || approved.length !== 0) {
-  errors.push(`${SPEC_PATH}: current branch must remain 8 pending and 0 approved until owner decisions are supplied`);
+if (pending.length !== 7 || approved.length !== 1) {
+  errors.push(`${SPEC_PATH}: expected 7 pending and 1 approved decision`);
+}
+
+const systemOfRecord = decisions.find((item) => item.id === "system_of_record");
+if (systemOfRecord?.status !== "approved") errors.push(`${SPEC_PATH}: system_of_record must be approved`);
+if (systemOfRecord?.approved_value !== "supabase:newbuild_leads") {
+  errors.push(`${SPEC_PATH}: system_of_record approved_value must be supabase:newbuild_leads`);
+}
+if (!String(systemOfRecord?.secure_reference || "").includes("public.newbuild_leads")) {
+  errors.push(`${SPEC_PATH}: system_of_record secure_reference must point to public.newbuild_leads`);
 }
 
 const requiredFields = new Set(Array.isArray(spec.required_operational_fields) ? spec.required_operational_fields : []);
@@ -185,27 +210,63 @@ if (!Array.isArray(matrix.scenarios) || matrix.scenarios.length !== 14) {
   errors.push(`${MATRIX_PATH}: expected 14 active form scenarios`);
 }
 
-if (handling.status !== "recommended_draft_not_operational") errors.push(`${CONTRACTS.handling}: must remain non-operational`);
-if (handling.rules?.approved_sla_exists !== false || handling.rules?.live_owner_assignment_exists !== false || handling.rules?.crm_mutation_enabled !== false) {
-  errors.push(`${CONTRACTS.handling}: operational flags must remain false`);
+if (handling.status !== "server_connected_owner_activation_pending") errors.push(`${CONTRACTS.handling}: invalid connected status`);
+if (handling.rules?.system_of_record_available !== true || handling.rules?.automatic_triage_enabled !== true) {
+  errors.push(`${CONTRACTS.handling}: storage and automatic triage must be connected`);
 }
-if (lifecycle.status !== "draft_contract_not_connected") errors.push(`${CONTRACTS.lifecycle}: must remain draft`);
-if (lifecycle.rules?.approved_sla_exists !== false || lifecycle.rules?.live_owner_assignment_exists !== false || lifecycle.rules?.crm_connected !== false) {
-  errors.push(`${CONTRACTS.lifecycle}: operational flags must remain false`);
+if (handling.rules?.approved_sla_exists !== false || handling.rules?.live_owner_assignment_exists !== false || handling.rules?.automatic_owner_assignment_enabled !== false || handling.rules?.crm_mutation_enabled !== false) {
+  errors.push(`${CONTRACTS.handling}: owner/SLA/CRM activation flags must remain false`);
 }
-if (handoff.status !== "draft_contract_not_connected") errors.push(`${CONTRACTS.handoff}: must remain draft`);
+
+if (lifecycle.status !== "server_connected_owner_activation_pending") errors.push(`${CONTRACTS.lifecycle}: invalid connected status`);
+if (lifecycle.rules?.system_of_record_available !== true || lifecycle.rules?.server_transition_api_available !== true || lifecycle.rules?.automatic_triage_only !== true) {
+  errors.push(`${CONTRACTS.lifecycle}: server lifecycle must be connected with triage-only automation`);
+}
+if (lifecycle.rules?.approved_sla_exists !== false || lifecycle.rules?.live_owner_assignment_exists !== false || lifecycle.rules?.automatic_owner_assignment_enabled !== false || lifecycle.rules?.crm_connected !== false) {
+  errors.push(`${CONTRACTS.lifecycle}: owner/SLA/CRM activation flags must remain false`);
+}
+
+if (handoff.status !== "server_storage_connected_owner_assignment_pending") errors.push(`${CONTRACTS.handoff}: invalid connected status`);
+if (handoff.rules?.server_storage_connected !== true || handoff.rules?.automatic_triage_enabled !== true) {
+  errors.push(`${CONTRACTS.handoff}: server storage and triage must be connected`);
+}
 if (handoff.rules?.approved_sla_exists !== false || handoff.rules?.automatic_owner_assignment_enabled !== false || handoff.rules?.crm_connected !== false) {
-  errors.push(`${CONTRACTS.handoff}: operational flags must remain false`);
+  errors.push(`${CONTRACTS.handoff}: owner/SLA/CRM activation flags must remain false`);
 }
-if (eventLog.status !== "draft_contract_not_connected") errors.push(`${CONTRACTS.event_log}: must remain draft`);
-if (eventLog.rules?.approved_sla_exists !== false || eventLog.rules?.automatic_transition_enabled !== false || eventLog.rules?.crm_connected !== false) {
-  errors.push(`${CONTRACTS.event_log}: operational flags must remain false`);
+
+if (eventLog.status !== "server_append_only_connected") errors.push(`${CONTRACTS.event_log}: invalid connected status`);
+if (eventLog.rules?.append_only !== true || eventLog.rules?.database_append_only_trigger_enabled !== true || eventLog.rules?.automatic_triage_only !== true) {
+  errors.push(`${CONTRACTS.event_log}: append-only server log and triage automation must be connected`);
+}
+if (eventLog.rules?.approved_sla_exists !== false || eventLog.rules?.automatic_owner_assignment_enabled !== false || eventLog.rules?.crm_connected !== false) {
+  errors.push(`${CONTRACTS.event_log}: owner/SLA/CRM activation flags must remain false`);
+}
+
+for (const fragment of [
+  'request.method === "GET" && url.searchParams.get("health") === "1"',
+  'restFetch("rpc/newbuild_lead_transition"',
+  'operational_status: "received"',
+  'next_action: "complete_triage"',
+  'source_system: "supabase:newbuild_leads"'
+]) {
+  if (!runtime.includes(fragment)) errors.push(`${RUNTIME_PATH}: missing operational runtime fragment ${fragment}`);
+}
+
+for (const fragment of [
+  "create or replace function public.newbuild_lead_transition",
+  "create or replace function public.newbuild_lead_health",
+  "newbuild_lead_events_append_only",
+  "with (security_invoker = true)",
+  "revoke all on table public.newbuild_lead_operational_policies from anon, authenticated"
+]) {
+  if (!migration.toLowerCase().includes(fragment.toLowerCase())) errors.push(`${MIGRATION_PATH}: missing fragment ${fragment}`);
 }
 
 console.log(`Owner decisions checked: ${decisions.length}`);
 console.log(`Pending decisions: ${pending.length}`);
 console.log(`Approved decisions: ${approved.length}`);
 console.log(`Active form scenarios preserved: ${matrix.scenarios?.length || 0}`);
+console.log(`System of record: ${systemOfRecord?.approved_value || "missing"}`);
 console.log(`Operational activation enabled: ${rules.operational_activation_enabled === true}`);
 
 if (errors.length) {

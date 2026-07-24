@@ -1,30 +1,36 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-07-15",
+  "schema_version": "2.0",
+  "updated_at": "2026-07-24",
   "portal_id": "newbuilds-borisoglebsk",
-  "status": "draft_contract_not_connected",
-  "purpose": "Контракт внутреннего handoff-пакета для письма, endpoint или CRM без изменения текущей доставки и без персональных значений в генерируемых отчётах.",
+  "status": "server_storage_connected_owner_assignment_pending",
+  "purpose": "Контракт внутреннего handoff-пакета для Supabase-очереди, резервного письма и будущей CRM. Технический контекст сохраняется автоматически; назначение конкретного владельца и SLA остаются заблокированными до утверждения.",
   "sources": {
     "handling_playbook": "data/operations/lead-handling.json",
     "lifecycle_contract": "data/operations/lead-lifecycle.json",
     "form_matrix": "data/qa/form-scenarios.json",
-    "project_registry": "data/projects/index.json"
+    "project_registry": "data/projects/index.json",
+    "system_of_record": "public.newbuild_leads",
+    "runtime_function": "supabase/functions/newbuild-lead/index.ts"
   },
   "rules": {
     "runtime_email_payload_changed": false,
+    "server_storage_connected": true,
+    "automatic_triage_enabled": true,
     "crm_connected": false,
     "automatic_owner_assignment_enabled": false,
+    "operational_activation_enabled": false,
     "approved_sla_exists": false,
     "generated_reports_contain_personal_values": false,
     "analytics_export_enabled": false,
     "initial_lifecycle_state": "received",
+    "post_storage_state": "triage_ready",
     "template_dimensions": ["qualification_status", "form_role", "lead_type", "residential_complex_id"],
     "expected_route_templates": 72
   },
   "packet_sections": [
     {
       "id": "routing",
-      "fields": ["handling_contract_version", "lead_lifecycle_state", "qualification_status", "response_guidance", "form_role", "lead_type"]
+      "fields": ["handling_contract_version", "lead_lifecycle_state", "lead_class", "qualification_status", "response_guidance", "form_role", "lead_type"]
     },
     {
       "id": "context",
@@ -32,20 +38,21 @@
     },
     {
       "id": "action",
-      "fields": ["recommended_first_action", "required_contact_outcome", "allowed_next_actions"]
+      "fields": ["recommended_first_action", "required_contact_outcome", "allowed_next_actions", "next_action"]
     },
     {
       "id": "attribution",
-      "fields": ["form_id", "lead_source", "placement"]
+      "fields": ["form_id", "lead_source", "placement", "source_system", "record_locator"]
     }
   ],
   "runtime_contact_fields": {
     "handled_by_delivery_layer": true,
+    "stored_only_in_protected_system": true,
     "excluded_from_generated_reports": true,
     "fields": ["name", "phone", "personal_data_consent"]
   },
   "rendering": {
-    "handling_contract_version": "1.0",
+    "handling_contract_version": "2.0",
     "response_guidance_labels": {
       "first_available_work_block": "Первый доступный рабочий блок",
       "same_working_day": "В течение рабочего дня",

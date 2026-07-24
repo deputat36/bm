@@ -8,6 +8,9 @@ on:
       - "data/operations/lead-handling.json"
       - "data/qa/form-scenarios.json"
       - "docs/portal/LEAD_LIFECYCLE_CONTRACT.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/validate-lead-lifecycle.mjs"
       - "tools/build-lead-lifecycle-report.mjs"
       - ".github/workflows/lead-lifecycle-guard.yml"
@@ -17,6 +20,9 @@ on:
       - "data/operations/lead-handling.json"
       - "data/qa/form-scenarios.json"
       - "docs/portal/LEAD_LIFECYCLE_CONTRACT.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/validate-lead-lifecycle.mjs"
       - "tools/build-lead-lifecycle-report.mjs"
       - ".github/workflows/lead-lifecycle-guard.yml"
@@ -50,4 +56,4 @@ jobs:
       - name: Generate lifecycle report
         run: |
           node tools/build-lead-lifecycle-report.mjs --format=json > /tmp/lead-lifecycle.json
-          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/lead-lifecycle.json","utf8")); if(data.status!=="draft_contract_not_connected"||data.summary?.states!==12||data.summary?.transitions!==18||data.summary?.terminal_states!==4||data.summary?.nonterminal_states!==8) process.exit(1); console.log(`Generated lifecycle states: ${data.summary.states}; transitions: ${data.summary.transitions}`);'
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/lead-lifecycle.json","utf8")); if(data.status!=="server_connected_owner_activation_pending"||data.summary?.states!==12||data.summary?.transitions!==18||data.summary?.terminal_states!==4||data.summary?.nonterminal_states!==8||data.rules?.system_of_record_available!==true||data.rules?.automatic_transition_enabled!==true||data.rules?.automatic_triage_only!==true||data.rules?.automatic_owner_assignment_enabled!==false) process.exit(1); console.log(`Generated lifecycle states: ${data.summary.states}; automatic triage only: ${data.rules.automatic_triage_only}`);'

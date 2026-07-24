@@ -4,9 +4,16 @@ on:
   pull_request:
     paths:
       - "data/operations/lead-operations-approval.json"
+      - "data/operations/lead-handling.json"
+      - "data/operations/lead-lifecycle.json"
+      - "data/operations/lead-handoff.json"
+      - "data/operations/lead-event-log.json"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/build-launch-readiness-report.mjs"
       - "tools/validate-launch-operations-gate.mjs"
       - "docs/portal/LAUNCH_OPERATIONS_GATE.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
       - "package.json"
       - ".github/workflows/launch-operations-gate.yml"
   push:
@@ -14,9 +21,16 @@ on:
       - main
     paths:
       - "data/operations/lead-operations-approval.json"
+      - "data/operations/lead-handling.json"
+      - "data/operations/lead-lifecycle.json"
+      - "data/operations/lead-handoff.json"
+      - "data/operations/lead-event-log.json"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/build-launch-readiness-report.mjs"
       - "tools/validate-launch-operations-gate.mjs"
       - "docs/portal/LAUNCH_OPERATIONS_GATE.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
       - "package.json"
       - ".github/workflows/launch-operations-gate.yml"
 
@@ -46,4 +60,4 @@ jobs:
       - name: Generate launch readiness report
         run: |
           node tools/build-launch-readiness-report.mjs --format=json > /tmp/launch-readiness.json
-          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/launch-readiness.json","utf8")); const gate=data.gates.find((item)=>item.id==="lead_operations_approval"); const profile=data.profiles.find((item)=>item.id==="campaign_launch"); if(gate?.status!=="blocked"||!profile?.blocked_gates?.includes("lead_operations_approval")||data.metrics?.lead_operations?.pending!==8) process.exit(1); console.log(`Operations gate: ${gate.status}; pending decisions: ${data.metrics.lead_operations.pending}`);'
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/launch-readiness.json","utf8")); const gate=data.gates.find((item)=>item.id==="lead_operations_approval"); const profile=data.profiles.find((item)=>item.id==="campaign_launch"); if(gate?.status!=="blocked"||gate?.evidence_count!==1||!profile?.blocked_gates?.includes("lead_operations_approval")||data.metrics?.lead_operations?.approved!==1||data.metrics?.lead_operations?.pending!==7||data.metrics?.lead_operations?.activation_enabled!==false||data.metrics?.lead_operations?.ready!==false) process.exit(1); console.log(`Operations gate: ${gate.status}; approved: ${data.metrics.lead_operations.approved}; pending: ${data.metrics.lead_operations.pending}`);'

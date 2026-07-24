@@ -11,7 +11,11 @@ on:
       - "data/operations/lead-event-log.json"
       - "data/qa/form-scenarios.json"
       - "docs/portal/LEAD_OPERATIONS_APPROVAL.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/validate-lead-operations-approval.mjs"
+      - "tools/validate-lead-operations-runtime.mjs"
       - "tools/build-lead-operations-approval-report.mjs"
       - ".github/workflows/lead-operations-approval-guard.yml"
       - "package.json"
@@ -24,7 +28,11 @@ on:
       - "data/operations/lead-event-log.json"
       - "data/qa/form-scenarios.json"
       - "docs/portal/LEAD_OPERATIONS_APPROVAL.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/validate-lead-operations-approval.mjs"
+      - "tools/validate-lead-operations-runtime.mjs"
       - "tools/build-lead-operations-approval-report.mjs"
       - ".github/workflows/lead-operations-approval-guard.yml"
       - "package.json"
@@ -50,12 +58,15 @@ jobs:
       - name: Check scripts
         run: |
           node --check tools/validate-lead-operations-approval.mjs
+          node --check tools/validate-lead-operations-runtime.mjs
           node --check tools/build-lead-operations-approval-report.mjs
 
       - name: Validate owner decisions and inactive operational flags
-        run: node tools/validate-lead-operations-approval.mjs
+        run: |
+          node tools/validate-lead-operations-approval.mjs
+          node tools/validate-lead-operations-runtime.mjs
 
       - name: Generate approval readiness report
         run: |
           node tools/build-lead-operations-approval-report.mjs --format=json > /tmp/lead-operations-approval.json
-          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/lead-operations-approval.json","utf8")); if(data.status!=="owner_decisions_required_not_operational"||data.summary?.total_decisions!==8||data.summary?.approved_decisions!==0||data.summary?.pending_decisions!==8||data.summary?.activation_enabled!==false||data.summary?.required_operational_fields!==13||data.summary?.activation_gates!==7) process.exit(1); console.log(`Owner decisions: ${data.summary.approved_decisions}/${data.summary.total_decisions}; pending: ${data.summary.pending_decisions}`);'
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/lead-operations-approval.json","utf8")); if(data.status!=="owner_decisions_required_not_operational"||data.summary?.total_decisions!==8||data.summary?.approved_decisions!==1||data.summary?.pending_decisions!==7||data.summary?.activation_enabled!==false||data.summary?.required_operational_fields!==13||data.summary?.activation_gates!==7) process.exit(1); console.log(`Owner decisions: ${data.summary.approved_decisions}/${data.summary.total_decisions}; pending: ${data.summary.pending_decisions}`);'

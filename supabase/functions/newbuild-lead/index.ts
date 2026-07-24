@@ -29,6 +29,12 @@ const allowedLeadTypes = new Set([
   "general"
 ]);
 
+const sourceCheckProjectIds = new Set([
+  "prostornaya-4a",
+  "aerodromnaya-18g",
+  "sennaya-76"
+]);
+
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 const telegramBotToken = Deno.env.get("TELEGRAM_BOT_TOKEN") || "";
@@ -54,19 +60,25 @@ function corsHeaders(origin: string) {
   return {
     "Access-Control-Allow-Origin": origin,
     "Access-Control-Allow-Headers": "content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Max-Age": "86400",
     "Vary": "Origin"
   };
 }
 
-function jsonResponse(body: JsonObject, status: number, origin?: string) {
+function jsonResponse(
+  body: JsonObject,
+  status: number,
+  origin?: string,
+  extraHeaders: Record<string, string> = {}
+) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       ...(origin ? corsHeaders(origin) : {}),
       "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "no-store"
+      "Cache-Control": "no-store",
+      ...extraHeaders
     }
   });
 }
@@ -136,6 +148,21 @@ async function restFetch(path: string, init: RequestInit = {}) {
   });
 }
 
+function getLeadClass(leadType: string): string {
+  if (["mortgage", "mortgage_calculation"].includes(leadType)) return "mortgage_request";
+  if (leadType === "waitlist") return "update_subscription";
+  if (["project_consultation", "comparison_request", "layout_request"].includes(leadType)) return "source_question";
+  if (["portal_selection", "apartment_selection", "complex_interest", "callback", "consultation"].includes(leadType)) {
+    return "buyer_intent";
+  }
+  return "general";
+}
+
+function requiresSourceCheck(payload: JsonObject, leadType: string): boolean {
+  const complexId = cleanText(payload.residential_complex_id, 120) || "";
+  return sourceCheckProjectIds.has(complexId) || leadType === "project_consultation";
+}
+
 async function checkRateLimit(request: Request, phoneNormalized: string): Promise<RateLimitResult> {
   const userAgent = request.headers.get("user-agent") || "unknown";
   const fingerprint = await sha256(`${getClientIp(request)}|${userAgent}|${phoneNormalized.slice(-4)}`);
@@ -178,12 +205,21 @@ async function checkRateLimit(request: Request, phoneNormalized: string): Promis
   }
 }
 
-function buildLeadRow(payload: JsonObject, request: Request, phone: { phone: string; normalized: string }, rateLimit: RateLimitResult) {
+function buildLeadRow(
+  payload: JsonObject,
+  request: Request,
+  phone: { phone: string; normalized: string },
+  rateLimit: RateLimitResult,
+  leadType: string
+) {
   const tracking = cleanObject(payload.tracking);
   const qualification = cleanObject(payload.qualification);
   const spamCheck = cleanObject(payload.spam_check);
+  const sourceCheckRequired = requiresSourceCheck(payload, leadType);
+  const leadClass = getLeadClass(leadType);
   const rawPayload = {
-    lead_type: cleanText(payload.lead_type, 80),
+    lead_type: leadType,
+    lead_class: leadClass,
     form_id: cleanText(payload.form_id, 160),
     project_id: cleanText(payload.project_id, 120),
     residential_complex_id: cleanText(payload.residential_complex_id, 120),
@@ -191,13 +227,15 @@ function buildLeadRow(payload: JsonObject, request: Request, phone: { phone: str
     budget: cleanText(payload.budget, 160),
     purchase_method: cleanText(payload.purchase_method || payload.mortgage_program, 160),
     timeline: cleanText(payload.timeline || payload.purchase_timeline, 160),
+    source_check_required: sourceCheckRequired,
     tracking,
     qualification
   };
 
   return {
     client_fixation_id: cleanText(payload.client_fixation_id, 120) || crypto.randomUUID(),
-    lead_type: cleanText(payload.lead_type, 80) || "general",
+    lead_type: leadType,
+    lead_class: leadClass,
     form_id: cleanText(payload.form_id, 160),
     project: cleanText(payload.project, 200) || "Портал Новостройки Борисоглебска",
     project_id: cleanText(payload.project_id, 120) || "newbuilds-borisoglebsk",
@@ -249,7 +287,12 @@ function buildLeadRow(payload: JsonObject, request: Request, phone: { phone: str
     policy_url: cleanText(payload.policy_url, 500),
     consent_url: cleanText(payload.consent_url, 500),
     delivery_status: "received",
-    crm_status: "new"
+    crm_status: "new",
+    operational_status: "received",
+    source_check_required: sourceCheckRequired,
+    next_action: "complete_triage",
+    source_system: "supabase:newbuild_leads",
+    operations_version: "2.0"
   };
 }
 
@@ -260,6 +303,7 @@ function leadSummary(row: JsonObject) {
   return [
     "Новая заявка: Новостройки Борисоглебска",
     `Тип: ${row.lead_type || ""}`,
+    `Класс: ${row.lead_class || ""}`,
     `ID: ${row.client_fixation_id || ""}`,
     `Имя: ${row.name || ""}`,
     `Телефон: ${row.phone || ""}`,
@@ -268,6 +312,7 @@ function leadSummary(row: JsonObject) {
     `Бюджет: ${row.budget || ""}`,
     `Способ покупки: ${row.purchase_method || row.mortgage_program || ""}`,
     `Квалификация: ${qualification.status || ""}, ${qualification.score || 0} баллов`,
+    `Нужна проверка источника: ${row.source_check_required === true ? "да" : "нет"}`,
     `Источник: ${current.utm_source || ""} / ${current.utm_medium || ""} / ${current.utm_campaign || ""}`,
     `Страница: ${row.page_url || ""}`
   ].join("\n");
@@ -282,15 +327,73 @@ async function notifyTelegram(text: string) {
   });
 }
 
+async function handleHealthRequest() {
+  const headers = { "X-Robots-Tag": "noindex, nofollow" };
+  if (!supabaseUrl || !serviceRoleKey) {
+    return jsonResponse({ success: false, status: "degraded", error: "server_not_configured" }, 503, undefined, headers);
+  }
+
+  try {
+    const healthResponse = await restFetch("rpc/newbuild_lead_health", {
+      method: "POST",
+      headers: restHeaders("return=representation"),
+      body: "{}"
+    });
+    if (!healthResponse.ok) {
+      console.error("newbuild_lead_health_failed", healthResponse.status, await healthResponse.text());
+      return jsonResponse({ success: false, status: "degraded", error: "health_check_failed" }, 503, undefined, headers);
+    }
+
+    const rawHealth = await healthResponse.json();
+    const health = (Array.isArray(rawHealth) ? rawHealth[0] : rawHealth) as JsonObject;
+    const healthy = health?.status === "ok";
+    return jsonResponse({ success: healthy, ...health }, healthy ? 200 : 503, undefined, headers);
+  } catch (error) {
+    console.error("newbuild_lead_health_exception", error);
+    return jsonResponse({ success: false, status: "degraded", error: "health_check_exception" }, 503, undefined, headers);
+  }
+}
+
+async function transitionToTriage(leadId: string, sourceCheckRequired: boolean) {
+  const transitionResponse = await restFetch("rpc/newbuild_lead_transition", {
+    method: "POST",
+    headers: restHeaders("return=representation"),
+    body: JSON.stringify({
+      p_lead_id: leadId,
+      p_to_state: "triage_ready",
+      p_actor_role: "portal_system",
+      p_next_action: "assign_owner",
+      p_source_check_required: sourceCheckRequired,
+      p_event_comment: "Автоматическая техническая классификация формы, объекта и потребности"
+    })
+  });
+
+  if (!transitionResponse.ok) {
+    console.error("newbuild_lead_triage_failed", transitionResponse.status, await transitionResponse.text());
+    return null;
+  }
+
+  const rawResult = await transitionResponse.json();
+  return (Array.isArray(rawResult) ? rawResult[0] : rawResult) as JsonObject;
+}
+
 Deno.serve(async (request) => {
+  const url = new URL(request.url);
   const origin = request.headers.get("origin");
 
-  if (!isAllowedOrigin(origin)) {
-    return jsonResponse({ success: false, error: "origin_not_allowed" }, 403);
+  if (request.method === "GET" && url.searchParams.get("health") === "1") {
+    return handleHealthRequest();
   }
 
   if (request.method === "OPTIONS") {
+    if (!isAllowedOrigin(origin)) {
+      return jsonResponse({ success: false, error: "origin_not_allowed" }, 403);
+    }
     return new Response(null, { status: 204, headers: corsHeaders(origin) });
+  }
+
+  if (!isAllowedOrigin(origin)) {
+    return jsonResponse({ success: false, error: "origin_not_allowed" }, 403);
   }
 
   if (request.method !== "POST") {
@@ -333,19 +436,21 @@ Deno.serve(async (request) => {
   if (!allowedLeadTypes.has(leadType)) {
     return jsonResponse({ success: false, errors: ["invalid_lead_type"] }, 422, origin);
   }
-  payload.lead_type = leadType;
 
   const rateLimit = await checkRateLimit(request, phone.normalized);
   if (!rateLimit.allowed) {
     return jsonResponse({ success: true, blocked: true, reason: "rate_limit" }, 200, origin);
   }
 
-  const row = buildLeadRow(payload, request, phone, rateLimit);
-  const insertResponse = await restFetch("newbuild_leads?select=id,client_fixation_id,lead_type,crm_status,qualification", {
-    method: "POST",
-    headers: restHeaders("return=representation"),
-    body: JSON.stringify(row)
-  });
+  const row = buildLeadRow(payload, request, phone, rateLimit, leadType);
+  const insertResponse = await restFetch(
+    "newbuild_leads?select=id,client_fixation_id,lead_type,lead_class,crm_status,qualification,operational_status,source_check_required,next_action,record_locator",
+    {
+      method: "POST",
+      headers: restHeaders("return=representation"),
+      body: JSON.stringify(row)
+    }
+  );
 
   if (insertResponse.status === 409) {
     return jsonResponse({ success: true, duplicate: true, client_fixation_id: row.client_fixation_id }, 200, origin);
@@ -370,19 +475,34 @@ Deno.serve(async (request) => {
       event_type: "created",
       event_title: "Заявка создана с сайта",
       event_comment: "Заявка принята через защищённую Edge Function",
+      from_state: null,
+      to_state: "received",
+      actor_role: "portal_system",
+      source_system: "portal_form",
+      next_action: "complete_triage",
+      payload_version: "2.0",
       payload: {
         client_fixation_id: row.client_fixation_id,
         lead_type: row.lead_type,
+        lead_class: row.lead_class,
         form_id: row.form_id,
         residential_complex_id: row.residential_complex_id,
         qualification: row.qualification,
-        delivery_status: row.delivery_status
+        delivery_status: row.delivery_status,
+        source_check_required: row.source_check_required
       }
     })
   });
 
   if (!eventResponse.ok) {
     console.error("newbuild_lead_event_failed", eventResponse.status, await eventResponse.text());
+  }
+
+  let triageResult: JsonObject | null = null;
+  try {
+    triageResult = await transitionToTriage(String(lead.id), row.source_check_required === true);
+  } catch (error) {
+    console.error("newbuild_lead_triage_exception", error);
   }
 
   try {
@@ -395,8 +515,13 @@ Deno.serve(async (request) => {
     success: true,
     request_id: lead.id,
     client_fixation_id: lead.client_fixation_id,
+    record_locator: lead.record_locator,
     lead_type: lead.lead_type,
+    lead_class: lead.lead_class,
     crm_status: lead.crm_status,
+    operational_status: triageResult?.to_state || lead.operational_status,
+    next_action: triageResult?.next_action || lead.next_action,
+    source_check_required: lead.source_check_required,
     qualification: lead.qualification
   }, 201, origin);
 });

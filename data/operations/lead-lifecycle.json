@@ -1,17 +1,26 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-07-15",
+  "schema_version": "2.0",
+  "updated_at": "2026-07-24",
   "portal_id": "newbuilds-borisoglebsk",
-  "status": "draft_contract_not_connected",
-  "purpose": "Контракт состояний первичного обращения без подключения CRM, назначения ответственных и автоматического изменения данных.",
+  "status": "server_connected_owner_activation_pending",
+  "purpose": "Контракт состояний первичного обращения, подключённый к Supabase-хранилищу и append-only журналу. Автоматически выполняется только безопасный технический переход received → triage_ready; назначение владельца, SLA и контактные переходы остаются заблокированными до решений владельца.",
   "sources": {
     "handling_playbook": "data/operations/lead-handling.json",
-    "form_matrix": "data/qa/form-scenarios.json"
+    "form_matrix": "data/qa/form-scenarios.json",
+    "runtime_function": "supabase/functions/newbuild-lead/index.ts",
+    "transition_function": "public.newbuild_lead_transition",
+    "system_of_record": "public.newbuild_leads",
+    "event_log": "public.newbuild_lead_events"
   },
   "rules": {
     "initial_state": "received",
+    "system_of_record_available": true,
+    "server_transition_api_available": true,
+    "automatic_transition_enabled": true,
+    "automatic_triage_only": true,
+    "automatic_owner_assignment_enabled": false,
+    "operational_activation_enabled": false,
     "crm_connected": false,
-    "automatic_transition_enabled": false,
     "approved_sla_exists": false,
     "live_owner_assignment_exists": false,
     "deal_pipeline_not_in_scope": true,
@@ -26,29 +35,29 @@
       "id": "received",
       "stage_order": 1,
       "terminal": false,
-      "purpose": "Обращение получено техническим каналом.",
+      "purpose": "Обращение сохранено в основном серверном хранилище.",
       "required_fields": ["lead_id", "received_at", "lead_type", "form_id"]
     },
     {
       "id": "triage_ready",
       "stage_order": 2,
       "terminal": false,
-      "purpose": "Форма, роль, объект и техническая квалификация определены.",
+      "purpose": "Форма, объект, тип потребности, квалификация и необходимость проверки источника определены автоматически.",
       "required_fields": ["form_role", "residential_complex_id", "qualification_status"]
     },
     {
       "id": "contact_pending",
       "stage_order": 3,
       "terminal": false,
-      "purpose": "Обращение готово к первой или повторной попытке связи.",
-      "required_fields": ["next_action"]
+      "purpose": "Обращение назначено утверждённой роли и имеет срок первой или повторной попытки связи.",
+      "required_fields": ["next_action", "lead_owner_ref", "assigned_role", "first_action_due_at"]
     },
     {
       "id": "contact_attempted",
       "stage_order": 4,
       "terminal": false,
-      "purpose": "Попытка связи зафиксирована.",
-      "required_fields": ["attempt_at", "contact_outcome"]
+      "purpose": "Попытка связи зафиксирована серверным переходом.",
+      "required_fields": ["attempt_at", "contact_outcome", "contact_channel"]
     },
     {
       "id": "contacted_qualified",
@@ -108,8 +117,8 @@
     }
   ],
   "transitions": [
-    {"id": "receive_to_triage", "from": "received", "to": "triage_ready", "event": "triage_completed"},
-    {"id": "triage_to_queue", "from": "triage_ready", "to": "contact_pending", "event": "queued_for_contact"},
+    {"id": "receive_to_triage", "from": "received", "to": "triage_ready", "event": "triage_completed", "runtime": "automatic"},
+    {"id": "triage_to_queue", "from": "triage_ready", "to": "contact_pending", "event": "queued_for_contact", "runtime": "owner_policy_required"},
     {"id": "queue_to_attempt", "from": "contact_pending", "to": "contact_attempted", "event": "contact_attempt_recorded"},
     {"id": "attempt_to_qualified", "from": "contact_attempted", "to": "contacted_qualified", "event": "contact_qualified", "required_outcome": "contacted_qualified"},
     {"id": "attempt_to_follow_up", "from": "contact_attempted", "to": "follow_up_scheduled", "event": "no_answer_follow_up", "required_outcome": "no_answer_follow_up_planned"},

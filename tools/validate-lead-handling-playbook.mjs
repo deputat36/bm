@@ -78,15 +78,18 @@ const projects = readJson(PROJECTS_PATH);
 if (!spec || !mainSource || !matrix || !projects) process.exit(1);
 
 if (spec.portal_id !== "newbuilds-borisoglebsk") errors.push(`${SPEC_PATH}: invalid portal_id`);
-if (spec.schema_version !== "1.0") errors.push(`${SPEC_PATH}: schema_version must be 1.0`);
-if (spec.status !== "recommended_draft_not_operational") {
-  errors.push(`${SPEC_PATH}: status must remain recommended_draft_not_operational`);
+if (spec.schema_version !== "2.0") errors.push(`${SPEC_PATH}: schema_version must be 2.0`);
+if (spec.status !== "server_connected_owner_activation_pending") {
+  errors.push(`${SPEC_PATH}: status must be server_connected_owner_activation_pending`);
 }
 
 const expectedSources = {
   qualification_logic: MAIN_PATH,
   form_matrix: MATRIX_PATH,
-  project_registry: PROJECTS_PATH
+  project_registry: PROJECTS_PATH,
+  system_of_record: "public.newbuild_leads",
+  operations_queue: "public.newbuild_lead_operations_queue_v1",
+  transition_function: "public.newbuild_lead_transition"
 };
 for (const [key, value] of Object.entries(expectedSources)) {
   if (spec.sources?.[key] !== value) errors.push(`${SPEC_PATH}: sources.${key} must be ${value}`);
@@ -94,6 +97,8 @@ for (const [key, value] of Object.entries(expectedSources)) {
 
 const rules = spec.rules || {};
 [
+  "system_of_record_available",
+  "automatic_triage_enabled",
   "response_guidance_is_recommendation",
   "personal_data_in_playbook_forbidden",
   "verified_source_required_before_factual_claim",
@@ -104,6 +109,8 @@ const rules = spec.rules || {};
 [
   "approved_sla_exists",
   "live_owner_assignment_exists",
+  "automatic_owner_assignment_enabled",
+  "operational_activation_enabled",
   "crm_mutation_enabled"
 ].forEach((key) => {
   if (rules[key] !== false) errors.push(`${SPEC_PATH}: rules.${key} must be false`);
@@ -178,7 +185,8 @@ for (const item of formRoles.values()) {
 }
 
 const globalNextActions = new Set(Array.isArray(spec.next_actions) ? spec.next_actions : []);
-if (globalNextActions.size !== 8) errors.push(`${SPEC_PATH}: expected 8 next actions`);
+if (globalNextActions.size !== 9) errors.push(`${SPEC_PATH}: expected 9 next actions`);
+if (!globalNextActions.has("assign_owner")) errors.push(`${SPEC_PATH}: assign_owner next action is required`);
 
 const leadTypes = uniqueById(spec.lead_types, `${SPEC_PATH}:lead_types`);
 exactSet(new Set(leadTypes.keys()), activeLeadTypes, `${SPEC_PATH}: active lead type coverage`);
@@ -186,6 +194,7 @@ for (const item of leadTypes.values()) {
   if (!Array.isArray(item.first_questions) || item.first_questions.length < 3) {
     errors.push(`${SPEC_PATH}:${item.id}: at least 3 first_questions required`);
   }
+  nonEmpty(item.lead_class, `${SPEC_PATH}:${item.id}:lead_class`);
   nonEmpty(item.required_outcome, `${SPEC_PATH}:${item.id}:required_outcome`);
   if (typeof item.source_check_required_by_default !== "boolean") {
     errors.push(`${SPEC_PATH}:${item.id}: source_check_required_by_default must be boolean`);
@@ -252,6 +261,9 @@ console.log(`Checked form roles: ${formRoles.size}`);
 console.log(`Checked active lead types: ${leadTypes.size}`);
 console.log(`Checked object contexts: ${objectContexts.size}`);
 console.log(`Checked contact outcomes: ${outcomes.size}`);
+console.log(`System of record connected: ${rules.system_of_record_available === true}`);
+console.log(`Automatic triage enabled: ${rules.automatic_triage_enabled === true}`);
+console.log(`Owner assignment enabled: ${rules.automatic_owner_assignment_enabled === true}`);
 
 if (errors.length) {
   console.error("\nLead handling playbook validation errors:");

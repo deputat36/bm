@@ -1,24 +1,33 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-07-16",
+  "schema_version": "1.1",
+  "updated_at": "2026-07-24",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "requires_owner_approval_not_operational",
-  "purpose": "Единый реестр решений владельца перед активацией операционной обработки обращений. Реестр не назначает людей, не включает CRM и не превращает рекомендательные гипотезы в действующий SLA.",
+  "purpose": "Единый реестр решений владельца перед активацией назначения ответственных, SLA и автоматического сопровождения обращений. Техническое хранение, триаж, история и health-check уже подключены; конкретные люди и рабочие правила не назначаются автоматически.",
   "sources": {
     "handling_playbook": "data/operations/lead-handling.json",
     "lifecycle_contract": "data/operations/lead-lifecycle.json",
     "handoff_contract": "data/operations/lead-handoff.json",
     "event_log_contract": "data/operations/lead-event-log.json",
-    "form_matrix": "data/qa/form-scenarios.json"
+    "form_matrix": "data/qa/form-scenarios.json",
+    "runtime_function": "supabase/functions/newbuild-lead/index.ts",
+    "operations_migration": "supabase/migrations/20260724060538_newbuild_lead_operations_v2.sql"
   },
   "rules": {
     "activation_requires_all_decisions_approved": true,
     "operational_activation_enabled": false,
     "crm_mutation_enabled": false,
+    "automatic_owner_assignment_enabled": false,
+    "automatic_triage_enabled": true,
+    "system_of_record_available": true,
+    "server_side_transition_api_available": true,
+    "health_check_available": true,
+    "real_leads_may_be_received_before_activation": true,
+    "owner_assignment_and_sla_enforcement_forbidden_before_activation": true,
     "real_owner_identity_in_repository_forbidden": true,
     "approved_owner_values_must_use_role_or_secure_reference": true,
     "hypotheses_are_not_approved_sla": true,
-    "test_leads_only_until_activation": true,
+    "test_leads_only_until_activation": false,
     "personal_data_in_decision_register_forbidden": true,
     "timezone_required_before_activation": true,
     "system_of_record_required_before_activation": true,
@@ -66,7 +75,7 @@
       "status": "requires_owner_decision",
       "approved_value": null,
       "secure_reference": null,
-      "hypothesis": "Стартовая гипотеза из roadmap: первое действие не позднее 10 минут в утверждённые рабочие часы; после первых 30 обращений значение пересматривается.",
+      "hypothesis": "Стартовая гипотеза: первое действие не позднее 10 минут в утверждённые рабочие часы и не позднее 12 часов вне них; после первых 30 обращений значения пересматриваются.",
       "approval_question": "Какой максимальный срок первого действия действует в рабочее и нерабочее время?",
       "activation_effects": ["first_action_due_at_required", "sla_breach_event_required"]
     },
@@ -86,7 +95,7 @@
       "status": "requires_owner_decision",
       "approved_value": null,
       "secure_reference": null,
-      "hypothesis": "Зафиксировать число попыток, каналы и интервалы; каждая неуспешная попытка должна завершаться следующим действием и датой.",
+      "hypothesis": "Выполнять до трёх попыток: сразу, через два часа и на следующий рабочий день; каждая попытка завершается следующим действием и датой.",
       "approval_question": "Сколько попыток связи выполняется, через какие интервалы и какими каналами?",
       "activation_effects": ["attempt_number_required", "next_action_at_required"]
     },
@@ -103,10 +112,12 @@
     {
       "id": "system_of_record",
       "decision_type": "secure_system_reference",
-      "status": "requires_owner_decision",
-      "approved_value": null,
-      "secure_reference": null,
-      "hypothesis": "Выбрать один управляемый источник статусов: CRM, защищённый Supabase endpoint или другой утверждённый реестр. GitHub не является хранилищем реальных обращений.",
+      "status": "approved",
+      "approved_value": "supabase:newbuild_leads",
+      "secure_reference": "supabase:ofewxuqfjhamgerwzull/public.newbuild_leads",
+      "approved_at": "2026-07-24",
+      "approved_by_basis": "Фактически развёрнутый и проверенный основной контур хранения портала",
+      "hypothesis": "Использовать защищённый Supabase-контур как единственный источник записи, статуса, результата контакта и следующего действия до возможной интеграции с CRM.",
       "approval_question": "Какая система является единственным источником владельца, статуса, результата контакта и следующего действия?",
       "activation_effects": ["source_system_required", "record_locator_required", "audit_log_required"]
     }

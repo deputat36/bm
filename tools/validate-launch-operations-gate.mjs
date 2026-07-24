@@ -45,10 +45,14 @@ const decisions = Array.isArray(approval.decisions) ? approval.decisions : [];
 const approved = decisions.filter((item) => item.status === "approved").length;
 const pending = decisions.filter((item) => item.status === "requires_owner_decision").length;
 const activationEnabled = approval.rules?.operational_activation_enabled === true;
+const systemOfRecord = decisions.find((item) => item.id === "system_of_record");
 
 if (decisions.length !== 8) errors.push(`${APPROVAL_PATH}: expected 8 decisions`);
-if (approved !== 0) errors.push(`${APPROVAL_PATH}: current baseline must have 0 approved decisions`);
-if (pending !== 8) errors.push(`${APPROVAL_PATH}: current baseline must have 8 pending decisions`);
+if (approved !== 1) errors.push(`${APPROVAL_PATH}: current baseline must have 1 approved decision`);
+if (pending !== 7) errors.push(`${APPROVAL_PATH}: current baseline must have 7 pending decisions`);
+if (systemOfRecord?.status !== "approved" || systemOfRecord?.approved_value !== "supabase:newbuild_leads") {
+  errors.push(`${APPROVAL_PATH}: approved decision must be system_of_record=supabase:newbuild_leads`);
+}
 if (activationEnabled) errors.push(`${APPROVAL_PATH}: operational activation must remain disabled`);
 
 const result = spawnSync(process.execPath, [BUILDER_PATH, "--format=json"], {
@@ -64,8 +68,8 @@ if (result.status !== 0) {
     const campaign = (report.profiles || []).find((item) => item.id === "campaign_launch");
 
     if (!gate) errors.push("launch report: lead_operations_approval gate is missing");
-    if (gate?.status !== "blocked") errors.push("launch report: lead_operations_approval must be blocked");
-    if (gate?.evidence_count !== 0) errors.push("launch report: operations evidence_count must be 0");
+    if (gate?.status !== "blocked") errors.push("launch report: lead_operations_approval must remain blocked");
+    if (gate?.evidence_count !== 1) errors.push("launch report: operations evidence_count must be 1");
     if (!campaign?.required_gates?.includes("lead_operations_approval")) {
       errors.push("launch report: campaign_launch must require lead_operations_approval");
     }
@@ -78,8 +82,8 @@ if (result.status !== 0) {
     if (report.summary?.total_profiles !== 4) errors.push("launch report: total_profiles must be 4");
     if (report.summary?.ready_profiles !== 0) errors.push("launch report: ready_profiles must remain 0");
     if (report.metrics?.lead_operations?.total_decisions !== 8) errors.push("launch report: total operations decisions must be 8");
-    if (report.metrics?.lead_operations?.approved !== 0) errors.push("launch report: approved operations decisions must be 0");
-    if (report.metrics?.lead_operations?.pending !== 8) errors.push("launch report: pending operations decisions must be 8");
+    if (report.metrics?.lead_operations?.approved !== 1) errors.push("launch report: approved operations decisions must be 1");
+    if (report.metrics?.lead_operations?.pending !== 7) errors.push("launch report: pending operations decisions must be 7");
     if (report.metrics?.lead_operations?.activation_enabled !== false) errors.push("launch report: operations activation must be false");
     if (report.metrics?.lead_operations?.ready !== false) errors.push("launch report: operations ready must be false");
   } catch (error) {
@@ -90,6 +94,7 @@ if (result.status !== 0) {
 console.log(`Operations decisions: ${decisions.length}`);
 console.log(`Approved operations decisions: ${approved}`);
 console.log(`Pending operations decisions: ${pending}`);
+console.log(`System of record: ${systemOfRecord?.approved_value || "missing"}`);
 console.log(`Operational activation enabled: ${activationEnabled}`);
 
 if (errors.length) {

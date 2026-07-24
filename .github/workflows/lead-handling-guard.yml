@@ -9,6 +9,9 @@ on:
       - "data/projects/index.json"
       - "data/qa/form-scenarios.json"
       - "docs/portal/LEAD_HANDLING_PLAYBOOK.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/validate-lead-handling-playbook.mjs"
       - "tools/build-lead-handling-playbook.mjs"
       - ".github/workflows/lead-handling-guard.yml"
@@ -19,6 +22,9 @@ on:
       - "data/projects/index.json"
       - "data/qa/form-scenarios.json"
       - "docs/portal/LEAD_HANDLING_PLAYBOOK.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/validate-lead-handling-playbook.mjs"
       - "tools/build-lead-handling-playbook.mjs"
       - ".github/workflows/lead-handling-guard.yml"
@@ -52,4 +58,4 @@ jobs:
       - name: Generate lead handling matrix
         run: |
           node tools/build-lead-handling-playbook.mjs --format=json > /tmp/lead-handling.json
-          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/lead-handling.json","utf8")); if(data.status!=="recommended_draft_not_operational"||data.summary?.routes!==18||data.summary?.priority_bands!==3||data.summary?.form_roles!==2||data.summary?.lead_types!==3||data.summary?.object_contexts!==4||data.summary?.contact_outcomes!==9) process.exit(1); console.log(`Generated handling routes: ${data.summary.routes}; object contexts: ${data.summary.object_contexts}`);'
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/lead-handling.json","utf8")); if(data.status!=="server_connected_owner_activation_pending"||data.summary?.routes!==18||data.summary?.priority_bands!==3||data.summary?.form_roles!==2||data.summary?.lead_types!==3||data.summary?.object_contexts!==4||data.summary?.contact_outcomes!==9||data.rules?.system_of_record_available!==true||data.rules?.automatic_triage_enabled!==true||data.rules?.automatic_owner_assignment_enabled!==false) process.exit(1); console.log(`Generated handling routes: ${data.summary.routes}; storage connected: ${data.rules.system_of_record_available}; owner assignment: ${data.rules.automatic_owner_assignment_enabled}`);'

@@ -7,9 +7,26 @@ on:
       - "data/operations/lead-lifecycle.json"
       - "data/operations/lead-handling.json"
       - "data/operations/lead-handoff.json"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/validate-lead-event-log.mjs"
       - "tools/build-lead-event-log-report.mjs"
       - "docs/portal/LEAD_EVENT_LOG_CONTRACT.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
+      - ".github/workflows/lead-event-log-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "data/operations/lead-event-log.json"
+      - "data/operations/lead-lifecycle.json"
+      - "data/operations/lead-handling.json"
+      - "data/operations/lead-handoff.json"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
+      - "tools/validate-lead-event-log.mjs"
+      - "tools/build-lead-event-log-report.mjs"
+      - "docs/portal/LEAD_EVENT_LOG_CONTRACT.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
       - ".github/workflows/lead-event-log-guard.yml"
   workflow_dispatch:
 
@@ -42,11 +59,14 @@ jobs:
           node - <<'NODE'
           const fs = require('fs');
           const data = JSON.parse(fs.readFileSync('/tmp/lead-event-log.json', 'utf8'));
-          if (data.status !== 'draft_contract_not_connected') process.exit(1);
+          if (data.status !== 'server_append_only_connected') process.exit(1);
           if (data.summary?.total_templates !== 18) process.exit(1);
           if (data.summary?.selected_templates !== 18) process.exit(1);
           if (data.summary?.append_only !== true) process.exit(1);
           if (data.summary?.real_event_records_in_repository_forbidden !== true) process.exit(1);
           if (data.summary?.crm_connected !== false) process.exit(1);
-          console.log(`Generated event templates: ${data.summary.total_templates}`);
+          if (data.rules?.database_append_only_trigger_enabled !== true) process.exit(1);
+          if (data.rules?.automatic_triage_only !== true) process.exit(1);
+          if (data.rules?.automatic_owner_assignment_enabled !== false) process.exit(1);
+          console.log(`Generated event templates: ${data.summary.total_templates}; database append-only: ${data.rules.database_append_only_trigger_enabled}`);
           NODE

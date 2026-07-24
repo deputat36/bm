@@ -44,28 +44,35 @@ const playbook = readJson(spec.sources?.handling_playbook || "");
 const handoff = readJson(spec.sources?.handoff_contract || "");
 if (!lifecycle || !playbook || !handoff) process.exit(1);
 
-if (spec.schema_version !== "1.0") errors.push(`${SPEC_PATH}: schema_version must be 1.0`);
+if (spec.schema_version !== "2.0") errors.push(`${SPEC_PATH}: schema_version must be 2.0`);
 if (spec.portal_id !== "newbuilds-borisoglebsk") errors.push(`${SPEC_PATH}: unexpected portal_id`);
 if (spec.portal_id !== lifecycle.portal_id || spec.portal_id !== playbook.portal_id || spec.portal_id !== handoff.portal_id) {
   errors.push(`${SPEC_PATH}: portal_id must match source contracts`);
 }
-if (spec.status !== "draft_contract_not_connected") errors.push(`${SPEC_PATH}: status must remain draft_contract_not_connected`);
+if (spec.status !== "server_append_only_connected") errors.push(`${SPEC_PATH}: invalid connected status`);
+if (spec.sources?.system_of_record !== "public.newbuild_leads") errors.push(`${SPEC_PATH}: invalid system_of_record`);
+if (spec.sources?.event_table !== "public.newbuild_lead_events") errors.push(`${SPEC_PATH}: invalid event_table`);
+if (spec.sources?.transition_function !== "public.newbuild_lead_transition") errors.push(`${SPEC_PATH}: invalid transition_function`);
 
 const rules = spec.rules || {};
 [
   "append_only",
+  "database_append_only_trigger_enabled",
   "event_update_forbidden",
   "event_delete_forbidden",
   "real_event_records_in_repository_forbidden",
   "personal_values_in_generated_reports_forbidden",
+  "automatic_transition_enabled",
+  "automatic_triage_only",
   "actor_is_role_not_person"
 ].forEach((key) => {
   if (rules[key] !== true) errors.push(`${SPEC_PATH}: ${key} must be true`);
 });
 [
-  "automatic_transition_enabled",
   "crm_connected",
-  "approved_sla_exists"
+  "approved_sla_exists",
+  "automatic_owner_assignment_enabled",
+  "operational_activation_enabled"
 ].forEach((key) => {
   if (rules[key] !== false) errors.push(`${SPEC_PATH}: ${key} must be false`);
 });
@@ -80,7 +87,7 @@ const transitionIds = new Set();
 const transitionEvents = new Set();
 for (const transition of transitions) {
   if (!transition.id || !transition.event || !transition.from || !transition.to) {
-    errors.push(`lifecycle transition: id, event, from and to are required`);
+    errors.push("lifecycle transition: id, event, from and to are required");
     continue;
   }
   if (transitionIds.has(transition.id)) errors.push(`lifecycle transition: duplicate id ${transition.id}`);
@@ -116,10 +123,21 @@ for (const field of requiredFields) {
 }
 
 const actorRoles = new Set(uniqueStrings(spec.actor_roles, `${SPEC_PATH}:actor_roles`));
-setEquals(actorRoles, new Set(["portal_system", "lead_operator", "manager", "source_reviewer"]), "actor roles");
+setEquals(actorRoles, new Set([
+  "portal_system",
+  "lead_operator",
+  "manager",
+  "source_reviewer",
+  "integration_system"
+]), "actor roles");
 
 const sourceSystems = new Set(uniqueStrings(spec.source_systems, `${SPEC_PATH}:source_systems`));
-setEquals(sourceSystems, new Set(["portal_form", "manual_register", "future_endpoint", "future_crm"]), "source systems");
+setEquals(sourceSystems, new Set([
+  "portal_form",
+  "supabase:newbuild_leads",
+  "manual_register",
+  "future_crm"
+]), "source systems");
 
 const reasonCodes = new Set(uniqueStrings(spec.reason_codes, `${SPEC_PATH}:reason_codes`));
 if (reasonCodes.size !== 10) errors.push(`${SPEC_PATH}: expected 10 reason codes`);
@@ -142,6 +160,7 @@ for (const transition of transitions) {
 
 const privacy = spec.privacy || {};
 if (privacy.repository_may_store_contract_only !== true) errors.push(`${SPEC_PATH}: repository_may_store_contract_only must be true`);
+if (privacy.database_event_payload_must_be_minimized !== true) errors.push(`${SPEC_PATH}: database_event_payload_must_be_minimized must be true`);
 const forbiddenFields = new Set(uniqueStrings(privacy.forbidden_fields, `${SPEC_PATH}:privacy.forbidden_fields`));
 setEquals(forbiddenFields, new Set([
   "name",
@@ -157,7 +176,8 @@ for (const field of [...requiredFields, ...optionalFields]) {
   if (forbiddenFields.has(field)) errors.push(`${SPEC_PATH}: event schema includes forbidden field ${field}`);
 }
 
-if (spec.rendering?.payload_version !== "1.0") errors.push(`${SPEC_PATH}: payload_version must be 1.0`);
+if (spec.rendering?.payload_version !== "2.0") errors.push(`${SPEC_PATH}: payload_version must be 2.0`);
+if (spec.rendering?.default_source_system !== "supabase:newbuild_leads") errors.push(`${SPEC_PATH}: invalid default_source_system`);
 if (!actorRoles.has(spec.rendering?.default_actor_role)) errors.push(`${SPEC_PATH}: invalid default_actor_role`);
 if (!sourceSystems.has(spec.rendering?.default_source_system)) errors.push(`${SPEC_PATH}: invalid default_source_system`);
 
@@ -173,6 +193,8 @@ console.log(`Checked event templates: ${transitions.length}`);
 console.log(`Checked lifecycle states: ${lifecycleStates.size}`);
 console.log(`Checked actor roles: ${actorRoles.size}`);
 console.log(`Checked reason codes: ${reasonCodes.size}`);
+console.log(`Database append-only enabled: ${rules.database_append_only_trigger_enabled === true}`);
+console.log(`Automatic owner assignment enabled: ${rules.automatic_owner_assignment_enabled === true}`);
 
 if (errors.length) {
   console.error("\nLead event log validation errors:");

@@ -54,27 +54,45 @@ const matrix = readJson(spec.sources?.form_matrix || "");
 const projects = readJson(spec.sources?.project_registry || "");
 if (!playbook || !lifecycle || !matrix || !projects) process.exit(1);
 
-if (spec.schema_version !== "1.0") errors.push(`${SPEC_PATH}: schema_version must be 1.0`);
+if (spec.schema_version !== "2.0") errors.push(`${SPEC_PATH}: schema_version must be 2.0`);
 if (spec.portal_id !== "newbuilds-borisoglebsk") errors.push(`${SPEC_PATH}: unexpected portal_id`);
 if (spec.portal_id !== playbook.portal_id || spec.portal_id !== lifecycle.portal_id) {
   errors.push(`${SPEC_PATH}: portal_id must match operation sources`);
 }
-if (spec.status !== "draft_contract_not_connected") errors.push(`${SPEC_PATH}: status must remain draft_contract_not_connected`);
+if (spec.status !== "server_storage_connected_owner_assignment_pending") {
+  errors.push(`${SPEC_PATH}: invalid connected status`);
+}
+if (spec.sources?.system_of_record !== "public.newbuild_leads") {
+  errors.push(`${SPEC_PATH}: system_of_record must be public.newbuild_leads`);
+}
+if (spec.sources?.runtime_function !== "supabase/functions/newbuild-lead/index.ts") {
+  errors.push(`${SPEC_PATH}: invalid runtime_function source`);
+}
 
 const rules = spec.rules || {};
 [
   "runtime_email_payload_changed",
   "crm_connected",
   "automatic_owner_assignment_enabled",
+  "operational_activation_enabled",
   "approved_sla_exists",
   "generated_reports_contain_personal_values",
   "analytics_export_enabled"
 ].forEach((key) => {
   if (rules[key] !== false) errors.push(`${SPEC_PATH}: ${key} must be false`);
 });
+[
+  "server_storage_connected",
+  "automatic_triage_enabled"
+].forEach((key) => {
+  if (rules[key] !== true) errors.push(`${SPEC_PATH}: ${key} must be true`);
+});
 
 if (rules.initial_lifecycle_state !== lifecycle.rules?.initial_state || rules.initial_lifecycle_state !== "received") {
   errors.push(`${SPEC_PATH}: initial lifecycle state must match received`);
+}
+if (rules.post_storage_state !== "triage_ready") {
+  errors.push(`${SPEC_PATH}: post_storage_state must be triage_ready`);
 }
 
 const expectedDimensions = new Set(["qualification_status", "form_role", "lead_type", "residential_complex_id"]);
@@ -126,6 +144,7 @@ setEquals(new Set(sections.keys()), requiredSections, "packet sections");
 const requiredFields = new Set([
   "handling_contract_version",
   "lead_lifecycle_state",
+  "lead_class",
   "qualification_status",
   "response_guidance",
   "form_role",
@@ -137,9 +156,12 @@ const requiredFields = new Set([
   "recommended_first_action",
   "required_contact_outcome",
   "allowed_next_actions",
+  "next_action",
   "form_id",
   "lead_source",
-  "placement"
+  "placement",
+  "source_system",
+  "record_locator"
 ]);
 const seenFields = new Set();
 for (const section of sections.values()) {
@@ -152,8 +174,12 @@ for (const section of sections.values()) {
 setEquals(seenFields, requiredFields, "packet fields");
 
 const runtimeContact = spec.runtime_contact_fields || {};
-if (runtimeContact.handled_by_delivery_layer !== true || runtimeContact.excluded_from_generated_reports !== true) {
-  errors.push(`${SPEC_PATH}: runtime contact fields must stay in delivery layer and outside generated reports`);
+if (
+  runtimeContact.handled_by_delivery_layer !== true
+  || runtimeContact.stored_only_in_protected_system !== true
+  || runtimeContact.excluded_from_generated_reports !== true
+) {
+  errors.push(`${SPEC_PATH}: contact fields must stay in protected delivery storage and outside reports`);
 }
 setEquals(new Set(runtimeContact.fields || []), new Set(["name", "phone", "personal_data_consent"]), "runtime contact fields");
 
@@ -166,6 +192,7 @@ for (const role of roles.values()) {
   if (!role.conversation_goal || !role.required_outcome) errors.push(`role ${role.id}: conversation goal and outcome required`);
 }
 for (const leadType of leadTypes.values()) {
+  if (!leadType.lead_class) errors.push(`lead type ${leadType.id}: lead_class required`);
   if (!Array.isArray(leadType.allowed_next_actions) || !leadType.allowed_next_actions.length) {
     errors.push(`lead type ${leadType.id}: allowed_next_actions required`);
   }
@@ -180,13 +207,15 @@ if (/\+7\d{10}/.test(serialized) || /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.tes
   errors.push(`${SPEC_PATH}: generated contract must not contain contact values`);
 }
 if (/sla_minutes|sla_hours|owner_email|assignee|manager_id/i.test(serialized)) {
-  errors.push(`${SPEC_PATH}: live SLA or owner assignment fields are forbidden`);
+  errors.push(`${SPEC_PATH}: live SLA or personal owner assignment fields are forbidden`);
 }
 
 console.log(`Checked handoff templates: ${expectedTemplates}`);
 console.log(`Checked packet sections: ${sections.size}`);
 console.log(`Checked packet fields: ${seenFields.size}`);
 console.log(`Checked object contexts: ${objectContexts.size}`);
+console.log(`Protected storage connected: ${rules.server_storage_connected === true}`);
+console.log(`Owner assignment enabled: ${rules.automatic_owner_assignment_enabled === true}`);
 
 if (errors.length) {
   console.error("\nLead handoff validation errors:");

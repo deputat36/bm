@@ -1,17 +1,24 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-07-18",
+  "schema_version": "2.0",
+  "updated_at": "2026-07-24",
   "portal_id": "newbuilds-borisoglebsk",
-  "status": "recommended_draft_not_operational",
-  "purpose": "Рекомендательная карта первого контакта и следующего шага без CRM, действующего SLA и назначения ответственных.",
+  "status": "server_connected_owner_activation_pending",
+  "purpose": "Карта первого контакта и следующего шага, подключённая к серверной очереди и техническому триажу. До управленческого утверждения ролей и SLA рекомендации не создают автоматическое назначение или просрочку.",
   "sources": {
     "qualification_logic": "assets/js/main.js",
     "form_matrix": "data/qa/form-scenarios.json",
-    "project_registry": "data/projects/index.json"
+    "project_registry": "data/projects/index.json",
+    "system_of_record": "public.newbuild_leads",
+    "operations_queue": "public.newbuild_lead_operations_queue_v1",
+    "transition_function": "public.newbuild_lead_transition"
   },
   "rules": {
+    "system_of_record_available": true,
+    "automatic_triage_enabled": true,
     "approved_sla_exists": false,
     "live_owner_assignment_exists": false,
+    "automatic_owner_assignment_enabled": false,
+    "operational_activation_enabled": false,
     "crm_mutation_enabled": false,
     "response_guidance_is_recommendation": true,
     "personal_data_in_playbook_forbidden": true,
@@ -66,6 +73,7 @@
   "lead_types": [
     {
       "id": "project_consultation",
+      "lead_class": "source_question",
       "first_questions": ["Что важно уточнить по объекту?", "Какая квартира рассматривается?", "Как планируется покупка и в какие сроки?"],
       "required_outcome": "Определён предмет консультации по объекту.",
       "source_check_required_by_default": true,
@@ -73,6 +81,7 @@
     },
     {
       "id": "portal_selection",
+      "lead_class": "buyer_intent",
       "first_questions": ["Какой формат квартиры рассматривается?", "Какой ориентир по бюджету и способу покупки?", "Насколько срочно нужно решение?"],
       "required_outcome": "Сформирован профиль подбора.",
       "source_check_required_by_default": false,
@@ -80,6 +89,7 @@
     },
     {
       "id": "mortgage",
+      "lead_class": "mortgage_request",
       "first_questions": ["Какой объект или бюджет рассматривается?", "Какой есть первоначальный взнос?", "Нужна оценка доступных программ?"],
       "required_outcome": "Собраны исходные данные для предварительной консультации.",
       "source_check_required_by_default": false,
@@ -130,5 +140,5 @@
     {"id": "invalid_or_spam", "requires_next_action": false},
     {"id": "do_not_contact", "requires_next_action": false}
   ],
-  "next_actions": ["source_check", "project_consultation", "mortgage_precheck", "selection_started", "alternative_selection", "updates_requested", "follow_up_scheduled", "close_no_action"]
+  "next_actions": ["assign_owner", "source_check", "project_consultation", "mortgage_precheck", "selection_started", "alternative_selection", "updates_requested", "follow_up_scheduled", "close_no_action"]
 }
