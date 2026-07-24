@@ -3,27 +3,23 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const HTML_FORM_EXPECTED = 14;
-const htmlFiles = [];
-
-function walk(dir) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if ([".git", "node_modules", ".github"].includes(entry.name)) continue;
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(full);
-    else if (entry.isFile() && entry.name.endsWith(".html")) htmlFiles.push(full);
-  }
-}
-
-walk(ROOT);
+const ACTIVE_FORM_PATHS = [
+  "index.html",
+  "catalog/index.html",
+  "catalog/prostornaya-4a/index.html",
+  "catalog/aerodromnaya-18g/index.html",
+  "catalog/sennaya-76/index.html",
+  "contacts/index.html",
+  "ipoteka/index.html"
+];
 
 let totalForms = 0;
 let updatedForms = 0;
 let updatedPages = 0;
 
-for (const file of htmlFiles) {
+for (const relativePath of ACTIVE_FORM_PATHS) {
+  const file = path.join(ROOT, relativePath);
   const before = fs.readFileSync(file, "utf8");
-  if (!before.includes("data-lead-form")) continue;
-
   const after = before.replace(
     /<form\b(?=[^>]*\bdata-lead-form\b)([^>]*)>([\s\S]*?)<\/form>/gi,
     (match, attrs, body) => {
@@ -41,10 +37,10 @@ for (const file of htmlFiles) {
 }
 
 if (totalForms !== HTML_FORM_EXPECTED) {
-  throw new Error(`Expected ${HTML_FORM_EXPECTED} lead forms, found ${totalForms}`);
+  throw new Error(`Expected ${HTML_FORM_EXPECTED} active lead forms, found ${totalForms}`);
 }
 if (updatedForms !== HTML_FORM_EXPECTED) {
-  throw new Error(`Expected to update ${HTML_FORM_EXPECTED} lead forms, updated ${updatedForms}`);
+  throw new Error(`Expected to update ${HTML_FORM_EXPECTED} active lead forms, updated ${updatedForms}`);
 }
 
 const mainPath = path.join(ROOT, "assets/js/main.js");
@@ -74,4 +70,4 @@ if (!String(pkg.scripts.validate || "").includes("validate-form-fail-closed.mjs"
 }
 fs.writeFileSync(packagePath, `${JSON.stringify(pkg, null, 2)}\n`);
 
-console.log(`Updated ${updatedForms} forms on ${updatedPages} pages.`);
+console.log(`Updated ${updatedForms} active forms on ${updatedPages} pages.`);
