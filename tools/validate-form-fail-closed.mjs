@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+// Active public forms must remain fail-closed until main.js initializes them.
 const ROOT = process.cwd();
 const MAIN_PATH = "assets/js/main.js";
 const ACTIVE_FORM_PATHS = [
