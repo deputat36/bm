@@ -25,6 +25,7 @@ function forbidFragment(source, fragment, label) {
 const main = read(MAIN_PATH);
 const schema = read(SCHEMA_PATH);
 const privacy = read(PRIVACY_PATH);
+const privacyLower = privacy.toLowerCase();
 
 requireFragment(main, `LEAD_ENDPOINT: "${ENDPOINT}"`, MAIN_PATH);
 requireFragment(main, 'WEB3FORMS_ACCESS_KEY: ""', MAIN_PATH);
@@ -50,9 +51,9 @@ requireFragment(main, "if (!response.ok || result.success === false)", MAIN_PATH
   "sendLeadWithPrivateFallback"
 ].forEach((fragment) => forbidFragment(schema, fragment, SCHEMA_PATH));
 
-requireFragment(privacy, "защищённый серверный реестр", PRIVACY_PATH);
-requireFragment(privacy, "сбой уведомления не отменяет основную запись", PRIVACY_PATH);
-forbidFragment(privacy, "через подключённый сервис обработки форм", PRIVACY_PATH);
+requireFragment(privacyLower, "защищённый серверный реестр", PRIVACY_PATH);
+requireFragment(privacyLower, "сбой уведомления не отменяет основную запись", PRIVACY_PATH);
+forbidFragment(privacyLower, "через подключённый сервис обработки форм", PRIVACY_PATH);
 
 const sendLeadStart = main.indexOf("async function sendLead(data)");
 const addHiddenStart = main.indexOf("function addHiddenField", sendLeadStart);
