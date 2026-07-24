@@ -33,10 +33,10 @@ jobs:
           node-version: 24
       - name: Apply primary lead route
         run: node tools/apply-primary-lead-route.mjs
-      - name: Check transformed JavaScript
-        run: |
-          node --check assets/js/main.js
-          node --check assets/js/schema.js
+      - name: Check main form script
+        run: node --check assets/js/main.js
+      - name: Check supporting schema script
+        run: node --check assets/js/schema.js
       - name: Validate primary route
         run: node tools/validate-primary-lead-route.mjs
       - name: Validate submit integrity
