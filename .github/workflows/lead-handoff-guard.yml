@@ -8,9 +8,27 @@ on:
       - "data/operations/lead-lifecycle.json"
       - "data/qa/form-scenarios.json"
       - "data/projects/index.json"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/validate-lead-handoff.mjs"
       - "tools/build-lead-handoff-report.mjs"
       - "docs/portal/LEAD_HANDOFF_CONTRACT.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
+      - ".github/workflows/lead-handoff-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "data/operations/lead-handoff.json"
+      - "data/operations/lead-handling.json"
+      - "data/operations/lead-lifecycle.json"
+      - "data/qa/form-scenarios.json"
+      - "data/projects/index.json"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/*newbuild_lead_operations*.sql"
+      - "tools/validate-lead-handoff.mjs"
+      - "tools/build-lead-handoff-report.mjs"
+      - "docs/portal/LEAD_HANDOFF_CONTRACT.md"
+      - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
       - ".github/workflows/lead-handoff-guard.yml"
   workflow_dispatch:
 
@@ -43,11 +61,14 @@ jobs:
           node - <<'NODE'
           const fs = require('fs');
           const data = JSON.parse(fs.readFileSync('/tmp/lead-handoff.json', 'utf8'));
-          if (data.status !== 'draft_contract_not_connected') process.exit(1);
+          if (data.status !== 'server_storage_connected_owner_assignment_pending') process.exit(1);
           if (data.summary?.total_templates !== 72) process.exit(1);
           if (data.summary?.selected_templates !== 72) process.exit(1);
           if (data.summary?.packet_sections !== 4) process.exit(1);
           if (data.summary?.runtime_email_payload_changed !== false) process.exit(1);
           if (data.summary?.crm_connected !== false) process.exit(1);
-          console.log(`Generated handoff templates: ${data.summary.total_templates}`);
+          if (data.rules?.server_storage_connected !== true) process.exit(1);
+          if (data.rules?.automatic_triage_enabled !== true) process.exit(1);
+          if (data.rules?.automatic_owner_assignment_enabled !== false) process.exit(1);
+          console.log(`Generated handoff templates: ${data.summary.total_templates}; protected storage: ${data.rules.server_storage_connected}`);
           NODE
