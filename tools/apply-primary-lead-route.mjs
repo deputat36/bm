@@ -40,7 +40,7 @@ function removeFunction(source, name) {
 }
 
 let main = fs.readFileSync("assets/js/main.js", "utf8");
-main = replaceOnce(main, /WEB3FORMS_ACCESS_KEY:\s*[^,]+,/, 'WEB3FORMS_ACCESS_KEY: "",', "Web3Forms key");
+main = replaceOnce(main, /^\s*WEB3FORMS_ACCESS_KEY:.*$/m, '  WEB3FORMS_ACCESS_KEY: "",', "Web3Forms key");
 main = replaceOnce(main, /LEAD_ENDPOINT:\s*"[^"]*",/, `LEAD_ENDPOINT: "${ENDPOINT}",`, "lead endpoint");
 main = replaceOnce(main, /SEND_EMAIL_COPY:\s*(?:true|false),/, "SEND_EMAIL_COPY: false,", "email copy flag");
 main = main.replace(/^const DRAFT_STORAGE_KEY = .*\r?\n/m, "");
