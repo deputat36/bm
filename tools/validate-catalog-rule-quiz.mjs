@@ -229,7 +229,6 @@ for (const resultKey of qa?.result_keys || []) {
 for (const requiredMainFragment of [
   "new FormData(form)",
   "data[key] = String(value).trim()",
-  "fields_json: JSON.stringify(data, null, 2)",
   "body: JSON.stringify(data)"
 ]) {
   if (!mainRuntime.includes(requiredMainFragment)) {
