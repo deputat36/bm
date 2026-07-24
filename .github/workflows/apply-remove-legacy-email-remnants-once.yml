@@ -1,0 +1,47 @@
+name: Apply remove legacy email remnants once
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/apply-remove-legacy-email-remnants.mjs"
+      - "tools/validate-no-legacy-email-remnants.mjs"
+      - ".github/workflows/apply-remove-legacy-email-remnants-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Remove legacy browser email remnants
+        run: node tools/apply-remove-legacy-email-remnants.mjs
+      - name: Validate cleaned scripts
+        run: |
+          node --check assets/js/main.js
+          node tools/validate-no-legacy-email-remnants.mjs
+          node tools/validate-primary-lead-route.mjs
+          node tools/validate-lead-submit-integrity.mjs
+          node tools/validate-offline-draft-privacy.mjs
+          npm run validate
+      - name: Remove one-time tooling
+        run: rm tools/apply-remove-legacy-email-remnants.mjs .github/workflows/apply-remove-legacy-email-remnants-once.yml
+      - name: Commit cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Удалить остатки старого почтового транспорта"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
