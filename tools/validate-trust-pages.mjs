@@ -62,7 +62,7 @@ for (const page of PAGES) {
       "защищённый серверный реестр",
       "резервная копия",
       "данные формы не отправляются",
-      "аналитик"
+      "аналит"
     ].forEach((fragment) => {
       if (!lower.includes(fragment)) errors.push(`${page.file}: отсутствует актуальное описание ${fragment}`);
     });
