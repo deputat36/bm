@@ -1,0 +1,40 @@
+name: Primary lead route guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/js/main.js"
+      - "assets/js/schema.js"
+      - "privacy/index.html"
+      - "tools/validate-primary-lead-route.mjs"
+      - "package.json"
+      - ".github/workflows/primary-lead-route-guard.yml"
+  pull_request:
+    paths:
+      - "assets/js/main.js"
+      - "assets/js/schema.js"
+      - "privacy/index.html"
+      - "tools/validate-primary-lead-route.mjs"
+      - "package.json"
+      - ".github/workflows/primary-lead-route-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-primary-route:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check validator
+        run: node --check tools/validate-primary-lead-route.mjs
+      - name: Validate primary lead route
+        run: node tools/validate-primary-lead-route.mjs

@@ -1,7 +1,7 @@
 const SITE_CONFIG = {
-  WEB3FORMS_ACCESS_KEY: ["c6b147c0", "0ce0", "43cb", "a41d", "2d112b6f1364"].join("-"),
-  LEAD_ENDPOINT: "",
-  SEND_EMAIL_COPY: true,
+  WEB3FORMS_ACCESS_KEY: "",
+  LEAD_ENDPOINT: "https://ofewxuqfjhamgerwzull.supabase.co/functions/v1/newbuild-lead",
+  SEND_EMAIL_COPY: false,
   ENABLE_THANK_YOU_REDIRECT: true,
   project: "Портал Новостройки Борисоглебска",
   projectId: "newbuilds-borisoglebsk",
@@ -37,7 +37,6 @@ const TRACKING_KEYS = [
 
 const TRACKING_STORAGE_KEY = "newbuildsBorisoglebskTracking";
 const LEGACY_TRACKING_STORAGE_KEY = "prostornayaTracking";
-const DRAFT_STORAGE_KEY = "newbuildsBorisoglebskLeadsDraft";
 const LAST_LEAD_STORAGE_KEY = "newbuildsBorisoglebskLastLead";
 const TRACKING_VALUE_MAX_LENGTH = 240;
 const TRACKING_CONTROL_PATTERN = /[\u0000-\u001f\u007f]/g;
@@ -352,56 +351,6 @@ function leadToReadableText(data) {
   ].join("\n");
 }
 
-async function sendWeb3FormsLead(data) {
-  const payload = {
-    access_key: SITE_CONFIG.WEB3FORMS_ACCESS_KEY,
-    subject: `Заявка ${data.lead_type || "general"} — ${data.residential_complex || data.project || "Новостройки Борисоглебска"}`,
-    from_name: "Портал Новостройки Борисоглебска",
-    name: data.name || "",
-    phone: data.phone || "",
-    lead_type: data.lead_type || "",
-    form_id: data.form_id || "",
-    interest: data.interest || data.room_type || "",
-    budget: data.budget || "",
-    purchase_method: data.purchase_method || data.mortgage_program || "",
-    timeline: data.timeline || data.purchase_timeline || "",
-    comment: data.comment || data.question || "",
-    project: data.project || "",
-    project_id: data.project_id || "",
-    project_name: data.project_name || "",
-    residential_complex: data.residential_complex || "",
-    residential_complex_id: data.residential_complex_id || "",
-    client_fixation_id: data.client_fixation_id || "",
-    qualification_status: data.qualification?.status || "",
-    qualification_score: String(data.qualification?.score || 0),
-    page_url: data.page_url || "",
-    page_title: data.page_title || "",
-    referrer: data.referrer || "",
-    lead_source: data.lead_source || "",
-    placement: data.placement || "",
-    tracking: JSON.stringify(data.tracking || {}),
-    personal_data_consent: data.personal_data_consent || "yes",
-    marketing_consent: data.marketing_consent || "no",
-    consent_text: data.consent_text || "",
-    policy_url: data.policy_url || "",
-    consent_url: data.consent_url || "",
-    submit_time_seconds: String(data.submit_time_seconds || 0),
-    created_at: data.created_at || "",
-    fields_json: JSON.stringify(data, null, 2),
-    message: leadToReadableText(data)
-  };
-
-  const response = await fetch("https://api.web3forms.com/submit", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok || result.success === false) throw new Error(result.message || "Web3Forms error");
-  return result;
-}
-
 async function sendCustomLead(data) {
   const response = await fetch(SITE_CONFIG.LEAD_ENDPOINT, {
     method: "POST",
@@ -409,34 +358,20 @@ async function sendCustomLead(data) {
     body: JSON.stringify(data)
   });
 
-  if (!response.ok) throw new Error("Lead endpoint error");
-  return response.json().catch(() => ({}));
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result.success === false) {
+    throw new Error(result.error || "Lead endpoint error");
+  }
+  return result;
 }
 
 async function sendLead(data) {
-  const tasks = [];
-
   if (data.spam_check?.likely_bot) {
     return { blocked: true };
   }
 
-  if (SITE_CONFIG.LEAD_ENDPOINT) tasks.push(sendCustomLead(data));
-  if (SITE_CONFIG.WEB3FORMS_ACCESS_KEY && SITE_CONFIG.SEND_EMAIL_COPY) tasks.push(sendWeb3FormsLead(data));
-
-  if (!tasks.length) {
-    const saved = safeJsonParse(safeStorageGet(DRAFT_STORAGE_KEY, "[]"), []);
-    saved.push(data);
-    if (!safeStorageSet(DRAFT_STORAGE_KEY, JSON.stringify(saved))) {
-      throw new Error("Offline draft storage unavailable");
-    }
-    return { offline: true };
-  }
-
-  const results = await Promise.allSettled(tasks);
-  const success = results.find((result) => result.status === "fulfilled");
-  if (success) return success.value || { success: true };
-
-  throw new Error("All lead destinations failed");
+  if (!SITE_CONFIG.LEAD_ENDPOINT) throw new Error("Lead endpoint unavailable");
+  return sendCustomLead(data);
 }
 
 function addHiddenField(form, name, value) {

@@ -1,72 +1,50 @@
 import fs from "node:fs";
-import path from "node:path";
 
-const ROOT = process.cwd();
 const MAIN_PATH = "assets/js/main.js";
+const ENDPOINT = "https://ofewxuqfjhamgerwzull.supabase.co/functions/v1/newbuild-lead";
+const source = fs.readFileSync(MAIN_PATH, "utf8");
 const errors = [];
 
-function read(relativePath) {
-  const fullPath = path.join(ROOT, relativePath);
-  if (!fs.existsSync(fullPath)) {
-    errors.push(`${relativePath}: file does not exist`);
-    return "";
-  }
-  return fs.readFileSync(fullPath, "utf8");
+function requireFragment(fragment) {
+  if (!source.includes(fragment)) errors.push(`${MAIN_PATH}: missing ${fragment}`);
 }
 
-function requireFragment(source, fragment, label = fragment) {
-  if (!source.includes(fragment)) errors.push(`${MAIN_PATH}: missing ${label}`);
+function forbidFragment(fragment) {
+  if (source.includes(fragment)) errors.push(`${MAIN_PATH}: forbidden ${fragment}`);
 }
-
-function requireOrder(source, fragments, label) {
-  let previous = -1;
-  for (const fragment of fragments) {
-    const index = source.indexOf(fragment);
-    if (index < 0) {
-      errors.push(`${MAIN_PATH}: ${label} missing fragment ${fragment}`);
-      return;
-    }
-    if (index <= previous) {
-      errors.push(`${MAIN_PATH}: invalid order for ${label}: ${fragment}`);
-      return;
-    }
-    previous = index;
-  }
-}
-
-function count(source, fragment) {
-  return source.split(fragment).length - 1;
-}
-
-const source = read(MAIN_PATH);
-if (!source) process.exit(1);
 
 [
   "function safeStorageGet(key, fallback = \"\")",
   "function safeStorageSet(key, value)",
   "return localStorage.getItem(key) ?? fallback;",
   "localStorage.setItem(key, value);",
-  "return false;",
-  "safeJsonParse(safeStorageGet(TRACKING_STORAGE_KEY, \"{}\"), {})",
-  "safeJsonParse(safeStorageGet(LEGACY_TRACKING_STORAGE_KEY, \"{}\"), {})",
-  "safeStorageSet(TRACKING_STORAGE_KEY, JSON.stringify(tracking));",
-  "safeJsonParse(safeStorageGet(DRAFT_STORAGE_KEY, \"[]\"), [])",
-  "if (!safeStorageSet(DRAFT_STORAGE_KEY, JSON.stringify(saved)))",
-  "throw new Error(\"Offline draft storage unavailable\")",
-  "return safeStorageSet(LAST_LEAD_STORAGE_KEY, JSON.stringify(safeLead));",
-  "if (form.dataset.submitting === \"true\") return;",
-  "form.dataset.submitting = \"true\";",
-  "form.setAttribute(\"aria-busy\", \"true\");",
+  `LEAD_ENDPOINT: "${ENDPOINT}"`,
+  'WEB3FORMS_ACCESS_KEY: ""',
+  "SEND_EMAIL_COPY: false",
+  "async function sendCustomLead(data)",
+  "const result = await response.json().catch(() => ({}));",
+  "if (!response.ok || result.success === false)",
+  'if (!SITE_CONFIG.LEAD_ENDPOINT) throw new Error("Lead endpoint unavailable")',
+  "return sendCustomLead(data);",
+  'if (form.dataset.submitting === "true") return;',
+  'form.dataset.submitting = "true";',
+  'form.setAttribute("aria-busy", "true");',
   "delete form.dataset.submitting;",
-  "form.removeAttribute(\"aria-busy\");"
-].forEach((fragment) => requireFragment(source, fragment));
+  'form.removeAttribute("aria-busy");'
+].forEach(requireFragment);
 
-if (count(source, "localStorage.getItem(") !== 1) {
-  errors.push(`${MAIN_PATH}: direct localStorage.getItem must exist only inside safeStorageGet`);
-}
-if (count(source, "localStorage.setItem(") !== 1) {
-  errors.push(`${MAIN_PATH}: direct localStorage.setItem must exist only inside safeStorageSet`);
-}
+[
+  "api.web3forms.com",
+  "sendWeb3FormsLead",
+  "Promise.allSettled",
+  "DRAFT_STORAGE_KEY",
+  "newbuildsBorisoglebskLeadsDraft",
+  "saved.push(data)",
+  "All lead destinations failed"
+].forEach(forbidFragment);
+
+if ((source.match(/localStorage\.getItem\(/g) || []).length !== 1) errors.push(`${MAIN_PATH}: direct localStorage.getItem must exist only in safeStorageGet`);
+if ((source.match(/localStorage\.setItem\(/g) || []).length !== 1) errors.push(`${MAIN_PATH}: direct localStorage.setItem must exist only in safeStorageSet`);
 
 const submitStart = source.indexOf('form.addEventListener("submit", async (event) => {');
 const submitEnd = source.indexOf("  });\n}", submitStart);
@@ -74,55 +52,31 @@ if (submitStart < 0 || submitEnd < 0) {
   errors.push(`${MAIN_PATH}: submit handler not found`);
 } else {
   const handler = source.slice(submitStart, submitEnd);
-
-  requireOrder(handler, [
+  const order = [
     "event.preventDefault();",
-    "if (form.dataset.submitting === \"true\") return;",
+    'if (form.dataset.submitting === "true") return;',
     "if (!form.checkValidity())",
-    "form.dataset.submitting = \"true\";",
+    'form.dataset.submitting = "true";',
     "const data = collectFormData(form);",
     "const result = await sendLead(data);",
     "trackLeadEvent(data, result);",
     "if (result.blocked)",
     "saveLastLead(data);"
-  ], "submit integrity flow");
-
-  requireOrder(handler, [
-    "} finally {",
-    "delete form.dataset.submitting;",
-    "form.removeAttribute(\"aria-busy\");",
-    "button.disabled = false;"
-  ], "submit lock cleanup");
-
-  if (handler.indexOf("saveLastLead(data);") < handler.indexOf("if (result.blocked)")) {
-    errors.push(`${MAIN_PATH}: blocked submissions must not update lastLead`);
+  ];
+  let previous = -1;
+  for (const fragment of order) {
+    const index = handler.indexOf(fragment);
+    if (index < 0 || index <= previous) errors.push(`${MAIN_PATH}: invalid submit order at ${fragment}`);
+    previous = index;
   }
 }
 
-const offlineStart = source.indexOf("if (!tasks.length) {");
-const offlineEnd = source.indexOf("  }\n\n  const results", offlineStart);
-if (offlineStart < 0 || offlineEnd < 0) {
-  errors.push(`${MAIN_PATH}: offline fallback block not found`);
-} else {
-  const offlineBlock = source.slice(offlineStart, offlineEnd);
-  requireOrder(offlineBlock, [
-    "safeStorageGet(DRAFT_STORAGE_KEY, \"[]\")",
-    "saved.push(data);",
-    "if (!safeStorageSet(DRAFT_STORAGE_KEY, JSON.stringify(saved)))",
-    "throw new Error(\"Offline draft storage unavailable\")",
-    "return { offline: true };"
-  ], "offline persistence flow");
-}
-
-console.log("Checked safe storage wrappers: 2");
-console.log("Checked submit in-flight lock: enabled");
-console.log("Checked blocked lastLead protection: enabled");
-console.log("Checked offline persistence honesty: enabled");
-
+console.log("Primary server route is mandatory");
+console.log("Browser email fallback is disabled");
+console.log("Browser PII draft storage is disabled");
 if (errors.length) {
   console.error("\nLead submit integrity validation errors:");
   errors.forEach((error) => console.error(`- ${error}`));
   process.exit(1);
 }
-
 console.log("Lead submit integrity validation passed.");

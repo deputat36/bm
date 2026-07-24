@@ -69,13 +69,22 @@ if (main.includes("user_agent: data.user_agent") || main.includes("`User agent: 
   errors.push(`${MAIN_PATH}: user agent must not be mapped into readable or top-level delivery fields`);
 }
 
-const web3Start = main.indexOf("async function sendWeb3FormsLead(data)");
-const web3End = main.indexOf("async function sendCustomLead(data)", web3Start);
-const web3Block = web3Start >= 0 && web3End > web3Start ? main.slice(web3Start, web3End) : "";
-if (!web3Block) {
-  errors.push(`${MAIN_PATH}: Web3Forms delivery block not found`);
-} else if (/\buser_agent\s*:/.test(web3Block)) {
-  errors.push(`${MAIN_PATH}: user_agent must not be an explicit Web3Forms field`);
+const customStart = main.indexOf("async function sendCustomLead(data)");
+const sendLeadStart = main.indexOf("async function sendLead(data)", customStart);
+const customBlock = customStart >= 0 && sendLeadStart > customStart ? main.slice(customStart, sendLeadStart) : "";
+if (!customBlock) {
+  errors.push(`${MAIN_PATH}: primary server delivery block not found`);
+} else {
+  if (/\buser_agent\s*:/.test(customBlock)) {
+    errors.push(`${MAIN_PATH}: user_agent must not be an explicit primary payload field`);
+  }
+  if (!customBlock.includes("body: JSON.stringify(data)")) {
+    errors.push(`${MAIN_PATH}: primary server payload serialization is missing`);
+  }
+}
+
+if (main.includes("sendWeb3FormsLead") || main.includes("api.web3forms.com")) {
+  errors.push(`${MAIN_PATH}: direct browser email delivery must remain removed`);
 }
 
 const prohibited = new Set(events?.rules?.prohibited_fields || []);
@@ -92,7 +101,8 @@ for (const event of events?.events || []) {
 
 console.log(`Legacy collector present: ${main.includes("data.user_agent = navigator.userAgent")}`);
 console.log("Checked collectFormData privacy wrapper: yes");
-console.log("Checked sendLead privacy wrapper: yes");
+console.log("Checked primary server payload: yes");
+console.log("Checked browser email transport removed: yes");
 console.log("Checked analytics prohibition: yes");
 
 if (errors.length) {

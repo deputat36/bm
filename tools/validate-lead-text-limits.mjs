@@ -103,8 +103,14 @@ if (!sendBlock.includes("sanitizeLeadTextFields")) {
   errors.push(`${RUNTIME_PATH}: sendLead must sanitize text fields again`);
 }
 
-if (!main.includes("fields_json: JSON.stringify(data, null, 2)")) {
-  errors.push(`${MAIN_PATH}: Web3Forms fields_json contract not found`);
+const customStart = main.indexOf("async function sendCustomLead(data)");
+const sendLeadStart = main.indexOf("async function sendLead(data)", customStart);
+const customBlock = customStart >= 0 && sendLeadStart > customStart ? main.slice(customStart, sendLeadStart) : "";
+if (!customBlock.includes("body: JSON.stringify(data)")) {
+  errors.push(`${MAIN_PATH}: primary server JSON payload contract not found`);
+}
+if (main.includes("fields_json:") || main.includes("sendWeb3FormsLead")) {
+  errors.push(`${MAIN_PATH}: legacy browser email payload must remain removed`);
 }
 
 console.log(`Lead text fields with limits: ${Object.keys(EXPECTED_LIMITS).length}`);
@@ -112,6 +118,7 @@ console.log(`Name limit: ${EXPECTED_LIMITS.name}`);
 console.log(`Short free-text limit: ${EXPECTED_LIMITS.budget}`);
 console.log(`Long free-text limit: ${EXPECTED_LIMITS.comment}`);
 console.log("Sanitization layers: collectFormData + sendLead");
+console.log("Delivery contract: primary server JSON only");
 
 if (errors.length) {
   console.error("\nLead text limits validation errors:");
