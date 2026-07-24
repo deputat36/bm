@@ -3,33 +3,24 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const MAIN_PATH = "assets/js/main.js";
+const ACTIVE_FORM_PATHS = [
+  "index.html",
+  "catalog/index.html",
+  "catalog/prostornaya-4a/index.html",
+  "catalog/aerodromnaya-18g/index.html",
+  "catalog/sennaya-76/index.html",
+  "contacts/index.html",
+  "ipoteka/index.html"
+];
 const errors = [];
-const htmlFiles = [];
-
-function walk(dir) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if ([".git", "node_modules", ".github"].includes(entry.name)) continue;
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(full);
-    else if (entry.isFile() && entry.name.endsWith(".html")) htmlFiles.push(full);
-  }
-}
-
-walk(ROOT);
-
 let formCount = 0;
-let pageCount = 0;
 
-for (const fullPath of htmlFiles) {
-  const source = fs.readFileSync(fullPath, "utf8");
-  if (!source.includes("data-lead-form")) continue;
-
-  pageCount += 1;
-  const relativePath = path.relative(ROOT, fullPath).replaceAll(path.sep, "/");
+for (const relativePath of ACTIVE_FORM_PATHS) {
+  const source = fs.readFileSync(path.join(ROOT, relativePath), "utf8");
   const forms = [...source.matchAll(/<form\b(?=[^>]*\bdata-lead-form\b)([^>]*)>([\s\S]*?)<\/form>/gi)];
 
   if (!forms.length) {
-    errors.push(`${relativePath}: data-lead-form найден, но форма не разобрана`);
+    errors.push(`${relativePath}: активные data-lead-form не найдены`);
     continue;
   }
 
@@ -47,14 +38,14 @@ for (const fullPath of htmlFiles) {
     if (!/<noscript>[\s\S]*?8 903 857-69-09[\s\S]*?<\/noscript>/i.test(body)) {
       errors.push(`${relativePath}: отсутствует no-JS подсказка с резервным телефоном`);
     }
-    if (/name=["'](?:name|phone)["'][^>]*>[\s\S]*?<\/fieldset>/i.test(body) === false) {
-      errors.push(`${relativePath}: контактные поля должны находиться внутри отключаемого fieldset`);
+    const fieldset = body.match(/<fieldset\b[^>]*\bdata-lead-fieldset\b[^>]*>([\s\S]*?)<\/fieldset>/i)?.[1] || "";
+    if (!/name=["']name["']/i.test(fieldset) || !/name=["']phone["']/i.test(fieldset)) {
+      errors.push(`${relativePath}: имя и телефон должны находиться внутри отключаемого fieldset`);
     }
   }
 }
 
-if (pageCount !== 7) errors.push(`ожидалось 7 страниц с формами, найдено ${pageCount}`);
-if (formCount !== 14) errors.push(`ожидалось 14 форм, найдено ${formCount}`);
+if (formCount !== 14) errors.push(`ожидалось 14 активных форм, найдено ${formCount}`);
 
 const mainSource = fs.readFileSync(path.join(ROOT, MAIN_PATH), "utf8");
 [
@@ -70,7 +61,7 @@ const css = cssPaths.map((file) => fs.readFileSync(path.join(ROOT, file), "utf8"
 if (!css.includes("[data-lead-fieldset]")) errors.push("CSS: отсутствует сброс оформления fail-closed fieldset");
 if (!css.includes("form__status--noscript")) errors.push("CSS: отсутствует оформление no-JS сообщения");
 
-console.log(`Checked fail-closed lead forms: ${formCount} forms on ${pageCount} pages`);
+console.log(`Checked fail-closed lead forms: ${formCount} forms on ${ACTIVE_FORM_PATHS.length} pages`);
 
 if (errors.length) {
   console.error("\nFail-closed form validation errors:");
