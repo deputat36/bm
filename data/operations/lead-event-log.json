@@ -1,21 +1,28 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-07-15",
+  "schema_version": "2.0",
+  "updated_at": "2026-07-24",
   "portal_id": "newbuilds-borisoglebsk",
-  "status": "draft_contract_not_connected",
-  "purpose": "Append-only контракт истории первичного обращения без хранения реальных лидов в репозитории и без автоматического изменения CRM.",
+  "status": "server_append_only_connected",
+  "purpose": "Append-only контракт истории первичного обращения, подключённый к public.newbuild_lead_events. Репозиторий хранит только схему и правила; реальные события и персональные данные остаются в защищённом Supabase-контуре.",
   "sources": {
     "lifecycle_contract": "data/operations/lead-lifecycle.json",
     "handling_playbook": "data/operations/lead-handling.json",
-    "handoff_contract": "data/operations/lead-handoff.json"
+    "handoff_contract": "data/operations/lead-handoff.json",
+    "system_of_record": "public.newbuild_leads",
+    "event_table": "public.newbuild_lead_events",
+    "transition_function": "public.newbuild_lead_transition"
   },
   "rules": {
     "append_only": true,
+    "database_append_only_trigger_enabled": true,
     "event_update_forbidden": true,
     "event_delete_forbidden": true,
     "real_event_records_in_repository_forbidden": true,
     "personal_values_in_generated_reports_forbidden": true,
-    "automatic_transition_enabled": false,
+    "automatic_transition_enabled": true,
+    "automatic_triage_only": true,
+    "automatic_owner_assignment_enabled": false,
+    "operational_activation_enabled": false,
     "crm_connected": false,
     "approved_sla_exists": false,
     "actor_is_role_not_person": true,
@@ -44,12 +51,13 @@
     "portal_system",
     "lead_operator",
     "manager",
-    "source_reviewer"
+    "source_reviewer",
+    "integration_system"
   ],
   "source_systems": [
     "portal_form",
+    "supabase:newbuild_leads",
     "manual_register",
-    "future_endpoint",
     "future_crm"
   ],
   "reason_codes": [
@@ -75,11 +83,12 @@
       "conversation_text",
       "client_fixation_id"
     ],
-    "repository_may_store_contract_only": true
+    "repository_may_store_contract_only": true,
+    "database_event_payload_must_be_minimized": true
   },
   "rendering": {
-    "payload_version": "1.0",
-    "default_source_system": "manual_register",
+    "payload_version": "2.0",
+    "default_source_system": "supabase:newbuild_leads",
     "default_actor_role": "lead_operator"
   }
 }
