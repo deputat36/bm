@@ -552,6 +552,9 @@ function shouldRedirectAfterSuccess(form, result) {
 function enhanceLeadForm(form) {
   getTrackingData();
   form.dataset.startedAt = String(Date.now());
+  const failClosedFieldset = form.querySelector("[data-lead-fieldset]");
+  if (failClosedFieldset) failClosedFieldset.disabled = false;
+  form.dataset.jsReady = "true";
   addHoneypot(form);
   addHiddenField(form, "lead_type", form.dataset.leadType);
   addHiddenField(form, "form_id", form.dataset.formId);

@@ -288,3 +288,21 @@
     padding: 0;
   }
 }
+
+
+/* Fail-closed lead forms */
+[data-lead-fieldset] {
+  border: 0;
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
+}
+
+[data-lead-form]:not([data-js-ready="true"]) [data-lead-fieldset] {
+  opacity: 0.72;
+}
+
+.form__status--noscript {
+  display: block;
+  margin-top: 12px;
+}
