@@ -1,0 +1,45 @@
+name: Apply no-JS phone text once
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "tools/apply-noscript-phone-text.mjs"
+      - ".github/workflows/apply-noscript-phone-text-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Replace no-JS phone links
+        run: node tools/apply-noscript-phone-text.mjs
+      - name: Validate protected forms and runtime
+        run: |
+          node tools/validate-form-fail-closed.mjs
+          node tools/validate-conversion-runtime.mjs
+          node tools/validate-phone-cta-report.mjs
+      - name: Remove one-time tooling
+        run: rm tools/apply-noscript-phone-text.mjs .github/workflows/apply-noscript-phone-text-once.yml
+      - name: Commit corrected pages
+        env:
+          TARGET_BRANCH: ${{ github.head_ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Убрать ложные phone CTA из no-JS режима"
+          git push origin "HEAD:${TARGET_BRANCH}"
