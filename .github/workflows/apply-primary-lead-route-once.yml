@@ -33,25 +33,56 @@ jobs:
           node-version: 24
       - name: Apply primary lead route
         run: node tools/apply-primary-lead-route.mjs
-      - name: Check main form script
-        run: node --check assets/js/main.js
-      - name: Check supporting schema script
-        run: node --check assets/js/schema.js
-      - name: Validate primary route
-        run: node tools/validate-primary-lead-route.mjs
-      - name: Validate submit integrity
-        run: node tools/validate-lead-submit-integrity.mjs
-      - name: Validate offline privacy
-        run: node tools/validate-offline-draft-privacy.mjs
-      - name: Validate complete project
-        shell: bash
+      - name: Check transformed scripts
         run: |
-          if ! npm run validate > /tmp/full-validation.log 2>&1; then
-            echo "Последние строки общей проверки:"
-            tail -n 120 /tmp/full-validation.log
-            exit 1
-          fi
-          tail -n 40 /tmp/full-validation.log
+          node --check assets/js/main.js
+          node --check assets/js/schema.js
+          node tools/validate-primary-lead-route.mjs
+          node tools/validate-lead-submit-integrity.mjs
+          node tools/validate-offline-draft-privacy.mjs
+      - name: Validate core forms and operations
+        run: |
+          node tools/validate-static-site.mjs
+          node tools/validate-thankyou-context.mjs
+          node tools/validate-catalog-conversion.mjs
+          node tools/validate-catalog-rule-quiz.mjs
+          node tools/validate-lead-operations-approval.mjs
+          node tools/validate-lead-operations-runtime.mjs
+          node tools/validate-launch-operations-gate.mjs
+          node tools/validate-form-qa-execution-pack.mjs
+      - name: Validate guides and conversion routes
+        run: |
+          node tools/validate-guide-permit-commissioning.mjs
+          node tools/validate-guide-uncommissioned-section.mjs
+          node tools/validate-guide-content-registry.mjs
+          node tools/validate-guide-launch-gate.mjs
+          node tools/validate-guide-review-pack.mjs
+          node tools/validate-homepage-object-cta.mjs
+          node tools/validate-contacts-conversion.mjs
+          node tools/validate-mortgage-conversion.mjs
+          node tools/validate-contextual-conversion.mjs
+          node tools/validate-lead-source-output.mjs
+          node tools/validate-form-role-analytics.mjs
+      - name: Validate analytics and campaign flows
+        run: |
+          node tools/validate-analytics-events.mjs
+          node tools/validate-analytics-funnel-report.mjs
+          node tools/validate-analytics-debug-mode.mjs
+          node tools/validate-conversion-runtime.mjs
+          node tools/validate-form-qa-scenarios.mjs
+          node tools/validate-form-qa-results.mjs
+          node tools/validate-campaign-release.mjs
+          node tools/validate-campaign-publications.mjs
+      - name: Validate verification and safety gates
+        run: |
+          node tools/validate-object-verification-profiles.mjs
+          node tools/validate-prostornaya-page-verification-safety.mjs
+          node tools/validate-project-verification-summary.mjs
+          node tools/validate-project-readiness-report.mjs
+          node tools/validate-source-collection.mjs
+          node tools/validate-launch-gates.mjs
+          node tools/validate-form-fail-closed.mjs
+          node tools/validate-primary-lead-route.mjs
       - name: Remove one-time tooling
         run: rm tools/apply-primary-lead-route.mjs .github/workflows/apply-primary-lead-route-once.yml
       - name: Commit transformed files
