@@ -44,7 +44,14 @@ jobs:
       - name: Validate offline privacy
         run: node tools/validate-offline-draft-privacy.mjs
       - name: Validate complete project
-        run: npm run validate
+        shell: bash
+        run: |
+          if ! npm run validate > /tmp/full-validation.log 2>&1; then
+            echo "Последние строки общей проверки:"
+            tail -n 120 /tmp/full-validation.log
+            exit 1
+          fi
+          tail -n 40 /tmp/full-validation.log
       - name: Remove one-time tooling
         run: rm tools/apply-primary-lead-route.mjs .github/workflows/apply-primary-lead-route-once.yml
       - name: Commit transformed files
