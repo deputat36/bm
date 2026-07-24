@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+// The no-JS fallback is readable contact text, not an analytics-capable CTA.
 const ROOT = process.cwd();
 const ACTIVE_FORM_PATHS = [
   "index.html",
