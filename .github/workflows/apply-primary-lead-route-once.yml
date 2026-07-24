@@ -33,14 +33,18 @@ jobs:
           node-version: 24
       - name: Apply primary lead route
         run: node tools/apply-primary-lead-route.mjs
-      - name: Validate transformed route
+      - name: Check transformed JavaScript
         run: |
           node --check assets/js/main.js
           node --check assets/js/schema.js
-          node tools/validate-primary-lead-route.mjs
-          node tools/validate-lead-submit-integrity.mjs
-          node tools/validate-offline-draft-privacy.mjs
-          npm run validate
+      - name: Validate primary route
+        run: node tools/validate-primary-lead-route.mjs
+      - name: Validate submit integrity
+        run: node tools/validate-lead-submit-integrity.mjs
+      - name: Validate offline privacy
+        run: node tools/validate-offline-draft-privacy.mjs
+      - name: Validate complete project
+        run: npm run validate
       - name: Remove one-time tooling
         run: rm tools/apply-primary-lead-route.mjs .github/workflows/apply-primary-lead-route-once.yml
       - name: Commit transformed files
