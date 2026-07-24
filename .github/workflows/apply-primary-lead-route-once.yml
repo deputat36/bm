@@ -40,16 +40,22 @@ jobs:
           node tools/validate-primary-lead-route.mjs
           node tools/validate-lead-submit-integrity.mjs
           node tools/validate-offline-draft-privacy.mjs
-      - name: Validate core forms and operations
-        run: |
-          node tools/validate-static-site.mjs
-          node tools/validate-thankyou-context.mjs
-          node tools/validate-catalog-conversion.mjs
-          node tools/validate-catalog-rule-quiz.mjs
-          node tools/validate-lead-operations-approval.mjs
-          node tools/validate-lead-operations-runtime.mjs
-          node tools/validate-launch-operations-gate.mjs
-          node tools/validate-form-qa-execution-pack.mjs
+      - name: Validate static site
+        run: node tools/validate-static-site.mjs
+      - name: Validate thank-you context
+        run: node tools/validate-thankyou-context.mjs
+      - name: Validate catalog conversion
+        run: node tools/validate-catalog-conversion.mjs
+      - name: Validate catalog rule quiz
+        run: node tools/validate-catalog-rule-quiz.mjs
+      - name: Validate operations approval
+        run: node tools/validate-lead-operations-approval.mjs
+      - name: Validate operations runtime
+        run: node tools/validate-lead-operations-runtime.mjs
+      - name: Validate operations launch gate
+        run: node tools/validate-launch-operations-gate.mjs
+      - name: Validate form QA execution pack
+        run: node tools/validate-form-qa-execution-pack.mjs
       - name: Validate guides and conversion routes
         run: |
           node tools/validate-guide-permit-commissioning.mjs
