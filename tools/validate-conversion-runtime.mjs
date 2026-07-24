@@ -45,6 +45,10 @@ function getAnchorTags(html) {
   return html.match(/<a\b[^>]*href=["'][^"']+["'][^>]*>/gi) || [];
 }
 
+function withoutNoScript(html) {
+  return String(html || "").replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
+}
+
 function countOccurrences(text, fragment) {
   return text.split(fragment).length - 1;
 }
@@ -151,7 +155,8 @@ for (const [pageFile, page] of pages) {
     checkedForms += count;
   }
 
-  const anchors = getAnchorTags(html);
+  // A phone inside <noscript> is a non-JavaScript safety fallback and cannot emit analytics.
+  const anchors = getAnchorTags(withoutNoScript(html));
   for (const anchor of anchors) {
     const href = getAttribute(anchor, "href");
     const action = getAttribute(anchor, "data-track-action");

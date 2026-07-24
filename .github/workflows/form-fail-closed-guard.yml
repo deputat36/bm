@@ -1,0 +1,42 @@
+name: Form fail-closed guard
+
+on:
+  pull_request:
+    paths:
+      - "**/*.html"
+      - "assets/js/main.js"
+      - "assets/css/leadgen.css"
+      - "assets/css/styles.css"
+      - "tools/validate-form-fail-closed.mjs"
+      - "package.json"
+      - ".github/workflows/form-fail-closed-guard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.html"
+      - "assets/js/main.js"
+      - "assets/css/leadgen.css"
+      - "assets/css/styles.css"
+      - "tools/validate-form-fail-closed.mjs"
+      - "package.json"
+      - ".github/workflows/form-fail-closed-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-form-fail-closed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check validator
+        run: node --check tools/validate-form-fail-closed.mjs
+      - name: Validate fail-closed forms
+        run: node tools/validate-form-fail-closed.mjs
