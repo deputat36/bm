@@ -1,0 +1,61 @@
+name: Live lead endpoint smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 4 * * *"
+  pull_request:
+    branches: [main]
+    paths:
+      - "assets/js/main.js"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "tools/smoke-live-lead-endpoint.mjs"
+      - "tools/validate-live-lead-smoke-contract.mjs"
+      - ".github/workflows/live-lead-endpoint-smoke.yml"
+  push:
+    branches: [main]
+    paths:
+      - "assets/js/main.js"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "tools/smoke-live-lead-endpoint.mjs"
+      - "tools/validate-live-lead-smoke-contract.mjs"
+      - ".github/workflows/live-lead-endpoint-smoke.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-lead-endpoint-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check scripts
+        run: |
+          node --check tools/smoke-live-lead-endpoint.mjs
+          node --check tools/validate-live-lead-smoke-contract.mjs
+      - name: Validate non-persistent contract
+        run: node tools/validate-live-lead-smoke-contract.mjs
+
+  live-smoke:
+    needs: contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check deployed lead endpoint without persistence
+        run: node tools/smoke-live-lead-endpoint.mjs
