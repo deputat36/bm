@@ -1,6 +1,7 @@
 import fs from "node:fs";
 
 const SMOKE_PATH = "tools/smoke-live-lead-endpoint.mjs";
+const REPORT_PATH = "tools/report-live-lead-smoke.mjs";
 const WORKFLOW_PATH = ".github/workflows/live-lead-endpoint-smoke.yml";
 const EDGE_PATH = "supabase/functions/newbuild-lead/index.ts";
 const MAIN_PATH = "assets/js/main.js";
@@ -24,6 +25,7 @@ function forbidPattern(source, pattern, label) {
 }
 
 const smoke = read(SMOKE_PATH);
+const report = read(REPORT_PATH);
 const workflow = read(WORKFLOW_PATH);
 const edge = read(EDGE_PATH);
 const main = read(MAIN_PATH);
@@ -43,13 +45,31 @@ const main = read(MAIN_PATH);
 ].forEach((fragment) => requireFragment(smoke, fragment, SMOKE_PATH));
 
 [
-  "permissions:\n  contents: read",
+  'const TITLE = "[Автомониторинг] Сбой обработчика заявок";',
+  'const status = process.env.MONITOR_STATUS || "failure";',
+  '"/issues?state=all&per_page=100&sort=updated&direction=desc"',
+  'issue.title === TITLE',
+  'JSON.stringify({ title: TITLE, body })',
+  'JSON.stringify({ state: "open", body })',
+  'JSON.stringify({ state: "closed", state_reason: "completed" })',
+  'Задача будет автоматически закрыта после успешного восстановления проверки',
+  'Проверка использует только health, CORS и заведомо отклоняемые запросы'
+].forEach((fragment) => requireFragment(report, fragment, REPORT_PATH));
+
+[
+  "permissions:\n  contents: read\n  issues: write",
   "workflow_dispatch:",
   "schedule:",
   "pull_request:",
   "push:",
   "node tools/validate-live-lead-smoke-contract.mjs",
-  "node tools/smoke-live-lead-endpoint.mjs"
+  "node tools/smoke-live-lead-endpoint.mjs",
+  "node --check tools/report-live-lead-smoke.mjs",
+  "if: ${{ always() && github.event_name != 'pull_request' }}",
+  "needs: [contract, live-smoke]",
+  "GITHUB_TOKEN: ${{ github.token }}",
+  "MONITOR_STATUS: ${{ needs.contract.result == 'success' && needs.live-smoke.result == 'success' && 'success' || 'failure' }}",
+  "run: node tools/report-live-lead-smoke.mjs"
 ].forEach((fragment) => requireFragment(workflow, fragment, WORKFLOW_PATH));
 
 requireFragment(main, `LEAD_ENDPOINT: "${ENDPOINT}"`, MAIN_PATH);
@@ -59,7 +79,10 @@ forbidPattern(smoke, /marketing_consent\s*:\s*(?:true|"yes"|'yes')/i, SMOKE_PATH
 forbidPattern(smoke, /\bname\s*:\s*["'`]/, SMOKE_PATH);
 forbidPattern(smoke, /\bemail\s*:\s*["'`]/, SMOKE_PATH);
 forbidPattern(smoke, /newbuild_leads\?select|rest\/v1|service_role|apikey/i, SMOKE_PATH);
+forbidPattern(report, /\b(phone|email|name|comment|question)\s*:/i, REPORT_PATH);
+forbidPattern(report, /newbuild_leads|service_role|supabase/i, REPORT_PATH);
 forbidPattern(workflow, /contents:\s*write/, WORKFLOW_PATH);
+forbidPattern(workflow, /pull_request_target\s*:/, WORKFLOW_PATH);
 
 const order = [
   'if (!isAllowedOrigin(origin))',
@@ -93,6 +116,7 @@ if (consentIndex < 0 || rateLimitIndex < 0 || insertIndex < 0 || !(consentIndex 
 console.log("Checked live smoke endpoint and production origin.");
 console.log("Checked smoke payloads: none can pass consent validation.");
 console.log("Checked Edge Function order: validation precedes rate limit and persistence.");
+console.log("Checked monitoring issue lifecycle: open/update on failure, close on recovery, skipped for pull requests.");
 
 if (errors.length) {
   console.error("\nLive lead smoke contract validation errors:");
