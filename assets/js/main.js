@@ -1,7 +1,5 @@
 const SITE_CONFIG = {
-  WEB3FORMS_ACCESS_KEY: "",
   LEAD_ENDPOINT: "https://ofewxuqfjhamgerwzull.supabase.co/functions/v1/newbuild-lead",
-  SEND_EMAIL_COPY: false,
   ENABLE_THANK_YOU_REDIRECT: true,
   project: "Портал Новостройки Борисоглебска",
   projectId: "newbuilds-borisoglebsk",
@@ -296,59 +294,6 @@ function collectFormData(form) {
   data.qualification = qualifyLead(data);
 
   return data;
-}
-
-function leadToReadableText(data) {
-  const tracking = data.tracking || {};
-  const current = tracking.current || {};
-  const firstTouch = tracking.first_touch || {};
-  const lastTouch = tracking.last_touch || {};
-  const qualification = data.qualification || {};
-
-  return [
-    `Тип заявки: ${data.lead_type || ""}`,
-    `ID фиксации клиента: ${data.client_fixation_id || ""}`,
-    `Проект: ${data.project || ""}`,
-    `ID проекта: ${data.project_id || ""}`,
-    `Название проекта: ${data.project_name || ""}`,
-    `ЖК: ${data.residential_complex || ""}`,
-    `ID ЖК: ${data.residential_complex_id || ""}`,
-    `Имя: ${data.name || ""}`,
-    `Телефон: ${data.phone || ""}`,
-    `Телефон нормализованный: ${data.phone_normalized || ""}`,
-    `Интерес: ${data.interest || data.room_type || ""}`,
-    `Бюджет: ${data.budget || ""}`,
-    `Способ покупки: ${data.purchase_method || data.mortgage_program || ""}`,
-    `Срок покупки: ${data.timeline || data.purchase_timeline || ""}`,
-    `Комментарий: ${data.comment || data.question || ""}`,
-    `Квалификация: ${qualification.status || ""}, ${qualification.score || 0} баллов, ${qualification.priority || ""}`,
-    `Причины квалификации: ${(qualification.reasons || []).join(", ")}`,
-    `Время заполнения формы: ${data.submit_time_seconds || 0} сек.`,
-    `Форма: ${data.form_id || ""}`,
-    `Страница: ${data.page_url || data.source || ""}`,
-    `Заголовок страницы: ${data.page_title || ""}`,
-    `Источник перехода: ${data.referrer || ""}`,
-    `Внутренний источник: ${data.lead_source || ""}`,
-    `Размещение перехода: ${data.placement || ""}`,
-    `Первое касание: ${firstTouch.page_url || ""}`,
-    `Последнее касание: ${lastTouch.page_url || ""}`,
-    `utm_source: ${current.utm_source || ""}`,
-    `utm_medium: ${current.utm_medium || ""}`,
-    `utm_campaign: ${current.utm_campaign || ""}`,
-    `utm_content: ${current.utm_content || ""}`,
-    `utm_term: ${current.utm_term || ""}`,
-    `gclid: ${current.gclid || ""}`,
-    `yclid: ${current.yclid || ""}`,
-    `vkclid: ${current.vkclid || ""}`,
-    `realtor: ${current.realtor || ""}`,
-    `realtor_id: ${current.realtor_id || ""}`,
-    `Согласие на обработку данных: ${data.personal_data_consent || ""}`,
-    `Согласие на новости/ожидание: ${data.marketing_consent || ""}`,
-    `Текст согласия: ${data.consent_text || ""}`,
-    `Политика обработки данных: ${data.policy_url || ""}`,
-    `Страница согласия: ${data.consent_url || ""}`,
-    `Дата: ${data.created_at || ""}`
-  ].join("\n");
 }
 
 async function sendCustomLead(data) {

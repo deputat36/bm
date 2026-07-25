@@ -48,8 +48,6 @@ requireFragments(main, MAIN_PATH, [
   'LEAD_ENDPOINT: "' + ENDPOINT + '"',
   'data.lead_source = data.lead_source || data.tracking?.current?.lead_source || "";',
   'data.placement = data.placement || data.tracking?.current?.placement || "";',
-  '`Внутренний источник: ${data.lead_source || ""}`',
-  '`Размещение перехода: ${data.placement || ""}`',
   'lead_source: data.lead_source || ""',
   'placement: data.placement || ""',
   'body: JSON.stringify(data)',
@@ -57,6 +55,7 @@ requireFragments(main, MAIN_PATH, [
 ]);
 
 forbidFragments(main, MAIN_PATH, [
+  "leadToReadableText",
   "sendWeb3FormsLead",
   "api.web3forms.com",
   "Promise.allSettled",
@@ -115,9 +114,16 @@ forbiddenBindings.forEach((pattern) => {
   if (pattern.test(main) || pattern.test(tracking) || pattern.test(mobile)) errors.push(`Техническая атрибуция связана с персональными полями: ${pattern}`);
 });
 
-console.log("Lead source and placement preserved in the primary server payload");
+const collectStart = main.indexOf("function collectFormData(form)");
+const sendStart = main.indexOf("async function sendCustomLead(data)");
+const collectBlock = collectStart >= 0 && sendStart > collectStart ? main.slice(collectStart, sendStart) : "";
+if (!collectBlock.includes("data.lead_source") || !collectBlock.includes("data.placement")) {
+  errors.push(`${MAIN_PATH}: источник и размещение должны добавляться до серверной отправки`);
+}
+
+console.log("Lead source and placement preserved in the primary server JSON payload");
 console.log("Mobile bar transport override removed");
-console.log("Browser email duplication removed");
+console.log("Browser email duplication and readable email formatter removed");
 
 if (errors.length) {
   console.error("\nLead source output validation errors:");

@@ -19,8 +19,6 @@ function forbidFragment(fragment) {
   "return localStorage.getItem(key) ?? fallback;",
   "localStorage.setItem(key, value);",
   `LEAD_ENDPOINT: "${ENDPOINT}"`,
-  'WEB3FORMS_ACCESS_KEY: ""',
-  "SEND_EMAIL_COPY: false",
   "async function sendCustomLead(data)",
   "const result = await response.json().catch(() => ({}));",
   "if (!response.ok || result.success === false)",
@@ -34,6 +32,9 @@ function forbidFragment(fragment) {
 ].forEach(requireFragment);
 
 [
+  "WEB3FORMS_ACCESS_KEY",
+  "SEND_EMAIL_COPY",
+  "leadToReadableText",
   "api.web3forms.com",
   "sendWeb3FormsLead",
   "Promise.allSettled",
