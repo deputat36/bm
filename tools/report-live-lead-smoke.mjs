@@ -3,6 +3,7 @@ const token = process.env.GITHUB_TOKEN || "";
 const repository = process.env.GITHUB_REPOSITORY || "";
 const runId = process.env.GITHUB_RUN_ID || "";
 const serverUrl = process.env.GITHUB_SERVER_URL || "https://github.com";
+const apiUrl = (process.env.GITHUB_API_URL || "https://api.github.com").replace(/\/+$/, "");
 const status = process.env.MONITOR_STATUS || "failure";
 const eventName = process.env.GITHUB_EVENT_NAME || "unknown";
 const refName = process.env.GITHUB_REF_NAME || "unknown";
@@ -16,7 +17,7 @@ requireValue(token, "GITHUB_TOKEN");
 requireValue(repository, "GITHUB_REPOSITORY");
 requireValue(runId, "GITHUB_RUN_ID");
 
-const apiBase = `https://api.github.com/repos/${repository}`;
+const apiBase = `${apiUrl}/repos/${repository}`;
 const runUrl = `${serverUrl}/${repository}/actions/runs/${runId}`;
 
 async function github(path, init = {}) {
@@ -33,7 +34,13 @@ async function github(path, init = {}) {
   });
 
   const text = await response.text();
-  const body = text ? JSON.parse(text) : null;
+  let body = null;
+  try {
+    body = text ? JSON.parse(text) : null;
+  } catch (_error) {
+    if (!response.ok) throw new Error(`GitHub API ${response.status}: ${text || "invalid response"}`);
+    throw new Error(`GitHub API returned invalid JSON: ${text.slice(0, 240)}`);
+  }
   if (!response.ok) {
     throw new Error(`GitHub API ${response.status}: ${body?.message || text || "unknown error"}`);
   }
