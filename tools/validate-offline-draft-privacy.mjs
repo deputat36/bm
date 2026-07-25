@@ -31,8 +31,9 @@ if (saveStart < 0 || trackStart < 0) {
   });
 }
 
-if (!main.includes('WEB3FORMS_ACCESS_KEY: ""')) errors.push("browser Web3Forms key must be empty");
-if (!main.includes("SEND_EMAIL_COPY: false")) errors.push("browser email copy must be disabled");
+if (main.includes("WEB3FORMS_ACCESS_KEY")) errors.push("browser Web3Forms key setting must be absent");
+if (main.includes("SEND_EMAIL_COPY")) errors.push("browser email copy setting must be absent");
+if (main.includes("leadToReadableText")) errors.push("legacy readable email formatter must be absent");
 if (!main.includes("return sendCustomLead(data);")) errors.push("primary server route is missing");
 
 if (errors.length) {

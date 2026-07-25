@@ -28,14 +28,15 @@ const privacy = read(PRIVACY_PATH);
 const privacyLower = privacy.toLowerCase();
 
 requireFragment(main, `LEAD_ENDPOINT: "${ENDPOINT}"`, MAIN_PATH);
-requireFragment(main, 'WEB3FORMS_ACCESS_KEY: ""', MAIN_PATH);
-requireFragment(main, "SEND_EMAIL_COPY: false", MAIN_PATH);
 requireFragment(main, "return sendCustomLead(data);", MAIN_PATH);
 requireFragment(main, 'if (!SITE_CONFIG.LEAD_ENDPOINT) throw new Error("Lead endpoint unavailable")', MAIN_PATH);
 requireFragment(main, "const result = await response.json().catch(() => ({}));", MAIN_PATH);
 requireFragment(main, "if (!response.ok || result.success === false)", MAIN_PATH);
 
 [
+  "WEB3FORMS_ACCESS_KEY",
+  "SEND_EMAIL_COPY",
+  "leadToReadableText",
   "api.web3forms.com",
   "sendWeb3FormsLead",
   "Promise.allSettled",
