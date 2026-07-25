@@ -15,7 +15,7 @@ jobs:
   apply:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Checkout source branch
         uses: actions/checkout@v4
@@ -28,14 +28,18 @@ jobs:
           node-version: 24
       - name: Remove legacy browser email remnants
         run: node tools/apply-remove-legacy-email-remnants.mjs
-      - name: Validate cleaned scripts
-        run: |
-          node --check assets/js/main.js
-          node tools/validate-no-legacy-email-remnants.mjs
-          node tools/validate-primary-lead-route.mjs
-          node tools/validate-lead-submit-integrity.mjs
-          node tools/validate-offline-draft-privacy.mjs
-          npm run validate
+      - name: Check JavaScript syntax
+        run: node --check assets/js/main.js
+      - name: Validate legacy remnants removed
+        run: node tools/validate-no-legacy-email-remnants.mjs
+      - name: Validate primary lead route
+        run: node tools/validate-primary-lead-route.mjs
+      - name: Validate lead submit integrity
+        run: node tools/validate-lead-submit-integrity.mjs
+      - name: Validate offline draft privacy
+        run: node tools/validate-offline-draft-privacy.mjs
+      - name: Validate full project
+        run: npm run validate
       - name: Remove one-time tooling
         run: rm tools/apply-remove-legacy-email-remnants.mjs .github/workflows/apply-remove-legacy-email-remnants-once.yml
       - name: Commit cleanup
