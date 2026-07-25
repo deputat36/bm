@@ -2,6 +2,7 @@ import fs from "node:fs";
 
 const SMOKE_PATH = "tools/smoke-live-lead-endpoint.mjs";
 const REPORT_PATH = "tools/report-live-lead-smoke.mjs";
+const REPORT_TEST_PATH = "tools/test-report-live-lead-smoke.mjs";
 const WORKFLOW_PATH = ".github/workflows/live-lead-endpoint-smoke.yml";
 const EDGE_PATH = "supabase/functions/newbuild-lead/index.ts";
 const MAIN_PATH = "assets/js/main.js";
@@ -26,6 +27,7 @@ function forbidPattern(source, pattern, label) {
 
 const smoke = read(SMOKE_PATH);
 const report = read(REPORT_PATH);
+const reportTest = read(REPORT_TEST_PATH);
 const workflow = read(WORKFLOW_PATH);
 const edge = read(EDGE_PATH);
 const main = read(MAIN_PATH);
@@ -46,7 +48,9 @@ const main = read(MAIN_PATH);
 
 [
   'const TITLE = "[Автомониторинг] Сбой обработчика заявок";',
+  'const apiUrl = (process.env.GITHUB_API_URL || "https://api.github.com").replace(/\\/+$/, "");',
   'const status = process.env.MONITOR_STATUS || "failure";',
+  'const apiBase = `${apiUrl}/repos/${repository}`;',
   '"/issues?state=all&per_page=100&sort=updated&direction=desc"',
   'issue.title === TITLE',
   'JSON.stringify({ title: TITLE, body })',
@@ -57,6 +61,19 @@ const main = read(MAIN_PATH);
 ].forEach((fragment) => requireFragment(report, fragment, REPORT_PATH));
 
 [
+  'http.createServer',
+  'GITHUB_API_URL: apiUrl',
+  'MONITOR_STATUS: status',
+  'await runReporter(apiUrl, "failure", 100)',
+  'await runReporter(apiUrl, "failure", 101)',
+  'assert.equal(state.createCount, 1, "Repeated failure must not create a duplicate issue")',
+  'await runReporter(apiUrl, "success", 102)',
+  'assert.equal(state.issue?.state, "closed")',
+  'assert.equal(state.issue?.state_reason, "completed")',
+  'Monitoring issue lifecycle passed: create, update without duplicate, close after recovery.'
+].forEach((fragment) => requireFragment(reportTest, fragment, REPORT_TEST_PATH));
+
+[
   "permissions:\n  contents: read\n  issues: write",
   "workflow_dispatch:",
   "schedule:",
@@ -65,6 +82,8 @@ const main = read(MAIN_PATH);
   "node tools/validate-live-lead-smoke-contract.mjs",
   "node tools/smoke-live-lead-endpoint.mjs",
   "node --check tools/report-live-lead-smoke.mjs",
+  "node --check tools/test-report-live-lead-smoke.mjs",
+  "node tools/test-report-live-lead-smoke.mjs",
   "if: ${{ always() && github.event_name != 'pull_request' }}",
   "needs: [contract, live-smoke]",
   "GITHUB_TOKEN: ${{ github.token }}",
@@ -81,6 +100,8 @@ forbidPattern(smoke, /\bemail\s*:\s*["'`]/, SMOKE_PATH);
 forbidPattern(smoke, /newbuild_leads\?select|rest\/v1|service_role|apikey/i, SMOKE_PATH);
 forbidPattern(report, /\b(phone|email|name|comment|question)\s*:/i, REPORT_PATH);
 forbidPattern(report, /newbuild_leads|service_role|supabase/i, REPORT_PATH);
+forbidPattern(reportTest, /https:\/\/api\.github\.com/, REPORT_TEST_PATH);
+forbidPattern(reportTest, /GITHUB_TOKEN:\s*(?!"test-token")/, REPORT_TEST_PATH);
 forbidPattern(workflow, /contents:\s*write/, WORKFLOW_PATH);
 forbidPattern(workflow, /pull_request_target\s*:/, WORKFLOW_PATH);
 
@@ -117,6 +138,7 @@ console.log("Checked live smoke endpoint and production origin.");
 console.log("Checked smoke payloads: none can pass consent validation.");
 console.log("Checked Edge Function order: validation precedes rate limit and persistence.");
 console.log("Checked monitoring issue lifecycle: open/update on failure, close on recovery, skipped for pull requests.");
+console.log("Checked local lifecycle test: isolated fake GitHub API, no repository issue writes.");
 
 if (errors.length) {
   console.error("\nLive lead smoke contract validation errors:");
