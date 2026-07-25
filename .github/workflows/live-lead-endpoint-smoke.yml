@@ -11,6 +11,7 @@ on:
       - "supabase/functions/newbuild-lead/index.ts"
       - "tools/smoke-live-lead-endpoint.mjs"
       - "tools/validate-live-lead-smoke-contract.mjs"
+      - "tools/report-live-lead-smoke.mjs"
       - ".github/workflows/live-lead-endpoint-smoke.yml"
   push:
     branches: [main]
@@ -19,10 +20,12 @@ on:
       - "supabase/functions/newbuild-lead/index.ts"
       - "tools/smoke-live-lead-endpoint.mjs"
       - "tools/validate-live-lead-smoke-contract.mjs"
+      - "tools/report-live-lead-smoke.mjs"
       - ".github/workflows/live-lead-endpoint-smoke.yml"
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: live-lead-endpoint-smoke-${{ github.ref }}
@@ -43,6 +46,7 @@ jobs:
         run: |
           node --check tools/smoke-live-lead-endpoint.mjs
           node --check tools/validate-live-lead-smoke-contract.mjs
+          node --check tools/report-live-lead-smoke.mjs
       - name: Validate non-persistent contract
         run: node tools/validate-live-lead-smoke-contract.mjs
 
@@ -59,3 +63,21 @@ jobs:
           node-version: 24
       - name: Check deployed lead endpoint without persistence
         run: node tools/smoke-live-lead-endpoint.mjs
+
+  report:
+    if: ${{ always() && github.event_name != 'pull_request' }}
+    needs: [contract, live-smoke]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Open, update or close monitoring issue
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          MONITOR_STATUS: ${{ needs.contract.result == 'success' && needs.live-smoke.result == 'success' && 'success' || 'failure' }}
+        run: node tools/report-live-lead-smoke.mjs
