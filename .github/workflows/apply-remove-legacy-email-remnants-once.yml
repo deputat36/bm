@@ -46,17 +46,24 @@ jobs:
           node tools/validate-launch-operations-gate.mjs
           node tools/validate-form-qa-execution-pack.mjs
           node tools/validate-guide-permit-commissioning.mjs
-      - name: Validate guides and conversion
-        run: |
-          node tools/validate-guide-uncommissioned-section.mjs
-          node tools/validate-guide-content-registry.mjs
-          node tools/validate-guide-launch-gate.mjs
-          node tools/validate-guide-review-pack.mjs
-          node tools/validate-homepage-object-cta.mjs
-          node tools/validate-contacts-conversion.mjs
-          node tools/validate-mortgage-conversion.mjs
-          node tools/validate-contextual-conversion.mjs
-          node tools/validate-lead-source-output.mjs
+      - name: Validate guide uncommissioned section
+        run: node tools/validate-guide-uncommissioned-section.mjs
+      - name: Validate guide content registry
+        run: node tools/validate-guide-content-registry.mjs
+      - name: Validate guide launch gate
+        run: node tools/validate-guide-launch-gate.mjs
+      - name: Validate guide review pack
+        run: node tools/validate-guide-review-pack.mjs
+      - name: Validate homepage object CTA
+        run: node tools/validate-homepage-object-cta.mjs
+      - name: Validate contacts conversion
+        run: node tools/validate-contacts-conversion.mjs
+      - name: Validate mortgage conversion
+        run: node tools/validate-mortgage-conversion.mjs
+      - name: Validate contextual conversion
+        run: node tools/validate-contextual-conversion.mjs
+      - name: Validate lead source output
+        run: node tools/validate-lead-source-output.mjs
       - name: Validate analytics and campaigns
         run: |
           node tools/validate-form-role-analytics.mjs
