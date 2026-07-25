@@ -15,7 +15,7 @@ jobs:
   apply:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
       - name: Checkout source branch
         uses: actions/checkout@v4
@@ -28,18 +28,56 @@ jobs:
           node-version: 24
       - name: Remove legacy browser email remnants
         run: node tools/apply-remove-legacy-email-remnants.mjs
-      - name: Check JavaScript syntax
-        run: node --check assets/js/main.js
-      - name: Validate legacy remnants removed
-        run: node tools/validate-no-legacy-email-remnants.mjs
-      - name: Validate primary lead route
-        run: node tools/validate-primary-lead-route.mjs
-      - name: Validate lead submit integrity
-        run: node tools/validate-lead-submit-integrity.mjs
-      - name: Validate offline draft privacy
-        run: node tools/validate-offline-draft-privacy.mjs
-      - name: Validate full project
-        run: npm run validate
+      - name: Check cleanup contracts
+        run: |
+          node --check assets/js/main.js
+          node tools/validate-no-legacy-email-remnants.mjs
+          node tools/validate-primary-lead-route.mjs
+          node tools/validate-lead-submit-integrity.mjs
+          node tools/validate-offline-draft-privacy.mjs
+      - name: Validate core forms and operations
+        run: |
+          node tools/validate-static-site.mjs
+          node tools/validate-thankyou-context.mjs
+          node tools/validate-catalog-conversion.mjs
+          node tools/validate-catalog-rule-quiz.mjs
+          node tools/validate-lead-operations-approval.mjs
+          node tools/validate-lead-operations-runtime.mjs
+          node tools/validate-launch-operations-gate.mjs
+          node tools/validate-form-qa-execution-pack.mjs
+          node tools/validate-guide-permit-commissioning.mjs
+      - name: Validate guides and conversion
+        run: |
+          node tools/validate-guide-uncommissioned-section.mjs
+          node tools/validate-guide-content-registry.mjs
+          node tools/validate-guide-launch-gate.mjs
+          node tools/validate-guide-review-pack.mjs
+          node tools/validate-homepage-object-cta.mjs
+          node tools/validate-contacts-conversion.mjs
+          node tools/validate-mortgage-conversion.mjs
+          node tools/validate-contextual-conversion.mjs
+          node tools/validate-lead-source-output.mjs
+      - name: Validate analytics and campaigns
+        run: |
+          node tools/validate-form-role-analytics.mjs
+          node tools/validate-analytics-events.mjs
+          node tools/validate-analytics-funnel-report.mjs
+          node tools/validate-analytics-debug-mode.mjs
+          node tools/validate-conversion-runtime.mjs
+          node tools/validate-form-qa-scenarios.mjs
+          node tools/validate-form-qa-results.mjs
+          node tools/validate-campaign-release.mjs
+          node tools/validate-campaign-publications.mjs
+      - name: Validate verification and safety gates
+        run: |
+          node tools/validate-object-verification-profiles.mjs
+          node tools/validate-prostornaya-page-verification-safety.mjs
+          node tools/validate-project-verification-summary.mjs
+          node tools/validate-project-readiness-report.mjs
+          node tools/validate-source-collection.mjs
+          node tools/validate-launch-gates.mjs
+          node tools/validate-form-fail-closed.mjs
+          node tools/validate-primary-lead-route.mjs
       - name: Remove one-time tooling
         run: rm tools/apply-remove-legacy-email-remnants.mjs .github/workflows/apply-remove-legacy-email-remnants-once.yml
       - name: Commit cleanup
