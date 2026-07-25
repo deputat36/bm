@@ -63,6 +63,7 @@ const main = read(MAIN_PATH);
 [
   'http.createServer',
   'GITHUB_API_URL: apiUrl',
+  'GITHUB_TOKEN: "test-token"',
   'MONITOR_STATUS: status',
   'await runReporter(apiUrl, "failure", 100)',
   'await runReporter(apiUrl, "failure", 101)',
@@ -101,7 +102,9 @@ forbidPattern(smoke, /newbuild_leads\?select|rest\/v1|service_role|apikey/i, SMO
 forbidPattern(report, /\b(phone|email|name|comment|question)\s*:/i, REPORT_PATH);
 forbidPattern(report, /newbuild_leads|service_role|supabase/i, REPORT_PATH);
 forbidPattern(reportTest, /https:\/\/api\.github\.com/, REPORT_TEST_PATH);
-forbidPattern(reportTest, /GITHUB_TOKEN:\s*(?!"test-token")/, REPORT_TEST_PATH);
+if ((reportTest.match(/GITHUB_TOKEN:/g) || []).length !== 1) {
+  errors.push(`${REPORT_TEST_PATH}: test token must be declared exactly once`);
+}
 forbidPattern(workflow, /contents:\s*write/, WORKFLOW_PATH);
 forbidPattern(workflow, /pull_request_target\s*:/, WORKFLOW_PATH);
 
