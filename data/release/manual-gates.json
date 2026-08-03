@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-07-14",
+  "updated_at": "2026-08-03",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Журнал только фактически пройденных ручных ворот запуска. Отсутствие доказательств не может считаться положительным результатом.",
   "rules": {
@@ -40,10 +40,13 @@
         "Подтверждение form_role и отсутствия персональных параметров.",
         "Подтверждение отсутствия двойного подсчёта lead_submit и lead_submit_classified."
       ],
-      "evidence": [],
+      "evidence": [
+        "evidence/qa/2026-08-03/form-qa-evidence.json",
+        "evidence/qa/2026-08-03/event-log-desktop.json"
+      ],
       "checked_at": null,
       "reviewer": "",
-      "notes": "Локальный analytics debug готов, но рабочий счётчик не подключался и не проверялся."
+      "notes": "Локальный analytics debug фактически выполнен на 14 desktop-сценариях и выявил дефекты issue #151. Рабочий GA4/Яндекс Метрика не подключался и не проверялся; Android и iPhone заблокированы отсутствием устройства или эмуляции."
     },
     {
       "id": "legal_owner_review",
