@@ -1,0 +1,59 @@
+name: Apply issue 151 contract patches
+
+on:
+  push:
+    branches:
+      - agent/issue-151-form-analytics-storage-readiness
+    paths:
+      - "tools/apply-issue-151-contract-patches.mjs"
+      - ".github/workflows/apply-issue-151-contract-patches.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/issue-151-form-analytics-storage-readiness
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply contract patches
+        run: node tools/apply-issue-151-contract-patches.mjs
+
+      - name: Check changed JavaScript
+        run: |
+          node --check assets/js/conversion-tracking.js
+          node --check assets/js/schema.js
+          node --check assets/js/analytics-debug.js
+          node --check assets/js/mobile-lead-bar.js
+          node --check tools/validate-form-analytics-contract.mjs
+          node --check tools/validate-storage-failure.mjs
+          node --check tools/validate-launch-readiness-invariants.mjs
+          node --check tools/validate-analytics-debug-mode.mjs
+          node --check tools/validate-conversion-runtime.mjs
+          node --check tools/validate-guide-launch-gate.mjs
+          node --check tools/validate-launch-operations-gate.mjs
+          node --check tools/validate-lead-source-output.mjs
+
+      - name: Commit generated patch
+        run: |
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json .github/workflows/form-qa-execution-pack-guard.yml spasibo/index.html data/analytics/events.json tools/validate-guide-launch-gate.mjs tools/validate-launch-operations-gate.mjs tools/validate-lead-source-output.mjs tools/validate-analytics-debug-mode.mjs tools/validate-conversion-runtime.mjs
+          if git diff --cached --quiet; then
+            echo "No generated patch changes"
+          else
+            git commit -m "Убрать state-lock и согласовать контракты issue #151"
+            git push origin HEAD:agent/issue-151-form-analytics-storage-readiness
+          fi
