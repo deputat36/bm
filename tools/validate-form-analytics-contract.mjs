@@ -14,12 +14,66 @@ const thankyou = read(paths.thankyou);
 const registry = JSON.parse(read(paths.registry));
 const requiredEvents = ["lead_form_view", "lead_form_start", "lead_submit", "lead_submit_classified", "lead_thankyou_view"];
 const requiredContext = ["form_id", "form_role", "lead_type", "object_id", "placement"];
+const prohibitedPublicFields = ["name", "phone", "phone_normalized", "email", "comment", "question", "user_agent", "client_fixation_id"];
 
 function requireFragment(source, fragment, label) {
   if (!source.includes(fragment)) errors.push(`${label}: missing ${fragment}`);
 }
+
 function forbidPattern(source, pattern, label) {
   if (pattern.test(source)) errors.push(`${label}: forbidden pattern ${pattern}`);
+}
+
+function extractObjectLiteral(source, marker) {
+  const markerIndex = source.indexOf(marker);
+  if (markerIndex < 0) return "";
+  const start = source.indexOf("{", markerIndex);
+  if (start < 0) return "";
+
+  let depth = 0;
+  let quote = "";
+  let escaped = false;
+  for (let index = start; index < source.length; index += 1) {
+    const char = source[index];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (char === "\\") {
+      escaped = true;
+      continue;
+    }
+    if (quote) {
+      if (char === quote) quote = "";
+      continue;
+    }
+    if (char === '"' || char === "'" || char === "`") {
+      quote = char;
+      continue;
+    }
+    if (char === "{") depth += 1;
+    if (char === "}") {
+      depth -= 1;
+      if (depth === 0) return source.slice(start, index + 1);
+    }
+  }
+  return "";
+}
+
+function validatePublicPayload(source, marker, label) {
+  const payload = extractObjectLiteral(source, marker);
+  if (!payload) {
+    errors.push(`${label}: public payload object not found`);
+    return;
+  }
+  for (const field of prohibitedPublicFields) {
+    const binding = new RegExp(`\\b${field}\\s*:`);
+    if (binding.test(payload)) errors.push(`${label}: public analytics payload exposes ${field}`);
+  }
+  for (const field of requiredContext) {
+    const binding = new RegExp(`\\b${field}\\s*:`);
+    if (!binding.test(payload)) errors.push(`${label}: public analytics payload missing ${field}`);
+  }
 }
 
 [
@@ -59,15 +113,11 @@ for (const eventName of requiredEvents) {
   if (event.contains_personal_data !== false) errors.push(`${paths.registry}:${eventName}: contains_personal_data must be false`);
 }
 
-const combinedPublicRuntime = `${tracking}\n${mobile}\n${thankyou}`;
-for (const field of ["name", "phone", "phone_normalized", "email", "comment", "question", "user_agent", "client_fixation_id"]) {
-  const publicPayloadBinding = new RegExp(`(?:publicPayload|thankYouPayload|sendConversionEvent\\([^)]*\\{)[\\s\\S]{0,900}\\b${field}\\s*:`, "m");
-  if (field !== "client_fixation_id" && publicPayloadBinding.test(combinedPublicRuntime)) {
-    errors.push(`public analytics payload may expose ${field}`);
-  }
-}
+validatePublicPayload(tracking, "const publicPayload =", `${paths.tracking}:lead_submit`);
+validatePublicPayload(mobile, "const publicPayload =", `${paths.mobile}:lead_submit`);
 forbidPattern(tracking, /window\.dataLayer\.push\([^)]*client_fixation_id/, paths.tracking);
-forbidPattern(mobile, /publicPayload[\s\S]{0,800}client_fixation_id\s*:/, paths.mobile);
+forbidPattern(mobile, /window\.dataLayer\.push\([^)]*client_fixation_id/, paths.mobile);
+forbidPattern(thankyou, /(?:dataLayer\.push|gtag\([^)]*)[\s\S]{0,300}client_fixation_id\s*:/, paths.thankyou);
 
 if ((tracking.match(/sendConversionEvent\("lead_submit_classified"/g) || []).length !== 2) {
   errors.push(`${paths.tracking}: expected classified event in live and dry-run paths`);
@@ -81,4 +131,4 @@ if (errors.length) {
   errors.forEach((error) => console.error(`- ${error}`));
   process.exit(1);
 }
-console.log("Form analytics contract passed: five events share form_id, form_role, lead_type, object_id and placement.");
+console.log("Form analytics contract passed: five events share form_id, form_role, lead_type, object_id and placement without PII in public payloads.");
