@@ -61,7 +61,8 @@ const registry = readJson("data/analytics/events.json");
   'thankYouUrl.searchParams.set("analytics_test", "debug")',
   'thankYouUrl.searchParams.set("lead_test", "dry-run")',
   'thankYouUrl.searchParams.set("test_ack", "1")',
-  'url.searchParams.delete("analytics_test")'
+  '["lead_test", "analytics_test", "test_ack", "storage_fail"].forEach',
+  'url.searchParams.delete(key)'
 ].forEach((fragment) => {
   if (!schemaScript.includes(fragment)) {
     errors.push(`assets/js/schema.js: missing debug integration fragment ${fragment}`);
