@@ -21,7 +21,17 @@ const LIVE_FIELDS = new Set([
 
 const DRY_RUN_FIELDS = new Set([
   ...LIVE_FIELDS,
+  "form_role",
+  "placement",
+  "object_id",
   "dry_run"
+]);
+
+const ALLOWED_CONTEXT_ENRICHMENT = new Set([
+  "form_role",
+  "placement",
+  "object_id",
+  "residential_complex_id"
 ]);
 
 const FORBIDDEN_FIELDS = [
@@ -108,8 +118,8 @@ if (!saveBlock) {
   checkForbidden(saveBlock, `${MAIN_PATH}:safeLead`);
 }
 
-const dryStart = schema.indexOf("localStorage.setItem(lastLeadStorageKey, JSON.stringify({");
-const dryEnd = schema.indexOf("window.dispatchEvent(new CustomEvent(\"newbuildLeadDryRun\"", dryStart);
+const dryStart = schema.indexOf('safeStorageSet("local", lastLeadStorageKey, JSON.stringify({');
+const dryEnd = schema.indexOf('window.dispatchEvent(new CustomEvent("newbuildLeadDryRun"', dryStart);
 const dryBlock = dryStart >= 0 && dryEnd > dryStart ? schema.slice(dryStart, dryEnd) : "";
 if (!dryBlock) {
   errors.push(`${SCHEMA_PATH}: dry-run lastLead block not found`);
@@ -119,25 +129,32 @@ if (!dryBlock) {
   if (!dryBlock.includes("dry_run: true")) errors.push(`${SCHEMA_PATH}: dry-run marker is missing`);
 }
 
-const roleStart = conversion.indexOf("function updateStoredLeadRole(detail, formRole)");
-const roleEnd = conversion.indexOf("\n  function sendConversionEvent", roleStart);
-const roleBlock = roleStart >= 0 && roleEnd > roleStart ? conversion.slice(roleStart, roleEnd) : "";
-if (!roleBlock) {
-  errors.push(`${CONVERSION_PATH}: updateStoredLeadRole block not found`);
+const contextStart = conversion.indexOf("function updateStoredLeadContext(detail, context)");
+const contextEnd = conversion.indexOf("\n  function updateStoredLeadRole", contextStart);
+const contextBlock = contextStart >= 0 && contextEnd > contextStart ? conversion.slice(contextStart, contextEnd) : "";
+if (!contextBlock) {
+  errors.push(`${CONVERSION_PATH}: updateStoredLeadContext block not found`);
 } else {
-  if (!roleBlock.includes("stored.form_role = formRole;")) {
-    errors.push(`${CONVERSION_PATH}: form_role update is missing`);
-  }
-  const assignments = Array.from(roleBlock.matchAll(/stored\.([a-z][a-z0-9_]*)\s*=/gi), (match) => match[1]);
-  assignments.forEach((field) => {
-    if (field !== "form_role") errors.push(`${CONVERSION_PATH}: unexpected lastLead update ${field}`);
+  const assignments = Array.from(contextBlock.matchAll(/stored\.([a-z][a-z0-9_]*)\s*=/gi), (match) => match[1]);
+  ALLOWED_CONTEXT_ENRICHMENT.forEach((field) => {
+    if (!assignments.includes(field)) errors.push(`${CONVERSION_PATH}: safe context update is missing ${field}`);
   });
-  checkForbidden(roleBlock, `${CONVERSION_PATH}:lastLeadRoleUpdate`);
+  assignments.forEach((field) => {
+    if (!ALLOWED_CONTEXT_ENRICHMENT.has(field)) errors.push(`${CONVERSION_PATH}: unexpected lastLead update ${field}`);
+  });
+  checkForbidden(contextBlock, `${CONVERSION_PATH}:lastLeadContextUpdate`);
+}
+
+const roleStart = conversion.indexOf("function updateStoredLeadRole(detail, formRole)");
+const roleEnd = conversion.indexOf("\n  function installLastLeadContextPersistence", roleStart);
+const roleBlock = roleStart >= 0 && roleEnd > roleStart ? conversion.slice(roleStart, roleEnd) : "";
+if (!roleBlock || !roleBlock.includes("updateStoredLeadContext(detail, context)")) {
+  errors.push(`${CONVERSION_PATH}: form role must use safe context update`);
 }
 
 console.log(`Live lastLead fields: ${LIVE_FIELDS.size}`);
 console.log(`Dry-run lastLead fields: ${DRY_RUN_FIELDS.size}`);
-console.log("Allowed later enrichment: form_role");
+console.log(`Allowed later enrichment: ${[...ALLOWED_CONTEXT_ENRICHMENT].join(", ")}`);
 console.log("Stored contact fields: 0");
 
 if (errors.length) {

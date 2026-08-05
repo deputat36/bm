@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.4",
-  "updated_at": "2026-07-15",
+  "schema_version": "1.5",
+  "updated_at": "2026-08-05",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Единый словарь событий, измерений и правил подсчёта конверсионной воронки портала.",
   "rules": {
@@ -21,7 +21,9 @@
       "consent_text",
       "user_agent"
     ],
-    "restricted_technical_fields": ["client_fixation_id"],
+    "restricted_technical_fields": [
+      "client_fixation_id"
+    ],
     "restricted_field_allowed_events": [],
     "restricted_field_internal_event": "newbuildLeadSubmit",
     "restricted_field_external_channels_forbidden": true,
@@ -34,6 +36,18 @@
       "maximum_events": 100,
       "external_analytics_suppressed": true,
       "personal_and_restricted_fields_removed": true
+    },
+    "storage_failure_test_mode": {
+      "storage_fail": [
+        "local",
+        "session"
+      ],
+      "requires": {
+        "lead_test": "dry-run",
+        "analytics_test": "debug",
+        "test_ack": "1"
+      },
+      "external_delivery_suppressed": true
     }
   },
   "events": [
@@ -47,12 +61,20 @@
       "implementation_fragments": [
         "sendConversionEvent(\"lead_cta_click\"",
         "action: target.dataset.trackAction",
-        "placement: target.dataset.trackPlacement",
+        "placement: normalizePlacement(target.dataset.trackPlacement || \"\")",
         "object_id: target.dataset.trackObject",
         "link_url: sanitizeCtaDestination(target)"
       ],
-      "required_fields": ["event", "page_path", "action"],
-      "optional_fields": ["placement", "object_id", "link_url"],
+      "required_fields": [
+        "event",
+        "page_path",
+        "action"
+      ],
+      "optional_fields": [
+        "placement",
+        "object_id",
+        "link_url"
+      ],
       "field_rules": {
         "link_url": "sanitized_destination_only",
         "phone_destination": "phone:primary_sales_phone",
@@ -74,13 +96,26 @@
       "purpose": "Фиксирует видимость формы и используется как знаменатель конверсии просмотра в начало заполнения.",
       "source_file": "assets/js/conversion-tracking.js",
       "implementation_fragments": [
-        "sendConversionEvent(\"lead_form_view\"",
-        "form_role: getFormRole(form)",
-        "form_id: form?.dataset.formId",
-        "lead_type: form?.dataset.leadType"
+        "sendConversionEvent(\"lead_form_view\", getFormDetails(form))",
+        "form_id:",
+        "form_role:",
+        "lead_type:",
+        "object_id:",
+        "placement:"
       ],
-      "required_fields": ["event", "page_path", "form_id", "form_role", "lead_type"],
-      "optional_fields": ["residential_complex", "residential_complex_id"],
+      "required_fields": [
+        "event",
+        "page_path",
+        "form_id",
+        "form_role",
+        "lead_type",
+        "object_id",
+        "placement"
+      ],
+      "optional_fields": [
+        "residential_complex",
+        "residential_complex_id"
+      ],
       "count_rule": "count_first_view_per_form_per_page_load",
       "count_filter": "none",
       "contains_personal_data": false,
@@ -94,12 +129,24 @@
       "purpose": "Фиксирует первое взаимодействие пользователя с конкретной формой.",
       "source_file": "assets/js/conversion-tracking.js",
       "implementation_fragments": [
-        "sendConversionEvent(\"lead_form_start\"",
-        "form_role: getFormRole(form)",
-        "startedForms.add(form)"
+        "sendConversionEvent(\"lead_form_start\", getFormDetails(form))",
+        "startedForms.add(form)",
+        "object_id:",
+        "placement:"
       ],
-      "required_fields": ["event", "page_path", "form_id", "form_role", "lead_type"],
-      "optional_fields": ["residential_complex", "residential_complex_id"],
+      "required_fields": [
+        "event",
+        "page_path",
+        "form_id",
+        "form_role",
+        "lead_type",
+        "object_id",
+        "placement"
+      ],
+      "optional_fields": [
+        "residential_complex",
+        "residential_complex_id"
+      ],
       "count_rule": "count_first_start_per_form_per_page_load",
       "count_filter": "none",
       "contains_personal_data": false,
@@ -115,16 +162,32 @@
       "implementation_fragments": [
         "const publicPayload = {",
         "event: \"lead_submit\"",
-        "form_id: data.form_id",
-        "lead_source: data.lead_source",
-        "placement: data.placement",
-        "blocked: Boolean(result.blocked)",
-        "offline: Boolean(result.offline)",
-        "window.dataLayer.push(publicPayload)",
-        "window.ym(counterId, \"reachGoal\", \"lead_submit\", publicPayload)"
+        "form_id:",
+        "form_role:",
+        "lead_type:",
+        "object_id:",
+        "placement:",
+        "window.dataLayer.push(publicPayload)"
       ],
-      "required_fields": ["event", "form_id", "lead_type", "blocked", "offline"],
-      "optional_fields": ["project_id", "project_name", "residential_complex", "residential_complex_id", "qualification_status", "qualification_score", "lead_source", "placement"],
+      "required_fields": [
+        "event",
+        "form_id",
+        "lead_type",
+        "blocked",
+        "offline",
+        "form_role",
+        "object_id",
+        "placement"
+      ],
+      "optional_fields": [
+        "project_id",
+        "project_name",
+        "residential_complex",
+        "residential_complex_id",
+        "qualification_status",
+        "qualification_score",
+        "lead_source"
+      ],
       "count_rule": "count_canonical_submissions",
       "count_filter": "blocked=false",
       "contains_personal_data": false,
@@ -139,17 +202,32 @@
       "source_file": "assets/js/conversion-tracking.js",
       "implementation_fragments": [
         "sendConversionEvent(\"lead_submit_classified\"",
-        "form_role: formRole",
-        "lead_source: detail.lead_source",
-        "placement: detail.placement",
-        "blocked: Boolean(detail.blocked)",
-        "offline: Boolean(detail.offline)"
+        "form_id:",
+        "form_role:",
+        "lead_type:",
+        "object_id:",
+        "placement:"
       ],
-      "required_fields": ["event", "form_id", "form_role", "lead_type", "blocked", "offline"],
-      "optional_fields": ["residential_complex_id", "qualification_status", "lead_source", "placement"],
+      "required_fields": [
+        "event",
+        "form_id",
+        "form_role",
+        "lead_type",
+        "blocked",
+        "offline",
+        "object_id",
+        "placement"
+      ],
+      "optional_fields": [
+        "residential_complex_id",
+        "qualification_status",
+        "lead_source"
+      ],
       "count_rule": "segment_canonical_submissions_only",
       "count_filter": "blocked=false",
-      "must_not_add_to": ["lead_submit"],
+      "must_not_add_to": [
+        "lead_submit"
+      ],
       "contains_personal_data": false,
       "contains_restricted_technical_id": false
     },
@@ -162,11 +240,26 @@
       "source_file": "spasibo/index.html",
       "implementation_fragments": [
         "event: \"lead_thankyou_view\"",
-        "form_role: formRole",
-        "attribution_source: attributionSource"
+        "form_id:",
+        "form_role:",
+        "lead_type:",
+        "object_id:",
+        "placement:"
       ],
-      "required_fields": ["event", "lead_type", "form_id", "form_role", "attribution_source"],
-      "optional_fields": ["residential_complex", "residential_complex_id", "qualification_status"],
+      "required_fields": [
+        "event",
+        "lead_type",
+        "form_id",
+        "form_role",
+        "attribution_source",
+        "object_id",
+        "placement"
+      ],
+      "optional_fields": [
+        "residential_complex",
+        "residential_complex_id",
+        "qualification_status"
+      ],
       "count_rule": "count_thankyou_views",
       "count_filter": "dry_run=false",
       "contains_personal_data": false,
@@ -185,8 +278,17 @@
         "form_role: context.formRole",
         "if (isDryRun && !isAnalyticsDebug) return;"
       ],
-      "required_fields": ["event", "action", "lead_type", "form_id", "form_role", "attribution_source"],
-      "optional_fields": ["residential_complex_id"],
+      "required_fields": [
+        "event",
+        "action",
+        "lead_type",
+        "form_id",
+        "form_role",
+        "attribution_source"
+      ],
+      "optional_fields": [
+        "residential_complex_id"
+      ],
       "count_rule": "count_actions",
       "count_filter": "dry_run=false",
       "contains_personal_data": false,

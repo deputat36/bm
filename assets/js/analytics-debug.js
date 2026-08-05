@@ -6,22 +6,56 @@
   const LIVE_LEAD_ID_PATTERN = /^NB-\d{8}-[A-Z0-9]{6}$/;
   const TEST_LEAD_ID_PATTERN = /^NB-TEST-\d{8}-[A-Z0-9]{6}$/;
 
+  function storageGet(kind, key, fallback = "") {
+    if (window.__NEWBUILD_SAFE_STORAGE__?.get) {
+      return window.__NEWBUILD_SAFE_STORAGE__.get(kind, key, fallback);
+    }
+    try {
+      const storage = kind === "session" ? sessionStorage : localStorage;
+      return storage.getItem(key) ?? fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function storageSet(kind, key, value) {
+    if (window.__NEWBUILD_SAFE_STORAGE__?.set) {
+      return window.__NEWBUILD_SAFE_STORAGE__.set(kind, key, value);
+    }
+    try {
+      const storage = kind === "session" ? sessionStorage : localStorage;
+      storage.setItem(key, value);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function storageRemove(kind, key) {
+    if (window.__NEWBUILD_SAFE_STORAGE__?.remove) {
+      return window.__NEWBUILD_SAFE_STORAGE__.remove(kind, key);
+    }
+    try {
+      const storage = kind === "session" ? sessionStorage : localStorage;
+      storage.removeItem(key);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   function isValidLeadId(value) {
     const id = String(value || "").trim();
     return LIVE_LEAD_ID_PATTERN.test(id) || TEST_LEAD_ID_PATTERN.test(id);
   }
 
   function removeLastLead() {
-    try {
-      localStorage.removeItem(LAST_LEAD_STORAGE_KEY);
-    } catch (error) {
-      // Privacy mode can make localStorage unavailable.
-    }
+    storageRemove("local", LAST_LEAD_STORAGE_KEY);
   }
 
   function readFreshLastLead() {
     try {
-      const stored = JSON.parse(localStorage.getItem(LAST_LEAD_STORAGE_KEY) || "{}");
+      const stored = JSON.parse(storageGet("local", LAST_LEAD_STORAGE_KEY, "{}") || "{}");
       const storedId = String(stored?.client_fixation_id || "").trim();
       const createdAt = Date.parse(String(stored?.created_at || ""));
       const ageMs = Date.now() - createdAt;
@@ -70,7 +104,7 @@
     }
 
     if (!dryRunValid) {
-      ["lead_test", "analytics_test", "test_ack"].forEach((key) => {
+      ["lead_test", "analytics_test", "test_ack", "storage_fail"].forEach((key) => {
         if (!url.searchParams.has(key)) return;
         url.searchParams.delete(key);
         urlChanged = true;
@@ -116,6 +150,7 @@
     "fields_json",
     "message"
   ]);
+  let memoryEvents = [];
 
   window.__NEWBUILD_ANALYTICS_DEBUG_MODE__ = true;
   document.body.dataset.analyticsTestMode = "debug";
@@ -136,17 +171,40 @@
     );
   }
 
+  function enrichLeadContext(payload) {
+    const source = payload && typeof payload === "object" ? { ...payload } : {};
+    if (!String(source.event || "").startsWith("lead_")) return source;
+
+    const stored = readFreshLastLead();
+    source.form_id = source.form_id || stored.form_id || "";
+    source.form_role = source.form_role || stored.form_role || "";
+    source.object_id = source.object_id || stored.object_id || stored.residential_complex_id || "";
+    source.residential_complex_id = source.residential_complex_id || stored.residential_complex_id || source.object_id || "";
+    source.placement = source.placement || stored.placement || "";
+    return source;
+  }
+
   function readEvents() {
     try {
-      const parsed = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "[]");
-      return Array.isArray(parsed) ? parsed : [];
+      const raw = storageGet("session", STORAGE_KEY, "");
+      if (!raw) return memoryEvents.slice();
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return memoryEvents.slice();
+      memoryEvents = parsed.slice(-MAX_EVENTS);
+      return memoryEvents.slice();
     } catch (error) {
-      return [];
+      return memoryEvents.slice();
     }
   }
 
   function writeEvents(events) {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(events.slice(-MAX_EVENTS)));
+    memoryEvents = Array.isArray(events) ? events.slice(-MAX_EVENTS) : [];
+    return storageSet("session", STORAGE_KEY, JSON.stringify(memoryEvents));
+  }
+
+  function clearEvents() {
+    memoryEvents = [];
+    storageRemove("session", STORAGE_KEY);
   }
 
   function formatTime(iso) {
@@ -166,7 +224,7 @@
     '<strong>Аналитика: локальный debug</strong>',
     '<button type="button" data-debug-toggle aria-expanded="true" style="border:0;background:transparent;color:inherit;cursor:pointer;font-weight:700">Скрыть</button>',
     '</div>',
-    '<p style="margin:8px 0">События сохраняются только в sessionStorage и не отправляются в GA или Метрику.</p>',
+    '<p style="margin:8px 0">События не отправляются в GA или Метрику. При отказе sessionStorage журнал остаётся только в памяти вкладки.</p>',
     '<div data-debug-body>',
     '<p style="margin:8px 0"><strong data-debug-count>0</strong> событий</p>',
     '<ol data-debug-events style="margin:8px 0;padding-left:22px"></ol>',
@@ -213,7 +271,7 @@
   }
 
   window.recordPortalAnalyticsDebugEvent = function (payload) {
-    const safePayload = sanitizePayload(payload);
+    const safePayload = sanitizePayload(enrichLeadContext(payload));
     const events = readEvents();
     events.push({
       ...safePayload,
@@ -226,9 +284,13 @@
     window.dispatchEvent(new CustomEvent("portalAnalyticsDebugEvent", { detail: safePayload }));
   };
 
+  window.getPortalAnalyticsDebugEvents = function () {
+    return readEvents().map((item) => ({ ...item }));
+  };
+
   panel.querySelector("[data-debug-copy]")?.addEventListener("click", copyEvents);
   panel.querySelector("[data-debug-clear]")?.addEventListener("click", () => {
-    sessionStorage.removeItem(STORAGE_KEY);
+    clearEvents();
     status.textContent = "Локальный журнал очищен.";
     render();
   });

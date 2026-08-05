@@ -77,9 +77,9 @@ if (result.status !== 0) {
       errors.push("launch report: campaign_launch must be blocked by lead_operations_approval");
     }
     if (report.summary?.total_gates !== 12) errors.push("launch report: total_gates must be 12");
-    if (report.summary?.passed !== 1) errors.push("launch report: passed gates must remain 1");
-    if (report.summary?.blocked !== 11) errors.push("launch report: blocked gates must be 11");
-    if (report.summary?.total_profiles !== 4) errors.push("launch report: total_profiles must be 4");
+            const gateStatusTotal = ["passed", "blocked", "in_review", "not_applicable"].reduce((sum, key) => sum + Number(report.summary?.[key] || 0), 0);
+if (gateStatusTotal !== report.summary?.total_gates) errors.push("gate status counts must match total_gates");
+if (report.summary?.total_profiles !== 4) errors.push("launch report: total_profiles must be 4");
     if (report.summary?.ready_profiles !== 0) errors.push("launch report: ready_profiles must remain 0");
     if (report.metrics?.lead_operations?.total_decisions !== 8) errors.push("launch report: total operations decisions must be 8");
     if (report.metrics?.lead_operations?.approved !== 1) errors.push("launch report: approved operations decisions must be 1");

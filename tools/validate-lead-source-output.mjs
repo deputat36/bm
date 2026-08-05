@@ -65,9 +65,11 @@ forbidFragments(main, MAIN_PATH, [
 requireFragments(mobile, MOBILE_PATH, [
   "enableInternalLeadIdPrivacy",
   "window.__NEWBUILD_INTERNAL_LEAD_ID_PRIVACY__ = true",
+  "function getContext(data = {})",
+  "const context = getContext(data);",
   'event: "lead_submit"',
   'lead_source: data.lead_source || ""',
-  'placement: data.placement || ""',
+  'placement: context.placement',
   "data-mobile-lead-bar"
 ]);
 
@@ -82,8 +84,9 @@ forbidFragments(mobile, MOBILE_PATH, [
 
 requireFragments(tracking, TRACKING_PATH, [
   'sendConversionEvent("lead_submit_classified"',
+  "const context = getFormDetails(form, detail);",
   'lead_source: detail.lead_source || ""',
-  'placement: detail.placement || ""'
+  'placement: context.placement'
 ]);
 
 const submitEvent = registry?.events?.find((event) => event.id === "lead_submit");
@@ -94,7 +97,8 @@ for (const [label, event] of [["lead_submit", submitEvent], ["lead_submit_classi
     continue;
   }
   ["lead_source", "placement"].forEach((field) => {
-    if (!event.optional_fields?.includes(field)) errors.push(`${REGISTRY_PATH}:${label}: нет ${field}`);
+    const declaredFields = new Set([...(event.required_fields || []), ...(event.optional_fields || [])]);
+    if (!declaredFields.has(field)) errors.push(`${REGISTRY_PATH}:${label}: нет ${field}`);
   });
   if (event.contains_personal_data !== false) errors.push(`${REGISTRY_PATH}:${label}: техническая атрибуция не должна содержать персональные данные`);
 }
@@ -108,7 +112,8 @@ const forbiddenBindings = [
   /lead_source\s*:\s*data\.(name|phone|email|comment|question)/,
   /placement\s*:\s*data\.(name|phone|email|comment|question)/,
   /data\.lead_source\s*=\s*data\.(name|phone|email|comment|question)/,
-  /data\.placement\s*=\s*data\.(name|phone|email|comment|question)/
+  /data\.placement\s*=\s*data\.(name|phone|email|comment|question)/,
+  /placement\s*:\s*(?:detail|context)\.(name|phone|email|comment|question)/
 ];
 forbiddenBindings.forEach((pattern) => {
   if (pattern.test(main) || pattern.test(tracking) || pattern.test(mobile)) errors.push(`Техническая атрибуция связана с персональными полями: ${pattern}`);
@@ -122,6 +127,7 @@ if (!collectBlock.includes("data.lead_source") || !collectBlock.includes("data.p
 }
 
 console.log("Lead source and placement preserved in the primary server JSON payload");
+console.log("Normalized placement context required in mobile and classified analytics");
 console.log("Mobile bar transport override removed");
 console.log("Browser email duplication and readable email formatter removed");
 

@@ -37,7 +37,7 @@ const registry = readJson("data/analytics/events.json");
   'window.__NEWBUILD_ANALYTICS_DEBUG_MODE__ = true',
   'window.recordPortalAnalyticsDebugEvent',
   'newbuildsBorisoglebskAnalyticsDebugEvents',
-  'sessionStorage.setItem',
+  'storageSet("session", STORAGE_KEY',
   'events.slice(-MAX_EVENTS)',
   'data-analytics-debug-panel',
   'Копировать JSON',
@@ -61,7 +61,8 @@ const registry = readJson("data/analytics/events.json");
   'thankYouUrl.searchParams.set("analytics_test", "debug")',
   'thankYouUrl.searchParams.set("lead_test", "dry-run")',
   'thankYouUrl.searchParams.set("test_ack", "1")',
-  'url.searchParams.delete("analytics_test")'
+  '["lead_test", "analytics_test", "test_ack", "storage_fail"].forEach',
+  'url.searchParams.delete(key)'
 ].forEach((fragment) => {
   if (!schemaScript.includes(fragment)) {
     errors.push(`assets/js/schema.js: missing debug integration fragment ${fragment}`);
@@ -88,7 +89,7 @@ if (debugLoadPosition < 0 || conversionLoadPosition < 0 || debugLoadPosition > c
 });
 
 const sendEventStart = conversionScript.indexOf("function sendConversionEvent");
-const sendEventEnd = conversionScript.indexOf("function getFormDetails", sendEventStart);
+const sendEventEnd = conversionScript.indexOf("function enrichMortgageLinks", sendEventStart);
 const sendEventBlock = sendEventStart >= 0 && sendEventEnd > sendEventStart
   ? conversionScript.slice(sendEventStart, sendEventEnd)
   : "";

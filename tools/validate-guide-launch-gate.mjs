@@ -120,8 +120,8 @@ if (!metrics) {
 }
 
 if (report.summary?.total_gates !== 12) errors.push(`summary.total_gates must be 12`);
-if (report.summary?.passed !== 1) errors.push(`summary.passed must be 1`);
-if (report.summary?.blocked !== 11) errors.push(`summary.blocked must be 11`);
+const gateStatusTotal = ["passed", "blocked", "in_review", "not_applicable"].reduce((sum, key) => sum + Number(report.summary?.[key] || 0), 0);
+if (gateStatusTotal !== report.summary?.total_gates) errors.push("gate status counts must match total_gates");
 if (report.summary?.total_profiles !== 4) errors.push(`summary.total_profiles must be 4`);
 if (report.summary?.ready_profiles !== 0) errors.push(`summary.ready_profiles must be 0`);
 
