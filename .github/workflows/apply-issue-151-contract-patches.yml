@@ -56,7 +56,7 @@ jobs:
           git diff --check
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json .github/workflows/form-qa-execution-pack-guard.yml spasibo/index.html data/analytics/events.json tools/validate-guide-launch-gate.mjs tools/validate-launch-operations-gate.mjs tools/validate-lead-source-output.mjs tools/validate-analytics-debug-mode.mjs tools/validate-conversion-runtime.mjs
+          git add package.json spasibo/index.html data/analytics/events.json tools/validate-guide-launch-gate.mjs tools/validate-launch-operations-gate.mjs tools/validate-lead-source-output.mjs tools/validate-analytics-debug-mode.mjs tools/validate-conversion-runtime.mjs
           if git diff --cached --quiet; then
             echo "No generated patch changes"
           else
