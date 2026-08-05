@@ -130,7 +130,7 @@ function loadPortalScript(baseUrl, fileName, options = {}) {
   return new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = new URL(fileName, baseUrl).href;
-    script.async = options.ordered !== true;
+    script.async = options.ordered !== true && fileName !== "conversion-tracking.js";
     script.addEventListener("load", resolve, { once: true });
     script.addEventListener("error", reject, { once: true });
     document.head.appendChild(script);
@@ -457,7 +457,7 @@ if (schemaScriptUrl && portalLeadForm) {
     : Promise.resolve();
 
   debugReady.catch(() => undefined).finally(() => {
-    loadPortalScript(schemaScriptUrl, "conversion-tracking.js", { ordered: true })
+    loadPortalScript(schemaScriptUrl, "conversion-tracking.js")
       .catch(() => undefined)
       .finally(() => {
         if (portalLeadForm.querySelector("select[name='residential_complex']")) {

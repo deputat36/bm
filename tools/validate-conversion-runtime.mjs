@@ -91,7 +91,7 @@ const requiredSchemaFragments = [
   'loadPortalScript(schemaScriptUrl, "priority-leads.js")',
   'loadPortalScript(schemaScriptUrl, "mobile-lead-bar.js")',
   'loadPortalScript(schemaScriptUrl, "form-accessibility.js")',
-  'loadPortalScript(schemaScriptUrl, "conversion-tracking.js", { ordered: true })',
+  'loadPortalScript(schemaScriptUrl, "conversion-tracking.js")',
   "isAnalyticsDebugRequested()"
 ];
 requiredSchemaFragments.forEach((fragment) => {
@@ -99,7 +99,7 @@ requiredSchemaFragments.forEach((fragment) => {
 });
 
 const debugLoadIndex = schemaSource.indexOf('loadPortalScript(schemaScriptUrl, "analytics-debug.js", { ordered: true })');
-const trackingLoadIndex = schemaSource.indexOf('loadPortalScript(schemaScriptUrl, "conversion-tracking.js", { ordered: true })');
+const trackingLoadIndex = schemaSource.indexOf('loadPortalScript(schemaScriptUrl, "conversion-tracking.js")');
 if (debugLoadIndex < 0 || trackingLoadIndex < 0 || debugLoadIndex > trackingLoadIndex) {
   errors.push(`${SCHEMA_SCRIPT_PATH}: analytics debug must be prepared before conversion tracking`);
 }

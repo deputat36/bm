@@ -62,7 +62,7 @@ requireFragments("assets/js/conversion-tracking.js", conversion, [
 ]);
 
 requireFragments("assets/js/schema.js", schema, [
-  'loadPortalScript(schemaScriptUrl, "conversion-tracking.js", { ordered: true })'
+  'loadPortalScript(schemaScriptUrl, "conversion-tracking.js")'
 ]);
 
 [
