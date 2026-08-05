@@ -61,8 +61,8 @@ replaceRequired(
 );
 replaceRequired(
   thankyouPath,
-  '          form_role: formRole || ""\n        });',
-  '          form_role: formRole || "",\n          object_id: objectId || "",\n          placement: placement || ""\n        });'
+  '        form_role: formRole || ""\n      });',
+  '        form_role: formRole || "",\n        object_id: objectId || "",\n        placement: placement || ""\n      });'
 );
 
 const eventsPath = "data/analytics/events.json";
