@@ -10,7 +10,8 @@ const errors = [];
 const readJson = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
 const resultsFile = readJson(RESULTS_PATH);
 const scenariosFile = readJson(SCENARIOS_PATH);
-const packageSource = fs.readFileSync(PACKAGE_PATH, "utf8");
+const packageFile = readJson(PACKAGE_PATH);
+const launchReadinessCommand = String(packageFile.scripts?.["validate:launch-readiness"] || "");
 const workflowSource = fs.readFileSync(WORKFLOW_PATH, "utf8");
 
 function validateCounts(label, counts) {
@@ -40,6 +41,7 @@ validateCounts("current matrix", current);
 validateCounts("required evidence matrix", { passed: 0, failed: 14, blocked: 28, not_run: 0 });
 validateCounts("fully successful matrix", { passed: 42, failed: 0, blocked: 0, not_run: 0 });
 
+if (!launchReadinessCommand) errors.push(`${PACKAGE_PATH}: validate:launch-readiness command is missing`);
 const forbiddenLocks = [
   "recorded_results!==0",
   "by_status?.not_run!==42",
@@ -48,7 +50,7 @@ const forbiddenLocks = [
   "summary?.blocked!==11"
 ];
 for (const fragment of forbiddenLocks) {
-  if (packageSource.includes(fragment)) errors.push(`${PACKAGE_PATH}: state lock remains: ${fragment}`);
+  if (launchReadinessCommand.includes(fragment)) errors.push(`${PACKAGE_PATH}: validate:launch-readiness state lock remains: ${fragment}`);
   if (workflowSource.includes(fragment)) errors.push(`${WORKFLOW_PATH}: state lock remains: ${fragment}`);
 }
 
