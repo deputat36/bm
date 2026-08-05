@@ -61,7 +61,7 @@
       "implementation_fragments": [
         "sendConversionEvent(\"lead_cta_click\"",
         "action: target.dataset.trackAction",
-        "placement: target.dataset.trackPlacement",
+        "placement: normalizePlacement(target.dataset.trackPlacement || \"\")",
         "object_id: target.dataset.trackObject",
         "link_url: sanitizeCtaDestination(target)"
       ],
