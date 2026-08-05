@@ -37,7 +37,7 @@ const registry = readJson("data/analytics/events.json");
   'window.__NEWBUILD_ANALYTICS_DEBUG_MODE__ = true',
   'window.recordPortalAnalyticsDebugEvent',
   'newbuildsBorisoglebskAnalyticsDebugEvents',
-  'sessionStorage.setItem',
+  'storageSet("session", STORAGE_KEY',
   'events.slice(-MAX_EVENTS)',
   'data-analytics-debug-panel',
   'Копировать JSON',
@@ -88,7 +88,7 @@ if (debugLoadPosition < 0 || conversionLoadPosition < 0 || debugLoadPosition > c
 });
 
 const sendEventStart = conversionScript.indexOf("function sendConversionEvent");
-const sendEventEnd = conversionScript.indexOf("function getFormDetails", sendEventStart);
+const sendEventEnd = conversionScript.indexOf("function enrichMortgageLinks", sendEventStart);
 const sendEventBlock = sendEventStart >= 0 && sendEventEnd > sendEventStart
   ? conversionScript.slice(sendEventStart, sendEventEnd)
   : "";

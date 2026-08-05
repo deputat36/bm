@@ -94,7 +94,8 @@ for (const [label, event] of [["lead_submit", submitEvent], ["lead_submit_classi
     continue;
   }
   ["lead_source", "placement"].forEach((field) => {
-    if (!event.optional_fields?.includes(field)) errors.push(`${REGISTRY_PATH}:${label}: нет ${field}`);
+    const declaredFields = new Set([...(event.required_fields || []), ...(event.optional_fields || [])]);
+    if (!declaredFields.has(field)) errors.push(`${REGISTRY_PATH}:${label}: нет ${field}`);
   });
   if (event.contains_personal_data !== false) errors.push(`${REGISTRY_PATH}:${label}: техническая атрибуция не должна содержать персональные данные`);
 }
