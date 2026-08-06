@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-07-14",
+  "updated_at": "2026-08-06",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Журнал только фактически пройденных ручных ворот запуска. Отсутствие доказательств не может считаться положительным результатом.",
   "rules": {
@@ -43,7 +43,7 @@
       "evidence": [],
       "checked_at": null,
       "reviewer": "",
-      "notes": "Локальный analytics debug готов, но рабочий счётчик не подключался и не проверялся."
+      "notes": "Локальный analytics debug фактически выполнен на 14 desktop-сценариях для commit 8b9845d; исторические материалы: evidence/qa/2026-08-03/form-qa-evidence.json и evidence/qa/2026-08-03/event-log-desktop.json. Выявленные дефекты исправлены в PR #153 и слиты в main коммитом 6fa7c1e8, но повторный browser QA ещё не выполнен. Рабочий GA4/Яндекс Метрика не подключался и не проверялся; Android и iPhone заблокированы отсутствием устройства или эмуляции."
     },
     {
       "id": "legal_owner_review",

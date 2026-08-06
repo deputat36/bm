@@ -1,17 +1,488 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-07-14",
+  "updated_at": "2026-08-03",
   "portal_id": "newbuilds-borisoglebsk",
   "source_matrix": "data/qa/form-scenarios.json",
   "purpose": "Журнал только фактически выполненных ручных проверок. Отсутствующая запись означает not_run и не может считаться успешным тестом.",
   "rules": {
-    "allowed_statuses": ["passed", "failed", "blocked"],
+    "allowed_statuses": [
+      "passed",
+      "failed",
+      "blocked"
+    ],
     "missing_result_status": "not_run",
     "passed_requires_evidence": true,
     "failed_requires_notes": true,
     "blocked_requires_notes": true,
     "personal_data_forbidden": true,
-    "expected_devices": ["desktop", "android", "iphone"]
+    "expected_devices": [
+      "desktop",
+      "android",
+      "iphone"
+    ]
   },
-  "results": []
+  "results": [
+    {
+      "scenario_id": "homepage_primary",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:20:47.066Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-homepage_primary-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: в локальном debug отсутствуют placement и обязательное lead_form_view для целевой формы."
+    },
+    {
+      "scenario_id": "homepage_detailed",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:21:04.045Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-homepage_detailed-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "catalog_primary",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:21:09.064Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-catalog_primary-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "catalog_detailed",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:21:14.320Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-catalog_detailed-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "prostornaya_4a_primary",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:21:42.446Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-prostornaya_4a_primary-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "prostornaya_4a_detailed",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:21:48.169Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-prostornaya_4a_detailed-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "aerodromnaya_18g_primary",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:21:53.368Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-aerodromnaya_18g_primary-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "aerodromnaya_18g_detailed",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:21:58.393Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-aerodromnaya_18g_detailed-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: в локальном debug отсутствуют placement и обязательное lead_form_view для целевой формы."
+    },
+    {
+      "scenario_id": "sennaya_76_primary",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:22:03.760Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-sennaya_76_primary-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "sennaya_76_detailed",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:22:09.020Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-sennaya_76_detailed-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "contacts_primary",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:22:20.618Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-contacts_primary-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "contacts_detailed",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:22:25.787Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-contacts_detailed-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "mortgage_primary",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:22:31.296Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-mortgage_primary-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "mortgage_detailed",
+      "device": "desktop",
+      "status": "failed",
+      "tested_at": "2026-08-03T09:22:36.569Z",
+      "browser": "Chrome cloud (версия средой не раскрыта)",
+      "os": "Удалённый cloud-профиль (ОС средой не раскрыта)",
+      "evidence_reference": "evidence/qa/2026-08-03/bm-qa-mortgage_detailed-desktop.jpg",
+      "event_log_attached": true,
+      "notes": "Desktop выполнен: во всех событиях локального debug отсутствует обязательный placement."
+    },
+    {
+      "scenario_id": "homepage_primary",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "homepage_detailed",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "catalog_primary",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "catalog_detailed",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "prostornaya_4a_primary",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "prostornaya_4a_detailed",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "aerodromnaya_18g_primary",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "aerodromnaya_18g_detailed",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "sennaya_76_primary",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "sennaya_76_detailed",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "contacts_primary",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "contacts_detailed",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "mortgage_primary",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "mortgage_detailed",
+      "device": "android",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "Android: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический Android или Android-эмуляцию."
+    },
+    {
+      "scenario_id": "homepage_primary",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "homepage_detailed",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "catalog_primary",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "catalog_detailed",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "prostornaya_4a_primary",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "prostornaya_4a_detailed",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "aerodromnaya_18g_primary",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "aerodromnaya_18g_detailed",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "sennaya_76_primary",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "sennaya_76_detailed",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "contacts_primary",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "contacts_detailed",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "mortgage_primary",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    },
+    {
+      "scenario_id": "mortgage_detailed",
+      "device": "iphone",
+      "status": "blocked",
+      "tested_at": "2026-08-03T09:26:17.344Z",
+      "browser": "Недоступен",
+      "os": "iPhone: физическое устройство и эмуляция недоступны",
+      "evidence_reference": "",
+      "event_log_attached": false,
+      "notes": "Слот заблокирован: доступный QA-браузер не предоставляет физический iPhone или iPhone-эмуляцию."
+    }
+  ]
 }

@@ -1,0 +1,994 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-08-03T09:26:17.344Z",
+  "portal_id": "newbuilds-borisoglebsk",
+  "commit_sha": "8b9845d9cb89c464a1de321393a055b6c0863a61",
+  "personal_data_forbidden": true,
+  "environment": "production",
+  "profile": "desktop cloud browser",
+  "records": [
+    {
+      "scenario_id": "homepage_primary",
+      "form_id": "homepage_quick_selection",
+      "form_role": "primary",
+      "events": [
+        {
+          "event": "lead_form_start",
+          "page_path": "/",
+          "form_id": "homepage_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:20:46.266Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/",
+          "form_id": "homepage_quick_selection",
+          "form_role": "",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:20:46.598Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/",
+          "form_id": "homepage_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:20:46.598Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "homepage_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:20:47.066Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "homepage_detailed",
+      "form_id": "homepage_priority_selection",
+      "form_role": "detailed",
+      "events": [
+        {
+          "event": "lead_form_start",
+          "page_path": "/",
+          "form_id": "homepage_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:03.063Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/",
+          "form_id": "homepage_priority_selection",
+          "form_role": "",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:03.441Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/",
+          "form_id": "homepage_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:03.441Z"
+        },
+        {
+          "event": "lead_form_view",
+          "page_path": "/",
+          "form_id": "homepage_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:03.645Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "homepage_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:04.045Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "catalog_primary",
+      "form_id": "catalog_quick_selection",
+      "form_role": "primary",
+      "events": [
+        {
+          "event": "lead_form_view",
+          "page_path": "/catalog/",
+          "form_id": "catalog_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:07.473Z"
+        },
+        {
+          "event": "lead_form_start",
+          "page_path": "/catalog/",
+          "form_id": "catalog_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:08.229Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/catalog/",
+          "form_id": "catalog_quick_selection",
+          "form_role": "",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:08.636Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/catalog/",
+          "form_id": "catalog_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:08.638Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "catalog_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:09.064Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "catalog_detailed",
+      "form_id": "catalog_priority_selection",
+      "form_role": "detailed",
+      "events": [
+        {
+          "event": "lead_form_start",
+          "page_path": "/catalog/",
+          "form_id": "catalog_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:13.384Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/catalog/",
+          "form_id": "catalog_priority_selection",
+          "form_role": "",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:13.876Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/catalog/",
+          "form_id": "catalog_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:13.877Z"
+        },
+        {
+          "event": "lead_form_view",
+          "page_path": "/catalog/",
+          "form_id": "catalog_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:13.933Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "catalog_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:14.320Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "prostornaya_4a_primary",
+      "form_id": "catalog_prostornaya_4a_quick_consultation",
+      "form_role": "primary",
+      "events": [
+        {
+          "event": "lead_form_view",
+          "page_path": "/catalog/prostornaya-4a/",
+          "form_id": "catalog_prostornaya_4a_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "prostornaya-4a",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:40.888Z"
+        },
+        {
+          "event": "lead_form_start",
+          "page_path": "/catalog/prostornaya-4a/",
+          "form_id": "catalog_prostornaya_4a_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "prostornaya-4a",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:41.622Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/catalog/prostornaya-4a/",
+          "form_id": "catalog_prostornaya_4a_quick_consultation",
+          "form_role": "",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "prostornaya-4a",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:41.995Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/catalog/prostornaya-4a/",
+          "form_id": "catalog_prostornaya_4a_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "prostornaya-4a",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:41.996Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "catalog_prostornaya_4a_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "prostornaya-4a",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:42.446Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "prostornaya_4a_detailed",
+      "form_id": "catalog_prostornaya_4a_priority_lead",
+      "form_role": "detailed",
+      "events": [
+        {
+          "event": "lead_form_start",
+          "page_path": "/catalog/prostornaya-4a/",
+          "form_id": "catalog_prostornaya_4a_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "prostornaya-4a",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:46.972Z"
+        },
+        {
+          "event": "lead_form_view",
+          "page_path": "/catalog/prostornaya-4a/",
+          "form_id": "catalog_prostornaya_4a_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "prostornaya-4a",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:47.274Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/catalog/prostornaya-4a/",
+          "form_id": "catalog_prostornaya_4a_priority_lead",
+          "form_role": "",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "prostornaya-4a",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:47.440Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/catalog/prostornaya-4a/",
+          "form_id": "catalog_prostornaya_4a_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "prostornaya-4a",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:47.441Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "catalog_prostornaya_4a_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "prostornaya-4a",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:48.169Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "aerodromnaya_18g_primary",
+      "form_id": "catalog_aerodromnaya_18g_quick_consultation",
+      "form_role": "primary",
+      "events": [
+        {
+          "event": "lead_form_view",
+          "page_path": "/catalog/aerodromnaya-18g/",
+          "form_id": "catalog_aerodromnaya_18g_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "aerodromnaya-18g",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:51.730Z"
+        },
+        {
+          "event": "lead_form_start",
+          "page_path": "/catalog/aerodromnaya-18g/",
+          "form_id": "catalog_aerodromnaya_18g_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "aerodromnaya-18g",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:52.501Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/catalog/aerodromnaya-18g/",
+          "form_id": "catalog_aerodromnaya_18g_quick_consultation",
+          "form_role": "",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "aerodromnaya-18g",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:52.901Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/catalog/aerodromnaya-18g/",
+          "form_id": "catalog_aerodromnaya_18g_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "aerodromnaya-18g",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:52.902Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "catalog_aerodromnaya_18g_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "aerodromnaya-18g",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:53.368Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "aerodromnaya_18g_detailed",
+      "form_id": "catalog_aerodromnaya_18g_priority_lead",
+      "form_role": "detailed",
+      "events": [
+        {
+          "event": "lead_form_start",
+          "page_path": "/catalog/aerodromnaya-18g/",
+          "form_id": "catalog_aerodromnaya_18g_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "aerodromnaya-18g",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:57.559Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/catalog/aerodromnaya-18g/",
+          "form_id": "catalog_aerodromnaya_18g_priority_lead",
+          "form_role": "",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "aerodromnaya-18g",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:57.949Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/catalog/aerodromnaya-18g/",
+          "form_id": "catalog_aerodromnaya_18g_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "aerodromnaya-18g",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:57.950Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "catalog_aerodromnaya_18g_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "aerodromnaya-18g",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:21:58.393Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "sennaya_76_primary",
+      "form_id": "catalog_sennaya_76_quick_consultation",
+      "form_role": "primary",
+      "events": [
+        {
+          "event": "lead_form_view",
+          "page_path": "/catalog/sennaya-76/",
+          "form_id": "catalog_sennaya_76_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "sennaya-76",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:02.251Z"
+        },
+        {
+          "event": "lead_form_start",
+          "page_path": "/catalog/sennaya-76/",
+          "form_id": "catalog_sennaya_76_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "sennaya-76",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:03.003Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/catalog/sennaya-76/",
+          "form_id": "catalog_sennaya_76_quick_consultation",
+          "form_role": "",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "sennaya-76",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:03.331Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/catalog/sennaya-76/",
+          "form_id": "catalog_sennaya_76_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "sennaya-76",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:03.332Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "catalog_sennaya_76_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "sennaya-76",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:03.760Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "sennaya_76_detailed",
+      "form_id": "catalog_sennaya_76_priority_lead",
+      "form_role": "detailed",
+      "events": [
+        {
+          "event": "lead_form_start",
+          "page_path": "/catalog/sennaya-76/",
+          "form_id": "catalog_sennaya_76_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "sennaya-76",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:08.189Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/catalog/sennaya-76/",
+          "form_id": "catalog_sennaya_76_priority_lead",
+          "form_role": "",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "sennaya-76",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:08.574Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/catalog/sennaya-76/",
+          "form_id": "catalog_sennaya_76_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "sennaya-76",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:08.575Z"
+        },
+        {
+          "event": "lead_form_view",
+          "page_path": "/catalog/sennaya-76/",
+          "form_id": "catalog_sennaya_76_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "sennaya-76",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:08.844Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "catalog_sennaya_76_priority_lead",
+          "form_role": "detailed",
+          "lead_type": "project_consultation",
+          "residential_complex_id": "sennaya-76",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:09.020Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "contacts_primary",
+      "form_id": "contacts_quick_selection",
+      "form_role": "primary",
+      "events": [
+        {
+          "event": "lead_form_view",
+          "page_path": "/contacts/",
+          "form_id": "contacts_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:19.039Z"
+        },
+        {
+          "event": "lead_form_start",
+          "page_path": "/contacts/",
+          "form_id": "contacts_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:19.764Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/contacts/",
+          "form_id": "contacts_quick_selection",
+          "form_role": "",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:20.145Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/contacts/",
+          "form_id": "contacts_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:20.146Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "contacts_quick_selection",
+          "form_role": "primary",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:20.618Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "contacts_detailed",
+      "form_id": "contacts_priority_selection",
+      "form_role": "detailed",
+      "events": [
+        {
+          "event": "lead_form_view",
+          "page_path": "/contacts/",
+          "form_id": "contacts_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:24.391Z"
+        },
+        {
+          "event": "lead_form_start",
+          "page_path": "/contacts/",
+          "form_id": "contacts_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:24.891Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/contacts/",
+          "form_id": "contacts_priority_selection",
+          "form_role": "",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:25.345Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/contacts/",
+          "form_id": "contacts_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:25.346Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "contacts_priority_selection",
+          "form_role": "detailed",
+          "lead_type": "portal_selection",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:25.787Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "mortgage_primary",
+      "form_id": "portal_mortgage_quick_consultation",
+      "form_role": "primary",
+      "events": [
+        {
+          "event": "lead_form_view",
+          "page_path": "/ipoteka/",
+          "form_id": "portal_mortgage_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "mortgage",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:29.735Z"
+        },
+        {
+          "event": "lead_form_start",
+          "page_path": "/ipoteka/",
+          "form_id": "portal_mortgage_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "mortgage",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:30.494Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/ipoteka/",
+          "form_id": "portal_mortgage_quick_consultation",
+          "form_role": "",
+          "lead_type": "mortgage",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:30.836Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/ipoteka/",
+          "form_id": "portal_mortgage_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "mortgage",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:30.836Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "portal_mortgage_quick_consultation",
+          "form_role": "primary",
+          "lead_type": "mortgage",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:31.296Z"
+        }
+      ]
+    },
+    {
+      "scenario_id": "mortgage_detailed",
+      "form_id": "portal_mortgage_consultation",
+      "form_role": "detailed",
+      "events": [
+        {
+          "event": "lead_form_start",
+          "page_path": "/ipoteka/",
+          "form_id": "portal_mortgage_consultation",
+          "form_role": "detailed",
+          "lead_type": "mortgage",
+          "residential_complex_id": "",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:35.539Z"
+        },
+        {
+          "event": "lead_submit",
+          "page_path": "/ipoteka/",
+          "form_id": "portal_mortgage_consultation",
+          "form_role": "",
+          "lead_type": "mortgage",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:35.954Z"
+        },
+        {
+          "event": "lead_submit_classified",
+          "page_path": "/ipoteka/",
+          "form_id": "portal_mortgage_consultation",
+          "form_role": "detailed",
+          "lead_type": "mortgage",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": true,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:35.955Z"
+        },
+        {
+          "event": "lead_form_view",
+          "page_path": "/ipoteka/",
+          "form_id": "portal_mortgage_consultation",
+          "form_role": "detailed",
+          "lead_type": "mortgage",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": false,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:35.962Z"
+        },
+        {
+          "event": "lead_thankyou_view",
+          "page_path": "/spasibo/",
+          "form_id": "portal_mortgage_consultation",
+          "form_role": "detailed",
+          "lead_type": "mortgage",
+          "residential_complex_id": "all-newbuilds",
+          "placement": "",
+          "simulated": true,
+          "offline": false,
+          "debug_only": true,
+          "recorded_at": "2026-08-03T09:22:36.569Z"
+        }
+      ]
+    }
+  ]
+}
+
