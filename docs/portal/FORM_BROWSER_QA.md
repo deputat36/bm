@@ -19,7 +19,7 @@ Workflow `Desktop form browser QA` выполняет существующую �
 - пять обязательных событий конкретной формы;
 - заполненные `form_id`, `form_role`, `lead_type`, `object_id` и нормализованный `placement`;
 - один канонический `lead_submit`;
-- отсутствие PII и `client_fixation_id` в event log;
+- отсутствие PII и `client_fixation_id` в event log и summary;
 - `storage_fail=local` и `storage_fail=session`;
 - восстановление кнопки, `aria-busy` и отсутствие вечного cooldown после отказа storage.
 
@@ -80,8 +80,10 @@ Workflow не изменяет автоматически:
 
 ## Локальный запуск
 
+Используется закреплённая версия Playwright 1.62.0.
+
 ```bash
-npm install --no-save playwright@1.55.0
+npm install --no-save playwright@1.62.0
 npx playwright install chromium
 QA_BASE_URL=http://127.0.0.1:4173 QA_START_SERVER=1 node tools/run-form-browser-qa.mjs
 ```
