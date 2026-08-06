@@ -1,0 +1,125 @@
+name: Desktop form browser QA
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "spasibo/**"
+      - "assets/js/main.js"
+      - "assets/js/schema.js"
+      - "assets/js/analytics-debug.js"
+      - "assets/js/conversion-tracking.js"
+      - "assets/js/mobile-lead-bar.js"
+      - "assets/js/form-accessibility.js"
+      - "data/qa/form-scenarios.json"
+      - "tools/run-form-browser-qa.mjs"
+      - ".github/workflows/form-browser-qa.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "spasibo/**"
+      - "assets/js/main.js"
+      - "assets/js/schema.js"
+      - "assets/js/analytics-debug.js"
+      - "assets/js/conversion-tracking.js"
+      - "assets/js/mobile-lead-bar.js"
+      - "assets/js/form-accessibility.js"
+      - "data/qa/form-scenarios.json"
+      - "tools/run-form-browser-qa.mjs"
+      - ".github/workflows/form-browser-qa.yml"
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Пусто — локальная версия checkout; production — только https://novostroyki-borisoglebsk.ru"
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-form-browser-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromium-desktop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pinned Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Check runner syntax
+        run: node --check tools/run-form-browser-qa.mjs
+
+      - name: Resolve QA target
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_BASE_URL: ${{ inputs.base_url }}
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" && -n "$REQUESTED_BASE_URL" ]]; then
+            printf 'QA_BASE_URL=%s\n' "$REQUESTED_BASE_URL" >> "$GITHUB_ENV"
+            echo 'QA_START_SERVER=0' >> "$GITHUB_ENV"
+          else
+            echo 'QA_BASE_URL=http://127.0.0.1:4173' >> "$GITHUB_ENV"
+            echo 'QA_START_SERVER=1' >> "$GITHUB_ENV"
+          fi
+
+      - name: Run 14 desktop scenarios and storage checks
+        env:
+          QA_OUTPUT_DIR: artifacts/form-browser-qa
+          QA_RUN_STORAGE: "1"
+          QA_HEADLESS: "1"
+        run: node tools/run-form-browser-qa.mjs
+
+      - name: Publish concise job summary
+        if: always()
+        run: |
+          if [[ ! -f artifacts/form-browser-qa/summary.json ]]; then
+            echo '### Desktop form browser QA' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Summary artifact was not created.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+          const fs = require("fs");
+          const data = JSON.parse(fs.readFileSync("artifacts/form-browser-qa/summary.json", "utf8"));
+          const s = data.summary || {};
+          console.log("### Desktop form browser QA");
+          console.log("");
+          console.log(`- Target: ${data.target?.mode || "unknown"} (${data.target?.device_profile || "unknown"})`);
+          console.log(`- Unique scenarios: ${s.unique_scenarios || 0}`);
+          console.log(`- Scenario runs: ${s.scenario_passed || 0} passed / ${s.scenario_failed || 0} failed`);
+          console.log(`- Aerodromnaya detailed runs: ${s.aerodromnaya_detailed_runs || 0}`);
+          console.log(`- Storage: ${s.storage_passed || 0} passed / ${s.storage_failed || 0} failed`);
+          console.log("");
+          console.log("Chromium desktop emulation is not a physical device and does not update form-results.json automatically.");
+          NODE
+
+      - name: Upload privacy-safe QA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-form-browser-qa-${{ github.run_id }}
+          path: artifacts/form-browser-qa
+          if-no-files-found: warn
+          retention-days: 14
