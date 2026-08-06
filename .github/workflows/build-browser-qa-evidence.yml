@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "tools/build-browser-qa-evidence.mjs"
+      - "tools/apply-browser-evidence-source-fix.mjs"
       - ".github/workflows/build-browser-qa-evidence.yml"
 
 permissions:
@@ -33,6 +34,8 @@ jobs:
 
       - name: Generate durable evidence
         run: |
+          node --check tools/apply-browser-evidence-source-fix.mjs
+          node tools/apply-browser-evidence-source-fix.mjs
           node --check tools/build-browser-qa-evidence.mjs
           node tools/build-browser-qa-evidence.mjs /tmp/browser-qa evidence/qa/2026-08-06-browser
           node -e 'const fs=require("fs"); for (const file of ["summary.json","event-contexts.json","manifest.json"]) JSON.parse(fs.readFileSync(`evidence/qa/2026-08-06-browser/${file}`,"utf8")); console.log("Generated evidence JSON is valid.");'
