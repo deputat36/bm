@@ -598,7 +598,7 @@ async function runScenario(browser, config, matrix, scenario, iteration) {
         repeat_submit_integrity: true,
         status_and_recovery: true
       },
-      phone: phoneChecks,
+      phone_validation: phoneChecks,
       event_counts: validated.counts,
       evidence: {
         screenshot: path.relative(ROOT, screenshot),
