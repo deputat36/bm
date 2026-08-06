@@ -1,0 +1,75 @@
+name: Apply phone pattern runtime fix
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/apply-phone-pattern-runtime-fix.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'agent/p0-desktop-browser-qa'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/p0-desktop-browser-qa
+
+      - name: Patch runtime and browser contract
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          accessibility = Path('assets/js/form-accessibility.js')
+          source = accessibility.read_text(encoding='utf-8')
+          before = '  const PHONE_PATTERN = "(?=(?:\\\\D*\\\\d){10,15}\\\\D*$)[+\\\\d\\\\s().-]+";'
+          after = '  const PHONE_PATTERN = "(?=(?:\\\\D*\\\\d){10,15}\\\\D*$)[+\\\\d\\\\s\\\\.\\\\(\\\\)\\\\-]+";'
+          if source.count(before) != 1:
+              raise SystemExit(f'Expected one PHONE_PATTERN target, found {source.count(before)}')
+          accessibility.write_text(source.replace(before, after), encoding='utf-8')
+
+          runner = Path('tools/run-form-browser-qa.mjs')
+          source = runner.read_text(encoding='utf-8')
+
+          before_scenario = '''    assertCondition(network.leadEndpointRequests.length === 0, `${scenario.id}: dry-run attempted newbuild-lead fetch`);
+    assertCondition(network.externalDataRequests.length === 0, `${scenario.id}: dry-run attempted external data delivery`);'''
+          after_scenario = '''    assertCondition(network.leadEndpointRequests.length === 0, `${scenario.id}: dry-run attempted newbuild-lead fetch`);
+    assertCondition(network.externalDataRequests.length === 0, `${scenario.id}: dry-run attempted external data delivery`);
+    assertCondition(network.consoleErrors.length === 0, `${scenario.id}: console errors: ${network.consoleErrors.join(" | ")}`);
+    assertCondition(network.pageErrors.length === 0, `${scenario.id}: page errors: ${network.pageErrors.join(" | ")}`);'''
+          if source.count(before_scenario) != 1:
+              raise SystemExit(f'Expected one scenario runtime target, found {source.count(before_scenario)}')
+          source = source.replace(before_scenario, after_scenario)
+
+          before_storage = '''    assertCondition(network.leadEndpointRequests.length === 0, `storage ${mode}: attempted newbuild-lead fetch`);
+    assertCondition(network.externalDataRequests.length === 0, `storage ${mode}: attempted external data delivery`);'''
+          after_storage = '''    assertCondition(network.leadEndpointRequests.length === 0, `storage ${mode}: attempted newbuild-lead fetch`);
+    assertCondition(network.externalDataRequests.length === 0, `storage ${mode}: attempted external data delivery`);
+    assertCondition(network.consoleErrors.length === 0, `storage ${mode}: console errors: ${network.consoleErrors.join(" | ")}`);
+    assertCondition(network.pageErrors.length === 0, `storage ${mode}: page errors: ${network.pageErrors.join(" | ")}`);'''
+          if source.count(before_storage) != 1:
+              raise SystemExit(f'Expected one storage runtime target, found {source.count(before_storage)}')
+          runner.write_text(source.replace(before_storage, after_storage), encoding='utf-8')
+          PY
+          node --check assets/js/form-accessibility.js
+          node --check tools/run-form-browser-qa.mjs
+          node - <<'NODE'
+          const source = require('fs').readFileSync('assets/js/form-accessibility.js', 'utf8');
+          const match = source.match(/const PHONE_PATTERN = "([^"]+)";/);
+          if (!match) process.exit(1);
+          new RegExp(match[1], 'v');
+          console.log('PHONE_PATTERN is valid with the HTML pattern v flag.');
+          NODE
+
+      - name: Commit confirmed runtime fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/js/form-accessibility.js tools/run-form-browser-qa.mjs
+          git commit -m "fix: исправить phone pattern для Chromium 151"
+          git push origin HEAD:agent/p0-desktop-browser-qa
