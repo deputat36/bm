@@ -50,11 +50,11 @@ replaceRequired(
 );
 
 replaceRequired(
-`  assertCondition(metadata.inputmode === "tel", \`${scenario.id}: inputmode=tel is required\`);`,
-`  assertCondition(metadata.accessibility_enhanced === true, \`${scenario.id}: accessibility layer is not ready\`);
-  assertCondition(Boolean(metadata.pattern), \`${scenario.id}: phone pattern is missing\`);
-  assertCondition(metadata.maxlength === 24, \`${scenario.id}: phone maxlength must be 24\`);
-  assertCondition(metadata.inputmode === "tel", \`${scenario.id}: inputmode=tel is required\`);`,
+`  assertCondition(metadata.inputmode === "tel", \`\${scenario.id}: inputmode=tel is required\`);`,
+`  assertCondition(metadata.accessibility_enhanced === true, \`\${scenario.id}: accessibility layer is not ready\`);
+  assertCondition(Boolean(metadata.pattern), \`\${scenario.id}: phone pattern is missing\`);
+  assertCondition(metadata.maxlength === 24, \`\${scenario.id}: phone maxlength must be 24\`);
+  assertCondition(metadata.inputmode === "tel", \`\${scenario.id}: inputmode=tel is required\`);`,
 "phone readiness assertions"
 );
 
