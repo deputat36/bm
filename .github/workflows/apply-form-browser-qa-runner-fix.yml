@@ -1,0 +1,39 @@
+name: Apply form browser QA runner fix
+
+on:
+  push:
+    branches:
+      - agent/p0-desktop-browser-qa
+    paths:
+      - "tools/apply-form-browser-qa-runner-fix.mjs"
+      - ".github/workflows/apply-form-browser-qa-runner-fix.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/p0-desktop-browser-qa
+
+      - name: Apply exact runner patch
+        run: |
+          node --check tools/apply-form-browser-qa-runner-fix.mjs
+          node tools/apply-form-browser-qa-runner-fix.mjs
+          node --check tools/run-form-browser-qa.mjs
+
+      - name: Commit runner change
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/run-form-browser-qa.mjs
+          if git diff --cached --quiet; then
+            echo "No runner changes to commit."
+            exit 0
+          fi
+          git commit -m "qa: исправить browser runner по artifact"
+          git push origin HEAD:agent/p0-desktop-browser-qa
