@@ -170,11 +170,11 @@ assertEqual(summary.target?.physical_device, false, "target.physical_device");`
   },
   {
     label: "storage profile assertion",
-    before: `  assertEqual(result.status, "passed", \`${label}.status\`);
-  assertTrue(result.checks && Object.values(result.checks).every(Boolean), \`${label}: not all checks passed\`);`,
-    after: `  assertEqual(result.status, "passed", \`${label}.status\`);
-  assertEqual(result.device, expectedDeviceProfile, \`${label}.device\`);
-  assertTrue(result.checks && Object.values(result.checks).every(Boolean), \`${label}: not all checks passed\`);`
+    before: `  assertEqual(result.status, "passed", \`\${label}.status\`);
+  assertTrue(result.checks && Object.values(result.checks).every(Boolean), \`\${label}: not all checks passed\`);`,
+    after: `  assertEqual(result.status, "passed", \`\${label}.status\`);
+  assertEqual(result.device, expectedDeviceProfile, \`\${label}.device\`);
+  assertTrue(result.checks && Object.values(result.checks).every(Boolean), \`\${label}: not all checks passed\`);`
   },
   {
     label: "validation summary target",
