@@ -1,4 +1,4 @@
-name: Desktop form browser QA
+name: Form browser QA
 
 on:
   pull_request:
@@ -49,13 +49,39 @@ permissions:
   contents: read
 
 concurrency:
-  group: desktop-form-browser-qa-${{ github.ref }}
+  group: form-browser-qa-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  chromium-desktop:
+  browser-profile:
+    name: ${{ matrix.label }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - slug: desktop
+            label: Desktop Chromium emulation
+            profile: desktop_chromium_emulation
+            engine: chromium
+            emulated_device: desktop-custom
+            install_engine: chromium
+            output_dir: artifacts/form-browser-qa-desktop
+          - slug: android
+            label: Android Chromium emulation
+            profile: android_chromium_emulation
+            engine: chromium
+            emulated_device: Pixel 7
+            install_engine: chromium
+            output_dir: artifacts/form-browser-qa-android
+          - slug: iphone
+            label: iPhone WebKit emulation
+            profile: iphone_webkit_emulation
+            engine: webkit
+            emulated_device: iPhone 13
+            install_engine: webkit
+            output_dir: artifacts/form-browser-qa-iphone
 
     steps:
       - name: Checkout repository
@@ -66,10 +92,12 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install pinned Playwright
+      - name: Install pinned Playwright engine
+        env:
+          PLAYWRIGHT_ENGINE: ${{ matrix.install_engine }}
         run: |
           npm install --no-save playwright@1.62.0
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps "$PLAYWRIGHT_ENGINE"
 
       - name: Check QA tool syntax
         run: |
@@ -94,46 +122,57 @@ jobs:
             echo 'QA_EXPECTED_ORIGIN=http://127.0.0.1:4173' >> "$GITHUB_ENV"
           fi
 
-      - name: Run 14 desktop scenarios and storage checks
+      - name: Run 14 unique scenarios and storage checks
         env:
-          QA_OUTPUT_DIR: artifacts/form-browser-qa
+          QA_DEVICE_PROFILE: ${{ matrix.profile }}
+          QA_OUTPUT_DIR: ${{ matrix.output_dir }}
           QA_RUN_STORAGE: "1"
           QA_HEADLESS: "1"
         run: node tools/run-form-browser-qa.mjs
 
       - name: Validate privacy-safe QA artifact
         if: always()
-        run: node tools/validate-form-browser-qa-artifact.mjs artifacts/form-browser-qa
+        env:
+          QA_EXPECTED_DEVICE_PROFILE: ${{ matrix.profile }}
+          QA_EXPECTED_BROWSER_ENGINE: ${{ matrix.engine }}
+          QA_EXPECTED_EMULATED_DEVICE: ${{ matrix.emulated_device }}
+          QA_OUTPUT_DIR: ${{ matrix.output_dir }}
+        run: node tools/validate-form-browser-qa-artifact.mjs "$QA_OUTPUT_DIR"
 
       - name: Publish concise job summary
         if: always()
+        env:
+          QA_OUTPUT_DIR: ${{ matrix.output_dir }}
+          QA_PROFILE_LABEL: ${{ matrix.label }}
         run: |
-          if [[ ! -f artifacts/form-browser-qa/summary.json ]]; then
-            echo '### Desktop form browser QA' >> "$GITHUB_STEP_SUMMARY"
-            echo 'Summary artifact was not created.' >> "$GITHUB_STEP_SUMMARY"
+          if [[ ! -f "$QA_OUTPUT_DIR/summary.json" ]]; then
+            printf '### %s\n\nSummary artifact was not created.\n' "$QA_PROFILE_LABEL" >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
           const fs = require("fs");
-          const data = JSON.parse(fs.readFileSync("artifacts/form-browser-qa/summary.json", "utf8"));
+          const data = JSON.parse(fs.readFileSync(`${process.env.QA_OUTPUT_DIR}/summary.json`, "utf8"));
           const s = data.summary || {};
-          console.log("### Desktop form browser QA");
+          console.log(`### ${process.env.QA_PROFILE_LABEL}`);
           console.log("");
-          console.log(`- Target: ${data.target?.mode || "unknown"} (${data.target?.device_profile || "unknown"})`);
+          console.log(`- Target: ${data.target?.mode || "unknown"}`);
           console.log(`- Origin: ${data.target?.origin || "unknown"}`);
+          console.log(`- Profile: ${data.target?.device_profile || "unknown"}`);
+          console.log(`- Engine: ${data.target?.browser_engine || "unknown"}`);
+          console.log(`- Emulated device: ${data.target?.emulated_device || "unknown"}`);
           console.log(`- Unique scenarios: ${s.unique_scenarios || 0}`);
           console.log(`- Scenario runs: ${s.scenario_passed || 0} passed / ${s.scenario_failed || 0} failed`);
           console.log(`- Aerodromnaya detailed runs: ${s.aerodromnaya_detailed_runs || 0}`);
           console.log(`- Storage: ${s.storage_passed || 0} passed / ${s.storage_failed || 0} failed`);
           console.log("");
-          console.log("Chromium desktop emulation is not a physical device and does not update form-results.json automatically.");
+          console.log("This is browser/device emulation, not a physical device. It does not update form-results.json or manual gates automatically.");
           NODE
 
       - name: Upload privacy-safe QA artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: desktop-form-browser-qa-${{ github.run_id }}
-          path: artifacts/form-browser-qa
+          name: form-browser-qa-${{ matrix.slug }}-${{ github.run_id }}
+          path: ${{ matrix.output_dir }}
           if-no-files-found: warn
           retention-days: 14
