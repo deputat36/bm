@@ -1,0 +1,36 @@
+name: Apply browser QA remote mode fix
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "tools/apply-browser-qa-remote-mode-fix.mjs"
+      - ".github/workflows/apply-browser-qa-remote-mode-fix.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'agent/p0-production-browser-qa'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/p0-production-browser-qa
+
+      - name: Apply exact remote-mode patch
+        run: |
+          node --check tools/apply-browser-qa-remote-mode-fix.mjs
+          node tools/apply-browser-qa-remote-mode-fix.mjs
+          node --check tools/validate-form-browser-qa-artifact.mjs
+
+      - name: Commit permanent QA fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/form-browser-qa.yml tools/validate-form-browser-qa-artifact.mjs
+          git commit -m "qa: поддержать local и production artifact modes"
+          git push origin HEAD:agent/p0-production-browser-qa
