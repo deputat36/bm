@@ -1,0 +1,236 @@
+{
+  "schema_version": "1.0",
+  "portal_id": "newbuilds-borisoglebsk",
+  "evidence_date": "2026-08-06",
+  "purpose": "Автоматизированная повторная desktop Chromium-приёмка форм после PR #153.",
+  "source": {
+    "repository": "deputat36/bm",
+    "pr": 154,
+    "source_head": "d839d7e49df5fe8e04b0b4ac4f524df06244f816",
+    "artifact_commit": "7842152ae7d8c42d6dae692247cafe5dc995d07f",
+    "merge_commit": "bf8f405e386aecba4a964d3a8d6dbad656702436",
+    "workflow_run_id": 31085851541,
+    "artifact_id": 8961381674,
+    "artifact_name": "desktop-form-browser-qa-31085851541",
+    "artifact_digest": "sha256:6d0831a326789aa6938af84745434bb6ec8cfc76f9d9054caeb895c1a466a7c9",
+    "artifact_expires_at": "2026-08-20T08:41:39Z"
+  },
+  "classification": {
+    "environment": "local_static_checkout",
+    "device_profile": "desktop_chromium_emulation",
+    "physical_device": false,
+    "production_domain_run": false,
+    "real_submission": false
+  },
+  "verified_results": {
+    "unique_scenarios": 14,
+    "scenario_runs": 15,
+    "scenario_passed": 15,
+    "scenario_failed": 0,
+    "aerodromnaya_detailed_runs": 2,
+    "storage_checks": 2,
+    "storage_passed": 2,
+    "storage_failed": 0,
+    "lead_endpoint_requests": 0,
+    "external_data_requests": 0,
+    "console_errors": 0,
+    "page_errors": 0,
+    "privacy_violations": 0,
+    "json_files": 18,
+    "artifact_files": 35
+  },
+  "verification": {
+    "github_actions_total": 7,
+    "github_actions_passed": 7,
+    "artifact_validator_passed": true,
+    "downloaded_digest_reverified": true,
+    "all_json_parsed": true,
+    "prohibited_keys_found": 0,
+    "prohibited_values_found": 0
+  },
+  "limitations": [
+    "Результат не является физическим устройством.",
+    "Production-domain browser-run не выполнялся.",
+    "Android и iPhone не проверены.",
+    "Реальная заявка не отправлялась.",
+    "Рабочий внешний аналитический счётчик не проверялся.",
+    "Manual legal, operations и launch gates не повышались."
+  ],
+  "artifact_files": [
+    {
+      "path": "events/aerodromnaya_18g_detailed-1.json",
+      "size_bytes": 2804,
+      "sha256": "6dd0704748454edcd120e5ed36fb283126c90726673c5f74c3267f62a4cbc249"
+    },
+    {
+      "path": "events/aerodromnaya_18g_detailed-2.json",
+      "size_bytes": 2804,
+      "sha256": "64bb210e5468c251c36a2ad405bd2cd8dba27544eefdd9428ad51ddab771d2b0"
+    },
+    {
+      "path": "events/aerodromnaya_18g_primary-1.json",
+      "size_bytes": 2850,
+      "sha256": "78b280d9db6acfc87875996fce7ba7d847c5503daa001cefe72da7faaea93efd"
+    },
+    {
+      "path": "events/catalog_detailed-1.json",
+      "size_bytes": 2654,
+      "sha256": "903aca424a03e8a7d193394a41af946dcf7c23987aca4fe1a36134acec37781b"
+    },
+    {
+      "path": "events/catalog_primary-1.json",
+      "size_bytes": 2628,
+      "sha256": "f9d786d349aaacd8275e1204c3f8171d5ad81ccf12cbe7c758deaff4e35a03fc"
+    },
+    {
+      "path": "events/contacts_detailed-1.json",
+      "size_bytes": 2667,
+      "sha256": "0d0245caa67d6618fa4d8a0da2e5631952608efec86fd4d88bdbe2155edc5b22"
+    },
+    {
+      "path": "events/contacts_primary-1.json",
+      "size_bytes": 2641,
+      "sha256": "d5b11e17dd24e66c84e7dabf27b6b6c33edc24d7eea3e53089f2a1b9d81c9b2d"
+    },
+    {
+      "path": "events/homepage_detailed-1.json",
+      "size_bytes": 2631,
+      "sha256": "33719efc6446dfd2d8f218d22a224a72ccee2c630e5bb6a5b0cf76c4fb675ddf"
+    },
+    {
+      "path": "events/homepage_primary-1.json",
+      "size_bytes": 2605,
+      "sha256": "37b995f794aba145df8ffeac72a9cbdcb4648d709500c55747ee540fcaa3b24f"
+    },
+    {
+      "path": "events/mortgage_detailed-1.json",
+      "size_bytes": 2632,
+      "sha256": "ade81c58c2267cfd9bd501fe61ca31298584fbac5cb9a08994b33864d00d70f5"
+    },
+    {
+      "path": "events/mortgage_primary-1.json",
+      "size_bytes": 2687,
+      "sha256": "3f089104723b5480f68c4008c6c8b612e3591d03e3e1b3594970785ef312eb0f"
+    },
+    {
+      "path": "events/prostornaya_4a_detailed-1.json",
+      "size_bytes": 2746,
+      "sha256": "d6848f1db34d6ef9fd65d6c8526e8ed237afe70704d13835f7a3ec1cfef2aa3c"
+    },
+    {
+      "path": "events/prostornaya_4a_primary-1.json",
+      "size_bytes": 2792,
+      "sha256": "025a4fbe2783742f77ce6e384de09b61f8579ae7f24993e09bc4798c8f85a499"
+    },
+    {
+      "path": "events/sennaya_76_detailed-1.json",
+      "size_bytes": 2618,
+      "sha256": "9aa4c67fa5bdd033ca097f31383e861fb1d22d3eda6057e2661c8f34868b99f6"
+    },
+    {
+      "path": "events/sennaya_76_primary-1.json",
+      "size_bytes": 2664,
+      "sha256": "40c4d2f61d617e02f25923c7c4640476d4aebcfe2fb493130e66c0b850131f04"
+    },
+    {
+      "path": "events/storage-local.json",
+      "size_bytes": 2041,
+      "sha256": "7fe9fddd35d6b7d6822d337bcb9bfac1f521a1bd0a9c82331531b140bcbc8158"
+    },
+    {
+      "path": "events/storage-session.json",
+      "size_bytes": 2041,
+      "sha256": "788c4913e734f8179d7423c0fe94bda36562292f3f34f85964a94ee6197a2ade"
+    },
+    {
+      "path": "screenshots/aerodromnaya_18g_detailed-1.png",
+      "size_bytes": 516587,
+      "sha256": "a70050f42d32365e6ba4d88abb23f68083aa029850fb816b0989408cf4fe9df3"
+    },
+    {
+      "path": "screenshots/aerodromnaya_18g_detailed-2.png",
+      "size_bytes": 521779,
+      "sha256": "690e66eefce2f7077a0bbd8ac220e8eda7759496cd6bd807d0793bd337809f53"
+    },
+    {
+      "path": "screenshots/aerodromnaya_18g_primary-1.png",
+      "size_bytes": 516294,
+      "sha256": "8bcba04a7e986f52e8b415d24a1a27d8029b56e5718ea66e8fc4d192f8323c68"
+    },
+    {
+      "path": "screenshots/catalog_detailed-1.png",
+      "size_bytes": 511099,
+      "sha256": "4259ad915e2e81a36261cf651617f282c3bb4fbd34af920d5fe75658cccd4798"
+    },
+    {
+      "path": "screenshots/catalog_primary-1.png",
+      "size_bytes": 510596,
+      "sha256": "f237115cb81de38b2e0731abda7594e3cacf55879efcb35bf8fef9ce587a5dcd"
+    },
+    {
+      "path": "screenshots/contacts_detailed-1.png",
+      "size_bytes": 512206,
+      "sha256": "06d0d206531fde634777959157cbdf7c46da6d2971d9f26376ec93556e7b6cf4"
+    },
+    {
+      "path": "screenshots/contacts_primary-1.png",
+      "size_bytes": 511217,
+      "sha256": "40c2c892d4f937f9543b6d3fe14ec01f742704c152b48d0e6ce4ca0bd9a34bde"
+    },
+    {
+      "path": "screenshots/homepage_detailed-1.png",
+      "size_bytes": 479008,
+      "sha256": "67ba3982645efcaf4974f81c04ac25b4d334cb4316adea2e2f350555d6a43a31"
+    },
+    {
+      "path": "screenshots/homepage_primary-1.png",
+      "size_bytes": 512232,
+      "sha256": "a6ee3e0785df4246c1e7c800933b2a487d0b44c407a7018e8c6e50645567a3ec"
+    },
+    {
+      "path": "screenshots/mortgage_detailed-1.png",
+      "size_bytes": 510537,
+      "sha256": "435a4738cf8f6f09bf19a72239435d38d7389bf471e68bdac20419987f2395fa"
+    },
+    {
+      "path": "screenshots/mortgage_primary-1.png",
+      "size_bytes": 510982,
+      "sha256": "85ee8a645ea4b67e54d16acfad2f4743b992c27deea8b63d45799cc9a8e27f8a"
+    },
+    {
+      "path": "screenshots/prostornaya_4a_detailed-1.png",
+      "size_bytes": 514038,
+      "sha256": "cb1b68788e08a1b18088438acdf01f02920c5180a371dbfaa39f3b4b92c7319f"
+    },
+    {
+      "path": "screenshots/prostornaya_4a_primary-1.png",
+      "size_bytes": 514661,
+      "sha256": "b934394bb92af3ae180b69d852e3ccf635c1f23096cf214ebd52cf0704e50ae1"
+    },
+    {
+      "path": "screenshots/sennaya_76_detailed-1.png",
+      "size_bytes": 519568,
+      "sha256": "b4088ae4a406dad3824b22beb5145de7fbb5a78369e9cc6aaad71d367c458edc"
+    },
+    {
+      "path": "screenshots/sennaya_76_primary-1.png",
+      "size_bytes": 513618,
+      "sha256": "e34079444540de8407fff9a5048a0127e5eeda561104cce1fae06b49b5604f07"
+    },
+    {
+      "path": "screenshots/storage-local.png",
+      "size_bytes": 2352413,
+      "sha256": "6e592448c927ac2154a59ba06d60cb01529f5d544ab43e2bf9478ab4b5a7f7cc"
+    },
+    {
+      "path": "screenshots/storage-session.png",
+      "size_bytes": 2356967,
+      "sha256": "234a34b7b4969dfa12765ddaf79a1b58623bfa5b0de30a3d6d74d448fd382338"
+    },
+    {
+      "path": "summary.json",
+      "size_bytes": 27708,
+      "sha256": "bfa69d98fc937019d89deb42a80daf7ff58e7d629cc61bf8d3027f72c7e14934"
+    }
+  ]
+}
