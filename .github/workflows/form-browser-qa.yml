@@ -82,11 +82,16 @@ jobs:
           REQUESTED_BASE_URL: ${{ inputs.base_url }}
         run: |
           if [[ "$EVENT_NAME" == "workflow_dispatch" && -n "$REQUESTED_BASE_URL" ]]; then
-            printf 'QA_BASE_URL=%s\n' "$REQUESTED_BASE_URL" >> "$GITHUB_ENV"
+            NORMALIZED_ORIGIN="$(node -e 'process.stdout.write(new URL(process.argv[1]).origin)' "$REQUESTED_BASE_URL")"
+            printf 'QA_BASE_URL=%s\n' "$NORMALIZED_ORIGIN" >> "$GITHUB_ENV"
             echo 'QA_START_SERVER=0' >> "$GITHUB_ENV"
+            echo 'QA_EXPECTED_MODE=allowlisted_remote' >> "$GITHUB_ENV"
+            printf 'QA_EXPECTED_ORIGIN=%s\n' "$NORMALIZED_ORIGIN" >> "$GITHUB_ENV"
           else
             echo 'QA_BASE_URL=http://127.0.0.1:4173' >> "$GITHUB_ENV"
             echo 'QA_START_SERVER=1' >> "$GITHUB_ENV"
+            echo 'QA_EXPECTED_MODE=local_static' >> "$GITHUB_ENV"
+            echo 'QA_EXPECTED_ORIGIN=http://127.0.0.1:4173' >> "$GITHUB_ENV"
           fi
 
       - name: Run 14 desktop scenarios and storage checks
@@ -115,6 +120,7 @@ jobs:
           console.log("### Desktop form browser QA");
           console.log("");
           console.log(`- Target: ${data.target?.mode || "unknown"} (${data.target?.device_profile || "unknown"})`);
+          console.log(`- Origin: ${data.target?.origin || "unknown"}`);
           console.log(`- Unique scenarios: ${s.unique_scenarios || 0}`);
           console.log(`- Scenario runs: ${s.scenario_passed || 0} passed / ${s.scenario_failed || 0} failed`);
           console.log(`- Aerodromnaya detailed runs: ${s.aerodromnaya_detailed_runs || 0}`);
