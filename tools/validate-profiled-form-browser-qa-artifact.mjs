@@ -65,6 +65,7 @@ if (profileErrors.length) {
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "newbuild-form-qa-profile-"));
 const normalizedArtifact = path.join(tempRoot, "artifact");
+let validationStatus = 1;
 
 try {
   fs.cpSync(artifactDir, normalizedArtifact, { recursive: true });
@@ -90,9 +91,13 @@ try {
   });
 
   if (validation.error) throw validation.error;
-  if (validation.status !== 0) process.exit(validation.status ?? 1);
+  validationStatus = validation.status ?? 1;
 } finally {
   fs.rmSync(tempRoot, { recursive: true, force: true });
 }
 
-console.log(`Browser profile contract passed: ${expectedProfile} / ${expectedEngine} / ${expectedDevice}; physical_device=false`);
+if (validationStatus !== 0) {
+  process.exitCode = validationStatus;
+} else {
+  console.log(`Browser profile contract passed: ${expectedProfile} / ${expectedEngine} / ${expectedDevice}; physical_device=false`);
+}
