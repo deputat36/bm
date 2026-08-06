@@ -36,6 +36,7 @@ const PROHIBITED_KEYS = new Set([
   "message"
 ]);
 const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/;
+const COMMIT_HASH = /^[a-f0-9]{40,64}$/i;
 const PHONE_LIKE = /(?:^|\D)\+?\d[\d\s().-]{8,}\d(?:\D|$)/;
 const EMAIL_LIKE = /[^\s@]+@[^\s@]+\.[^\s@]+/i;
 const NORMALIZED_PLACEMENT = /^[a-zа-яё0-9_-]{1,120}$/i;
@@ -78,7 +79,7 @@ function scanPrivacy(value, source, currentPath = "") {
     return;
   }
 
-  if (typeof value !== "string" || ISO_TIMESTAMP.test(value)) return;
+  if (typeof value !== "string" || ISO_TIMESTAMP.test(value) || COMMIT_HASH.test(value)) return;
   if (PHONE_LIKE.test(value)) fail(`${source}: phone-like value at ${currentPath}`);
   if (EMAIL_LIKE.test(value)) fail(`${source}: email-like value at ${currentPath}`);
 }
