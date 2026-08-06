@@ -1,0 +1,43 @@
+name: Apply form browser QA artifact key fix
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/apply-form-browser-qa-artifact-key-fix.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'agent/p0-desktop-browser-qa'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/p0-desktop-browser-qa
+
+      - name: Rename artifact metadata key
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('tools/run-form-browser-qa.mjs')
+          source = path.read_text(encoding='utf-8')
+          before = '      phone: phoneChecks,'
+          after = '      phone_validation: phoneChecks,'
+          if source.count(before) != 1:
+              raise SystemExit(f'Expected one artifact key target, found {source.count(before)}')
+          path.write_text(source.replace(before, after), encoding='utf-8')
+          PY
+          node --check tools/run-form-browser-qa.mjs
+
+      - name: Commit runner change
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/run-form-browser-qa.mjs
+          git commit -m "qa: исключить PII-подобный ключ из artifact"
+          git push origin HEAD:agent/p0-desktop-browser-qa
