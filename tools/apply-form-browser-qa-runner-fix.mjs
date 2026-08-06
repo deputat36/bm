@@ -22,19 +22,19 @@ replaceRequired(
 function collectProhibitedValuePaths(value, prefix = "") {
   const violations = [];
   if (Array.isArray(value)) {
-    value.forEach((item, index) => violations.push(...collectProhibitedValuePaths(item, \`${prefix}[\${index}]\`)));
+    value.forEach((item, index) => violations.push(...collectProhibitedValuePaths(item, prefix + "[" + index + "]")));
     return violations;
   }
   if (value && typeof value === "object") {
     for (const [key, nested] of Object.entries(value)) {
-      const nextPath = prefix ? \`${prefix}.\${key}\` : key;
+      const nextPath = prefix ? prefix + "." + key : key;
       violations.push(...collectProhibitedValuePaths(nested, nextPath));
     }
     return violations;
   }
   if (typeof value !== "string" || ISO_TIMESTAMP_VALUE.test(value)) return violations;
-  if (PHONE_LIKE_VALUE.test(value)) violations.push(\`${prefix}:phone-like\`);
-  if (EMAIL_LIKE_VALUE.test(value)) violations.push(\`${prefix}:email-like\`);
+  if (PHONE_LIKE_VALUE.test(value)) violations.push(prefix + ":phone-like");
+  if (EMAIL_LIKE_VALUE.test(value)) violations.push(prefix + ":email-like");
   return violations;
 }
 
@@ -67,8 +67,8 @@ replaceRequired(
           };
           const expectedAliases = aliases[expectedObjectId] || [String(expectedObjectId || "").toLowerCase()];
           const matched = options.find((item) => {
-            const searchable = \`${item.value || ""} \${item.textContent || ""}\`.toLowerCase();
-            return expectedAliases.some((alias) => alias && searchable.includes(alias));
+            const searchable = String(item.value || "") + " " + String(item.textContent || "");
+            return expectedAliases.some((alias) => alias && searchable.toLowerCase().includes(alias));
           });
           if (matched) return matched.value;
         }
