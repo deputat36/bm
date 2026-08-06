@@ -13,5 +13,6 @@ fs.writeFileSync(file, source, "utf8");
 
 const match = source.match(/const PHONE_PATTERN = "([^"]+)";/);
 if (!match) throw new Error("Updated PHONE_PATTERN not found");
-new RegExp(match[1], "v");
+const runtimePattern = JSON.parse(`"${match[1]}"`);
+new RegExp(runtimePattern, "v");
 console.log("PHONE_PATTERN is valid with the HTML pattern v flag.");
