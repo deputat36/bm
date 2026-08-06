@@ -17,7 +17,6 @@ on:
       - "data/qa/form-scenarios.json"
       - "tools/run-form-browser-qa.mjs"
       - "tools/validate-form-browser-qa-artifact.mjs"
-      - "tools/browser-profile-preload.mjs"
       - "tools/run-profiled-form-browser-qa.mjs"
       - "tools/validate-profiled-form-browser-qa-artifact.mjs"
       - ".github/workflows/form-browser-qa.yml"
@@ -39,7 +38,6 @@ on:
       - "data/qa/form-scenarios.json"
       - "tools/run-form-browser-qa.mjs"
       - "tools/validate-form-browser-qa-artifact.mjs"
-      - "tools/browser-profile-preload.mjs"
       - "tools/run-profiled-form-browser-qa.mjs"
       - "tools/validate-profiled-form-browser-qa-artifact.mjs"
       - ".github/workflows/form-browser-qa.yml"
@@ -109,7 +107,6 @@ jobs:
         run: |
           node --check tools/run-form-browser-qa.mjs
           node --check tools/validate-form-browser-qa-artifact.mjs
-          node --check tools/browser-profile-preload.mjs
           node --check tools/run-profiled-form-browser-qa.mjs
           node --check tools/validate-profiled-form-browser-qa-artifact.mjs
 
