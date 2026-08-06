@@ -8,6 +8,16 @@ const summaryPath = path.join(artifactDir, "summary.json");
 const eventsDir = path.join(artifactDir, "events");
 const screenshotsDir = path.join(artifactDir, "screenshots");
 const errors = [];
+const EXPECTED_MODES = new Set(["local_static", "allowlisted_remote"]);
+const expectedMode = process.env.QA_EXPECTED_MODE || "local_static";
+const expectedOrigin = new URL(
+  process.env.QA_EXPECTED_ORIGIN || "http://127.0.0.1:4173"
+).origin;
+
+if (!EXPECTED_MODES.has(expectedMode)) {
+  throw new Error(`Unsupported QA_EXPECTED_MODE: ${expectedMode}`);
+}
+
 const REQUIRED_EVENTS = [
   "lead_form_view",
   "lead_form_start",
@@ -102,7 +112,8 @@ if (!summary) process.exit(1);
 scanPrivacy(summary, path.relative(ROOT, summaryPath));
 
 assertEqual(summary.schema_version, "1.0", "summary.schema_version");
-assertEqual(summary.target?.mode, "local_static", "target.mode");
+assertEqual(summary.target?.mode, expectedMode, "target.mode");
+assertEqual(summary.target?.origin, expectedOrigin, "target.origin");
 assertEqual(summary.target?.device_profile, "desktop_chromium_emulation", "target.device_profile");
 assertEqual(summary.target?.physical_device, false, "target.physical_device");
 assertEqual(summary.safety?.dry_run_only, true, "safety.dry_run_only");
@@ -182,9 +193,6 @@ for (const file of eventFiles) {
 }
 
 const allFiles = [];
-for (const directory of [artifactDir, eventsDir, screenshotsDir]) {
-  if (!fs.existsSync(directory)) continue;
-}
 function collectFiles(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
@@ -196,6 +204,7 @@ collectFiles(artifactDir);
 assertEqual(allFiles.length, 35, "artifact file count");
 
 console.log(`Checked browser QA artifact files: ${allFiles.length}`);
+console.log(`Target: ${expectedMode} (${expectedOrigin})`);
 console.log(`Scenario runs: ${summary.summary?.scenario_passed || 0}/${summary.summary?.scenario_runs || 0}`);
 console.log(`Storage checks: ${summary.summary?.storage_passed || 0}/${summary.summary?.storage_checks || 0}`);
 console.log("Endpoint requests: 0; external data requests: 0");
