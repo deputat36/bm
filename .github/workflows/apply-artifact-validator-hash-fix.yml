@@ -1,0 +1,36 @@
+name: Apply artifact validator hash fix
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "tools/apply-artifact-validator-hash-fix.mjs"
+      - ".github/workflows/apply-artifact-validator-hash-fix.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'agent/p0-desktop-browser-qa'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/p0-desktop-browser-qa
+
+      - name: Apply exact validator patch
+        run: |
+          node --check tools/apply-artifact-validator-hash-fix.mjs
+          node tools/apply-artifact-validator-hash-fix.mjs
+          node --check tools/validate-form-browser-qa-artifact.mjs
+
+      - name: Commit validator fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/validate-form-browser-qa-artifact.mjs
+          git commit -m "qa: исключить commit hash из phone-like scan"
+          git push origin HEAD:agent/p0-desktop-browser-qa
