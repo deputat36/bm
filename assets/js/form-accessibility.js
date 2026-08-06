@@ -5,7 +5,7 @@
   const PHONE_MIN_DIGITS = 10;
   const PHONE_MAX_DIGITS = 15;
   const PHONE_MAX_LENGTH = 24;
-  const PHONE_PATTERN = "(?=(?:\\D*\\d){10,15}\\D*$)[+\\d\\s().-]+";
+  const PHONE_PATTERN = "(?=(?:\\D*\\d){10,15}\\D*$)[+\\d\\s\\.\\(\\)\\-]+";
   const PHONE_ERROR_MESSAGE = "Укажите номер телефона от 10 до 15 цифр.";
   const LEAD_TEXT_LIMITS = Object.freeze({
     name: 80,
