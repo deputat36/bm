@@ -16,7 +16,7 @@
 - page errors — 0;
 - PII/privacy violations — 0;
 - строгий artifact-validator passed;
-- 18 JSON-файлов валидны;
+- 18 JSON-файлов исходного artifact валидны;
 - 35 файлов исходного artifact отражены в manifest.
 
 ## Среда
@@ -48,7 +48,7 @@
 - срок хранения GitHub artifact: до 20 августа 2026 года;
 - digest повторно подтверждён после скачивания.
 
-`manifest.json` содержит SHA-256 и размер каждого из 35 файлов, включая 17 скриншотов. В репозитории сохраняются summary, 17 обезличенных event logs и сокращённый event context. Бинарные скриншоты остаются в GitHub artifact.
+`manifest.json` содержит SHA-256 и размер каждого из 35 файлов, включая 17 скриншотов, 17 полных event logs и исходный summary. `event-contexts.json` сохраняет агрегированный privacy-safe контекст всех журналов: последовательность событий, form_id, form_role, lead_type, object_id и placement. Бинарные скриншоты, исходный summary и полные event logs остаются в GitHub artifact и не дублируются в Git.
 
 ## Диагностический первый запуск
 
