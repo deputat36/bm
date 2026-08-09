@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-07-12",
+  "updated_at": "2026-08-09",
   "catalog_role": "reference_catalog",
   "purpose": "Справочный реестр остальных новостроек Борисоглебска, кроме трёх приоритетных лидогенерационных объектов.",
   "publication_rules": {
@@ -12,7 +12,35 @@
     "general_lead_url": "/catalog/#lead",
     "unverified_objects_must_not_render": true
   },
-  "projects": [],
+  "projects": [
+    {
+      "id": "uyutnyy-voronezh-grad",
+      "slug": "uyutnyy",
+      "display_name": "ЖК «Уютный»",
+      "address": "ул. Уютная, 5А и ул. Дорожная, 50А",
+      "city": "Борисоглебск",
+      "commercial_role": "reference_catalog",
+      "verification_status": "confirmed",
+      "is_public_ready": true,
+      "last_checked_at": "2026-08-09",
+      "public_status_label": "Сдан, сведения проверены",
+      "building_status": "Строительство завершено",
+      "builder_name": "ООО «Воронеж Град»",
+      "sources": [
+        {
+          "title": "Официальная страница компании «Воронеж Град» о жилом массиве в Борисоглебске",
+          "url": "https://xn--80addfcg1chatf.xn--p1ai/new/",
+          "checked_at": "2026-08-09"
+        },
+        {
+          "title": "ЕРЗ — ЖК «Уютный», Борисоглебск",
+          "url": "https://erzrf.ru/novostroyki/zhk-ujutnyj-4809392001?gkId=4809392001&regionKey=142301001",
+          "checked_at": "2026-08-09"
+        }
+      ],
+      "verification_note": "Официальная страница ООО «Воронеж Град» сообщает о завершении строительства жилого массива и прямо называет два дома ЖК «Уютный» в Борисоглебске: Уютная, 5А и Дорожная, 50А. ЕРЗ независимо связывает ЖК с Борисоглебском и ООО «Воронеж Град». Карточка не публикует текущие цены, наличие или ипотечные условия."
+    }
+  ],
   "research_queue": [
     {
       "id": "built-houses-2018-plus",
