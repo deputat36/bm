@@ -1,0 +1,64 @@
+name: Portal Supabase performance guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/performance/portal-supabase-performance.json"
+      - "supabase/migrations/**"
+      - "tools/validate-portal-supabase-performance.mjs"
+      - "tools/build-portal-supabase-performance-report.mjs"
+      - "docs/portal/SUPABASE_PERFORMANCE_SCOPE.md"
+      - ".github/workflows/portal-supabase-performance-guard.yml"
+  pull_request:
+    paths:
+      - "data/performance/portal-supabase-performance.json"
+      - "supabase/migrations/**"
+      - "tools/validate-portal-supabase-performance.mjs"
+      - "tools/build-portal-supabase-performance-report.mjs"
+      - "docs/portal/SUPABASE_PERFORMANCE_SCOPE.md"
+      - ".github/workflows/portal-supabase-performance-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-portal-supabase-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-portal-supabase-performance.mjs
+          node --check tools/build-portal-supabase-performance-report.mjs
+
+      - name: Validate prelaunch performance scope
+        run: node tools/validate-portal-supabase-performance.mjs
+
+      - name: Build performance report
+        run: |
+          node tools/build-portal-supabase-performance-report.mjs --format=json > /tmp/portal-performance.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/portal-performance.json","utf8")); const s=data.summary||{}; if(s.portal_warn_or_error_count!==0||s.portal_unused_index_info_count!==17||s.registered_prelaunch_indexes!==17||s.prelaunch_drop_forbidden!==true||s.minimum_real_leads_for_review!==30||s.minimum_live_days_for_review!==7) process.exit(1); console.log(`Portal performance: WARN/ERROR=${s.portal_warn_or_error_count}; unused INFO=${s.portal_unused_index_info_count}; indexes=${s.registered_prelaunch_indexes}`);'
+
+      - name: Reject premature prelaunch DROP INDEX
+        run: |
+          cat > supabase/migrations/99999999999993_test_drop_prelaunch_index.sql <<'SQL'
+          drop index if exists public.newbuild_leads_created_at_idx;
+          SQL
+          if node tools/validate-portal-supabase-performance.mjs; then
+            echo "Validator incorrectly allowed prelaunch DROP INDEX"
+            rm -f supabase/migrations/99999999999993_test_drop_prelaunch_index.sql
+            exit 1
+          fi
+          rm -f supabase/migrations/99999999999993_test_drop_prelaunch_index.sql
+          node tools/validate-portal-supabase-performance.mjs
