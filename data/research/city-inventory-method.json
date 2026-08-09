@@ -83,13 +83,15 @@
       "status": "partial_access_limited",
       "completeness_effect": "required_for_completion",
       "evidence": [
+        "data/research/eiszh-primary-scan.json",
         "data/research/source-collection.json"
       ],
       "limitations": [
-        "exact Prostornaya object candidate URL is known but current crawler access is blocked",
-        "city-wide EISZhS project reconciliation has not been completed"
+        "exact Tellermanov object candidate ID 72480 and route are known but the exact primary card content has not been read and identity-matched",
+        "public web-index search is not an official city filter/export and returns unrelated EISZhS objects",
+        "city-wide EISZhS or equivalent primary project reconciliation has not been completed"
       ],
-      "next_action": "establish readable primary project-card access or equivalent primary registry export and reconcile city scope"
+      "next_action": "read exact primary card 72480 and obtain a reproducible city/region primary listing, API/export or equivalent primary project dataset for Borisoglebsk reconciliation"
     },
     {
       "id": "official_developer_project_scan",
