@@ -1,0 +1,96 @@
+name: Portal Supabase security guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/security/portal-supabase-security.json"
+      - "supabase/migrations/**"
+      - "supabase/functions/newbuild-lead/**"
+      - "tools/validate-portal-supabase-security.mjs"
+      - "tools/build-portal-supabase-security-report.mjs"
+      - "docs/portal/SUPABASE_SECURITY_SCOPE.md"
+      - ".github/workflows/portal-supabase-security-guard.yml"
+  pull_request:
+    paths:
+      - "data/security/portal-supabase-security.json"
+      - "supabase/migrations/**"
+      - "supabase/functions/newbuild-lead/**"
+      - "tools/validate-portal-supabase-security.mjs"
+      - "tools/build-portal-supabase-security-report.mjs"
+      - "docs/portal/SUPABASE_SECURITY_SCOPE.md"
+      - ".github/workflows/portal-supabase-security-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-portal-supabase-security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-portal-supabase-security.mjs
+          node --check tools/build-portal-supabase-security-report.mjs
+
+      - name: Validate portal-owned Supabase security
+        run: node tools/validate-portal-supabase-security.mjs
+
+      - name: Build scoped security report
+        run: |
+          node tools/build-portal-supabase-security-report.mjs --format=json > /tmp/portal-supabase-security.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/portal-supabase-security.json","utf8")); const s=data.summary||{}; if(s.portal_advisor_findings!==4||s.portal_warn_findings!==0||s.portal_security_definer_warn_observed!==false||s.shared_out_of_scope_finding_groups<1||s.global_shared_finding_groups<1||s.out_of_scope_mutation_forbidden!==true) process.exit(1); console.log(`Portal advisor: findings=${s.portal_advisor_findings}; warn=${s.portal_warn_findings}; shared_groups=${s.shared_out_of_scope_finding_groups}`);'
+
+      - name: Reject portal SECURITY DEFINER
+        run: |
+          cat > supabase/migrations/99999999999990_test_portal_security_definer.sql <<'SQL'
+          create or replace function public.newbuild_test_unsafe()
+          returns boolean
+          language sql
+          security definer
+          set search_path = public
+          as $$ select true $$;
+          SQL
+          if node tools/validate-portal-supabase-security.mjs; then
+            echo "Validator incorrectly allowed portal SECURITY DEFINER"
+            rm -f supabase/migrations/99999999999990_test_portal_security_definer.sql
+            exit 1
+          fi
+          rm -f supabase/migrations/99999999999990_test_portal_security_definer.sql
+
+      - name: Reject authenticated grant to portal table
+        run: |
+          cat > supabase/migrations/99999999999991_test_portal_broad_grant.sql <<'SQL'
+          grant select on public.newbuild_leads to authenticated;
+          SQL
+          if node tools/validate-portal-supabase-security.mjs; then
+            echo "Validator incorrectly allowed authenticated table grant"
+            rm -f supabase/migrations/99999999999991_test_portal_broad_grant.sql
+            exit 1
+          fi
+          rm -f supabase/migrations/99999999999991_test_portal_broad_grant.sql
+
+      - name: Reject portal view without security_invoker
+        run: |
+          cat > supabase/migrations/99999999999992_test_portal_view.sql <<'SQL'
+          create or replace view public.newbuild_test_unsafe_view
+          as select id from public.newbuild_leads;
+          SQL
+          if node tools/validate-portal-supabase-security.mjs; then
+            echo "Validator incorrectly allowed portal view without security_invoker"
+            rm -f supabase/migrations/99999999999992_test_portal_view.sql
+            exit 1
+          fi
+          rm -f supabase/migrations/99999999999992_test_portal_view.sql
+          node tools/validate-portal-supabase-security.mjs
