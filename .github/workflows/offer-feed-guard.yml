@@ -1,0 +1,145 @@
+name: Offer feed guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/offers/**"
+      - "tools/validate-offer-feed.mjs"
+      - "tools/build-offer-feed-preview.mjs"
+      - "docs/portal/OFFER_FEED_CONTRACT.md"
+      - ".github/workflows/offer-feed-guard.yml"
+  pull_request:
+    paths:
+      - "data/offers/**"
+      - "tools/validate-offer-feed.mjs"
+      - "tools/build-offer-feed-preview.mjs"
+      - "docs/portal/OFFER_FEED_CONTRACT.md"
+      - ".github/workflows/offer-feed-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-offer-feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-offer-feed.mjs
+          node --check tools/build-offer-feed-preview.mjs
+
+      - name: Validate fail-closed baseline
+        run: node tools/validate-offer-feed.mjs
+
+      - name: Build internal preview
+        run: |
+          node tools/build-offer-feed-preview.mjs --format=json > /tmp/offer-preview.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/offer-preview.json","utf8")); if(data.summary?.total_offers!==0||data.summary?.globally_public!==false||data.summary?.live_source_connected!==false) process.exit(1); console.log(`Offer preview: ${data.summary.total_offers} rows; public=${data.summary.globally_public}; live=${data.summary.live_source_connected}`);'
+
+      - name: Reject public row for non-public project
+        run: |
+          cp data/offers/feed.json /tmp/feed-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const now = new Date().toISOString();
+          const feed = {
+            schema_version: '1.0',
+            updated_at: now.slice(0, 10),
+            portal_id: 'newbuilds-borisoglebsk',
+            status: 'internal_preview_not_public',
+            generated_at: now,
+            source: {
+              id: 'test-source',
+              type: 'manual_import',
+              status: 'accepted',
+              reference: 'repo:test-fixture',
+              seller_basis_confirmed: true
+            },
+            offers: [{
+              object_id: 'tellermanov-sad',
+              section_or_entrance: 'test',
+              apartment_number_public: 'test-1',
+              rooms: 1,
+              area_m2: 40,
+              floor: 2,
+              price: 5000000,
+              price_checked_at: now,
+              availability_status: 'available',
+              availability_checked_at: now,
+              seller_type: 'developer',
+              contract_type: 'ddu',
+              mortgage_status: 'requires_check',
+              source_id: 'test-source',
+              publication_allowed: true
+            }]
+          };
+          fs.writeFileSync('data/offers/feed.json', JSON.stringify(feed, null, 2) + '\n');
+          NODE
+          if node tools/validate-offer-feed.mjs; then
+            echo "Validator incorrectly allowed a public row for a non-public project"
+            exit 1
+          fi
+          cp /tmp/feed-baseline.json data/offers/feed.json
+
+      - name: Reject forbidden PII field
+        run: |
+          cp data/offers/feed.json /tmp/feed-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const now = new Date().toISOString();
+          const feed = {
+            schema_version: '1.0',
+            updated_at: now.slice(0, 10),
+            portal_id: 'newbuilds-borisoglebsk',
+            status: 'internal_preview_not_public',
+            generated_at: now,
+            source: { id: 'test-source', type: 'manual_import', status: 'review_required', reference: 'repo:test-fixture' },
+            offers: [{
+              object_id: 'tellermanov-sad',
+              section_or_entrance: 'test',
+              apartment_number_public: 'test-2',
+              rooms: 1,
+              area_m2: 40,
+              floor: 2,
+              price: null,
+              price_checked_at: null,
+              availability_status: 'unknown',
+              availability_checked_at: now,
+              seller_type: 'unknown',
+              contract_type: 'unknown',
+              mortgage_status: 'unknown',
+              source_id: 'test-source',
+              publication_allowed: false,
+              seller_phone: '+70000000000'
+            }]
+          };
+          fs.writeFileSync('data/offers/feed.json', JSON.stringify(feed, null, 2) + '\n');
+          NODE
+          if node tools/validate-offer-feed.mjs; then
+            echo "Validator incorrectly allowed a forbidden PII field"
+            exit 1
+          fi
+          cp /tmp/feed-baseline.json data/offers/feed.json
+
+      - name: Reject direct browser feed consumption
+        run: |
+          printf '%s\n' 'fetch("/data/offers/feed.json")' > assets/js/__offer_feed_forbidden_test.js
+          if node tools/validate-offer-feed.mjs; then
+            echo "Validator incorrectly allowed browser feed consumption"
+            rm -f assets/js/__offer_feed_forbidden_test.js
+            exit 1
+          fi
+          rm -f assets/js/__offer_feed_forbidden_test.js
+          node tools/validate-offer-feed.mjs

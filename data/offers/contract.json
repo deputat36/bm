@@ -1,0 +1,83 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "schema_only_no_live_source",
+  "purpose": "Нормализованный внутренний контракт актуальных предложений без прямой публикации рабочих шахматок и без автоматического обещания цены или наличия.",
+  "rules": {
+    "public_render_enabled": false,
+    "internal_preview_only": true,
+    "live_source_connected": false,
+    "raw_inventory_in_repository_forbidden": true,
+    "personal_data_forbidden": true,
+    "direct_browser_source_fetch_forbidden": true,
+    "publication_requires_project_public_ready": true,
+    "publication_requires_accepted_source": true,
+    "publication_requires_current_price": true,
+    "publication_requires_current_availability": true,
+    "publication_requires_confirmed_seller_basis": true,
+    "publication_requires_contract_type": true,
+    "history_separate_from_current_feed": true
+  },
+  "required_offer_fields": [
+    "object_id",
+    "section_or_entrance",
+    "apartment_number_public",
+    "rooms",
+    "area_m2",
+    "floor",
+    "price",
+    "price_checked_at",
+    "availability_status",
+    "availability_checked_at",
+    "seller_type",
+    "contract_type",
+    "mortgage_status",
+    "source_id",
+    "publication_allowed"
+  ],
+  "allowed_values": {
+    "availability_status": ["available", "reserved", "unavailable", "sold", "unknown"],
+    "seller_type": ["developer", "legal_entity", "individual", "unknown"],
+    "contract_type": ["ddu", "dkp", "assignment", "preliminary", "investment", "other", "unknown"],
+    "mortgage_status": ["available_verified", "unavailable", "requires_check", "unknown"]
+  },
+  "freshness_policy": {
+    "price_max_age_hours": 24,
+    "availability_max_age_hours": 12,
+    "stale_rows_must_not_be_public": true,
+    "missing_timestamp_must_not_be_public": true,
+    "clock_basis": "UTC"
+  },
+  "source_policy": {
+    "allowed_source_types": ["google_sheets", "managed_backend", "manual_import"],
+    "source_reference_must_be_secure_or_repository_reference": true,
+    "accepted_source_status_required_for_publication": true,
+    "working_sheet_must_not_be_public_api": true
+  },
+  "publication_policy": {
+    "public_availability_statuses": ["available"],
+    "seller_type_unknown_forbidden": true,
+    "contract_type_unknown_forbidden": true,
+    "price_must_be_positive": true,
+    "area_m2_must_be_positive": true,
+    "floor_must_be_positive_integer": true,
+    "source_id_required": true,
+    "object_id_must_resolve_to_registered_project": true
+  },
+  "forbidden_offer_keys": [
+    "seller_name",
+    "seller_phone",
+    "seller_email",
+    "client_name",
+    "client_phone",
+    "client_email",
+    "user_agent",
+    "access_token",
+    "api_key",
+    "raw_sheet_url",
+    "internal_comment"
+  ],
+  "planned_live_source": null,
+  "activation_note": "До отдельного source/legal/release изменения live_source_connected=false и public_render_enabled=false."
+}
