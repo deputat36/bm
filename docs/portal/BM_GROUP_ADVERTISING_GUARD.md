@@ -8,16 +8,35 @@
 
 Портал больше не использует старый single-project домен `tellermanovsad.ru` как публичный адрес.
 
-Проблемные legacy routes:
+Два проблемных legacy URL:
 
 ```text
 /kvartiry-ot-zastroyschika-borisoglebsk/
 /spisok-ozhidaniya/
 ```
 
-не должны существовать как публичные страницы и не должны входить в sitemap.
+больше не содержат старый объектный/рекламный контент. До выпуска подтверждённых server 301/308 они сохранены только как нейтральные `noindex,follow` transition pages на городской каталог.
+
+Это соответствует общей миграционной модели проекта: не оставлять устаревший контент, но и не превращать старый URL в 404 до решения `hosting_redirect_format`.
 
 Портал сохраняет нейтральный домен `novostroyki-borisoglebsk.ru` и независимое позиционирование.
+
+## Требования к двум transition pages
+
+Каждый старый URL обязан:
+
+- содержать `noindex,follow`;
+- иметь marker `data-legacy-migration-stub="bm-contract"`;
+- иметь canonical `https://novostroyki-borisoglebsk.ru/catalog/`;
+- содержать явную ссылку на `../catalog/`;
+- не содержать `tellermanovsad.ru`;
+- не содержать старое BM/объектное позиционирование;
+- не содержать lead-form или контактные поля;
+- не содержать client-side auto redirect;
+- не содержать факты, площади, ипотечные обещания или ранний список по конкретному ЖК;
+- отсутствовать в sitemap.
+
+После определения hosting redirect syntax эти stubs можно заменить server 301/308 отдельным release-изменением с сохранением query/UTM.
 
 ## Covered scope
 
@@ -39,7 +58,7 @@
 
 Также запрещено:
 
-- возвращать legacy problem pages;
+- возвращать старый объектный контент в два legacy URL;
 - снимать `noindex` с Просторной 4А только ради рекламы до остальных gates;
 - создавать covered-object paid brand/geo search без письменного approval;
 - записывать фактическую VK/Telegram/offline/object publication без matching approval scope;
@@ -91,4 +110,4 @@ Paid brand/geo search → `paid_brand_or_geo_search`.
 node tools/validate-bm-contract-advertising.mjs
 ```
 
-После любого изменения BM-related campaign/publication/legal copy этот guard должен оставаться зелёным.
+После любого изменения BM-related campaign/publication/legal copy или двух legacy transition pages этот guard должен оставаться зелёным.
