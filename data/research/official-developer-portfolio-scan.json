@@ -1,0 +1,248 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "known_entities_scan_partial",
+  "purpose": "Системно сверять официальные публичные портфели уже обнаруженных застройщиков/компаний по Борисоглебску без вывода об отсутствии других проектов или безадресной привязки очередей.",
+  "rules": {
+    "official_portfolio_absence_is_not_city_absence": true,
+    "unaddressed_queue_cannot_map_to_project": true,
+    "secondary_candidate_cannot_close_official_scan": true,
+    "public_reference_project_requires_tracked_scope": true,
+    "priority_project_requires_tracked_or_unresolved_scope": true,
+    "developer_scan_has_no_publication_effect": true,
+    "completion_requires_zero_blocking_scopes": true,
+    "new_entity_from_primary_scan_must_be_added_before_completion": true
+  },
+  "tracked_scopes": [
+    {
+      "id": "bm-group-development",
+      "display_name": "BM Group development",
+      "scan_status": "scanned_current",
+      "official_sources": [
+        {
+          "title": "BM Group — проекты",
+          "url": "https://bm36.ru/projects/",
+          "checked_at": "2026-08-09",
+          "supports": [
+            "current_published_portfolio",
+            "tellermanov_sad_borisoglebsk"
+          ]
+        },
+        {
+          "title": "BM Group — ЖК «Теллерманов сад»",
+          "url": "https://bm36.ru/projects/tellermanov-sad/",
+          "checked_at": "2026-08-09",
+          "supports": [
+            "project_name",
+            "city",
+            "prostornaya_address_scope"
+          ]
+        }
+      ],
+      "canonical_project_links": [
+        {
+          "registry": "priority",
+          "project_id": "tellermanov-sad",
+          "link_status": "official_current_exact_project",
+          "publication_effect": "none"
+        }
+      ],
+      "unresolved_portfolio_items": [],
+      "limitations": [
+        "current BM portfolio confirms only BM's own published projects",
+        "portfolio scan does not replace project-level source/legal/media gates"
+      ]
+    },
+    {
+      "id": "psk",
+      "display_name": "ООО «Первая Строительная Компания»",
+      "scan_status": "partial_unnamed_projects",
+      "official_sources": [
+        {
+          "title": "ПСК / Борисоглебский ЖБИ — страница компании",
+          "url": "https://zhbi36.ru/psk/",
+          "checked_at": "2026-08-09",
+          "supports": [
+            "company_builds_multifamily_housing_in_borisoglebsk",
+            "aerodromnaya_29b_completed_and_commissioned",
+            "sales_open_in_second_and_third_construction_queues_without_addresses"
+          ]
+        }
+      ],
+      "canonical_project_links": [
+        {
+          "registry": "reference",
+          "project_id": "aerodromnaya-29b-psk",
+          "link_status": "official_current_exact_address",
+          "publication_effect": "none"
+        },
+        {
+          "registry": "priority",
+          "project_id": "aerodromnaya-18g",
+          "link_status": "candidate_entity_only_no_official_address_link",
+          "publication_effect": "none"
+        }
+      ],
+      "unresolved_portfolio_items": [
+        {
+          "id": "psk-second-third-queues",
+          "observed_label": "II и III очереди строительства",
+          "reason_unresolved": "Официальная страница сообщает об открытых продажах, но не называет адреса/кадастровую или разрешительную привязку очередей.",
+          "must_not_assume_project_id": "aerodromnaya-18g"
+        }
+      ],
+      "limitations": [
+        "official page does not link II/III queues to Aerodromnaya 18G",
+        "brand/company identity alone cannot confirm a priority-object developer"
+      ]
+    },
+    {
+      "id": "proekt-invest-stroyart",
+      "display_name": "ГК «Проект Инвест» / ООО «СЗ «Стройарт»",
+      "scan_status": "scanned_current",
+      "official_sources": [
+        {
+          "title": "ГК «Проект Инвест» — жилищное строительство",
+          "url": "https://proektinvest.com/objects/zhilishnoe-stroitelstvo.html",
+          "checked_at": "2026-08-09",
+          "supports": [
+            "current_published_housing_portfolio",
+            "evropeyskiy_borisoglebsk",
+            "stroyart_developer_identity_on_project_page"
+          ]
+        }
+      ],
+      "canonical_project_links": [
+        {
+          "registry": "reference",
+          "project_id": "evropeyskiy-proekt-invest",
+          "link_status": "official_current_exact_project",
+          "publication_effect": "none"
+        }
+      ],
+      "unresolved_portfolio_items": [],
+      "limitations": [
+        "official project page does not provide enough exact queue addresses for portal publication",
+        "developer portfolio confirms only its own published projects"
+      ]
+    },
+    {
+      "id": "voronezh-grad",
+      "display_name": "ООО «Воронеж Град»",
+      "scan_status": "scanned_current",
+      "official_sources": [
+        {
+          "title": "Воронеж Град — жилой массив в Борисоглебске",
+          "url": "https://xn--80addfcg1chatf.xn--p1ai/new/",
+          "checked_at": "2026-08-09",
+          "supports": [
+            "uyutnyy_borisoglebsk",
+            "uyutnaya_5a",
+            "dorozhnaya_50a",
+            "construction_completed_statement"
+          ]
+        }
+      ],
+      "canonical_project_links": [
+        {
+          "registry": "reference",
+          "project_id": "uyutnyy-voronezh-grad",
+          "link_status": "official_current_exact_project_and_addresses",
+          "publication_effect": "none"
+        }
+      ],
+      "unresolved_portfolio_items": [],
+      "limitations": [
+        "official site describes the company's own Borisoglebsk development only",
+        "historical marketing prices are not current commercial evidence"
+      ]
+    },
+    {
+      "id": "aleks",
+      "display_name": "ООО «Алекс» — текущий официальный portfolio source не принят",
+      "scan_status": "current_official_access_unverified",
+      "official_sources": [],
+      "discovery_sources": [
+        {
+          "title": "СтройПрайс — историческая ссылка на сайт ООО «Алекс» для дома Аэродромная 32",
+          "url": "https://stroyprice.ru/object/11968/",
+          "checked_at": "2026-08-09",
+          "effect": "site_candidate_only"
+        }
+      ],
+      "canonical_project_links": [
+        {
+          "registry": "reference",
+          "project_id": "aerodromnaya-32-aleks",
+          "link_status": "inherited_from_existing_reference_evidence_not_current_official_portfolio",
+          "publication_effect": "none"
+        }
+      ],
+      "unresolved_portfolio_items": [
+        {
+          "id": "aleks-current-official-portfolio",
+          "observed_label": "Текущий официальный портфель ООО «Алекс»",
+          "reason_unresolved": "Secondary sources указывают сайт oooaleks.ru, но текущий официальный Borisoglebsk portfolio content не принят как читаемый primary source.",
+          "must_not_promote_candidates": [
+            "prigorodnaya-30a-aleks",
+            "studencheskiy-5-aleks"
+          ]
+        }
+      ],
+      "limitations": [
+        "secondary site pointer cannot close an official developer scan",
+        "existing Aerodromnaya 32 reference card relies on separate regulator/bank/industry evidence"
+      ]
+    },
+    {
+      "id": "sennaya-76-developer-unresolved",
+      "display_name": "Компания-застройщик дома на Сенной 76 — юридическое лицо не установлено",
+      "scan_status": "entity_unresolved",
+      "official_sources": [],
+      "discovery_sources": [
+        {
+          "title": "РИА «Глас-Медиа» — интервью главного инженера компании-застройщика",
+          "url": "https://ria-glas.ru/2024/blagoustroistvo/novyj-dom-na-ulicze-sennaya-76-chto-za-fasadom/",
+          "checked_at": "2026-08-09",
+          "effect": "representative_role_and_object_statement_only"
+        }
+      ],
+      "canonical_project_links": [
+        {
+          "registry": "priority",
+          "project_id": "sennaya-76",
+          "link_status": "unresolved_developer_entity_scope",
+          "publication_effect": "none"
+        }
+      ],
+      "unresolved_portfolio_items": [
+        {
+          "id": "sennaya-76-legal-developer-entity",
+          "observed_label": "Юридическое лицо компании-застройщика",
+          "reason_unresolved": "Публичное интервью подтверждает роль собеседника как главного инженера компании-застройщика, но не называет проверяемое юридическое лицо, ИНН/ОГРН и официальный portfolio channel.",
+          "must_not_assume_from_secondary_marketplace": "ИП Тарасов М.К."
+        }
+      ],
+      "limitations": [
+        "representative interview is not a legal-entity registry",
+        "marketplace developer naming cannot close primary developer identity"
+      ]
+    }
+  ],
+  "completion_state": {
+    "known_scope_scan_complete": false,
+    "blocking_scope_ids": [
+      "psk",
+      "aleks",
+      "sennaya-76-developer-unresolved"
+    ],
+    "scanned_current_scope_ids": [
+      "bm-group-development",
+      "proekt-invest-stroyart",
+      "voronezh-grad"
+    ],
+    "city_developer_scan_complete": false,
+    "completion_claim": "not_allowed"
+  }
+}
