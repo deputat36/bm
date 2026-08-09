@@ -40,46 +40,31 @@
         {
           "observed_label": "Дорожная 50А",
           "observed_address": "ул. Дорожная, 50А",
-          "mapping": {
-            "registry": "reference",
-            "project_id": "uyutnyy-voronezh-grad"
-          },
+          "mapping": {"registry": "reference", "project_id": "uyutnyy-voronezh-grad"},
           "note": "В portal registry объединено с Уютной 5А в ЖК «Уютный» по официальной странице ООО «Воронеж Град»."
         },
         {
           "observed_label": "Уютная 5А",
           "observed_address": "ул. Уютная, 5А",
-          "mapping": {
-            "registry": "reference",
-            "project_id": "uyutnyy-voronezh-grad"
-          },
+          "mapping": {"registry": "reference", "project_id": "uyutnyy-voronezh-grad"},
           "note": "В portal registry объединено с Дорожной 50А в ЖК «Уютный» по официальной странице ООО «Воронеж Град»."
         },
         {
           "observed_label": "Европейский",
           "observed_address": "Борисоглебск, ЖК «Европейский»",
-          "mapping": {
-            "registry": "reference",
-            "project_id": "evropeyskiy-proekt-invest"
-          },
+          "mapping": {"registry": "reference", "project_id": "evropeyskiy-proekt-invest"},
           "note": "Точные адреса очередей в публичной reference-карточке намеренно не фиксируются без отдельной проверки."
         },
         {
           "observed_label": "ул. Аэродромная 32",
           "observed_address": "ул. Аэродромная, 32",
-          "mapping": {
-            "registry": "reference",
-            "project_id": "aerodromnaya-32-aleks"
-          },
+          "mapping": {"registry": "reference", "project_id": "aerodromnaya-32-aleks"},
           "note": "Минимальная reference-карточка принята по отдельному regulator/builder evidence."
         },
         {
           "observed_label": "по ул. Сенная, 76",
           "observed_address": "ул. Сенная, 76",
-          "mapping": {
-            "registry": "priority",
-            "project_id": "sennaya-76"
-          },
+          "mapping": {"registry": "priority", "project_id": "sennaya-76"},
           "note": "Priority-object остаётся частично подтверждённым и noindex до первичных документов."
         }
       ]
@@ -94,10 +79,7 @@
         {
           "observed_label": "ЖК «Чкалов»",
           "observed_address": "ул. Аэродромная, 18Г",
-          "mapping": {
-            "registry": "priority",
-            "project_id": "aerodromnaya-18g"
-          },
+          "mapping": {"registry": "priority", "project_id": "aerodromnaya-18g"},
           "note": "Внешнее название «Чкалов» остаётся discovery clue. Portal naming конфликтует с неподтверждённым владельцем/брендом и не повышается по вторичному источнику."
         }
       ]
@@ -112,10 +94,7 @@
         {
           "observed_label": "Многоквартирный дом Аэродромная 29Б",
           "observed_address": "ул. Аэродромная, 29Б",
-          "mapping": {
-            "registry": "reference",
-            "project_id": "aerodromnaya-29b-psk"
-          },
+          "mapping": {"registry": "reference", "project_id": "aerodromnaya-29b-psk"},
           "note": "Официальная страница прямо сообщает о завершении строительства и вводе дома."
         }
       ]
@@ -130,19 +109,13 @@
         {
           "observed_label": "Жилой объект на Пригородной 30А",
           "observed_address": "ул. Пригородная, 30А",
-          "mapping": {
-            "registry": "candidate",
-            "project_id": "prigorodnaya-30a-aleks"
-          },
+          "mapping": {"registry": "candidate", "project_id": "prigorodnaya-30a-aleks"},
           "note": "Историческая зацепка конфликтует с другим address/land-use context; публикация запрещена до primary object identity."
         },
         {
           "observed_label": "Жилой объект в Студенческом переулке 5",
           "observed_address": "пер. Студенческий, 5",
-          "mapping": {
-            "registry": "candidate",
-            "project_id": "studencheskiy-5-aleks"
-          },
+          "mapping": {"registry": "candidate", "project_id": "studencheskiy-5-aleks"},
           "note": "Историческая builder-link есть, но exact primary operation/commissioning source не найден."
         }
       ]
@@ -157,10 +130,7 @@
         {
           "observed_label": "Дом на Просторной 4А",
           "observed_address": "ул. Просторная, 4А",
-          "mapping": {
-            "registry": "priority",
-            "project_id": "tellermanov-sad"
-          },
+          "mapping": {"registry": "priority", "project_id": "tellermanov-sad"},
           "note": "Внешний city-directory discovery не используется как источник истины; объект уже зарегистрирован как priority и проходит отдельную primary-source verification."
         }
       ]
@@ -170,7 +140,7 @@
     "priority_projects_accounted_for": 3,
     "reference_projects_accounted_for": 4,
     "unresolved_candidates_accounted_for": 2,
-    "external_observations_mapped": 10,
+    "observations_mapped": 10,
     "unmapped_observations": 0,
     "research_queue_complete": false,
     "known_limitations": [
