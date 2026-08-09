@@ -1,0 +1,183 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "coverage_snapshot_not_completeness_claim",
+  "purpose": "Контроль того, что обнаруженные в публичных источниках новостройки Борисоглебска сопоставлены с priority/reference/candidate registry. Карта не доказывает отсутствие иных объектов.",
+  "rules": {
+    "completeness_claim_allowed": false,
+    "absence_from_discovery_source_is_not_proof_of_absence": true,
+    "secondary_source_is_discovery_only": true,
+    "every_observed_object_requires_registry_mapping": true,
+    "unresolved_object_must_map_to_candidate": true,
+    "priority_and_reference_registries_remain_authoritative": true
+  },
+  "registry_snapshot": {
+    "priority_project_ids": [
+      "tellermanov-sad",
+      "aerodromnaya-18g",
+      "sennaya-76"
+    ],
+    "reference_project_ids": [
+      "uyutnyy-voronezh-grad",
+      "aerodromnaya-29b-psk",
+      "aerodromnaya-32-aleks",
+      "evropeyskiy-proekt-invest"
+    ],
+    "unresolved_candidate_ids": [
+      "prigorodnaya-30a-aleks",
+      "studencheskiy-5-aleks"
+    ]
+  },
+  "discovery_sources": [
+    {
+      "id": "yandex_borisoglebsk_compare_2026-08-09",
+      "source_class": "secondary_marketplace_discovery",
+      "title": "Яндекс Недвижимость — сравнение новостроек Борисоглебска",
+      "url": "https://realty.yandex.ru/borisoglebsk/sravnenie-novostroek/",
+      "checked_at": "2026-08-09",
+      "observed_objects": [
+        {
+          "observed_label": "Дорожная 50А",
+          "observed_address": "ул. Дорожная, 50А",
+          "mapping": {
+            "registry": "reference",
+            "project_id": "uyutnyy-voronezh-grad"
+          },
+          "note": "В portal registry объединено с Уютной 5А в ЖК «Уютный» по официальной странице ООО «Воронеж Град»."
+        },
+        {
+          "observed_label": "Уютная 5А",
+          "observed_address": "ул. Уютная, 5А",
+          "mapping": {
+            "registry": "reference",
+            "project_id": "uyutnyy-voronezh-grad"
+          },
+          "note": "В portal registry объединено с Дорожной 50А в ЖК «Уютный» по официальной странице ООО «Воронеж Град»."
+        },
+        {
+          "observed_label": "Европейский",
+          "observed_address": "Борисоглебск, ЖК «Европейский»",
+          "mapping": {
+            "registry": "reference",
+            "project_id": "evropeyskiy-proekt-invest"
+          },
+          "note": "Точные адреса очередей в публичной reference-карточке намеренно не фиксируются без отдельной проверки."
+        },
+        {
+          "observed_label": "ул. Аэродромная 32",
+          "observed_address": "ул. Аэродромная, 32",
+          "mapping": {
+            "registry": "reference",
+            "project_id": "aerodromnaya-32-aleks"
+          },
+          "note": "Минимальная reference-карточка принята по отдельному regulator/builder evidence."
+        },
+        {
+          "observed_label": "по ул. Сенная, 76",
+          "observed_address": "ул. Сенная, 76",
+          "mapping": {
+            "registry": "priority",
+            "project_id": "sennaya-76"
+          },
+          "note": "Priority-object остаётся частично подтверждённым и noindex до первичных документов."
+        }
+      ]
+    },
+    {
+      "id": "cian_borisoglebsk_current_newbuilds_2026-08-09",
+      "source_class": "secondary_marketplace_discovery",
+      "title": "ЦИАН — строящиеся новостройки Борисоглебска",
+      "url": "https://voronezh.cian.ru/novostroyki-stroyashiesya-voronezhskaya-oblast-borisoglebsk/",
+      "checked_at": "2026-08-09",
+      "observed_objects": [
+        {
+          "observed_label": "ЖК «Чкалов»",
+          "observed_address": "ул. Аэродромная, 18Г",
+          "mapping": {
+            "registry": "priority",
+            "project_id": "aerodromnaya-18g"
+          },
+          "note": "Внешнее название «Чкалов» остаётся discovery clue. Portal naming конфликтует с неподтверждённым владельцем/брендом и не повышается по вторичному источнику."
+        }
+      ]
+    },
+    {
+      "id": "psk_official_completed_house_2026-08-09",
+      "source_class": "official_builder",
+      "title": "ПСК / Борисоглебский ЖБИ — официальная страница компании",
+      "url": "https://zhbi36.ru/psk/",
+      "checked_at": "2026-08-09",
+      "observed_objects": [
+        {
+          "observed_label": "Многоквартирный дом Аэродромная 29Б",
+          "observed_address": "ул. Аэродромная, 29Б",
+          "mapping": {
+            "registry": "reference",
+            "project_id": "aerodromnaya-29b-psk"
+          },
+          "note": "Официальная страница прямо сообщает о завершении строительства и вводе дома."
+        }
+      ]
+    },
+    {
+      "id": "metallinvestbank_aleks_archive_2026-08-09",
+      "source_class": "official_financing_partner_archive",
+      "title": "Металлинвестбанк — архив объектов ООО «Алекс» в Борисоглебске",
+      "url": "https://metallinvestbank.ru/about/press_center/2057/",
+      "checked_at": "2026-08-09",
+      "observed_objects": [
+        {
+          "observed_label": "Жилой объект на Пригородной 30А",
+          "observed_address": "ул. Пригородная, 30А",
+          "mapping": {
+            "registry": "candidate",
+            "project_id": "prigorodnaya-30a-aleks"
+          },
+          "note": "Историческая зацепка конфликтует с другим address/land-use context; публикация запрещена до primary object identity."
+        },
+        {
+          "observed_label": "Жилой объект в Студенческом переулке 5",
+          "observed_address": "пер. Студенческий, 5",
+          "mapping": {
+            "registry": "candidate",
+            "project_id": "studencheskiy-5-aleks"
+          },
+          "note": "Историческая builder-link есть, но exact primary operation/commissioning source не найден."
+        }
+      ]
+    },
+    {
+      "id": "portal_priority_register_2026-08-09",
+      "source_class": "portal_authoritative_register",
+      "title": "Канонический priority-project register портала",
+      "url": "repo:data/research/priority-projects.json",
+      "checked_at": "2026-08-09",
+      "observed_objects": [
+        {
+          "observed_label": "Дом на Просторной 4А",
+          "observed_address": "ул. Просторная, 4А",
+          "mapping": {
+            "registry": "priority",
+            "project_id": "tellermanov-sad"
+          },
+          "note": "Внешний city-directory discovery не используется как источник истины; объект уже зарегистрирован как priority и проходит отдельную primary-source verification."
+        }
+      ]
+    }
+  ],
+  "coverage_summary": {
+    "priority_projects_accounted_for": 3,
+    "reference_projects_accounted_for": 4,
+    "unresolved_candidates_accounted_for": 2,
+    "external_observations_mapped": 10,
+    "unmapped_observations": 0,
+    "research_queue_complete": false,
+    "known_limitations": [
+      "Публичные каталоги не гарантируют полноту всех построенных домов города.",
+      "Исторические и малые объекты могут отсутствовать в агрегаторах.",
+      "Планируемые проекты учитываются только после публичного подтверждения.",
+      "Справочный охват не заменяет проверку первичных документов по priority-object claims."
+    ]
+  }
+}
