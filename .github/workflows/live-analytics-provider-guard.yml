@@ -1,0 +1,48 @@
+name: Live analytics provider guard
+
+on:
+  pull_request:
+    paths:
+      - "data/analytics/live-provider.json"
+      - "data/legal/legal-owner-approval.json"
+      - "data/release/manual-gates.json"
+      - "tools/validate-live-analytics-provider.mjs"
+      - "tools/validate-legal-owner-approval.mjs"
+      - "tools/validate-launch-gates.mjs"
+      - ".github/workflows/live-analytics-provider-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "data/analytics/live-provider.json"
+      - "data/legal/legal-owner-approval.json"
+      - "data/release/manual-gates.json"
+      - "tools/validate-live-analytics-provider.mjs"
+      - "tools/validate-legal-owner-approval.mjs"
+      - "tools/validate-launch-gates.mjs"
+      - ".github/workflows/live-analytics-provider-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check validator syntax
+        run: |
+          node --check tools/validate-live-analytics-provider.mjs
+          node --check tools/validate-legal-owner-approval.mjs
+          node --check tools/validate-launch-gates.mjs
+      - name: Validate live analytics provider
+        run: node tools/validate-live-analytics-provider.mjs
+      - name: Validate legal owner approval
+        run: node tools/validate-legal-owner-approval.mjs
+      - name: Validate cross-gate prerequisites
+        run: node tools/validate-launch-gates.mjs

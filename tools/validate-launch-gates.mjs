@@ -3,12 +3,20 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const GATES_PATH = "data/release/manual-gates.json";
+const LEGAL_APPROVAL_PATH = "data/legal/legal-owner-approval.json";
+const LIVE_ANALYTICS_PATH = "data/analytics/live-provider.json";
 const EXPECTED_GATE_IDS = new Set([
   "real_lead_delivery",
   "live_analytics_debug",
   "legal_owner_review",
   "campaign_publication_approval",
   "hosting_redirect_format"
+]);
+const NON_WAIVABLE_GATE_IDS = new Set([
+  "real_lead_delivery",
+  "live_analytics_debug",
+  "legal_owner_review",
+  "campaign_publication_approval"
 ]);
 const ALLOWED_STATUSES = new Set(["blocked", "in_review", "passed", "not_applicable"]);
 const ALLOWED_SCOPES = new Set(["campaign_launch", "campaign_and_seo", "legacy_redirect_release"]);
@@ -74,10 +82,46 @@ function scanForbiddenKeys(value, label) {
   }
 }
 
+function legalContractReady(data) {
+  const decisions = Array.isArray(data?.decisions) ? data.decisions : [];
+  return data?.status === "approved_for_final_publication"
+    && data?.rules?.final_legal_publication_enabled === true
+    && decisions.length === 8
+    && decisions.every((item) => item.status === "approved"
+      && String(item.approved_value ?? "").trim()
+      && isValidDate(item.checked_at)
+      && String(item.basis || "").trim());
+}
+
+function liveAnalyticsContractReady(data) {
+  const requiredChecks = [
+    "required_events_observed",
+    "required_dimensions_observed",
+    "lead_submit_not_double_counted",
+    "lead_submit_classified_is_dimension_only",
+    "pii_absent",
+    "arbitrary_query_absent"
+  ];
+  return data?.status === "live_debug_passed"
+    && data?.rules?.live_delivery_enabled === true
+    && data?.rules?.debug_verified === true
+    && ["ga4", "yandex_metrika"].includes(data?.provider)
+    && String(data?.public_counter_id || "").trim() !== ""
+    && isValidDate(data?.configuration_checked_at)
+    && isValidDate(data?.debug_checked_at)
+    && String(data?.reviewer_reference || "").trim() !== ""
+    && Array.isArray(data?.debug_evidence)
+    && data.debug_evidence.length > 0
+    && requiredChecks.every((key) => data?.acceptance_checks?.[key] === true);
+}
+
 const registry = readJson(GATES_PATH);
+const legalApproval = readJson(LEGAL_APPROVAL_PATH);
+const liveAnalytics = readJson(LIVE_ANALYTICS_PATH);
 const seenIds = new Set();
 let passedCount = 0;
 let blockedCount = 0;
+const gateMap = new Map();
 
 if (!registry || !Array.isArray(registry.gates)) {
   errors.push(`${GATES_PATH}: gates должен быть массивом`);
@@ -113,9 +157,13 @@ if (!registry || !Array.isArray(registry.gates)) {
 
     if (seenIds.has(id)) errors.push(`${label}: дублирующий id`);
     seenIds.add(id);
+    gateMap.set(id, gate);
     if (!EXPECTED_GATE_IDS.has(id)) errors.push(`${label}: незарегистрированный gate id`);
     if (!ALLOWED_SCOPES.has(scope)) errors.push(`${label}: неподдерживаемый scope=${scope}`);
     if (!ALLOWED_STATUSES.has(status)) errors.push(`${label}: неподдерживаемый status=${status}`);
+    if (status === "not_applicable" && NON_WAIVABLE_GATE_IDS.has(id)) {
+      errors.push(`${label}: критический gate не может быть not_applicable`);
+    }
     if (!Array.isArray(gate.required_evidence) || gate.required_evidence.length < 2) {
       errors.push(`${label}: required_evidence должен содержать минимум два пункта`);
     }
@@ -157,9 +205,21 @@ if (!registry || !Array.isArray(registry.gates)) {
   scanForbiddenKeys(registry, GATES_PATH);
 }
 
+const legalGate = gateMap.get("legal_owner_review");
+if (legalGate?.status === "passed" && !legalContractReady(legalApproval)) {
+  errors.push(`${GATES_PATH}:legal_owner_review: passed запрещён, пока ${LEGAL_APPROVAL_PATH} не approved_for_final_publication`);
+}
+
+const analyticsGate = gateMap.get("live_analytics_debug");
+if (analyticsGate?.status === "passed" && !liveAnalyticsContractReady(liveAnalytics)) {
+  errors.push(`${GATES_PATH}:live_analytics_debug: passed запрещён, пока ${LIVE_ANALYTICS_PATH} не подтверждает live debug`);
+}
+
 console.log(`Checked manual launch gates: ${seenIds.size}`);
 console.log(`Passed manual gates: ${passedCount}`);
 console.log(`Blocked manual gates: ${blockedCount}`);
+console.log(`Legal prerequisite ready: ${legalContractReady(legalApproval)}`);
+console.log(`Live analytics prerequisite ready: ${liveAnalyticsContractReady(liveAnalytics)}`);
 
 if (errors.length) {
   console.error("\nLaunch gate validation errors:");
