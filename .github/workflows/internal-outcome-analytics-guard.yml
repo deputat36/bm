@@ -8,6 +8,7 @@ on:
       - "data/analytics/events.json"
       - "data/operations/lead-lifecycle.json"
       - "data/operations/lead-event-log.json"
+      - "data/qa/form-scenarios.json"
       - "supabase/functions/newbuild-lead/index.ts"
       - "supabase/migrations/20260724060538_newbuild_lead_operations_v2.sql"
       - "tools/validate-internal-outcomes.mjs"
@@ -20,6 +21,7 @@ on:
       - "data/analytics/events.json"
       - "data/operations/lead-lifecycle.json"
       - "data/operations/lead-event-log.json"
+      - "data/qa/form-scenarios.json"
       - "supabase/functions/newbuild-lead/index.ts"
       - "supabase/migrations/20260724060538_newbuild_lead_operations_v2.sql"
       - "tools/validate-internal-outcomes.mjs"
@@ -56,7 +58,22 @@ jobs:
       - name: Build outcome report specification
         run: |
           node tools/build-internal-outcome-report-spec.mjs --format=json > /tmp/internal-outcomes.json
-          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/internal-outcomes.json","utf8")); const s=data.summary||{}; if(s.canonical_events!==12||s.canonical_available!==4||s.canonical_schema_gaps!==8||s.reporting_dimensions!==8||s.server_dimensions!==7||s.dimension_schema_gaps!==1||s.live_export_enabled!==false) process.exit(1); console.log(`Internal outcomes: ${s.canonical_available}/${s.canonical_events} canonical available; gaps=${s.canonical_schema_gaps}`);'
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/internal-outcomes.json","utf8")); const s=data.summary||{}; if(s.canonical_events!==12||s.canonical_available!==4||s.canonical_schema_gaps!==8||s.reporting_dimensions!==8||s.server_dimensions!==7||s.registry_derived_dimensions!==1||s.dimension_schema_gaps!==0||s.live_export_enabled!==false) process.exit(1); console.log(`Internal outcomes: ${s.canonical_available}/${s.canonical_events} canonical; dimensions server=${s.server_dimensions}, registry=${s.registry_derived_dimensions}, gaps=${s.dimension_schema_gaps}`);'
+
+      - name: Reject ambiguous form role mapping
+        run: |
+          cp data/qa/form-scenarios.json /tmp/form-scenarios-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/qa/form-scenarios.json', 'utf8'));
+          data.scenarios[1].form_id = data.scenarios[0].form_id;
+          fs.writeFileSync('data/qa/form-scenarios.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-internal-outcomes.mjs; then
+            echo "Validator incorrectly allowed ambiguous form_id -> form_role mapping"
+            exit 1
+          fi
+          cp /tmp/form-scenarios-baseline.json data/qa/form-scenarios.json
 
       - name: Reject public analytics namespace overlap
         run: |
