@@ -34,13 +34,23 @@ function buildReport() {
   }
 }
 
+function exactSet(actual, expected, label) {
+  const left = [...actual].sort();
+  const right = [...expected].sort();
+  if (JSON.stringify(left) !== JSON.stringify(right)) {
+    errors.push(`${label}: expected ${right.join(", ")}; got ${left.join(", ")}`);
+  }
+}
+
 const registry = readJson(REGISTRY_PATH);
 const report = buildReport();
 if (!registry || !report) process.exit(1);
 
 const guides = Array.isArray(registry.guides) ? registry.guides : [];
-const ready = guides.filter((item) => item.indexing_status === "ready").length;
-const blocked = guides.filter((item) => item.indexing_status === "blocked").length;
+const readyGuides = guides.filter((item) => item.indexing_status === "ready");
+const blockedGuides = guides.filter((item) => item.indexing_status === "blocked");
+const ready = readyGuides.length;
+const blocked = blockedGuides.length;
 const sourceVerified = guides.filter((item) => item.source_status === "verified_on_date").length;
 const sourcePending = guides.filter((item) => item.source_status === "requires_source_review").length;
 const sourceNotApplicable = guides.filter((item) => item.source_status === "not_applicable").length;
@@ -49,85 +59,125 @@ const legalPassed = guides.filter((item) => item.legal_review === "passed").leng
 const legalNotApplicable = guides.filter((item) => item.legal_review === "not_applicable").length;
 
 if (guides.length !== 8) errors.push(`${REGISTRY_PATH}: expected 8 guides, found ${guides.length}`);
-if (ready !== 0) errors.push(`${REGISTRY_PATH}: current baseline expects index_ready=0, found ${ready}`);
-if (blocked !== guides.length) errors.push(`${REGISTRY_PATH}: every current guide must remain blocked`);
-if (sourceVerified !== 7 || sourcePending !== 0 || sourceNotApplicable !== 1) {
-  errors.push(`${REGISTRY_PATH}: unexpected source status counts`);
+if (ready + blocked !== guides.length) errors.push(`${REGISTRY_PATH}: ready + blocked must equal total guides`);
+if (sourceVerified + sourcePending + sourceNotApplicable !== guides.length) {
+  errors.push(`${REGISTRY_PATH}: source status counts must equal total guides`);
 }
-if (editorialPassed !== 1) errors.push(`${REGISTRY_PATH}: expected one editorially passed guide`);
-if (legalPassed !== 0) errors.push(`${REGISTRY_PATH}: legal review must not be implied`);
 
-const gate = Array.isArray(report.gates)
-  ? report.gates.find((item) => item.id === "guide_content_publication")
-  : null;
-const profile = Array.isArray(report.profiles)
-  ? report.profiles.find((item) => item.id === "seo_guide_indexing")
-  : null;
+for (const guide of readyGuides) {
+  const label = `${REGISTRY_PATH}:${guide.id}`;
+  if (!["verified_on_date", "not_applicable"].includes(guide.source_status)) {
+    errors.push(`${label}: ready guide requires accepted source status`);
+  }
+  if (guide.editorial_review !== "passed") {
+    errors.push(`${label}: ready guide requires editorial_review=passed`);
+  }
+  if (!["passed", "not_applicable"].includes(guide.legal_review)) {
+    errors.push(`${label}: ready guide requires legal review passed or not_applicable`);
+  }
+}
+
+const allContentReady = guides.length === 8
+  && ready === guides.length
+  && blocked === 0
+  && sourcePending === 0
+  && editorialPassed === guides.length
+  && legalPassed + legalNotApplicable === guides.length;
+
+const gates = Array.isArray(report.gates) ? report.gates : [];
+const profiles = Array.isArray(report.profiles) ? report.profiles : [];
+const gate = gates.find((item) => item.id === "guide_content_publication");
+const profile = profiles.find((item) => item.id === "seo_guide_indexing");
 const metrics = report.metrics?.guides;
 
 if (!gate) errors.push(`${REPORT_SCRIPT}: guide_content_publication gate is missing`);
 if (!profile) errors.push(`${REPORT_SCRIPT}: seo_guide_indexing profile is missing`);
+
 if (gate) {
-  if (gate.category !== "derived") errors.push(`guide_content_publication: category must be derived`);
-  if (gate.scope !== "seo_guide_indexing") errors.push(`guide_content_publication: invalid scope`);
-  if (gate.status !== "blocked") errors.push(`guide_content_publication: current status must be blocked`);
-  if (gate.evidence_count !== 0) errors.push(`guide_content_publication: evidence_count must equal ready guides`);
+  if (gate.category !== "derived") errors.push("guide_content_publication: category must be derived");
+  if (gate.scope !== "seo_guide_indexing") errors.push("guide_content_publication: invalid scope");
+  const expectedStatus = allContentReady ? "passed" : "blocked";
+  if (gate.status !== expectedStatus) {
+    errors.push(`guide_content_publication: expected status=${expectedStatus}, found ${gate.status}`);
+  }
+  if (gate.evidence_count !== ready) {
+    errors.push(`guide_content_publication: evidence_count must equal ready guides (${ready})`);
+  }
   for (const fragment of [
-    "ready=0",
-    "blocked=8",
-    "source_verified=7",
-    "source_pending=0",
-    "editorial_passed=1",
-    "legal_passed_or_na=1",
-    "total=8"
+    `ready=${ready}`,
+    `blocked=${blocked}`,
+    `source_verified=${sourceVerified}`,
+    `source_pending=${sourcePending}`,
+    `editorial_passed=${editorialPassed}`,
+    `legal_passed_or_na=${legalPassed + legalNotApplicable}`,
+    `total=${guides.length}`
   ]) {
     if (!String(gate.details || "").includes(fragment)) {
       errors.push(`guide_content_publication: details missing ${fragment}`);
     }
   }
 }
+
 if (profile) {
   const required = Array.isArray(profile.required_gates) ? profile.required_gates : [];
   if (JSON.stringify(required) !== JSON.stringify(["guide_content_publication", "legal_owner_review"])) {
-    errors.push(`seo_guide_indexing: unexpected required_gates`);
+    errors.push("seo_guide_indexing: unexpected required_gates");
   }
-  if (profile.ready !== false) errors.push(`seo_guide_indexing: current profile must be blocked`);
-  if (!Array.isArray(profile.blocked_gates) || !profile.blocked_gates.includes("guide_content_publication")) {
-    errors.push(`seo_guide_indexing: guide content blocker is missing`);
+
+  const gateMap = new Map(gates.map((item) => [item.id, item]));
+  const missing = required.filter((id) => !gateMap.has(id));
+  const expectedBlocked = required.filter((id) => {
+    const status = gateMap.get(id)?.status;
+    return status && !["passed", "not_applicable"].includes(status);
+  });
+  const expectedPassed = required.filter((id) => {
+    const status = gateMap.get(id)?.status;
+    return ["passed", "not_applicable"].includes(status);
+  });
+  const expectedReady = missing.length === 0 && expectedBlocked.length === 0;
+
+  if (profile.ready !== expectedReady) {
+    errors.push(`seo_guide_indexing: expected ready=${expectedReady}, found ${profile.ready}`);
   }
-  if (!profile.blocked_gates.includes("legal_owner_review")) {
-    errors.push(`seo_guide_indexing: legal owner review blocker is missing`);
-  }
+  exactSet(new Set(profile.blocked_gates || []), new Set(expectedBlocked), "seo_guide_indexing: blocked_gates");
+  exactSet(new Set(profile.passed_gates || []), new Set(expectedPassed), "seo_guide_indexing: passed_gates");
+  exactSet(new Set(profile.missing_gates || []), new Set(missing), "seo_guide_indexing: missing_gates");
 }
+
 if (!metrics) {
   errors.push(`${REPORT_SCRIPT}: guide metrics are missing`);
 } else {
   const expected = {
-    total: 8,
-    index_ready: 0,
-    index_blocked: 8,
-    source_verified: 7,
-    source_review_required: 0,
-    source_not_applicable: 1,
-    editorial_passed: 1,
-    legal_passed: 0,
-    legal_not_applicable: 1,
-    ready: false
+    total: guides.length,
+    index_ready: ready,
+    index_blocked: blocked,
+    source_verified: sourceVerified,
+    source_review_required: sourcePending,
+    source_not_applicable: sourceNotApplicable,
+    editorial_passed: editorialPassed,
+    legal_passed: legalPassed,
+    legal_not_applicable: legalNotApplicable,
+    ready: allContentReady
   };
   for (const [key, value] of Object.entries(expected)) {
     if (metrics[key] !== value) errors.push(`metrics.guides.${key}: expected ${value}, found ${metrics[key]}`);
   }
 }
 
-if (report.summary?.total_gates !== 12) errors.push(`summary.total_gates must be 12`);
-const gateStatusTotal = ["passed", "blocked", "in_review", "not_applicable"].reduce((sum, key) => sum + Number(report.summary?.[key] || 0), 0);
-if (gateStatusTotal !== report.summary?.total_gates) errors.push("gate status counts must match total_gates");
-if (report.summary?.total_profiles !== 4) errors.push(`summary.total_profiles must be 4`);
-if (report.summary?.ready_profiles !== 0) errors.push(`summary.ready_profiles must be 0`);
+const summary = report.summary || {};
+const gateStatusTotal = ["passed", "blocked", "in_review", "not_applicable"]
+  .reduce((sum, key) => sum + Number(summary[key] || 0), 0);
+if (gateStatusTotal !== Number(summary.total_gates || 0)) errors.push("gate status counts must match total_gates");
+if (Number(summary.total_gates || 0) !== gates.length) errors.push("summary.total_gates must equal gates.length");
+if (Number(summary.total_profiles || 0) !== profiles.length) errors.push("summary.total_profiles must equal profiles.length");
+if (Number(summary.ready_profiles || 0) !== profiles.filter((item) => item.ready).length) {
+  errors.push("summary.ready_profiles must match ready profiles");
+}
 
 console.log(`Guide launch gate: ready=${ready}; blocked=${blocked}; total=${guides.length}`);
 console.log(`Guide source status: verified=${sourceVerified}; pending=${sourcePending}; not_applicable=${sourceNotApplicable}`);
 console.log(`Guide review status: editorial_passed=${editorialPassed}; legal_passed=${legalPassed}; legal_not_applicable=${legalNotApplicable}`);
+console.log(`Guide content publication status: ${allContentReady ? "passed" : "blocked"}`);
 
 if (errors.length) {
   console.error("\nGuide launch gate validation errors:");

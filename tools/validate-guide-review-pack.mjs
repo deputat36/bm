@@ -132,7 +132,7 @@ guides.forEach((guide) => {
   } else if (!["requires_review", "passed"].includes(guide.legal_review)) {
     errors.push(`${PATHS.registry}:${guide.id}: invalid legal_review=${guide.legal_review}`);
   }
-  if (guide.indexing_status !== "blocked") errors.push(`${PATHS.registry}:${guide.id}: current review pack requires indexing_status=blocked`);
+  if (!["blocked", "ready"].includes(guide.indexing_status)) errors.push(`${PATHS.registry}:${guide.id}: invalid indexing_status=${guide.indexing_status}`);
 });
 
 if (resultsRegistry.schema_version !== "1.0") errors.push(`${PATHS.results}: schema_version must be 1.0`);
