@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "specification_only_no_history_store",
+  "purpose": "Отдельный append-only контракт истории цены и статуса предложения. Текущий feed хранит только последнее состояние; исторические события должны записываться в защищённое управляемое хранилище и не публиковаться как browser API.",
+  "sources": {
+    "current_offer_contract": "data/offers/contract.json",
+    "current_feed": "data/offers/feed.json"
+  },
+  "rules": {
+    "append_only": true,
+    "event_update_forbidden": true,
+    "event_delete_forbidden": true,
+    "current_feed_must_not_embed_history": true,
+    "real_history_events_in_repository_forbidden": true,
+    "personal_data_forbidden": true,
+    "secrets_in_repository_forbidden": true,
+    "direct_browser_history_access_forbidden": true,
+    "source_id_required": true,
+    "observed_at_required": true,
+    "hash_chain_required": true,
+    "history_write_enabled": false,
+    "history_store_connected": false
+  },
+  "store": {
+    "type": null,
+    "secure_reference": null,
+    "retention_days": null,
+    "allowed_types": ["supabase_private_table", "managed_backend"],
+    "activation_requires": [
+      "managed_store_selected",
+      "secure_reference_resolved",
+      "retention_policy_defined",
+      "append_only_enforced_server_side",
+      "service_role_only_write_access",
+      "backup_or_export_policy_defined"
+    ]
+  },
+  "offer_identity_fields": [
+    "object_id",
+    "section_or_entrance",
+    "apartment_number_public"
+  ],
+  "event_types": [
+    "price_observed",
+    "availability_observed"
+  ],
+  "required_event_fields": [
+    "event_id",
+    "event_type",
+    "observed_at",
+    "object_id",
+    "section_or_entrance",
+    "apartment_number_public",
+    "source_id",
+    "value",
+    "previous_event_hash",
+    "event_hash"
+  ],
+  "event_value_rules": {
+    "price_observed": {
+      "type": "number_or_null",
+      "positive_when_number": true,
+      "null_meaning": "price_not_available_from_source"
+    },
+    "availability_observed": {
+      "type": "enum",
+      "values": ["available", "reserved", "unavailable", "sold", "unknown"]
+    }
+  },
+  "hash_chain": {
+    "algorithm": "sha256",
+    "first_event_previous_hash": null,
+    "event_hash_input_fields": [
+      "event_type",
+      "observed_at",
+      "object_id",
+      "section_or_entrance",
+      "apartment_number_public",
+      "source_id",
+      "value",
+      "previous_event_hash"
+    ],
+    "same_offer_events_must_chain": true
+  },
+  "forbidden_event_keys": [
+    "seller_name",
+    "seller_phone",
+    "seller_email",
+    "client_name",
+    "client_phone",
+    "client_email",
+    "comment",
+    "internal_comment",
+    "user_agent",
+    "page_url",
+    "referrer",
+    "access_token",
+    "api_key",
+    "raw_sheet_url"
+  ],
+  "activation_note": "До отдельного storage/release изменения история не записывается: history_write_enabled=false и history_store_connected=false."
+}
