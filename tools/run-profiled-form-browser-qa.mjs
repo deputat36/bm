@@ -104,6 +104,13 @@ generatedSource = replaceExact(
       physical_device: false`,
   "summary target metadata"
 );
+generatedSource = replaceExact(
+  generatedSource,
+  "fullPage: true",
+  'fullPage: PROFILE_NAME !== "iphone_webkit_emulation"',
+  "profile-safe evidence screenshots",
+  4
+);
 
 fs.writeFileSync(TEMP_RUNNER, generatedSource, "utf8");
 
