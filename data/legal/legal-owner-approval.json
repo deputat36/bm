@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "requires_owner_approval_not_publishable",
+  "purpose": "Fail-closed реестр фактических юридических решений владельца до перевода privacy, consent и legal из рабочей редакции в финальную публикацию.",
+  "rules": {
+    "final_legal_publication_enabled": false,
+    "all_required_decisions_must_be_approved": true,
+    "legal_review_required": true,
+    "personal_data_forbidden": true,
+    "operator_facts_must_not_be_invented": true,
+    "allowed_statuses": [
+      "requires_owner_decision",
+      "approved",
+      "rejected",
+      "superseded"
+    ],
+    "approved_requires_value": true,
+    "approved_requires_checked_at": true,
+    "approved_requires_basis": true
+  },
+  "decisions": [
+    {
+      "id": "operator_identity",
+      "title": "Фактический оператор персональных данных",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "checked_at": null,
+      "basis": "",
+      "required_for": ["privacy", "consent", "legal", "campaign_launch", "seo_indexing"],
+      "question": "Какое физическое лицо, ИП или юридическое лицо фактически определяет цели обработки данных на портале?"
+    },
+    {
+      "id": "operator_requisites",
+      "title": "Реквизиты и адрес оператора",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "checked_at": null,
+      "basis": "",
+      "required_for": ["privacy", "consent", "legal"],
+      "question": "Какие обязательные реквизиты и адрес оператора должны быть опубликованы?"
+    },
+    {
+      "id": "privacy_contact_channel",
+      "title": "Канал запросов по персональным данным",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "checked_at": null,
+      "basis": "",
+      "required_for": ["privacy", "consent"],
+      "question": "По какому контролируемому адресу или каналу пользователь может запросить доступ, уточнение, ограничение, удаление или отзыв согласия?"
+    },
+    {
+      "id": "retention_policy",
+      "title": "Сроки хранения данных и технических журналов",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "checked_at": null,
+      "basis": "",
+      "required_for": ["privacy", "consent", "operations"],
+      "question": "Как долго хранятся заявка, согласие, event log и резервные копии и что происходит после истечения срока?"
+    },
+    {
+      "id": "withdrawal_deletion_policy",
+      "title": "Отзыв согласия, блокирование и удаление",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "checked_at": null,
+      "basis": "",
+      "required_for": ["privacy", "consent", "operations"],
+      "question": "Как принимается и исполняется запрос на отзыв, блокирование или удаление данных и какие законные исключения применяются?"
+    },
+    {
+      "id": "processor_and_notification_channels",
+      "title": "Технические сервисы и внутренние каналы уведомления",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "checked_at": null,
+      "basis": "",
+      "required_for": ["privacy", "legal"],
+      "question": "Какие фактически используемые сервисы хранения, хостинга, уведомления и аналитики должны быть отражены в юридической модели обработки?"
+    },
+    {
+      "id": "advertising_and_independence_review",
+      "title": "Проверка рекламных формулировок и независимого статуса портала",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "checked_at": null,
+      "basis": "",
+      "required_for": ["campaign_launch", "seo_indexing"],
+      "question": "Подтверждено ли, что тексты и визуальная подача не создают впечатление официального сайта застройщика и допустимы для выбранных каналов?"
+    },
+    {
+      "id": "final_legal_review",
+      "title": "Финальная юридическая проверка",
+      "status": "requires_owner_decision",
+      "approved_value": null,
+      "checked_at": null,
+      "basis": "",
+      "required_for": ["privacy", "consent", "legal", "campaign_launch", "seo_indexing"],
+      "question": "Кем и когда проверена финальная редакция privacy, consent, legal и рекламных формулировок?"
+    }
+  ],
+  "activation_gates": [
+    "all_decisions_approved",
+    "operator_identity_and_requisites_present",
+    "privacy_contact_channel_operational",
+    "retention_and_withdrawal_policies_approved",
+    "processor_channels_reviewed",
+    "advertising_independence_review_passed",
+    "final_legal_review_passed",
+    "final_legal_publication_explicitly_enabled"
+  ]
+}
