@@ -1,0 +1,107 @@
+name: Official developer portfolio guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/research/official-developer-portfolio-scan.json"
+      - "data/research/city-inventory-method.json"
+      - "data/research/priority-projects.json"
+      - "data/research/reference-projects.json"
+      - "data/research/reference-candidates.json"
+      - "tools/validate-official-developer-scan.mjs"
+      - "docs/portal/OFFICIAL_DEVELOPER_PORTFOLIO_SCAN.md"
+      - ".github/workflows/official-developer-portfolio-guard.yml"
+  pull_request:
+    paths:
+      - "data/research/official-developer-portfolio-scan.json"
+      - "data/research/city-inventory-method.json"
+      - "data/research/priority-projects.json"
+      - "data/research/reference-projects.json"
+      - "data/research/reference-candidates.json"
+      - "tools/validate-official-developer-scan.mjs"
+      - "docs/portal/OFFICIAL_DEVELOPER_PORTFOLIO_SCAN.md"
+      - ".github/workflows/official-developer-portfolio-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-official-developer-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-official-developer-scan.mjs
+
+      - name: Validate official developer scan
+        run: node tools/validate-official-developer-scan.mjs
+
+      - name: Reject PCK address inference
+        run: |
+          cp data/research/official-developer-portfolio-scan.json /tmp/developer-scan-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/official-developer-portfolio-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const scope = data.tracked_scopes.find((item) => item.id === 'psk');
+          scope.scan_status = 'scanned_current';
+          scope.unresolved_portfolio_items = [];
+          data.completion_state.blocking_scope_ids = ['aleks', 'sennaya-76-developer-unresolved'];
+          data.completion_state.scanned_current_scope_ids.push('psk');
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-official-developer-scan.mjs; then
+            echo "Developer validator incorrectly allowed PCK candidate entity link as a closed exact portfolio scan"
+            exit 1
+          fi
+          cp /tmp/developer-scan-baseline.json data/research/official-developer-portfolio-scan.json
+
+      - name: Reject secondary site pointer as official Alex scan
+        run: |
+          cp data/research/official-developer-portfolio-scan.json /tmp/developer-scan-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/official-developer-portfolio-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const scope = data.tracked_scopes.find((item) => item.id === 'aleks');
+          scope.scan_status = 'scanned_current';
+          scope.unresolved_portfolio_items = [];
+          data.completion_state.blocking_scope_ids = ['psk', 'sennaya-76-developer-unresolved'];
+          data.completion_state.scanned_current_scope_ids.push('aleks');
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-official-developer-scan.mjs; then
+            echo "Developer validator incorrectly allowed a secondary site pointer to close Alex official scan"
+            exit 1
+          fi
+          cp /tmp/developer-scan-baseline.json data/research/official-developer-portfolio-scan.json
+
+      - name: Reject false city developer completion
+        run: |
+          cp data/research/official-developer-portfolio-scan.json /tmp/developer-scan-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/official-developer-portfolio-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.status = 'city_developer_scan_complete';
+          data.completion_state.known_scope_scan_complete = true;
+          data.completion_state.city_developer_scan_complete = true;
+          data.completion_state.completion_claim = 'allowed';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-official-developer-scan.mjs; then
+            echo "Developer validator incorrectly allowed false city developer completion"
+            exit 1
+          fi
+          cp /tmp/developer-scan-baseline.json data/research/official-developer-portfolio-scan.json
+          node tools/validate-official-developer-scan.mjs

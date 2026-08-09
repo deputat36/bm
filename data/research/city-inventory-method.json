@@ -97,14 +97,17 @@
       "status": "in_progress",
       "completeness_effect": "supporting_required",
       "evidence": [
+        "data/research/official-developer-portfolio-scan.json",
         "data/research/city-catalog-coverage.json",
         "data/research/reference-projects.json"
       ],
       "limitations": [
+        "three known developer scopes remain blocking: unnamed PCK queues, current official Alex portfolio access, and unresolved Sennaya 76 legal developer entity",
         "developer sites confirm only their own published portfolio",
-        "absence from one developer site is not proof that no other project exists"
+        "absence from one developer site is not proof that no other project exists",
+        "new developer entities discovered by permit/EISZhS/municipal scans must be added before completion"
       ],
-      "next_action": "continue official developer portfolio reconciliation for discovered entities"
+      "next_action": "resolve blocking known developer scopes and add any entities discovered by upstream primary scans"
     },
     {
       "id": "municipal_planning_and_address_scan",
