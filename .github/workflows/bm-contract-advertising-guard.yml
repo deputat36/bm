@@ -10,6 +10,8 @@ on:
       - "data/marketing/campaign-publications.json"
       - "data/release/manual-gates.json"
       - "catalog/prostornaya-4a/**"
+      - "kvartiry-ot-zastroyschika-borisoglebsk/**"
+      - "spisok-ozhidaniya/**"
       - "index.html"
       - "catalog/**"
       - "developers/**"
@@ -37,6 +39,8 @@ on:
       - "data/marketing/campaign-publications.json"
       - "data/release/manual-gates.json"
       - "catalog/prostornaya-4a/**"
+      - "kvartiry-ot-zastroyschika-borisoglebsk/**"
+      - "spisok-ozhidaniya/**"
       - "index.html"
       - "catalog/**"
       - "developers/**"
@@ -100,6 +104,16 @@ jobs:
             exit 1
           fi
           cp /tmp/home-baseline.html index.html
+
+      - name: Reject regression in legacy transition stub
+        run: |
+          cp spisok-ozhidaniya/index.html /tmp/waitlist-baseline.html
+          printf '\n<form><input name="phone"><button>Отправить</button></form>\n' >> spisok-ozhidaniya/index.html
+          if node tools/validate-bm-contract-advertising.mjs; then
+            echo "Validator incorrectly allowed lead form on BM legacy transition stub"
+            exit 1
+          fi
+          cp /tmp/waitlist-baseline.html spisok-ozhidaniya/index.html
 
       - name: Reject covered-object publication without written approval
         run: |
