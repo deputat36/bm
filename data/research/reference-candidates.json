@@ -83,11 +83,20 @@
           ]
         },
         {
+          "class": "secondary_regional_publication",
+          "title": "РИА Воронеж — муниципальные контракты на квартиры в строящемся доме по Пригородной 30А",
+          "url": "https://riavrn.ru/news/v-chetvertom-kvartale-2014-goda-borisoglebtsev-nachnut-pereselyat-iz-avariynogo-zhilya/",
+          "supports": [
+            "residential_construction_claim_in_2014",
+            "municipal_apartment_purchase_contracts_reported"
+          ]
+        },
+        {
           "class": "secondary_legal_archive",
-          "title": "ГАРАНТ — схема территориального планирования Воронежской области 2009",
+          "title": "ГАРАНТ — схема территориального планирования Воронежской области",
           "url": "https://base.garant.ru/18189258/",
           "supports": [
-            "older_conflicting_land_use_context"
+            "conflicting_public_planning_context_kindergarten_at_same_address"
           ]
         }
       ],
@@ -98,8 +107,9 @@
       ],
       "publication_limits": [
         "do_not_render",
-        "do_not_infer_house_status_from_2015_bank_archive",
-        "do_not_infer_nonexistence_from_older_land_use_context"
+        "do_not_infer_house_status_from_historical_bank_or_media_reports",
+        "do_not_treat_regional_media_as_primary_contract_evidence",
+        "do_not_infer_nonexistence_from_conflicting_planning_context"
       ],
       "evidence": "docs/portal/research/REFERENCE_ALEX_CANDIDATES_2026-08-09.md"
     },
