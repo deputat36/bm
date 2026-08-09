@@ -10,7 +10,7 @@
 
 ## Что уже даёт серверный контур
 
-`public.newbuild_leads` и `public.newbuild_lead_events` уже позволяют достоверно получить:
+`public.newbuild_leads` и `public.newbuild_lead_events` позволяют достоверно получить:
 
 - создание обращения;
 - назначение роли после operational activation;
@@ -19,11 +19,23 @@
 - квалификацию;
 - вход в состояние `consultation_active`.
 
-В `newbuild_leads` уже сохраняются `lead_source`, `placement`, `residential_complex_id`, `form_id`, `lead_type` и `lead_class`.
+В `newbuild_leads` сохраняются `lead_source`, `placement`, `residential_complex_id`, `form_id`, `lead_type` и `lead_class`.
 
-## Подтверждённый schema gap
+## Form role без дублирования server column
 
-`form_role` существует во frontend analytics, но текущий `buildLeadRow()` не сохраняет его отдельным server field. Поэтому разрез primary/detailed нельзя считать доступным для защищённой outcome-аналитики до отдельного server-side изменения.
+Для protected reporting отдельная колонка `form_role` в `newbuild_leads` не нужна.
+
+Каноническая матрица `data/qa/form-scenarios.json` содержит 14 активных `form_id` и однозначное соответствие:
+
+```text
+form_id -> primary | detailed
+```
+
+На 9 августа 2026 года mapping содержит 7 primary и 7 detailed форм без дубликатов `form_id`.
+
+Outcome report получает роль через защищённый join по сохранённому server `form_id`. Это устраняет прежний reporting gap и избегает риска рассинхронизации двух независимых полей в lead record.
+
+При добавлении новой активной формы registry/validator должны быть обновлены одновременно; неоднозначный `form_id` запрещён.
 
 ## Каноническая воронка результата
 
@@ -46,7 +58,7 @@ closed_lost
 
 Из текущей server schema напрямую доступны первые четыре. Остальные восемь нельзя выводить из догадок или текстовых комментариев — для них требуется отдельное каноническое событие/поле.
 
-`consultation_started` доступен как производный внутренний milestone по входу в `consultation_active`, но он не подменяет `consultation_scheduled` или `consultation_completed`.
+`consultation_started` доступен как производный milestone по входу в `consultation_active`, но он не подменяет `consultation_scheduled` или `consultation_completed`.
 
 ## Доступные агрегаты после operational activation
 
@@ -60,7 +72,7 @@ consultation_start_rate = consultation_started / lead_qualified
 
 ## Измерения
 
-Доступны на сервере:
+Server record:
 
 - lead_source;
 - placement;
@@ -70,13 +82,15 @@ consultation_start_rate = consultation_started / lead_qualified
 - lead_class;
 - result_status.
 
-Пока недоступен как отдельное server dimension:
+Registry-derived:
 
-- form_role.
+- form_role через `form_scenarios.form_id -> form_role`.
+
+Таким образом для всех восьми предусмотренных reporting dimensions есть определённый источник; dimension schema gaps отсутствуют.
 
 ## Privacy
 
-Репозиторий хранит только контракт и генератор спецификации. Реальные outcome rows остаются в защищённом server contour.
+Репозиторий хранит только контракт, form registry и генератор спецификации. Реальные outcome rows остаются в защищённом server contour.
 
 В агрегированные отчёты запрещено выводить:
 
@@ -88,22 +102,21 @@ consultation_start_rate = consultation_started / lead_qualified
 - комментарии и вопросы;
 - page_url/referrer/user_agent.
 
-Минимальная группа для сегментированного отчёта — 3 обращения. Меньшие группы должны подавляться, чтобы не повышать риск обратной идентификации.
+Минимальная группа для сегментированного отчёта — 3 обращения. Меньшие группы должны подавляться.
 
 ## Отделение от публичной аналитики
 
-Публичный `data/analytics/events.json` отвечает только за обезличенные browser events. Канонические internal outcome events не должны добавляться туда автоматически.
+Публичный `data/analytics/events.json` отвечает только за обезличенные browser events. Канонические internal outcome events не добавляются туда автоматически.
 
 Связь между public attribution и commercial outcome выполняется только внутри защищённого server contour.
 
 ## Следующие технические этапы
 
 1. После owner approval операционного контура подтвердить реальные `assigned_at`, `contacted_at`, `qualified_at` на тестовом lead.
-2. Отдельно добавить server persistence `form_role`.
-3. Спроектировать append-only события для consultation scheduled/completed, selection, showing, deposit, won/lost.
-4. Не строить deal rate до появления канонического `closed_won`.
-5. Подключить cost data отдельно после фактического запуска placements.
-6. Строить только агрегированные отчёты по source / placement / object / form / lead type.
+2. Спроектировать append-only события consultation scheduled/completed, selection, showing, deposit, won/lost.
+3. Не строить deal rate до появления канонического `closed_won`.
+4. Подключить cost data отдельно после фактического запуска placements.
+5. Строить только агрегированные отчёты по source / placement / object / form / form role / lead type.
 
 ## Команды
 

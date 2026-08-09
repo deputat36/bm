@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "updated_at": "2026-08-09",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "specification_only_no_live_outcome_export",
@@ -11,7 +11,8 @@
     "event_log_contract": "data/operations/lead-event-log.json",
     "runtime_function": "supabase/functions/newbuild-lead/index.ts",
     "operations_migration": "supabase/migrations/20260724060538_newbuild_lead_operations_v2.sql",
-    "public_analytics_contract": "data/analytics/events.json"
+    "public_analytics_contract": "data/analytics/events.json",
+    "form_registry": "data/qa/form-scenarios.json"
   },
   "rules": {
     "protected_server_data_only": true,
@@ -23,6 +24,7 @@
     "missing_commercial_event_must_not_be_inferred": true,
     "public_and_internal_event_namespaces_separate": true,
     "aggregate_reports_only": true,
+    "registry_derived_dimensions_require_unique_mapping": true,
     "live_export_enabled": false,
     "cost_data_connected": false
   },
@@ -141,7 +143,7 @@
     {"id": "form_id", "availability": "server_record", "source": "newbuild_leads.form_id"},
     {"id": "lead_type", "availability": "server_record", "source": "newbuild_leads.lead_type"},
     {"id": "lead_class", "availability": "server_record", "source": "newbuild_leads.lead_class"},
-    {"id": "form_role", "availability": "schema_gap", "source": null, "note": "Frontend формирует form_role, но buildLeadRow сейчас не сохраняет его отдельным server field."},
+    {"id": "form_role", "availability": "registry_derived", "source": "form_scenarios.form_id->form_role", "join_key": "form_id", "note": "Роль формы является статической метаинформацией и выводится по уникальному form_id из канонической матрицы 14 активных форм; отдельная колонка в lead table не требуется."},
     {"id": "result_status", "availability": "server_record", "source": "newbuild_leads.result_status"}
   ],
   "privacy": {
@@ -166,7 +168,6 @@
     "small_groups_must_be_suppressed": true
   },
   "known_gaps": [
-    "form_role_not_persisted_as_server_dimension",
     "consultation_scheduled_event_missing",
     "consultation_completed_event_missing",
     "selection_sent_event_missing",
