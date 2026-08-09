@@ -70,6 +70,21 @@
       ]
     },
     {
+      "id": "jkhdom_vostochny_1_2026-08-09",
+      "source_class": "secondary_housing_stock_discovery",
+      "title": "ЖКХдом — карточка многоквартирного дома Восточный, 1",
+      "url": "https://jkhdom.com/dom/voronejskaya-oblast/borisoglebsk/1176875",
+      "checked_at": "2026-08-09",
+      "observed_objects": [
+        {
+          "observed_label": "Дом мкр. Восточный, 1",
+          "observed_address": "мкр. Восточный, 1",
+          "mapping": {"registry": "reference", "project_id": "evropeyskiy-proekt-invest"},
+          "note": "Вторичный жилищный реестр указывает дом 2020 года. Отдельная карточка не создаётся: Яндекс Недвижимость связывает Восточный, 1 и 3 с ЖК «Европейский», уже представленным reference-карточкой; официальный сайт ГК «Проект Инвест» подтверждает сам ЖК и застройщика, но точные адреса очередей в portal reference по-прежнему не повышаются без первичного address-level evidence."
+        }
+      ]
+    },
+    {
       "id": "cian_borisoglebsk_current_newbuilds_2026-08-09",
       "source_class": "secondary_marketplace_discovery",
       "title": "ЦИАН — строящиеся новостройки Борисоглебска",
@@ -140,12 +155,13 @@
     "priority_projects_accounted_for": 3,
     "reference_projects_accounted_for": 4,
     "unresolved_candidates_accounted_for": 2,
-    "observations_mapped": 10,
+    "observations_mapped": 11,
     "unmapped_observations": 0,
     "research_queue_complete": false,
     "known_limitations": [
       "Публичные каталоги не гарантируют полноту всех построенных домов города.",
       "Исторические и малые объекты могут отсутствовать в агрегаторах.",
+      "Жилищные реестры вторичного уровня используются для discovery и entity resolution, но не доказывают полноту домов по годам и не заменяют первичные разрешительные документы.",
       "Планируемые проекты учитываются только после публичного подтверждения.",
       "Справочный охват не заменяет проверку первичных документов по priority-object claims."
     ]
