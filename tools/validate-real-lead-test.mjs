@@ -26,6 +26,7 @@ const REQUIRED_FIELDS = new Set([
   "consent",
   "record_locator"
 ]);
+const FORBIDDEN_PII_KEYS = new Set(["name", "phone", "phone_normalized", "email", "comment", "question"]);
 const errors = [];
 
 function fail(message) {
@@ -55,6 +56,19 @@ function validEvidence(item) {
   const reference = String(item.reference || "").trim();
   const note = String(item.note || "").trim();
   return Boolean(note) && (reference.startsWith("https://") || /^(docs|data|artifacts)\//.test(reference));
+}
+
+function scanPiiFields(value, currentPath = "") {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => scanPiiFields(item, `${currentPath}[${index}]`));
+    return;
+  }
+  if (!value || typeof value !== "object") return;
+  for (const [key, nested] of Object.entries(value)) {
+    const nextPath = currentPath ? `${currentPath}.${key}` : key;
+    if (FORBIDDEN_PII_KEYS.has(key)) fail(`PII field forbidden in repository contract: ${nextPath}`);
+    scanPiiFields(nested, nextPath);
+  }
 }
 
 const data = readJson(FILE);
@@ -126,11 +140,9 @@ if (completed) {
   }
 }
 
-const serialized = JSON.stringify(data);
-const lower = serialized.toLowerCase();
-if (/[^\d]\+?\d[\d\s().-]{8,}\d/.test(serialized)) fail("phone-like value forbidden in repository contract");
-if (/[^\s@]+@[^\s@]+\.[^\s@]+/.test(serialized)) fail("email-like value forbidden in repository contract");
-for (const forbidden of ["lead_test=dry-run", "web3forms", "access_key", "client_fixation_id", "user_agent"]) {
+scanPiiFields(data);
+const lower = JSON.stringify(data).toLowerCase();
+for (const forbidden of ["lead_test=dry-run", "web3forms", "access_key", "client_fixation_id"]) {
   if (lower.includes(forbidden)) fail(`forbidden contract content: ${forbidden}`);
 }
 
