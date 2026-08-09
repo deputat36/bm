@@ -40,13 +40,15 @@ Evidence этого прохода: `docs/portal/research/CITY_CATALOG_STOCK_SCA
 
 Жилищные реестры вторичного уровня полезны для поиска адресов и проверки дублей, но не считаются исчерпывающим перечнем домов по годам. Проверенный 9 августа secondary housing-stock index заканчивает перечень годов Борисоглебска 2020 годом, хотя в других источниках уже видны более новые объекты. Поэтому такой источник особенно полезен как discovery clue и отрицательный тест полноты, но не как completeness authority.
 
-Поэтому `research_queue_complete=false` сохраняется до появления отдельной воспроизводимой методики полной инвентаризации: официальный реестр/разрешения, архив ввода, ЕИСЖС и муниципальные документы должны быть сопоставлены системно, а не только через поисковую выдачу.
+Отдельная воспроизводимая методика теперь формализована в `data/research/city-inventory-method.json` и описана в `docs/portal/CITY_INVENTORY_METHOD.md`. Она требует системно пройти разрешительные/вводные реестры, ЕИСЖС или эквивалентный primary project source, официальные developer-портфели, муниципальные планировочные/адресные публикации и финальное entity reconciliation.
+
+Пока эти обязательные scans не пройдены, `research_queue_complete=false` и `inventory_complete=false` сохраняются независимо от того, сколько агрегаторов перестали показывать новые результаты.
 
 ## Использование вторичных источников
 
 Яндекс Недвижимость, ЦИАН и жилищные агрегаторы используются только для discovery, entity resolution и cross-check. Они не повышают critical claims priority-object до confirmed и не могут сами по себе создать public-ready reference-card, если нет достаточного evidence по адресу, статусу и объектной идентичности.
 
-Для каждого `source_class`, начинающегося с `secondary_`, coverage map теперь обязана явно хранить:
+Для каждого `source_class`, начинающегося с `secondary_`, coverage map обязана явно хранить:
 
 ```text
 completeness_use_allowed=false
@@ -70,4 +72,6 @@ limitations=[...]
 - snapshot пытается объявить research queue завершённой;
 - public catalog/runtime начинает загружать research-only coverage JSON.
 
-GitHub Actions guard дополнительно содержит негативный тест, который искусственно разрешает secondary source использоваться для completeness и требует, чтобы validator отклонил такое состояние.
+`tools/validate-city-inventory-method.mjs` отдельно проверяет, что завершение Phase C возможно только по формализованной методике и не смешивается с legal/media/publication readiness конкретных карточек.
+
+GitHub Actions guards содержат отрицательные тесты ложной полноты, secondary completeness authority и преждевременного inventory completion.
