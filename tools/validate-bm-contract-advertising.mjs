@@ -25,6 +25,21 @@ const PUBLIC_ROOTS = [
   "karta-sayta",
   "spasibo"
 ];
+const LEGACY_FORBIDDEN_FRAGMENTS = [
+  "теллерманов сад",
+  "просторная 4а",
+  "bm group",
+  "бм групп",
+  "наш.дом",
+  "70 квартир",
+  "27,71",
+  "63,76",
+  "ранний список",
+  "лист ожидания",
+  "семейная ипотека",
+  "материнский капитал",
+  "молодая семья"
+];
 const errors = [];
 
 function read(relativePath) {
@@ -83,6 +98,11 @@ function exactSet(actual, expected, label) {
   if (JSON.stringify(left) !== JSON.stringify(right)) errors.push(`${label}: expected ${right.join(", ")}; got ${left.join(", ")}`);
 }
 
+function hasNoindexFollow(html) {
+  return /<meta\s+name=["']robots["']\s+content=["']noindex\s*,\s*follow["'][^>]*>/i.test(html)
+    || /<meta\s+content=["']noindex\s*,\s*follow["']\s+name=["']robots["'][^>]*>/i.test(html);
+}
+
 const contract = readJson(CONTRACT_PATH);
 const campaignRegistry = readJson(CAMPAIGNS_PATH);
 const publicationRegistry = readJson(PUBLICATIONS_PATH);
@@ -91,7 +111,7 @@ const sitemap = read(SITEMAP_PATH);
 const coveredPage = read(COVERED_PAGE);
 if (!contract || !campaignRegistry || !publicationRegistry || !manualGates || !sitemap || !coveredPage) process.exit(1);
 
-if (contract.schema_version !== "1.0") errors.push(`${CONTRACT_PATH}: schema_version must be 1.0`);
+if (contract.schema_version !== "1.1") errors.push(`${CONTRACT_PATH}: schema_version must be 1.1`);
 if (!isIsoDate(contract.updated_at)) errors.push(`${CONTRACT_PATH}: updated_at must be YYYY-MM-DD`);
 if (contract.portal_id !== "newbuilds-borisoglebsk") errors.push(`${CONTRACT_PATH}: invalid portal_id`);
 if (contract.source_audit !== "CONTRACT_AD_AUDIT_2026-07-01.md") errors.push(`${CONTRACT_PATH}: source_audit mismatch`);
@@ -103,6 +123,7 @@ for (const key of [
   "old_single_project_domain_forbidden",
   "official_site_impression_forbidden",
   "developer_direct_wording_forbidden",
+  "legacy_problem_routes_may_exist_only_as_safe_transition_stubs",
   "brand_or_geo_paid_search_without_written_approval_forbidden",
   "object_specific_publication_without_written_approval_forbidden",
   "object_specific_offline_material_without_written_approval_forbidden",
@@ -116,8 +137,28 @@ if (contract.rules?.old_single_project_domain !== "tellermanovsad.ru") errors.pu
 
 const forbiddenPhrases = contract.rules?.forbidden_public_phrases || [];
 if (!forbiddenPhrases.includes("квартиры от застройщика")) errors.push(`${CONTRACT_PATH}: exact prohibited phrase must be registered`);
-const forbiddenLegacyPaths = contract.rules?.forbidden_legacy_paths || [];
-exactSet(new Set(forbiddenLegacyPaths), new Set(["/kvartiry-ot-zastroyschika-borisoglebsk/", "/spisok-ozhidaniya/"]), `${CONTRACT_PATH}: forbidden legacy paths`);
+
+const legacyRoutes = Array.isArray(contract.legacy_transition_routes) ? contract.legacy_transition_routes : [];
+if (legacyRoutes.length !== 2) errors.push(`${CONTRACT_PATH}: expected two BM legacy transition routes`);
+exactSet(
+  new Set(legacyRoutes.map((item) => item.source_url)),
+  new Set(["/kvartiry-ot-zastroyschika-borisoglebsk/", "/spisok-ozhidaniya/"]),
+  `${CONTRACT_PATH}: legacy transition source URLs`
+);
+const legacyRequirements = contract.legacy_transition_requirements || {};
+for (const key of [
+  "old_domain_forbidden",
+  "old_branding_forbidden",
+  "lead_form_forbidden",
+  "automatic_redirect_forbidden_until_server_release",
+  "object_specific_claims_forbidden",
+  "explicit_target_link_required",
+  "sitemap_inclusion_forbidden"
+]) {
+  if (legacyRequirements[key] !== true) errors.push(`${CONTRACT_PATH}: legacy_transition_requirements.${key} must be true`);
+}
+if (legacyRequirements.robots !== "noindex,follow") errors.push(`${CONTRACT_PATH}: legacy transition robots must be noindex,follow`);
+if (legacyRequirements.migration_marker !== 'data-legacy-migration-stub="bm-contract"') errors.push(`${CONTRACT_PATH}: legacy transition marker mismatch`);
 
 const approval = contract.approval || {};
 const allowedScopes = new Set(approval.allowed_scopes || []);
@@ -151,8 +192,8 @@ if (approval.status === "passed") {
   if (!(approval.approved_scopes || []).length) errors.push(`${CONTRACT_PATH}: passed approval requires at least one approved scope`);
 }
 
-const publicFiles = [...new Set(PUBLIC_ROOTS.flatMap((entry) => listHtmlFiles(entry)))];
 const oldDomain = String(contract.rules.old_single_project_domain || "").toLowerCase();
+const publicFiles = [...new Set(PUBLIC_ROOTS.flatMap((entry) => listHtmlFiles(entry)))];
 for (const relativePath of publicFiles) {
   const text = fs.readFileSync(path.join(ROOT, relativePath), "utf8").toLowerCase();
   if (oldDomain && text.includes(oldDomain)) errors.push(`${relativePath}: old single-project domain ${oldDomain} is forbidden in public HTML`);
@@ -161,12 +202,40 @@ for (const relativePath of publicFiles) {
   }
 }
 
-if (sitemap.toLowerCase().includes(oldDomain)) errors.push(`${SITEMAP_PATH}: old single-project domain is forbidden`);
-for (const legacyPath of forbiddenLegacyPaths) {
-  if (sitemap.includes(legacyPath)) errors.push(`${SITEMAP_PATH}: forbidden legacy path present ${legacyPath}`);
-  const localPath = `${legacyPath.replace(/^\/+|\/+$/g, "")}/index.html`;
-  if (fs.existsSync(path.join(ROOT, localPath))) errors.push(`${localPath}: forbidden legacy public page still exists`);
+for (const route of legacyRoutes) {
+  const label = `${CONTRACT_PATH}:${route.source_url || "unknown-route"}`;
+  const sourceFile = String(route.source_file || "").trim();
+  const sourceUrl = String(route.source_url || "").trim();
+  const targetHref = String(route.target_href || "").trim();
+  const canonical = String(route.canonical || "").trim();
+  if (!sourceFile || !fs.existsSync(path.join(ROOT, sourceFile))) {
+    errors.push(`${label}: transition source file must exist until server redirect release`);
+    continue;
+  }
+  if (route.status !== "transition_page") errors.push(`${label}: status must be transition_page`);
+  if (route.server_redirect_status !== "blocked_by_hosting_redirect_format") errors.push(`${label}: server redirect must remain blocked_by_hosting_redirect_format in current phase`);
+  if (route.target_url !== "/catalog/" || targetHref !== "../catalog/") errors.push(`${label}: transition target must be neutral city catalog`);
+  if (canonical !== "https://novostroyki-borisoglebsk.ru/catalog/") errors.push(`${label}: canonical must point to neutral city catalog`);
+  if (sitemap.includes(sourceUrl)) errors.push(`${SITEMAP_PATH}: transition source must not be indexed ${sourceUrl}`);
+
+  const html = fs.readFileSync(path.join(ROOT, sourceFile), "utf8");
+  const lower = html.toLowerCase();
+  if (!hasNoindexFollow(html)) errors.push(`${sourceFile}: safe transition stub requires noindex,follow`);
+  if (!html.includes('data-legacy-migration-stub="bm-contract"')) errors.push(`${sourceFile}: BM transition marker missing`);
+  if (!html.includes(`<link rel="canonical" href="${canonical}">`)) errors.push(`${sourceFile}: neutral canonical mismatch`);
+  if (!html.includes(`href="${targetHref}"`)) errors.push(`${sourceFile}: explicit neutral target link missing`);
+  if (oldDomain && lower.includes(oldDomain)) errors.push(`${sourceFile}: old single-project domain is forbidden in transition stub`);
+  if (/<form\b/i.test(html) || /data-lead-form/i.test(html) || /<input\b|<textarea\b|<select\b/i.test(html)) errors.push(`${sourceFile}: legacy lead form/contact fields are forbidden`);
+  if (/http-equiv=["']refresh["']/i.test(html) || /location\.(?:href|replace|assign)\s*\(/i.test(html) || /window\.location\s*=/i.test(html)) errors.push(`${sourceFile}: automatic client redirect forbidden before server redirect release`);
+  for (const fragment of LEGACY_FORBIDDEN_FRAGMENTS) {
+    if (lower.includes(fragment)) errors.push(`${sourceFile}: object-specific/old-brand fragment forbidden in transition stub: ${fragment}`);
+  }
+  for (const phrase of forbiddenPhrases) {
+    if (lower.includes(String(phrase).toLowerCase())) errors.push(`${sourceFile}: prohibited advertising phrase forbidden in transition stub: ${phrase}`);
+  }
 }
+
+if (sitemap.toLowerCase().includes(oldDomain)) errors.push(`${SITEMAP_PATH}: old single-project domain is forbidden`);
 if (!coveredPage.includes('<meta name="robots" content="noindex,follow">')) errors.push(`${COVERED_PAGE}: covered object page must remain noindex,follow until other gates pass`);
 
 const campaigns = Array.isArray(campaignRegistry.campaigns) ? campaignRegistry.campaigns : [];
@@ -181,7 +250,7 @@ for (const campaign of campaigns) {
   if (paidSearch && approval.status !== "passed") errors.push(`${CAMPAIGNS_PATH}:${campaign.id}: covered-object paid search requires written approval before campaign configuration`);
   if (paidSearch) {
     const hasBrandTerm = (contract.paid_search_brand_terms || []).some((term) => campaignText.includes(String(term).toLowerCase().replace(/\s+/g, "_")) || campaignText.includes(String(term).toLowerCase()));
-    if (hasBrandTerm && !new Set(approval.approved_scopes || []).has("paid_brand_or_geo_search")) errors.push(`${CAMPAIGNS_PATH}:${campaign.id}: brand/geo paid search requires paid_brand_or_geo_search scope`);
+    if (hasBrandTerm && !(approval.approved_scopes || []).includes("paid_brand_or_geo_search")) errors.push(`${CAMPAIGNS_PATH}:${campaign.id}: brand/geo paid search requires paid_brand_or_geo_search scope`);
   }
 }
 
@@ -218,8 +287,11 @@ if (contract.publication_policy?.approval_must_include_matching_scope !== true) 
 if (contract.publication_policy?.manual_campaign_publication_gate_still_required !== true) errors.push(`${CONTRACT_PATH}: campaign manual gate must stay required`);
 if (contract.publication_policy?.legal_owner_review_still_required !== true) errors.push(`${CONTRACT_PATH}: legal owner gate must stay required`);
 if (contract.current_migration_state?.neutral_portal_domain !== "novostroyki-borisoglebsk.ru") errors.push(`${CONTRACT_PATH}: neutral portal domain mismatch`);
+if (contract.current_migration_state?.legacy_problem_routes_neutralized_as_transition_stubs !== true) errors.push(`${CONTRACT_PATH}: legacy problem routes must be marked neutralized`);
+if (contract.current_migration_state?.server_redirect_release_still_blocked !== true) errors.push(`${CONTRACT_PATH}: server redirect release must remain blocked in current phase`);
 
-console.log(`Public HTML files checked: ${publicFiles.length}`);
+console.log(`Public core HTML files checked: ${publicFiles.length}`);
+console.log(`Safe BM legacy transition stubs checked: ${legacyRoutes.length}`);
 console.log(`Covered object campaigns defined: ${campaigns.filter((item) => coveredObjects.has(item.object_id)).length}`);
 console.log(`Covered object publications recorded: ${coveredPublicationCount}`);
 console.log(`External written approval status: ${approval.status}`);
