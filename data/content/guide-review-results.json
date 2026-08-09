@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-07-16",
+  "updated_at": "2026-08-09",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "in_progress",
   "purpose": "Журнал выполненных проверок материалов справочника.",
@@ -32,6 +32,31 @@
           "type": "repository_file",
           "reference": "docs/portal/reviews/GUIDE_EGRN_EDITORIAL_REVIEW_2026-07-16.md",
           "note": "Редакционная проверка"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "guide_id": "guide-layout-choice",
+      "review_type": "editorial",
+      "status": "passed",
+      "reviewer_reference": "role:content_editor",
+      "checked_at": "2026-08-09",
+      "check_results": {
+        "single_search_intent": true,
+        "title_description_alignment": true,
+        "answer_first_structure": true,
+        "readability_and_navigation": true,
+        "source_claim_alignment": true,
+        "cta_relevance": true,
+        "language_quality": true,
+        "internal_linking": true
+      },
+      "evidence": [
+        {
+          "type": "repository_file",
+          "reference": "docs/portal/reviews/GUIDE_LAYOUT_EDITORIAL_REVIEW_2026-08-09.md",
+          "note": "Редакционная проверка практического гайда по выбору планировки"
         }
       ],
       "notes": ""
