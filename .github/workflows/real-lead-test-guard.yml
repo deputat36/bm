@@ -1,0 +1,45 @@
+name: Real lead test guard
+
+on:
+  pull_request:
+    paths:
+      - "data/release/real-lead-test.json"
+      - "data/release/manual-gates.json"
+      - "data/analytics/live-provider.json"
+      - "data/legal/legal-owner-approval.json"
+      - "tools/validate-real-lead-test.mjs"
+      - "tools/validate-launch-gates.mjs"
+      - ".github/workflows/real-lead-test-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "data/release/real-lead-test.json"
+      - "data/release/manual-gates.json"
+      - "data/analytics/live-provider.json"
+      - "data/legal/legal-owner-approval.json"
+      - "tools/validate-real-lead-test.mjs"
+      - "tools/validate-launch-gates.mjs"
+      - ".github/workflows/real-lead-test-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check validator syntax
+        run: |
+          node --check tools/validate-real-lead-test.mjs
+          node --check tools/validate-launch-gates.mjs
+      - name: Validate real lead execution contract
+        run: node tools/validate-real-lead-test.mjs
+      - name: Validate real lead manual gate prerequisite
+        run: node tools/validate-launch-gates.mjs
