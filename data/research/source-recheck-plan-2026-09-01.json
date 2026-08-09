@@ -1,0 +1,129 @@
+{
+  "schema_version": "1.0",
+  "created_at": "2026-08-09",
+  "recheck_not_before": "2026-09-01",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "scheduled_source_recheck_not_acceptance",
+  "purpose": "Повторно проверить первичные разрешительные реестры для Аэродромной 18Г и Сенной 76 после запуска единого электронного контура реестров разрешений. Этот план не повышает source status сам по себе.",
+  "rules": {
+    "plan_has_no_publication_effect": true,
+    "recheck_date_is_not_acceptance_date": true,
+    "exact_address_or_land_plot_match_required": true,
+    "permit_registry_record_must_match_object": true,
+    "secondary_search_results_cannot_close_task": true,
+    "negative_search_result_is_not_proof_of_absence": true,
+    "accepted_status_requires_saved_evidence": true
+  },
+  "authority_context": {
+    "current_municipal_channel": {
+      "name": "Администрация Борисоглебского городского округа Воронежской области",
+      "official_site": "https://borisoglebsk.gosuslugi.ru/",
+      "department": "отдел архитектуры администрации",
+      "current_crawler_status": "403_forbidden_on_2026-08-09",
+      "basis": "Постановление администрации БГО от 28.12.2024 №3998 указывает borisoglebsk.gosuslugi.ru как официальный сайт и отдел архитектуры как профильное подразделение."
+    },
+    "future_federal_registry": {
+      "system_name": "ЕГИС Стройкомплекс.РФ",
+      "effective_from": "2026-09-01",
+      "registry_scope": [
+        "разрешения на строительство объектов капитального строительства",
+        "разрешения на ввод объектов капитального строительства в эксплуатацию"
+      ],
+      "legal_basis": [
+        {
+          "title": "Постановление Правительства РФ от 25.05.2026 №596",
+          "reference": "https://www.garant.ru/products/ipo/prime/doc/414185666/",
+          "supports": "единые электронные реестры в ЕГИС Стройкомплекс.РФ с 01.09.2026"
+        },
+        {
+          "title": "Приказ Минстроя России от 21.04.2026 №256/пр",
+          "reference": "https://rg.ru/documents/2026/05/28/minstroi-prikaz256-site-dok.html",
+          "supports": "состав сведений реестров; вступает в силу 01.09.2026"
+        }
+      ]
+    }
+  },
+  "projects": [
+    {
+      "project_id": "aerodromnaya-18g",
+      "address": "г. Борисоглебск, ул. Аэродромная, 18Г",
+      "current_source_state": {
+        "aerodromnaya_18g_public_registry": "missing",
+        "aerodromnaya_18g_developer_entity": "candidate_found",
+        "aerodromnaya_18g_building_permit": "missing",
+        "aerodromnaya_18g_project_declaration": "missing",
+        "aerodromnaya_18g_media_rights": "missing"
+      },
+      "registry_queries": [
+        "точное совпадение адреса Аэродромная 18Г",
+        "варианты адреса/строительного адреса с кадастровой привязкой",
+        "ООО Первая Строительная Компания только как candidate entity, не как поисковое доказательство",
+        "разрешения на строительство и ввод с составом секций"
+      ],
+      "acceptance_targets": [
+        "номер и дата разрешения на строительство",
+        "выдавший орган",
+        "застройщик в реестровой записи",
+        "адресная или кадастровая привязка",
+        "состав объекта/секций",
+        "номер и дата разрешения на ввод при наличии",
+        "точный scope каждого разрешения"
+      ],
+      "closes_only_if_evidence_matches": [
+        "aerodromnaya_18g_public_registry",
+        "aerodromnaya_18g_building_permit"
+      ]
+    },
+    {
+      "project_id": "sennaya-76",
+      "address": "г. Борисоглебск, ул. Сенная, 76",
+      "current_source_state": {
+        "sennaya_76_public_registry": "missing",
+        "sennaya_76_developer_entity": "missing",
+        "sennaya_76_building_permit": "missing",
+        "sennaya_76_project_declaration": "missing",
+        "sennaya_76_media_rights": "missing"
+      },
+      "registry_queries": [
+        "точное совпадение адреса Сенная 76",
+        "варианты строительного адреса с кадастровой привязкой",
+        "ИП Тарасов М.К. только как secondary discovery candidate, не как поисковое доказательство",
+        "разрешение на ввод и связанное разрешение на строительство"
+      ],
+      "acceptance_targets": [
+        "номер и дата разрешения на ввод",
+        "выдавший орган",
+        "застройщик в реестровой записи",
+        "адресная или кадастровая привязка",
+        "сведения о разрешении на строительство, на основании которого строился объект",
+        "идентификаторы, позволяющие сопоставить объект с ЕГРН/правами продавца"
+      ],
+      "closes_only_if_evidence_matches": [
+        "sennaya_76_public_registry",
+        "sennaya_76_building_permit",
+        "sennaya_76_developer_entity"
+      ]
+    }
+  ],
+  "execution_result_schema": {
+    "allowed_results": [
+      "accepted",
+      "candidate_found",
+      "not_found_recheck_required",
+      "conflict_requires_resolution"
+    ],
+    "required_fields": [
+      "checked_at",
+      "source_reference",
+      "matched_identifiers",
+      "evidence_note",
+      "result"
+    ],
+    "accepted_requires": [
+      "primary_or_official_registry_source",
+      "exact_object_match",
+      "repository_evidence_saved",
+      "source_collection_task_updated"
+    ]
+  }
+}
