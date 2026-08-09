@@ -3,7 +3,7 @@
   "updated_at": "2026-08-09",
   "portal_id": "newbuilds-borisoglebsk",
   "supabase_project_id": "ofewxuqfjhamgerwzull",
-  "status": "live_advisor_checked_repository_guard_pending",
+  "status": "repository_guard_active_live_shared_findings_pending",
   "purpose": "Отделить security posture портала новостроек от других приложений общего Supabase-проекта и защищать portal-owned newbuild_* migrations без изменения чужих nav/nav_v2 контуров.",
   "ownership": {
     "portal_owned_prefixes": [
