@@ -1,0 +1,71 @@
+name: Source recheck plan guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/research/source-recheck-plan-2026-09-01.json"
+      - "data/research/source-collection.json"
+      - "tools/validate-source-recheck-plan.mjs"
+      - ".github/workflows/source-recheck-plan-guard.yml"
+  pull_request:
+    paths:
+      - "data/research/source-recheck-plan-2026-09-01.json"
+      - "data/research/source-collection.json"
+      - "tools/validate-source-recheck-plan.mjs"
+      - ".github/workflows/source-recheck-plan-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-source-recheck-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-source-recheck-plan.mjs
+
+      - name: Validate source recheck plan
+        run: node tools/validate-source-recheck-plan.mjs
+
+      - name: Reject publication effect
+        run: |
+          cp data/research/source-recheck-plan-2026-09-01.json /tmp/source-recheck-plan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/source-recheck-plan-2026-09-01.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.rules.plan_has_no_publication_effect = false;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-source-recheck-plan.mjs; then
+            echo "Validator incorrectly allowed publication effect"
+            exit 1
+          fi
+          cp /tmp/source-recheck-plan.json data/research/source-recheck-plan-2026-09-01.json
+
+      - name: Reject stale source snapshot
+        run: |
+          cp data/research/source-recheck-plan-2026-09-01.json /tmp/source-recheck-plan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/source-recheck-plan-2026-09-01.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.projects[0].current_source_state.aerodromnaya_18g_building_permit = 'accepted';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-source-recheck-plan.mjs; then
+            echo "Validator incorrectly allowed stale source snapshot"
+            exit 1
+          fi
+          cp /tmp/source-recheck-plan.json data/research/source-recheck-plan-2026-09-01.json
