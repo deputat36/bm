@@ -8,6 +8,7 @@
     "completeness_claim_allowed": false,
     "absence_from_discovery_source_is_not_proof_of_absence": true,
     "secondary_source_is_discovery_only": true,
+    "secondary_source_cannot_establish_completeness": true,
     "every_observed_object_requires_registry_mapping": true,
     "unresolved_object_must_map_to_candidate": true,
     "priority_and_reference_registries_remain_authoritative": true
@@ -36,6 +37,11 @@
       "title": "Яндекс Недвижимость — сравнение новостроек Борисоглебска",
       "url": "https://realty.yandex.ru/borisoglebsk/sravnenie-novostroek/",
       "checked_at": "2026-08-09",
+      "completeness_use_allowed": false,
+      "limitations": [
+        "marketplace selection is not an official complete city register",
+        "absence from marketplace is not proof of absence"
+      ],
       "observed_objects": [
         {
           "observed_label": "Дорожная 50А",
@@ -75,6 +81,11 @@
       "title": "ЖКХдом — карточка многоквартирного дома Восточный, 1",
       "url": "https://jkhdom.com/dom/voronejskaya-oblast/borisoglebsk/1176875",
       "checked_at": "2026-08-09",
+      "completeness_use_allowed": false,
+      "limitations": [
+        "city year index currently stops at 2020 and omits independently known newer objects",
+        "housing-stock aggregation is discovery evidence, not primary permit evidence"
+      ],
       "observed_objects": [
         {
           "observed_label": "Дом мкр. Восточный, 1",
@@ -90,6 +101,11 @@
       "title": "ЦИАН — строящиеся новостройки Борисоглебска",
       "url": "https://voronezh.cian.ru/novostroyki-stroyashiesya-voronezhskaya-oblast-borisoglebsk/",
       "checked_at": "2026-08-09",
+      "completeness_use_allowed": false,
+      "limitations": [
+        "marketplace construction filter is not a complete municipal permit register",
+        "project naming and status require primary cross-check"
+      ],
       "observed_objects": [
         {
           "observed_label": "ЖК «Чкалов»",
