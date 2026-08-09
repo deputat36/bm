@@ -37,13 +37,8 @@
       "authority_class": "secondary",
       "status": "completed_discovery_only",
       "completeness_effect": "none",
-      "evidence": [
-        "data/research/city-catalog-coverage.json"
-      ],
-      "limitations": [
-        "marketplace selection is not an official complete city register",
-        "project naming and status require primary cross-check"
-      ],
+      "evidence": ["data/research/city-catalog-coverage.json"],
+      "limitations": ["marketplace selection is not an official complete city register","project naming and status require primary cross-check"],
       "next_action": "repeat only as discovery/cross-check when registries change"
     },
     {
@@ -51,14 +46,8 @@
       "authority_class": "secondary",
       "status": "completed_with_known_omissions",
       "completeness_effect": "none",
-      "evidence": [
-        "docs/portal/research/CITY_CATALOG_STOCK_SCAN_2026-08-09.md",
-        "data/research/city-catalog-coverage.json"
-      ],
-      "limitations": [
-        "checked housing-stock index stops at 2020 for Borisoglebsk",
-        "independently known newer objects are absent, so the source cannot prove completeness"
-      ],
+      "evidence": ["docs/portal/research/CITY_CATALOG_STOCK_SCAN_2026-08-09.md","data/research/city-catalog-coverage.json"],
+      "limitations": ["checked housing-stock index stops at 2020 for Borisoglebsk","independently known newer objects are absent, so the source cannot prove completeness"],
       "next_action": "use as bounded discovery and dedup evidence only"
     },
     {
@@ -67,14 +56,8 @@
       "status": "scheduled_not_started",
       "completeness_effect": "required_for_completion",
       "not_before": "2026-09-01",
-      "evidence": [
-        "data/research/source-recheck-plan-2026-09-01.json",
-        "docs/portal/SOURCE_RECHECK_2026-09-01.md"
-      ],
-      "limitations": [
-        "new unified permit registry is scheduled to become effective on 2026-09-01",
-        "current public search did not expose enough exact primary records for all target objects"
-      ],
+      "evidence": ["data/research/source-recheck-plan-2026-09-01.json","docs/portal/SOURCE_RECHECK_2026-09-01.md"],
+      "limitations": ["new unified permit registry is scheduled to become effective on 2026-09-01","current public search did not expose enough exact primary records for all target objects"],
       "next_action": "scan exact Borisoglebsk construction and commissioning permits after registry availability"
     },
     {
@@ -82,13 +65,8 @@
       "authority_class": "primary_required",
       "status": "partial_access_limited",
       "completeness_effect": "required_for_completion",
-      "evidence": [
-        "data/research/source-collection.json"
-      ],
-      "limitations": [
-        "exact Prostornaya object candidate URL is known but current crawler access is blocked",
-        "city-wide EISZhS project reconciliation has not been completed"
-      ],
+      "evidence": ["data/research/source-collection.json"],
+      "limitations": ["exact Prostornaya object candidate URL is known but current crawler access is blocked","city-wide EISZhS project reconciliation has not been completed"],
       "next_action": "establish readable primary project-card access or equivalent primary registry export and reconcile city scope"
     },
     {
@@ -96,59 +74,40 @@
       "authority_class": "official_project_level",
       "status": "in_progress",
       "completeness_effect": "supporting_required",
-      "evidence": [
-        "data/research/official-developer-portfolio-scan.json",
-        "data/research/city-catalog-coverage.json",
-        "data/research/reference-projects.json"
-      ],
-      "limitations": [
-        "three known developer scopes remain blocking: unnamed PCK queues, current official Alex portfolio access, and unresolved Sennaya 76 legal developer entity",
-        "developer sites confirm only their own published portfolio",
-        "absence from one developer site is not proof that no other project exists",
-        "new developer entities discovered by permit/EISZhS/municipal scans must be added before completion"
-      ],
+      "evidence": ["data/research/official-developer-portfolio-scan.json","data/research/city-catalog-coverage.json","data/research/reference-projects.json"],
+      "limitations": ["three known developer scopes remain blocking: unnamed PCK queues, current official Alex portfolio access, and unresolved Sennaya 76 legal developer entity","developer sites confirm only their own published portfolio","absence from one developer site is not proof that no other project exists","new developer entities discovered by permit/EISZhS/municipal scans must be added before completion"],
       "next_action": "resolve blocking known developer scopes and add any entities discovered by upstream primary scans"
     },
     {
       "id": "municipal_planning_and_address_scan",
       "authority_class": "primary_required",
-      "status": "access_limited_pending",
+      "status": "partial_access_limited",
       "completeness_effect": "required_for_completion",
       "evidence": [
+        "data/research/municipal-planning-scan.json",
         "data/research/source-recheck-plan-2026-09-01.json"
       ],
       "limitations": [
-        "official municipal channel is identified but crawler access is currently restricted",
-        "planning/public-hearing/address records have not been systematically reconciled"
+        "current 2026 PZZ amendment publication is identified, but the readable legal mirror omits map appendices 1-6",
+        "exact changed land plots and residential project intent cannot be derived without the missing maps",
+        "municipal public-hearing archive is not yet systematically readable/reconciled"
       ],
-      "next_action": "obtain readable municipal planning/address records and scan publicly confirmed planned projects"
+      "next_action": "obtain PZZ map appendices and readable hearing archive; reconcile only exact residential address/land-plot observations"
     },
     {
       "id": "registry_entity_reconciliation",
       "authority_class": "derived_reconciliation",
       "status": "in_progress",
       "completeness_effect": "required_for_completion",
-      "evidence": [
-        "data/research/city-catalog-coverage.json",
-        "data/research/reference-candidates.json"
-      ],
-      "limitations": [
-        "two unresolved candidate records remain",
-        "priority projects still contain primary-source gaps"
-      ],
+      "evidence": ["data/research/city-catalog-coverage.json","data/research/reference-candidates.json"],
+      "limitations": ["two unresolved candidate records remain","priority projects still contain primary-source gaps"],
       "next_action": "resolve or retain explicit candidate gaps until every observation has one canonical mapping"
     }
   ],
   "completion_state": {
     "inventory_complete": false,
     "required_scan_ids_passed": [],
-    "blocking_scan_ids": [
-      "primary_permit_and_commissioning_registry_scan",
-      "eiszh_primary_project_scan",
-      "official_developer_project_scan",
-      "municipal_planning_and_address_scan",
-      "registry_entity_reconciliation"
-    ],
+    "blocking_scan_ids": ["primary_permit_and_commissioning_registry_scan","eiszh_primary_project_scan","official_developer_project_scan","municipal_planning_and_address_scan","registry_entity_reconciliation"],
     "coverage_research_queue_complete": false,
     "unmapped_observations": 0,
     "completion_claim": "not_allowed"
