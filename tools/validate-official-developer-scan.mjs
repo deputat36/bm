@@ -42,9 +42,8 @@ if (!scan || !priority || !reference || !candidates || !inventory) process.exit(
 
 if (scan.schema_version !== "1.0") errors.push(`${SCAN_PATH}: schema_version must be 1.0`);
 if (scan.portal_id !== "newbuilds-borisoglebsk") errors.push(`${SCAN_PATH}: invalid portal_id`);
-if (scan.status !== "known_entities_scan_partial") {
-  errors.push(`${SCAN_PATH}: status must remain known_entities_scan_partial until derived completion passes`);
-}
+const allowedTopStatuses = new Set(["known_entities_scan_partial", "city_developer_scan_complete"]);
+if (!allowedTopStatuses.has(scan.status)) errors.push(`${SCAN_PATH}: unsupported status ${scan.status}`);
 
 for (const key of [
   "official_portfolio_absence_is_not_city_absence",
@@ -188,6 +187,10 @@ if (completion.city_developer_scan_complete !== cityDeveloperComplete) {
 }
 if (completion.completion_claim !== (cityDeveloperComplete ? "allowed" : "not_allowed")) {
   errors.push(`${SCAN_PATH}: completion_claim inconsistent with derived state`);
+}
+const expectedTopStatus = cityDeveloperComplete ? "city_developer_scan_complete" : "known_entities_scan_partial";
+if (scan.status !== expectedTopStatus) {
+  errors.push(`${SCAN_PATH}: expected status=${expectedTopStatus}, found ${scan.status}`);
 }
 
 const inventoryDeveloperScan = inventoryScans.get("official_developer_project_scan");
