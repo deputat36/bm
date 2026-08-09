@@ -64,6 +64,11 @@ const allowedStatuses = new Set([
   "current_official_access_unverified",
   "entity_unresolved"
 ]);
+const blockingLinkStatuses = new Set([
+  "candidate_entity_only_no_official_address_link",
+  "inherited_from_existing_reference_evidence_not_current_official_portfolio",
+  "unresolved_developer_entity_scope"
+]);
 const scopes = Array.isArray(scan.tracked_scopes) ? scan.tracked_scopes : [];
 if (!scopes.length) errors.push(`${SCAN_PATH}: tracked_scopes must be non-empty`);
 
@@ -146,6 +151,9 @@ for (const scope of scopes) {
     if (registry === "reference" && !referenceIds.has(projectId)) errors.push(`${SCAN_PATH}:${id}: unknown reference project ${projectId}`);
     if (link.publication_effect !== "none") errors.push(`${SCAN_PATH}:${id}:${projectId}: publication_effect must remain none`);
     if (!String(link.link_status || "").trim()) errors.push(`${SCAN_PATH}:${id}:${projectId}: link_status is required`);
+    if (blockingLinkStatuses.has(link.link_status) && scope.scan_status === "scanned_current") {
+      errors.push(`${SCAN_PATH}:${id}:${projectId}: blocking link_status ${link.link_status} cannot exist in scanned_current scope`);
+    }
     projectLinkCounts.set(projectId, (projectLinkCounts.get(projectId) || 0) + 1);
   }
 }
