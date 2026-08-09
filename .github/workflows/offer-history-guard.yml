@@ -1,0 +1,97 @@
+name: Offer history guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/offers/**"
+      - "tools/validate-offer-history.mjs"
+      - "tools/build-offer-history-plan.mjs"
+      - "docs/portal/OFFER_HISTORY_CONTRACT.md"
+      - ".github/workflows/offer-history-guard.yml"
+  pull_request:
+    paths:
+      - "data/offers/**"
+      - "tools/validate-offer-history.mjs"
+      - "tools/build-offer-history-plan.mjs"
+      - "docs/portal/OFFER_HISTORY_CONTRACT.md"
+      - ".github/workflows/offer-history-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-offer-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-offer-history.mjs
+          node --check tools/build-offer-history-plan.mjs
+
+      - name: Validate fail-closed history contract
+        run: node tools/validate-offer-history.mjs
+
+      - name: Build history plan
+        run: |
+          node tools/build-offer-history-plan.mjs --format=json > /tmp/offer-history-plan.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/offer-history-plan.json","utf8")); const s=data.summary||{}; if(s.event_types!==2||s.required_event_fields!==10||s.store_connected!==false||s.writes_enabled!==false||s.append_only!==true||s.hash_chain_required!==true||s.activation_requirements!==6) process.exit(1); console.log(`Offer history: event_types=${s.event_types}; connected=${s.store_connected}; writes=${s.writes_enabled}`);'
+
+      - name: Reject mutable history policy
+        run: |
+          cp data/offers/history-contract.json /tmp/history-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/offers/history-contract.json', 'utf8'));
+          data.rules.append_only = false;
+          data.rules.event_update_forbidden = false;
+          fs.writeFileSync('data/offers/history-contract.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-offer-history.mjs; then
+            echo "Validator incorrectly allowed mutable history"
+            exit 1
+          fi
+          cp /tmp/history-baseline.json data/offers/history-contract.json
+
+      - name: Reject incomplete store activation
+        run: |
+          cp data/offers/history-contract.json /tmp/history-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/offers/history-contract.json', 'utf8'));
+          data.rules.history_store_connected = true;
+          data.rules.history_write_enabled = true;
+          fs.writeFileSync('data/offers/history-contract.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-offer-history.mjs; then
+            echo "Validator incorrectly allowed history activation without store/ref/retention"
+            exit 1
+          fi
+          cp /tmp/history-baseline.json data/offers/history-contract.json
+
+      - name: Reject embedded history in current offer schema
+        run: |
+          cp data/offers/contract.json /tmp/offer-contract-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/offers/contract.json', 'utf8'));
+          data.required_offer_fields.push('price_history');
+          fs.writeFileSync('data/offers/contract.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-offer-history.mjs; then
+            echo "Validator incorrectly allowed embedded history in current feed"
+            exit 1
+          fi
+          cp /tmp/offer-contract-baseline.json data/offers/contract.json
+          node tools/validate-offer-history.mjs
