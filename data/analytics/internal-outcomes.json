@@ -1,0 +1,181 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "specification_only_no_live_outcome_export",
+  "purpose": "Контракт защищённой аналитики результата обращения от server receipt до консультации, показа и сделки без передачи персональных данных и внутренних lead ID во внешнюю веб-аналитику.",
+  "sources": {
+    "lead_table": "public.newbuild_leads",
+    "event_table": "public.newbuild_lead_events",
+    "lifecycle_contract": "data/operations/lead-lifecycle.json",
+    "event_log_contract": "data/operations/lead-event-log.json",
+    "runtime_function": "supabase/functions/newbuild-lead/index.ts",
+    "operations_migration": "supabase/migrations/20260724060538_newbuild_lead_operations_v2.sql",
+    "public_analytics_contract": "data/analytics/events.json"
+  },
+  "rules": {
+    "protected_server_data_only": true,
+    "real_outcome_rows_in_repository_forbidden": true,
+    "personal_data_in_generated_reports_forbidden": true,
+    "lead_id_in_external_analytics_forbidden": true,
+    "record_locator_in_external_analytics_forbidden": true,
+    "owner_reference_in_external_analytics_forbidden": true,
+    "missing_commercial_event_must_not_be_inferred": true,
+    "public_and_internal_event_namespaces_separate": true,
+    "aggregate_reports_only": true,
+    "live_export_enabled": false,
+    "cost_data_connected": false
+  },
+  "canonical_outcome_events": [
+    {
+      "id": "lead_received",
+      "coverage": "available",
+      "source": "newbuild_leads.created_at",
+      "definition": "Серверная запись обращения создана."
+    },
+    {
+      "id": "lead_assigned",
+      "coverage": "available",
+      "source": "newbuild_leads.assigned_at",
+      "definition": "Обращение назначено утверждённой роли."
+    },
+    {
+      "id": "lead_contacted",
+      "coverage": "available",
+      "source": "newbuild_leads.contacted_at",
+      "definition": "Состоялся подтверждённый контакт."
+    },
+    {
+      "id": "lead_qualified",
+      "coverage": "available",
+      "source": "newbuild_leads.qualified_at",
+      "definition": "Потребность квалифицирована в защищённом операционном контуре."
+    },
+    {
+      "id": "consultation_scheduled",
+      "coverage": "schema_gap",
+      "source": null,
+      "definition": "Назначена консультация на конкретный срок."
+    },
+    {
+      "id": "consultation_completed",
+      "coverage": "schema_gap",
+      "source": null,
+      "definition": "Предметная консультация завершена."
+    },
+    {
+      "id": "selection_sent",
+      "coverage": "schema_gap",
+      "source": null,
+      "definition": "Клиенту отправлен подбор вариантов."
+    },
+    {
+      "id": "showing_scheduled",
+      "coverage": "schema_gap",
+      "source": null,
+      "definition": "Назначен показ или встреча по объекту."
+    },
+    {
+      "id": "showing_completed",
+      "coverage": "schema_gap",
+      "source": null,
+      "definition": "Показ или встреча фактически состоялись."
+    },
+    {
+      "id": "deposit",
+      "coverage": "schema_gap",
+      "source": null,
+      "definition": "В защищённом коммерческом контуре зафиксирован задаток/аванс как согласованный этап."
+    },
+    {
+      "id": "closed_won",
+      "coverage": "schema_gap",
+      "source": null,
+      "definition": "Обращение связано с завершённой сделкой."
+    },
+    {
+      "id": "closed_lost",
+      "coverage": "schema_gap",
+      "source": null,
+      "definition": "Коммерческий процесс закрыт без сделки с контролируемой причиной."
+    }
+  ],
+  "derived_internal_metrics": [
+    {
+      "id": "contact_attempted",
+      "coverage": "available",
+      "source": "newbuild_leads.first_action_at",
+      "count_rule": "count leads with first_action_at not null"
+    },
+    {
+      "id": "consultation_started",
+      "coverage": "available",
+      "source": "newbuild_lead_events.to_state=consultation_active",
+      "count_rule": "count distinct lead_id entering consultation_active"
+    },
+    {
+      "id": "contact_rate",
+      "coverage": "available_after_operational_activation",
+      "formula": "lead_contacted / lead_received"
+    },
+    {
+      "id": "qualified_rate",
+      "coverage": "available_after_operational_activation",
+      "formula": "lead_qualified / lead_contacted"
+    },
+    {
+      "id": "consultation_start_rate",
+      "coverage": "available_after_operational_activation",
+      "formula": "consultation_started / lead_qualified"
+    },
+    {
+      "id": "deal_rate",
+      "coverage": "blocked_by_schema_gap",
+      "formula": "closed_won / lead_qualified"
+    }
+  ],
+  "dimensions": [
+    {"id": "lead_source", "availability": "server_record", "source": "newbuild_leads.lead_source"},
+    {"id": "placement", "availability": "server_record", "source": "newbuild_leads.placement"},
+    {"id": "object_id", "availability": "server_record", "source": "newbuild_leads.residential_complex_id"},
+    {"id": "form_id", "availability": "server_record", "source": "newbuild_leads.form_id"},
+    {"id": "lead_type", "availability": "server_record", "source": "newbuild_leads.lead_type"},
+    {"id": "lead_class", "availability": "server_record", "source": "newbuild_leads.lead_class"},
+    {"id": "form_role", "availability": "schema_gap", "source": null, "note": "Frontend формирует form_role, но buildLeadRow сейчас не сохраняет его отдельным server field."},
+    {"id": "result_status", "availability": "server_record", "source": "newbuild_leads.result_status"}
+  ],
+  "privacy": {
+    "forbidden_report_fields": [
+      "lead_id",
+      "event_id",
+      "record_locator",
+      "client_fixation_id",
+      "lead_owner_ref",
+      "backup_owner_ref",
+      "name",
+      "phone",
+      "phone_normalized",
+      "email",
+      "comment",
+      "question",
+      "page_url",
+      "referrer",
+      "user_agent"
+    ],
+    "minimum_group_size": 3,
+    "small_groups_must_be_suppressed": true
+  },
+  "known_gaps": [
+    "form_role_not_persisted_as_server_dimension",
+    "consultation_scheduled_event_missing",
+    "consultation_completed_event_missing",
+    "selection_sent_event_missing",
+    "showing_scheduled_event_missing",
+    "showing_completed_event_missing",
+    "deposit_event_missing",
+    "closed_won_event_missing",
+    "closed_lost_event_missing",
+    "cost_data_not_connected"
+  ],
+  "activation_note": "До operational activation и отдельной server-side схемы коммерческих событий этот контракт является спецификацией отчётности, а не live dashboard."
+}
