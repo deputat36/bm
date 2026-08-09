@@ -1,0 +1,153 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "method_defined_execution_partial",
+  "purpose": "Определить воспроизводимый fail-closed путь от текущего discovery snapshot к обоснованному заявлению о системном охвате новостроек Борисоглебска без объявления абсолютной полноты по агрегаторам.",
+  "target_scope": {
+    "city": "Борисоглебск",
+    "built_multifamily_houses_from_year": 2018,
+    "under_construction_multifamily_houses": true,
+    "publicly_confirmed_planned_projects": true,
+    "private_or_unpublished_projects_excluded_until_public_confirmation": true
+  },
+  "rules": {
+    "inventory_complete_allowed": false,
+    "secondary_sources_cannot_close_required_scan": true,
+    "all_discovered_objects_require_registry_mapping": true,
+    "unresolved_objects_require_candidate_registry": true,
+    "final_completion_requires_all_required_scans_passed": true,
+    "completion_requires_zero_unmapped_observations": true,
+    "completion_requires_primary_permit_or_registry_scan": true,
+    "completion_requires_eiszh_or_equivalent_primary_project_scan": true,
+    "completion_requires_municipal_or_official_planning_scan": true,
+    "historical_failed_or_blocked_results_must_not_be_rewritten": true
+  },
+  "sources_of_truth": {
+    "coverage_map": "data/research/city-catalog-coverage.json",
+    "priority_registry": "data/research/priority-projects.json",
+    "reference_registry": "data/research/reference-projects.json",
+    "candidate_registry": "data/research/reference-candidates.json",
+    "source_collection": "data/research/source-collection.json",
+    "permit_recheck_plan": "data/research/source-recheck-plan-2026-09-01.json"
+  },
+  "required_scans": [
+    {
+      "id": "secondary_marketplace_current_scan",
+      "authority_class": "secondary",
+      "status": "completed_discovery_only",
+      "completeness_effect": "none",
+      "evidence": [
+        "data/research/city-catalog-coverage.json"
+      ],
+      "limitations": [
+        "marketplace selection is not an official complete city register",
+        "project naming and status require primary cross-check"
+      ],
+      "next_action": "repeat only as discovery/cross-check when registries change"
+    },
+    {
+      "id": "secondary_housing_stock_scan_2018_plus",
+      "authority_class": "secondary",
+      "status": "completed_with_known_omissions",
+      "completeness_effect": "none",
+      "evidence": [
+        "docs/portal/research/CITY_CATALOG_STOCK_SCAN_2026-08-09.md",
+        "data/research/city-catalog-coverage.json"
+      ],
+      "limitations": [
+        "checked housing-stock index stops at 2020 for Borisoglebsk",
+        "independently known newer objects are absent, so the source cannot prove completeness"
+      ],
+      "next_action": "use as bounded discovery and dedup evidence only"
+    },
+    {
+      "id": "primary_permit_and_commissioning_registry_scan",
+      "authority_class": "primary_required",
+      "status": "scheduled_not_started",
+      "completeness_effect": "required_for_completion",
+      "not_before": "2026-09-01",
+      "evidence": [
+        "data/research/source-recheck-plan-2026-09-01.json",
+        "docs/portal/SOURCE_RECHECK_2026-09-01.md"
+      ],
+      "limitations": [
+        "new unified permit registry is scheduled to become effective on 2026-09-01",
+        "current public search did not expose enough exact primary records for all target objects"
+      ],
+      "next_action": "scan exact Borisoglebsk construction and commissioning permits after registry availability"
+    },
+    {
+      "id": "eiszh_primary_project_scan",
+      "authority_class": "primary_required",
+      "status": "partial_access_limited",
+      "completeness_effect": "required_for_completion",
+      "evidence": [
+        "data/research/source-collection.json"
+      ],
+      "limitations": [
+        "exact Prostornaya object candidate URL is known but current crawler access is blocked",
+        "city-wide EISZhS project reconciliation has not been completed"
+      ],
+      "next_action": "establish readable primary project-card access or equivalent primary registry export and reconcile city scope"
+    },
+    {
+      "id": "official_developer_project_scan",
+      "authority_class": "official_project_level",
+      "status": "in_progress",
+      "completeness_effect": "supporting_required",
+      "evidence": [
+        "data/research/city-catalog-coverage.json",
+        "data/research/reference-projects.json"
+      ],
+      "limitations": [
+        "developer sites confirm only their own published portfolio",
+        "absence from one developer site is not proof that no other project exists"
+      ],
+      "next_action": "continue official developer portfolio reconciliation for discovered entities"
+    },
+    {
+      "id": "municipal_planning_and_address_scan",
+      "authority_class": "primary_required",
+      "status": "access_limited_pending",
+      "completeness_effect": "required_for_completion",
+      "evidence": [
+        "data/research/source-recheck-plan-2026-09-01.json"
+      ],
+      "limitations": [
+        "official municipal channel is identified but crawler access is currently restricted",
+        "planning/public-hearing/address records have not been systematically reconciled"
+      ],
+      "next_action": "obtain readable municipal planning/address records and scan publicly confirmed planned projects"
+    },
+    {
+      "id": "registry_entity_reconciliation",
+      "authority_class": "derived_reconciliation",
+      "status": "in_progress",
+      "completeness_effect": "required_for_completion",
+      "evidence": [
+        "data/research/city-catalog-coverage.json",
+        "data/research/reference-candidates.json"
+      ],
+      "limitations": [
+        "two unresolved candidate records remain",
+        "priority projects still contain primary-source gaps"
+      ],
+      "next_action": "resolve or retain explicit candidate gaps until every observation has one canonical mapping"
+    }
+  ],
+  "completion_state": {
+    "inventory_complete": false,
+    "required_scan_ids_passed": [],
+    "blocking_scan_ids": [
+      "primary_permit_and_commissioning_registry_scan",
+      "eiszh_primary_project_scan",
+      "official_developer_project_scan",
+      "municipal_planning_and_address_scan",
+      "registry_entity_reconciliation"
+    ],
+    "coverage_research_queue_complete": false,
+    "unmapped_observations": 0,
+    "completion_claim": "not_allowed"
+  }
+}
