@@ -9,10 +9,12 @@
     "lead_handling": "data/operations/lead-handling.json",
     "operations_approval": "data/operations/lead-operations-approval.json",
     "event_log_contract": "data/operations/lead-event-log.json",
-    "internal_outcomes": "data/analytics/internal-outcomes.json"
+    "internal_outcomes": "data/analytics/internal-outcomes.json",
+    "persistence_design": "data/operations/commercial-outcome-persistence.json"
   },
   "rules": {
     "protected_internal_events_only": true,
+    "persistence_design_selected": true,
     "persistence_connected": false,
     "event_write_enabled": false,
     "append_only_required_when_persisted": true,
@@ -27,6 +29,15 @@
     "closed_won_requires_evidence_reference": true,
     "deposit_amount_not_required": true,
     "owner_closure_policy_required_before_closed_lost_activation": true
+  },
+  "persistence_design": {
+    "status": "selected_not_deployed",
+    "store": "public.newbuild_commercial_events",
+    "contract": "data/operations/commercial-outcome-persistence.json",
+    "migration_created": false,
+    "production_ddl_applied": false,
+    "write_api_deployed": false,
+    "deployment_effect": "none"
   },
   "required_event_fields": [
     "event_id",
@@ -168,5 +179,5 @@
     "closure_reason_policy_approved",
     "protected_event_write_api_reviewed"
   ],
-  "activation_note": "До прохождения activation_gates события остаются спецификацией. Они не считаются доступными в internal outcome analytics и не должны записываться в production автоматически."
+  "activation_note": "Persistence design выбран, но store не развёрнут. До прохождения activation_gates, explicit migration approval и production verification события остаются спецификацией. Они не считаются доступными в internal outcome analytics и не должны записываться в production автоматически."
 }

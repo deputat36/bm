@@ -1,0 +1,151 @@
+name: Commercial outcome persistence guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/operations/commercial-outcome-persistence.json"
+      - "data/operations/commercial-outcome-events.json"
+      - "data/analytics/internal-outcomes.json"
+      - "data/security/portal-supabase-security.json"
+      - "tools/validate-commercial-outcome-persistence.mjs"
+      - "tools/validate-commercial-outcome-events.mjs"
+      - "tools/build-commercial-outcome-persistence-sql.mjs"
+      - "docs/portal/COMMERCIAL_OUTCOME_PERSISTENCE_DESIGN.md"
+      - "supabase/migrations/**"
+      - ".github/workflows/commercial-outcome-persistence-guard.yml"
+  pull_request:
+    paths:
+      - "data/operations/commercial-outcome-persistence.json"
+      - "data/operations/commercial-outcome-events.json"
+      - "data/analytics/internal-outcomes.json"
+      - "data/security/portal-supabase-security.json"
+      - "tools/validate-commercial-outcome-persistence.mjs"
+      - "tools/validate-commercial-outcome-events.mjs"
+      - "tools/build-commercial-outcome-persistence-sql.mjs"
+      - "docs/portal/COMMERCIAL_OUTCOME_PERSISTENCE_DESIGN.md"
+      - "supabase/migrations/**"
+      - ".github/workflows/commercial-outcome-persistence-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-commercial-outcome-persistence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-commercial-outcome-persistence.mjs
+          node --check tools/validate-commercial-outcome-events.mjs
+          node --check tools/build-commercial-outcome-persistence-sql.mjs
+
+      - name: Validate persistence design and event contract
+        run: |
+          node tools/validate-commercial-outcome-persistence.mjs
+          node tools/validate-commercial-outcome-events.mjs
+
+      - name: Build and inspect SQL preview
+        run: |
+          node tools/build-commercial-outcome-persistence-sql.mjs > /tmp/commercial-outcome-persistence.sql
+          test "$(head -n 1 /tmp/commercial-outcome-persistence.sql)" = "-- PREVIEW ONLY - NOT DEPLOYED"
+          tail -n 1 /tmp/commercial-outcome-persistence.sql | grep -F -- "-- PREVIEW ONLY - NOT DEPLOYED"
+          grep -F "create table if not exists public.newbuild_commercial_events" /tmp/commercial-outcome-persistence.sql
+          grep -F "public.newbuild_commercial_events_append_only" /tmp/commercial-outcome-persistence.sql
+          grep -F "public.newbuild_record_commercial_event" /tmp/commercial-outcome-persistence.sql
+          grep -F "enable row level security" /tmp/commercial-outcome-persistence.sql
+          grep -F "force row level security" /tmp/commercial-outcome-persistence.sql
+          grep -F "security invoker" /tmp/commercial-outcome-persistence.sql
+          grep -F "revoke all on table public.newbuild_commercial_events from public, anon, authenticated" /tmp/commercial-outcome-persistence.sql
+          grep -F "grant select, insert on table public.newbuild_commercial_events to service_role" /tmp/commercial-outcome-persistence.sql
+          grep -F "commercial_closed_lost_owner_policy_not_activated" /tmp/commercial-outcome-persistence.sql
+          if grep -qi "security definer" /tmp/commercial-outcome-persistence.sql; then
+            echo "SQL preview contains SECURITY DEFINER"
+            exit 1
+          fi
+
+      - name: Assert no commercial store migration exists
+        run: |
+          if grep -R -n -E "newbuild_commercial_events|newbuild_record_commercial_event" supabase/migrations; then
+            echo "Design-only phase must not create a Supabase migration for commercial outcomes"
+            exit 1
+          fi
+
+      - name: Reject premature production DDL state
+        run: |
+          cp data/operations/commercial-outcome-persistence.json /tmp/commercial-persistence-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/operations/commercial-outcome-persistence.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.deployment.production_ddl_applied = true;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-commercial-outcome-persistence.mjs; then
+            echo "Persistence validator incorrectly allowed production_ddl_applied=true without deployment evidence"
+            exit 1
+          fi
+          cp /tmp/commercial-persistence-baseline.json data/operations/commercial-outcome-persistence.json
+
+      - name: Reject operational event log as commercial store
+        run: |
+          cp data/operations/commercial-outcome-persistence.json /tmp/commercial-persistence-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/operations/commercial-outcome-persistence.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.store.table = 'newbuild_lead_events';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-commercial-outcome-persistence.mjs; then
+            echo "Persistence validator incorrectly allowed the operational event log as commercial store"
+            exit 1
+          fi
+          cp /tmp/commercial-persistence-baseline.json data/operations/commercial-outcome-persistence.json
+
+      - name: Reject SECURITY DEFINER write design
+        run: |
+          cp data/operations/commercial-outcome-persistence.json /tmp/commercial-persistence-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/operations/commercial-outcome-persistence.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.write_api_design.security_mode = 'definer';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-commercial-outcome-persistence.mjs; then
+            echo "Persistence validator incorrectly allowed SECURITY DEFINER write design"
+            exit 1
+          fi
+          cp /tmp/commercial-persistence-baseline.json data/operations/commercial-outcome-persistence.json
+
+      - name: Reject premature internal outcome availability
+        run: |
+          cp data/analytics/internal-outcomes.json /tmp/internal-outcomes-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/analytics/internal-outcomes.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const event = data.canonical_outcome_events.find((item) => item.id === 'consultation_scheduled');
+          event.coverage = 'available';
+          event.source = 'public.newbuild_commercial_events';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-commercial-outcome-persistence.mjs; then
+            echo "Persistence validator incorrectly allowed internal outcome availability before deployment"
+            exit 1
+          fi
+          cp /tmp/internal-outcomes-baseline.json data/analytics/internal-outcomes.json
+          node tools/validate-commercial-outcome-persistence.mjs
+          node tools/validate-commercial-outcome-events.mjs

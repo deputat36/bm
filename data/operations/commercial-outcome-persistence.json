@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "store_design_selected_not_deployed",
+  "purpose": "Выбрать и формализовать защищённое append-only хранилище коммерческих milestone events без создания migration, production DDL или включения write API до owner/operations activation.",
+  "store": {
+    "kind": "dedicated_postgres_table",
+    "schema": "public",
+    "table": "newbuild_commercial_events",
+    "reason": "Коммерческие milestone events имеют отдельную семантику и поля object_id/scheduled_for/evidence_ref/protected_note; они не должны перегружать операционный transition log newbuild_lead_events или расширять primary lead lifecycle скрытно.",
+    "lead_fk": "public.newbuild_leads(id)",
+    "on_delete": "restrict",
+    "append_only": true,
+    "rls_enabled": true,
+    "rls_forced": true,
+    "anon_access": "none",
+    "authenticated_access": "none",
+    "service_role_access": ["select", "insert"],
+    "browser_direct_access": false
+  },
+  "deployment": {
+    "migration_file_created": false,
+    "production_ddl_applied": false,
+    "write_api_deployed": false,
+    "event_write_enabled": false,
+    "sql_preview_only": true,
+    "activation_requires_owner_operations_decisions": true
+  },
+  "write_api_design": {
+    "function": "public.newbuild_record_commercial_event",
+    "security_mode": "invoker",
+    "fixed_search_path": "public",
+    "public_execute": false,
+    "anon_execute": false,
+    "authenticated_execute": false,
+    "service_role_execute": true,
+    "idempotency_required": true,
+    "server_timestamp_authoritative": true,
+    "closure_reason_owner_policy_required_for_closed_lost": true
+  },
+  "columns": [
+    {"name":"event_id","type":"uuid","nullable":false,"source":"server_generated"},
+    {"name":"lead_id","type":"uuid","nullable":false,"source":"protected_internal_reference"},
+    {"name":"event_type","type":"text","nullable":false,"source":"canonical_event_contract"},
+    {"name":"occurred_at","type":"timestamptz","nullable":false,"source":"server_timestamp"},
+    {"name":"actor_ref","type":"text","nullable":false,"source":"role_or_secure_reference"},
+    {"name":"source_system","type":"text","nullable":false,"source":"protected_system_reference"},
+    {"name":"object_id","type":"text","nullable":true,"source":"registered_object_reference"},
+    {"name":"scheduled_for","type":"timestamptz","nullable":true,"source":"event_payload"},
+    {"name":"reason_code","type":"text","nullable":true,"source":"approved_owner_closure_policy"},
+    {"name":"next_action","type":"text","nullable":true,"source":"controlled_action"},
+    {"name":"next_action_at","type":"timestamptz","nullable":true,"source":"event_payload"},
+    {"name":"evidence_ref","type":"text","nullable":true,"source":"secure_or_repository_reference"},
+    {"name":"protected_note","type":"text","nullable":true,"source":"server_only_text"},
+    {"name":"idempotency_key","type":"text","nullable":false,"source":"protected_writer_generated_or_supplied"},
+    {"name":"created_at","type":"timestamptz","nullable":false,"source":"server_timestamp"}
+  ],
+  "constraints": {
+    "event_type_values_source": "data/operations/commercial-outcome-events.json#events[].id",
+    "unique_idempotency": ["lead_id", "idempotency_key"],
+    "lead_fk_required": true,
+    "forbid_update": true,
+    "forbid_delete": true,
+    "closed_lost_reason_enforced_only_after_owner_policy_activation": true,
+    "event_required_fields_enforced_by_write_api": true,
+    "generic_json_metadata_column_forbidden": true
+  },
+  "privacy": {
+    "pii_columns_forbidden": ["name","phone","phone_normalized","email","client_fixation_id","page_url","referrer","user_agent","utm_source","utm_medium","utm_campaign","utm_content"],
+    "protected_note_external_export_forbidden": true,
+    "lead_id_external_export_forbidden": true,
+    "aggregate_reporting_min_group_size": 3
+  },
+  "sql_preview": {
+    "generator": "tools/build-commercial-outcome-persistence-sql.mjs",
+    "must_not_write_migration": true,
+    "must_not_execute_sql": true,
+    "preview_requires_banner": "PREVIEW ONLY - NOT DEPLOYED",
+    "expected_objects": [
+      "public.newbuild_commercial_events",
+      "public.newbuild_commercial_events_append_only",
+      "public.newbuild_record_commercial_event"
+    ]
+  },
+  "activation_gates": [
+    "operational_activation_enabled",
+    "append_only_server_enforcement_reviewed",
+    "actor_reference_policy_approved",
+    "closure_reason_policy_approved",
+    "protected_event_write_api_reviewed",
+    "migration_reviewed_and_explicitly_approved",
+    "production_schema_verified_after_apply"
+  ],
+  "completion_state": {
+    "store_selected": true,
+    "server_persistence_available": false,
+    "protected_write_api_available": false,
+    "production_write_enabled": false,
+    "commercial_events_available_in_internal_outcomes": false
+  }
+}

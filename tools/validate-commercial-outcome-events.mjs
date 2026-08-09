@@ -3,6 +3,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const CONTRACT_PATH = "data/operations/commercial-outcome-events.json";
+const PERSISTENCE_PATH = "data/operations/commercial-outcome-persistence.json";
 const LIFECYCLE_PATH = "data/operations/lead-lifecycle.json";
 const HANDLING_PATH = "data/operations/lead-handling.json";
 const APPROVAL_PATH = "data/operations/lead-operations-approval.json";
@@ -44,13 +45,14 @@ function isIsoDate(value) {
 }
 
 const contract = readJson(CONTRACT_PATH);
+const persistence = readJson(PERSISTENCE_PATH);
 const lifecycle = readJson(LIFECYCLE_PATH);
 const handling = readJson(HANDLING_PATH);
 const approval = readJson(APPROVAL_PATH);
 const eventLog = readJson(EVENT_LOG_PATH);
 const internalOutcomes = readJson(INTERNAL_OUTCOMES_PATH);
 const publicEvents = readJson(PUBLIC_EVENTS_PATH);
-if (!contract || !lifecycle || !handling || !approval || !eventLog || !internalOutcomes || !publicEvents) process.exit(1);
+if (!contract || !persistence || !lifecycle || !handling || !approval || !eventLog || !internalOutcomes || !publicEvents) process.exit(1);
 
 if (contract.schema_version !== "1.0") errors.push(`${CONTRACT_PATH}: schema_version must be 1.0`);
 if (!isIsoDate(contract.updated_at)) errors.push(`${CONTRACT_PATH}: updated_at must be YYYY-MM-DD`);
@@ -62,7 +64,8 @@ const expectedSources = {
   lead_handling: HANDLING_PATH,
   operations_approval: APPROVAL_PATH,
   event_log_contract: EVENT_LOG_PATH,
-  internal_outcomes: INTERNAL_OUTCOMES_PATH
+  internal_outcomes: INTERNAL_OUTCOMES_PATH,
+  persistence_design: PERSISTENCE_PATH
 };
 for (const [key, value] of Object.entries(expectedSources)) {
   if (contract.sources?.[key] !== value) errors.push(`${CONTRACT_PATH}: sources.${key} must be ${value}`);
@@ -70,6 +73,7 @@ for (const [key, value] of Object.entries(expectedSources)) {
 
 for (const key of [
   "protected_internal_events_only",
+  "persistence_design_selected",
   "append_only_required_when_persisted",
   "existing_lead_lifecycle_not_mutated_by_spec",
   "commercial_event_must_not_be_inferred",
@@ -88,6 +92,20 @@ for (const key of [
 for (const key of ["persistence_connected", "event_write_enabled"]) {
   if (contract.rules?.[key] !== false) errors.push(`${CONTRACT_PATH}: rules.${key} must remain false before server implementation`);
 }
+
+if (contract.persistence_design?.status !== "selected_not_deployed") errors.push(`${CONTRACT_PATH}: persistence_design.status must be selected_not_deployed`);
+if (contract.persistence_design?.store !== "public.newbuild_commercial_events") errors.push(`${CONTRACT_PATH}: persistence_design.store mismatch`);
+if (contract.persistence_design?.contract !== PERSISTENCE_PATH) errors.push(`${CONTRACT_PATH}: persistence_design.contract must be ${PERSISTENCE_PATH}`);
+for (const key of ["migration_created", "production_ddl_applied", "write_api_deployed"]) {
+  if (contract.persistence_design?.[key] !== false) errors.push(`${CONTRACT_PATH}: persistence_design.${key} must remain false before deployment`);
+}
+if (contract.persistence_design?.deployment_effect !== "none") errors.push(`${CONTRACT_PATH}: persistence design must have deployment_effect=none`);
+if (persistence.status !== "store_design_selected_not_deployed") errors.push(`${PERSISTENCE_PATH}: status must remain store_design_selected_not_deployed`);
+if (`${persistence.store?.schema}.${persistence.store?.table}` !== contract.persistence_design?.store) errors.push(`${CONTRACT_PATH}: selected store must match ${PERSISTENCE_PATH}`);
+for (const key of ["migration_file_created", "production_ddl_applied", "write_api_deployed", "event_write_enabled"]) {
+  if (persistence.deployment?.[key] !== false) errors.push(`${PERSISTENCE_PATH}: deployment.${key} must remain false in design-only phase`);
+}
+if (persistence.deployment?.sql_preview_only !== true) errors.push(`${PERSISTENCE_PATH}: SQL preview must remain preview-only`);
 
 const expectedEventIds = new Set([
   "consultation_scheduled",
@@ -119,6 +137,11 @@ const expectedRequiredFields = new Set([
   "protected_note"
 ]);
 exactSet(new Set(contract.required_event_fields || []), expectedRequiredFields, `${CONTRACT_PATH}: required_event_fields`);
+
+const persistenceColumnNames = new Set((persistence.columns || []).map((column) => column.name));
+for (const field of expectedRequiredFields) {
+  if (!persistenceColumnNames.has(field)) errors.push(`${PERSISTENCE_PATH}: missing canonical event column ${field}`);
+}
 
 const ranks = new Set();
 for (const event of events) {
@@ -231,6 +254,10 @@ exactSet(activationGates, new Set([
 ]), `${CONTRACT_PATH}: activation gates`);
 
 console.log(`Commercial outcome events: ${events.length}`);
+console.log(`Persistence design selected: ${contract.rules.persistence_design_selected === true}`);
+console.log(`Selected store: ${contract.persistence_design?.store || "missing"}`);
+console.log(`Migration created: ${contract.persistence_design?.migration_created === true}`);
+console.log(`Production DDL applied: ${contract.persistence_design?.production_ddl_applied === true}`);
 console.log(`Closure reason candidates: ${candidateReasons.size}; owner decision status: ${closureDecision?.status || "missing"}`);
 console.log(`Persistence connected: ${contract.rules.persistence_connected === true}`);
 console.log(`Event writes enabled: ${contract.rules.event_write_enabled === true}`);
