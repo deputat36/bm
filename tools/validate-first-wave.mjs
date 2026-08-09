@@ -81,7 +81,8 @@ if (!plan || !campaignRegistry || !release || !publicationRegistry || !readiness
 if (plan.schema_version !== "1.0") errors.push(`${PLAN_PATH}: schema_version must be 1.0`);
 if (!isIsoDate(plan.updated_at)) errors.push(`${PLAN_PATH}: updated_at must be YYYY-MM-DD`);
 if (plan.portal_id !== "newbuilds-borisoglebsk") errors.push(`${PLAN_PATH}: invalid portal_id`);
-if (plan.status !== "prepared_blocked_by_launch_gates") errors.push(`${PLAN_PATH}: status must remain prepared_blocked_by_launch_gates until all launch gates pass`);
+const allowedWaveStatuses = new Set(["prepared_blocked_by_launch_gates", "ready_for_publication", "active", "paused", "completed"]);
+if (!allowedWaveStatuses.has(plan.status)) errors.push(`${PLAN_PATH}: unsupported status ${plan.status}`);
 
 const rules = plan.rules || {};
 if (rules.planned_placements_min !== 3 || rules.planned_placements_max !== 5) errors.push(`${PLAN_PATH}: placement bounds must be 3..5`);
@@ -122,8 +123,8 @@ if (!launchReady && blockers.size === 0) errors.push(`${READINESS_SCRIPT}: campa
 
 const activeCampaigns = new Map((campaignRegistry.campaigns || []).filter((item) => item.status === "active").map((item) => [item.id, item]));
 const releaseIds = new Set(release.campaign_ids || []);
-if (release.status !== "prepared_not_published" && release.status !== "published") errors.push(`${RELEASE_PATH}: unexpected release status`);
-if (release.publication?.links_published !== false) errors.push(`${RELEASE_PATH}: current first-wave preparation expects links_published=false`);
+if (!new Set(["prepared_not_published", "published"]).has(release.status)) errors.push(`${RELEASE_PATH}: unexpected release status`);
+if (typeof release.publication?.links_published !== "boolean") errors.push(`${RELEASE_PATH}: publication.links_published must be boolean`);
 
 const offerVariants = Array.isArray(plan.offer_variants) ? plan.offer_variants : [];
 if (offerVariants.length < 1 || offerVariants.length > rules.maximum_offer_variants) errors.push(`${PLAN_PATH}: offer variant count out of bounds`);
@@ -210,7 +211,10 @@ for (const item of placements) {
 
 if (!launchReady && plan.status !== "prepared_blocked_by_launch_gates") errors.push(`${PLAN_PATH}: blocked launch requires prepared_blocked_by_launch_gates`);
 if (!launchReady && approvedCount > 0) errors.push(`${PLAN_PATH}: no placements may be approved while launch blockers exist`);
+if (launchReady && publishedCount === 0 && plan.status === "prepared_blocked_by_launch_gates") errors.push(`${PLAN_PATH}: launch-ready plan must advance beyond prepared_blocked_by_launch_gates`);
+if (publishedCount > 0 && !new Set(["active", "paused", "completed"]).has(plan.status)) errors.push(`${PLAN_PATH}: published placements require active/paused/completed plan status`);
 if ((publicationRegistry.publications || []).length === 0 && publishedCount !== 0) errors.push(`${PLAN_PATH}: no published plan items allowed without publication records`);
+if (release.publication?.links_published === true && (publicationRegistry.publications || []).length === 0) errors.push(`${RELEASE_PATH}: links_published=true requires actual publication records`);
 
 const monitoring = plan.monitoring_plan || {};
 if (monitoring.first_quality_review_after_leads !== 10) errors.push(`${PLAN_PATH}: first quality review must be after 10 leads`);
