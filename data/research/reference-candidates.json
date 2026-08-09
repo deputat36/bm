@@ -1,0 +1,155 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "purpose": "Непубличный исследовательский реестр кандидатов для городского reference-каталога. Запись здесь не означает разрешение на публикацию.",
+  "publication_effect": "none",
+  "allowed_statuses": [
+    "needs_primary",
+    "identity_conflict",
+    "promoted"
+  ],
+  "promotion_rule": {
+    "target_registry": "data/research/reference-projects.json",
+    "requires_status": "promoted",
+    "requires_public_registry_entry": true,
+    "candidate_never_renders_directly": true,
+    "secondary_source_cannot_close_primary_gap": true
+  },
+  "candidates": [
+    {
+      "id": "aerodromnaya-32-aleks",
+      "display_name": "Дом на Аэродромной 32",
+      "address": "ул. Аэродромная, 32",
+      "city": "Борисоглебск",
+      "status": "promoted",
+      "last_checked_at": "2026-08-09",
+      "public_registry_id": "aerodromnaya-32-aleks",
+      "observed_builder": "ООО «Алекс»",
+      "sources": [
+        {
+          "class": "official_regulator",
+          "title": "ГЖИ Воронежской области — изменение реестра лицензий по дому Аэродромная, 32",
+          "url": "https://gzhi.govvrn.ru/news/s-1-fevralia-2020-goda-v-reestr-licenzii-voronezskoi-oblasti-vneseny",
+          "supports": [
+            "address_exists_as_managed_multifamily_house",
+            "operation_not_later_than_2020-02"
+          ]
+        },
+        {
+          "class": "official_financing_partner_archive",
+          "title": "Металлинвестбанк — жилой объект ООО «Алекс» на Аэродромной, 32",
+          "url": "https://metallinvestbank.ru/about/press_center/2057/",
+          "supports": [
+            "historical_builder_address_link"
+          ]
+        },
+        {
+          "class": "industry_registry_secondary",
+          "title": "ЕРЗ — Дом по ул. Аэродромная, 32, Борисоглебск",
+          "url": "https://erzrf.ru/novostroyki/zhk-dom-po-ul-aerodromnaja-32-9763197001?gkId=9763197001&regionKey=142301001",
+          "supports": [
+            "current_cross_check_object_identity",
+            "current_cross_check_builder_identity"
+          ]
+        }
+      ],
+      "acceptance_gaps": [],
+      "publication_limits": [
+        "commissioned_year_not_confirmed",
+        "no_current_price",
+        "no_current_availability",
+        "no_current_mortgage_terms",
+        "no_dedicated_lead_form"
+      ],
+      "evidence": "docs/portal/research/REFERENCE_AERODROMNAYA_32_2026-08-09.md"
+    },
+    {
+      "id": "prigorodnaya-30a-aleks",
+      "display_name": "Кандидат: объект на Пригородной 30А",
+      "address": "ул. Пригородная, 30А",
+      "city": "Борисоглебск",
+      "status": "identity_conflict",
+      "last_checked_at": "2026-08-09",
+      "public_registry_id": null,
+      "observed_builder": "ООО «Алекс»",
+      "sources": [
+        {
+          "class": "official_financing_partner_archive",
+          "title": "Металлинвестбанк — жилой объект ООО «Алекс» на Пригородной, 30А",
+          "url": "https://metallinvestbank.ru/about/press_center/2057/",
+          "supports": [
+            "historical_builder_address_link",
+            "residential_construction_claim_in_2015"
+          ]
+        },
+        {
+          "class": "secondary_legal_archive",
+          "title": "ГАРАНТ — схема территориального планирования Воронежской области 2009",
+          "url": "https://base.garant.ru/18189258/",
+          "supports": [
+            "older_conflicting_land_use_context"
+          ]
+        }
+      ],
+      "acceptance_gaps": [
+        "exact_current_multifamily_house_identity",
+        "official_operation_or_commissioning_source",
+        "primary_document_resolving_address_land_use_conflict"
+      ],
+      "publication_limits": [
+        "do_not_render",
+        "do_not_infer_house_status_from_2015_bank_archive",
+        "do_not_infer_nonexistence_from_older_land_use_context"
+      ],
+      "evidence": "docs/portal/research/REFERENCE_ALEX_CANDIDATES_2026-08-09.md"
+    },
+    {
+      "id": "studencheskiy-5-aleks",
+      "display_name": "Кандидат: объект в Студенческом переулке 5",
+      "address": "пер. Студенческий, 5",
+      "city": "Борисоглебск",
+      "status": "needs_primary",
+      "last_checked_at": "2026-08-09",
+      "public_registry_id": null,
+      "observed_builder": "ООО «Алекс»",
+      "sources": [
+        {
+          "class": "official_financing_partner_archive",
+          "title": "Металлинвестбанк — жилой объект ООО «Алекс» в пер. Студенческом, 5",
+          "url": "https://metallinvestbank.ru/about/press_center/2057/",
+          "supports": [
+            "historical_builder_address_link",
+            "residential_construction_claim_in_2015"
+          ]
+        },
+        {
+          "class": "secondary_current_use",
+          "title": "Т-Путешествия — размещение по адресу Студенческий переулок, 5",
+          "url": "https://www.tbank.ru/travel/hotels/new/hotels/3495164/",
+          "supports": [
+            "current_residential_use_clue"
+          ]
+        },
+        {
+          "class": "official_regulator_search_context",
+          "title": "ГЖИ Воронежской области — постановление по 122 домам Борисоглебска, 2025",
+          "url": "https://gzhi.govvrn.ru/news/v-period-s-11-po-16-sentiabria-2025-goda-v-gzi-postupilo-8-zaiavlenii",
+          "supports": [
+            "search_context_only_no_exact_house_5_match"
+          ]
+        }
+      ],
+      "acceptance_gaps": [
+        "official_exact_multifamily_house_record",
+        "official_operation_or_commissioning_source",
+        "current_primary_object_identity"
+      ],
+      "publication_limits": [
+        "do_not_render",
+        "absence_from_one_regulator_list_is_not_proof_of_absence",
+        "secondary_current_use_is_not_commissioning_evidence"
+      ],
+      "evidence": "docs/portal/research/REFERENCE_ALEX_CANDIDATES_2026-08-09.md"
+    }
+  ]
+}
