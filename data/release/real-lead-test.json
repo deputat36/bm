@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "requires_explicit_owner_consent_not_executed",
+  "purpose": "Fail-closed контракт одной контролируемой реальной заявки для доказательства production browser → newbuild-lead → public.newbuild_leads без хранения тестового контакта в GitHub.",
+  "rules": {
+    "execution_enabled": false,
+    "explicit_owner_consent_required": true,
+    "secure_contact_reference_required": true,
+    "personal_contact_in_repository_forbidden": true,
+    "exactly_one_submission_required": true,
+    "production_domain_required": true,
+    "dry_run_forbidden_for_real_test": true,
+    "before_after_health_required": true,
+    "database_record_evidence_required": true,
+    "technical_field_verification_required": true,
+    "notification_delivery_is_secondary": true,
+    "manual_gate_update_requires_completed_evidence": true
+  },
+  "execution": {
+    "approved_by_owner": false,
+    "approved_at": null,
+    "secure_contact_reference": null,
+    "target_url": "https://novostroyki-borisoglebsk.ru/",
+    "form_id": "homepage_quick_selection",
+    "form_role": "primary",
+    "lead_type": "portal_selection",
+    "object_id": "all-newbuilds",
+    "placement": "quick-lead",
+    "submitted_at": null,
+    "record_locator": null
+  },
+  "expected_server_fields": [
+    "lead_id",
+    "created_at",
+    "form_id",
+    "form_role",
+    "lead_type",
+    "object_id",
+    "placement",
+    "source_page",
+    "consent",
+    "record_locator"
+  ],
+  "expected_privacy": {
+    "public_analytics_pii_forbidden": true,
+    "browser_fallback_transport_forbidden": true,
+    "user_agent_storage_forbidden": true,
+    "arbitrary_query_storage_forbidden": true
+  },
+  "evidence": {
+    "health_before": null,
+    "health_after": null,
+    "database_record": null,
+    "event_log": null,
+    "notification": null,
+    "reviewer_reference": "",
+    "checked_at": null
+  },
+  "acceptance_checks": {
+    "one_submission_only": false,
+    "server_record_created": false,
+    "record_locator_present": false,
+    "form_context_matches": false,
+    "consent_recorded": false,
+    "no_legacy_fallback_used": false,
+    "health_ok_before": false,
+    "health_ok_after": false,
+    "public_analytics_pii_absent": false
+  }
+}

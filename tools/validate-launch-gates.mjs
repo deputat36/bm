@@ -3,6 +3,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const GATES_PATH = "data/release/manual-gates.json";
+const REAL_LEAD_PATH = "data/release/real-lead-test.json";
 const LEGAL_APPROVAL_PATH = "data/legal/legal-owner-approval.json";
 const LIVE_ANALYTICS_PATH = "data/analytics/live-provider.json";
 const EXPECTED_GATE_IDS = new Set([
@@ -82,6 +83,37 @@ function scanForbiddenKeys(value, label) {
   }
 }
 
+function realLeadContractReady(data) {
+  const requiredChecks = [
+    "one_submission_only",
+    "server_record_created",
+    "record_locator_present",
+    "form_context_matches",
+    "consent_recorded",
+    "no_legacy_fallback_used",
+    "health_ok_before",
+    "health_ok_after",
+    "public_analytics_pii_absent"
+  ];
+  const evidenceKeys = ["health_before", "health_after", "database_record", "event_log"];
+  return data?.status === "passed_real_lead_delivery"
+    && data?.rules?.execution_enabled === true
+    && data?.execution?.approved_by_owner === true
+    && isValidDate(data?.execution?.approved_at)
+    && /^secure:[a-z0-9_.:-]{3,120}$/i.test(String(data?.execution?.secure_contact_reference || ""))
+    && isValidDate(data?.execution?.submitted_at)
+    && /^newbuild_leads:[a-z0-9-]{8,120}$/i.test(String(data?.execution?.record_locator || ""))
+    && requiredChecks.every((key) => data?.acceptance_checks?.[key] === true)
+    && evidenceKeys.every((key) => {
+      const item = data?.evidence?.[key];
+      const reference = String(item?.reference || "").trim();
+      return String(item?.note || "").trim() !== ""
+        && (reference.startsWith("https://") || /^(docs|data|artifacts)\//.test(reference));
+    })
+    && isValidDate(data?.evidence?.checked_at)
+    && String(data?.evidence?.reviewer_reference || "").trim() !== "";
+}
+
 function legalContractReady(data) {
   const decisions = Array.isArray(data?.decisions) ? data.decisions : [];
   return data?.status === "approved_for_final_publication"
@@ -116,6 +148,7 @@ function liveAnalyticsContractReady(data) {
 }
 
 const registry = readJson(GATES_PATH);
+const realLead = readJson(REAL_LEAD_PATH);
 const legalApproval = readJson(LEGAL_APPROVAL_PATH);
 const liveAnalytics = readJson(LIVE_ANALYTICS_PATH);
 const seenIds = new Set();
@@ -205,6 +238,11 @@ if (!registry || !Array.isArray(registry.gates)) {
   scanForbiddenKeys(registry, GATES_PATH);
 }
 
+const realLeadGate = gateMap.get("real_lead_delivery");
+if (realLeadGate?.status === "passed" && !realLeadContractReady(realLead)) {
+  errors.push(`${GATES_PATH}:real_lead_delivery: passed запрещён, пока ${REAL_LEAD_PATH} не подтверждает одну согласованную реальную доставку`);
+}
+
 const legalGate = gateMap.get("legal_owner_review");
 if (legalGate?.status === "passed" && !legalContractReady(legalApproval)) {
   errors.push(`${GATES_PATH}:legal_owner_review: passed запрещён, пока ${LEGAL_APPROVAL_PATH} не approved_for_final_publication`);
@@ -218,6 +256,7 @@ if (analyticsGate?.status === "passed" && !liveAnalyticsContractReady(liveAnalyt
 console.log(`Checked manual launch gates: ${seenIds.size}`);
 console.log(`Passed manual gates: ${passedCount}`);
 console.log(`Blocked manual gates: ${blockedCount}`);
+console.log(`Real lead prerequisite ready: ${realLeadContractReady(realLead)}`);
 console.log(`Legal prerequisite ready: ${legalContractReady(legalApproval)}`);
 console.log(`Live analytics prerequisite ready: ${liveAnalyticsContractReady(liveAnalytics)}`);
 
