@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-07-16",
+  "updated_at": "2026-08-09",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "editorial_registry_not_publication_approval",
   "purpose": "Единый реестр поисковых интентов, источников, CTA и готовности материалов справочника без автоматического снятия noindex.",
@@ -14,9 +14,20 @@
     "index_ready_requires_editorial_review": true,
     "index_ready_requires_legal_review_when_applicable": true,
     "index_ready_requires_source_review": true,
-    "allowed_review_statuses": ["requires_review", "passed", "not_applicable"],
-    "allowed_source_statuses": ["requires_source_review", "verified_on_date", "not_applicable"],
-    "allowed_indexing_statuses": ["blocked", "ready"]
+    "allowed_review_statuses": [
+      "requires_review",
+      "passed",
+      "not_applicable"
+    ],
+    "allowed_source_statuses": [
+      "requires_source_review",
+      "verified_on_date",
+      "not_applicable"
+    ],
+    "allowed_indexing_statuses": [
+      "blocked",
+      "ready"
+    ]
   },
   "guides": [
     {
@@ -37,7 +48,9 @@
       "legal_review": "requires_review",
       "indexing_status": "blocked",
       "expected_tracked_cta_count": 2,
-      "allowed_placements": ["guide_documents_footer"]
+      "allowed_placements": [
+        "guide_documents_footer"
+      ]
     },
     {
       "id": "guide-seller-documents",
@@ -55,7 +68,9 @@
       "legal_review": "requires_review",
       "indexing_status": "blocked",
       "expected_tracked_cta_count": 1,
-      "allowed_placements": ["guide_seller_documents_footer"]
+      "allowed_placements": [
+        "guide_seller_documents_footer"
+      ]
     },
     {
       "id": "guide-egrn-cadastral",
@@ -74,7 +89,9 @@
       "legal_review": "requires_review",
       "indexing_status": "blocked",
       "expected_tracked_cta_count": 1,
-      "allowed_placements": ["guide_egrn_footer"]
+      "allowed_placements": [
+        "guide_egrn_footer"
+      ]
     },
     {
       "id": "guide-contract-types",
@@ -93,7 +110,9 @@
       "legal_review": "requires_review",
       "indexing_status": "blocked",
       "expected_tracked_cta_count": 1,
-      "allowed_placements": ["guide_contract_types_footer"]
+      "allowed_placements": [
+        "guide_contract_types_footer"
+      ]
     },
     {
       "id": "guide-project-declaration",
@@ -112,7 +131,9 @@
       "legal_review": "requires_review",
       "indexing_status": "blocked",
       "expected_tracked_cta_count": 2,
-      "allowed_placements": ["guide_declaration_footer"]
+      "allowed_placements": [
+        "guide_declaration_footer"
+      ]
     },
     {
       "id": "guide-layout-choice",
@@ -120,14 +141,16 @@
       "canonical": "https://novostroyki-borisoglebsk.ru/guides/kak-vybrat-planirovku/",
       "intent": "как выбрать планировку квартиры в новостройке",
       "topic": "layout",
-      "content_checked_at": null,
+      "content_checked_at": "2026-08-09",
       "source_status": "not_applicable",
       "source_urls": [],
-      "editorial_review": "requires_review",
+      "editorial_review": "passed",
       "legal_review": "not_applicable",
-      "indexing_status": "blocked",
+      "indexing_status": "ready",
       "expected_tracked_cta_count": 2,
-      "allowed_placements": ["guide_layout_footer"]
+      "allowed_placements": [
+        "guide_layout_footer"
+      ]
     },
     {
       "id": "guide-permit-commissioning",
@@ -144,7 +167,9 @@
       "legal_review": "requires_review",
       "indexing_status": "blocked",
       "expected_tracked_cta_count": 1,
-      "allowed_placements": ["guide_commissioning_footer"]
+      "allowed_placements": [
+        "guide_commissioning_footer"
+      ]
     },
     {
       "id": "guide-uncommissioned-section",
@@ -161,7 +186,9 @@
       "legal_review": "requires_review",
       "indexing_status": "blocked",
       "expected_tracked_cta_count": 1,
-      "allowed_placements": ["guide_uncommissioned_section_footer"]
+      "allowed_placements": [
+        "guide_uncommissioned_section_footer"
+      ]
     }
   ]
 }
