@@ -1,0 +1,125 @@
+name: First wave guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/marketing/first-wave.json"
+      - "data/marketing/utm-campaigns.json"
+      - "data/marketing/campaign-release.json"
+      - "data/marketing/campaign-publications.json"
+      - "data/release/manual-gates.json"
+      - "data/operations/lead-operations-approval.json"
+      - "data/qa/form-results.json"
+      - "tools/build-launch-readiness-report.mjs"
+      - "tools/validate-first-wave.mjs"
+      - "tools/build-first-wave-pack.mjs"
+      - "docs/portal/FIRST_WAVE_RELEASE_PACK.md"
+      - ".github/workflows/first-wave-guard.yml"
+  pull_request:
+    paths:
+      - "data/marketing/first-wave.json"
+      - "data/marketing/utm-campaigns.json"
+      - "data/marketing/campaign-release.json"
+      - "data/marketing/campaign-publications.json"
+      - "data/release/manual-gates.json"
+      - "data/operations/lead-operations-approval.json"
+      - "data/qa/form-results.json"
+      - "tools/build-launch-readiness-report.mjs"
+      - "tools/validate-first-wave.mjs"
+      - "tools/build-first-wave-pack.mjs"
+      - "docs/portal/FIRST_WAVE_RELEASE_PACK.md"
+      - ".github/workflows/first-wave-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-first-wave:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-first-wave.mjs
+          node --check tools/build-first-wave-pack.mjs
+
+      - name: Validate current first-wave plan
+        run: node tools/validate-first-wave.mjs
+
+      - name: Build first-wave release pack
+        run: |
+          node tools/build-first-wave-pack.mjs --format=json > /tmp/first-wave.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/first-wave.json","utf8")); const s=data.summary||{}; if(s.placements<3||s.placements>5||s.offer_variants<1||s.offer_variants>2||s.unique_urls!==s.placements) process.exit(1); if(s.campaign_launch_ready===false && Number(s.approved_to_publish||0)+Number(s.published||0)>0) process.exit(1); console.log(`First wave: placements=${s.placements}; offers=${s.offer_variants}; unique_urls=${s.unique_urls}; launch_ready=${s.campaign_launch_ready}`);'
+
+      - name: Reject duplicate placement
+        run: |
+          cp data/marketing/first-wave.json /tmp/first-wave-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/marketing/first-wave.json', 'utf8'));
+          data.placements[1].placement = data.placements[0].placement;
+          fs.writeFileSync('data/marketing/first-wave.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-first-wave.mjs; then
+            echo "Validator incorrectly allowed duplicate placement"
+            exit 1
+          fi
+          cp /tmp/first-wave-baseline.json data/marketing/first-wave.json
+
+      - name: Reject priority-object campaign in first wave
+        run: |
+          cp data/marketing/first-wave.json /tmp/first-wave-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/marketing/first-wave.json', 'utf8'));
+          data.placements[0].campaign_id = 'prostornaya_4a_vk_launch';
+          fs.writeFileSync('data/marketing/first-wave.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-first-wave.mjs; then
+            echo "Validator incorrectly allowed priority-object campaign"
+            exit 1
+          fi
+          cp /tmp/first-wave-baseline.json data/marketing/first-wave.json
+
+      - name: Reject publication approval when a launch gate is forced blocked
+        run: |
+          cp data/marketing/first-wave.json /tmp/first-wave-baseline.json
+          cp data/release/manual-gates.json /tmp/manual-gates-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const gates = JSON.parse(fs.readFileSync('data/release/manual-gates.json', 'utf8'));
+          const legal = gates.gates.find((item) => item.id === 'legal_owner_review');
+          legal.status = 'blocked';
+          legal.evidence = [];
+          legal.checked_at = null;
+          legal.reviewer = '';
+          fs.writeFileSync('data/release/manual-gates.json', JSON.stringify(gates, null, 2) + '\n');
+
+          const data = JSON.parse(fs.readFileSync('data/marketing/first-wave.json', 'utf8'));
+          data.status = 'prepared_blocked_by_launch_gates';
+          const item = data.placements[0];
+          item.status = 'approved_to_publish';
+          item.external_target_url = 'https://example.com/publication-target';
+          item.owner_ref = 'role:campaign_owner';
+          item.planned_publish_at = '2026-08-10T09:00:00+03:00';
+          item.planned_cost_rub = 0;
+          fs.writeFileSync('data/marketing/first-wave.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-first-wave.mjs; then
+            echo "Validator incorrectly allowed approval while a campaign_launch gate is blocked"
+            exit 1
+          fi
+          cp /tmp/first-wave-baseline.json data/marketing/first-wave.json
+          cp /tmp/manual-gates-baseline.json data/release/manual-gates.json
+          node tools/validate-first-wave.mjs

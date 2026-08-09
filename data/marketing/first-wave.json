@@ -1,0 +1,130 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "prepared_blocked_by_launch_gates",
+  "purpose": "Контролируемый план первой волны трафика на общие посадочные страницы портала без фактической публикации до прохождения campaign_launch gates.",
+  "rules": {
+    "planned_placements_min": 3,
+    "planned_placements_max": 5,
+    "maximum_offer_variants": 2,
+    "unique_placement_required": true,
+    "unique_generated_url_required": true,
+    "priority_object_campaigns_forbidden_until_public_ready": true,
+    "actual_publication_requires_all_campaign_launch_gates": true,
+    "actual_publication_requires_external_target": true,
+    "actual_publication_requires_owner_ref": true,
+    "actual_publication_requires_publish_time": true,
+    "actual_publication_requires_cost": true,
+    "publication_records_stored_separately": true,
+    "test_parameters_forbidden": true,
+    "personal_data_forbidden": true
+  },
+  "required_launch_gates": [
+    "form_manual_qa",
+    "lead_operations_approval",
+    "real_lead_delivery",
+    "live_analytics_debug",
+    "legal_owner_review",
+    "campaign_links_prepared",
+    "campaign_publication_approval"
+  ],
+  "offer_variants": [
+    {
+      "id": "catalog_selection",
+      "title": "Общий подбор новостройки",
+      "allowed_campaign_ids": [
+        "portal_vk_catalog",
+        "portal_telegram_catalog",
+        "portal_offline_qr"
+      ]
+    },
+    {
+      "id": "mortgage_consultation",
+      "title": "Ипотечная консультация по новостройке",
+      "allowed_campaign_ids": [
+        "portal_vk_mortgage",
+        "portal_telegram_mortgage"
+      ]
+    }
+  ],
+  "placements": [
+    {
+      "id": "first_wave_vk_city_community_catalog_01",
+      "campaign_id": "portal_vk_catalog",
+      "offer_variant": "catalog_selection",
+      "placement": "vk_city_community_catalog_01",
+      "target_class": "vk_city_community",
+      "status": "prepared_not_approved",
+      "external_target_url": null,
+      "owner_ref": null,
+      "planned_publish_at": null,
+      "planned_cost_rub": null
+    },
+    {
+      "id": "first_wave_vk_realtor_page_catalog_01",
+      "campaign_id": "portal_vk_catalog",
+      "offer_variant": "catalog_selection",
+      "placement": "vk_realtor_page_catalog_01",
+      "target_class": "vk_realtor_page",
+      "status": "prepared_not_approved",
+      "external_target_url": null,
+      "owner_ref": null,
+      "planned_publish_at": null,
+      "planned_cost_rub": null
+    },
+    {
+      "id": "first_wave_telegram_city_channel_catalog_01",
+      "campaign_id": "portal_telegram_catalog",
+      "offer_variant": "catalog_selection",
+      "placement": "telegram_city_channel_catalog_01",
+      "target_class": "telegram_city_channel",
+      "status": "prepared_not_approved",
+      "external_target_url": null,
+      "owner_ref": null,
+      "planned_publish_at": null,
+      "planned_cost_rub": null
+    },
+    {
+      "id": "first_wave_office_qr_catalog_01",
+      "campaign_id": "portal_offline_qr",
+      "offer_variant": "catalog_selection",
+      "placement": "office_qr_catalog_01",
+      "target_class": "offline_office_qr",
+      "status": "prepared_not_approved",
+      "external_target_url": null,
+      "owner_ref": null,
+      "planned_publish_at": null,
+      "planned_cost_rub": null
+    },
+    {
+      "id": "first_wave_vk_city_community_mortgage_01",
+      "campaign_id": "portal_vk_mortgage",
+      "offer_variant": "mortgage_consultation",
+      "placement": "vk_city_community_mortgage_01",
+      "target_class": "vk_city_community",
+      "status": "prepared_not_approved",
+      "external_target_url": null,
+      "owner_ref": null,
+      "planned_publish_at": null,
+      "planned_cost_rub": null
+    }
+  ],
+  "monitoring_plan": {
+    "first_quality_review_after_leads": 10,
+    "first_rate_review_after_leads": 30,
+    "metrics": [
+      "received",
+      "contacted",
+      "qualified",
+      "consultation_started"
+    ],
+    "stop_conditions": [
+      "invalid_or_spam_rate_requires_review",
+      "delivery_or_attribution_failure",
+      "owner_or_sla_failure",
+      "legal_or_source_gate_regression"
+    ]
+  },
+  "publication_note": "Файл планирует placements, но не является журналом публикаций. Фактические размещения записываются только в data/marketing/campaign-publications.json после ручного решения и внешнего evidence."
+}
