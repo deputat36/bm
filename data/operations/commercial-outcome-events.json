@@ -1,0 +1,172 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "specification_only_persistence_not_connected",
+  "purpose": "Канонический контракт защищённых коммерческих milestone-событий после первичной квалификации обращения. Контракт не расширяет текущий lead lifecycle автоматически и не включает запись событий до отдельного server-side persistence review.",
+  "sources": {
+    "lead_lifecycle": "data/operations/lead-lifecycle.json",
+    "lead_handling": "data/operations/lead-handling.json",
+    "operations_approval": "data/operations/lead-operations-approval.json",
+    "event_log_contract": "data/operations/lead-event-log.json",
+    "internal_outcomes": "data/analytics/internal-outcomes.json"
+  },
+  "rules": {
+    "protected_internal_events_only": true,
+    "persistence_connected": false,
+    "event_write_enabled": false,
+    "append_only_required_when_persisted": true,
+    "existing_lead_lifecycle_not_mutated_by_spec": true,
+    "commercial_event_must_not_be_inferred": true,
+    "event_actor_requires_role_or_secure_reference": true,
+    "lead_id_required_in_protected_store": true,
+    "lead_id_external_export_forbidden": true,
+    "personal_data_in_event_payload_forbidden": true,
+    "free_text_in_analytics_export_forbidden": true,
+    "closed_lost_requires_reason": true,
+    "closed_won_requires_evidence_reference": true,
+    "deposit_amount_not_required": true,
+    "owner_closure_policy_required_before_closed_lost_activation": true
+  },
+  "required_event_fields": [
+    "event_id",
+    "lead_id",
+    "event_type",
+    "occurred_at",
+    "actor_ref",
+    "source_system",
+    "object_id",
+    "scheduled_for",
+    "reason_code",
+    "next_action",
+    "next_action_at",
+    "evidence_ref",
+    "protected_note"
+  ],
+  "events": [
+    {
+      "id": "consultation_scheduled",
+      "stage_rank": 10,
+      "terminal": false,
+      "requires_prior_context": ["lead_qualified"],
+      "required_non_null_fields": ["scheduled_for", "next_action"],
+      "allowed_next_actions": ["consultation_completed", "follow_up_scheduled", "closed_lost"]
+    },
+    {
+      "id": "consultation_completed",
+      "stage_rank": 20,
+      "terminal": false,
+      "requires_prior_context": ["lead_qualified", "consultation_scheduled_or_consultation_active"],
+      "required_non_null_fields": ["next_action"],
+      "allowed_next_actions": ["selection_sent", "showing_scheduled", "follow_up_scheduled", "deposit", "closed_won", "closed_lost"]
+    },
+    {
+      "id": "selection_sent",
+      "stage_rank": 30,
+      "terminal": false,
+      "requires_prior_context": ["lead_qualified"],
+      "required_non_null_fields": ["next_action"],
+      "allowed_next_actions": ["showing_scheduled", "follow_up_scheduled", "deposit", "closed_lost"]
+    },
+    {
+      "id": "showing_scheduled",
+      "stage_rank": 40,
+      "terminal": false,
+      "requires_prior_context": ["lead_qualified"],
+      "required_non_null_fields": ["object_id", "scheduled_for", "next_action"],
+      "allowed_next_actions": ["showing_completed", "follow_up_scheduled", "closed_lost"]
+    },
+    {
+      "id": "showing_completed",
+      "stage_rank": 50,
+      "terminal": false,
+      "requires_prior_context": ["showing_scheduled"],
+      "required_non_null_fields": ["object_id", "next_action"],
+      "allowed_next_actions": ["deposit", "follow_up_scheduled", "closed_won", "closed_lost"]
+    },
+    {
+      "id": "deposit",
+      "stage_rank": 60,
+      "terminal": false,
+      "requires_prior_context": ["lead_qualified"],
+      "required_non_null_fields": ["object_id", "evidence_ref", "next_action"],
+      "allowed_next_actions": ["closed_won", "closed_lost"]
+    },
+    {
+      "id": "closed_won",
+      "stage_rank": 90,
+      "terminal": true,
+      "requires_prior_context": ["lead_qualified"],
+      "required_non_null_fields": ["object_id", "evidence_ref"],
+      "allowed_next_actions": []
+    },
+    {
+      "id": "closed_lost",
+      "stage_rank": 91,
+      "terminal": true,
+      "requires_prior_context": ["lead_received"],
+      "required_non_null_fields": ["reason_code"],
+      "allowed_next_actions": []
+    }
+  ],
+  "closure_reason_policy": {
+    "status": "owner_decision_required",
+    "decision_id": "closure_reason_policy",
+    "candidate_values_from_owner_register": [
+      "duplicate",
+      "invalid_or_spam",
+      "do_not_contact",
+      "no_answer_after_policy",
+      "not_interested",
+      "postponed",
+      "no_suitable_option",
+      "financing_not_available",
+      "other_with_comment"
+    ],
+    "technical_terminal_mapping": {
+      "duplicate": "duplicate",
+      "invalid_or_spam": "invalid_or_spam",
+      "do_not_contact": "do_not_contact"
+    },
+    "other_with_comment_requires_protected_note": true,
+    "protected_note_external_export_forbidden": true
+  },
+  "field_rules": {
+    "event_id": "server_generated_uuid_or_equivalent",
+    "lead_id": "protected_internal_reference",
+    "event_type": "one_of_events",
+    "occurred_at": "server_timestamp",
+    "actor_ref": "role_or_secure_reference_only",
+    "source_system": "protected_system_reference",
+    "object_id": "registered_object_id_or_null",
+    "scheduled_for": "iso_datetime_or_null",
+    "reason_code": "approved_closure_reason_or_null",
+    "next_action": "controlled_action_or_null",
+    "next_action_at": "iso_datetime_or_null",
+    "evidence_ref": "secure_or_repository_reference_or_null",
+    "protected_note": "server_only_text_or_null"
+  },
+  "forbidden_payload_keys": [
+    "name",
+    "phone",
+    "phone_normalized",
+    "email",
+    "client_fixation_id",
+    "page_url",
+    "referrer",
+    "user_agent",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_content"
+  ],
+  "activation_gates": [
+    "operational_activation_enabled",
+    "commercial_event_store_selected",
+    "append_only_server_enforcement_reviewed",
+    "actor_reference_policy_approved",
+    "closure_reason_policy_approved",
+    "protected_event_write_api_reviewed"
+  ],
+  "activation_note": "До прохождения activation_gates события остаются спецификацией. Они не считаются доступными в internal outcome analytics и не должны записываться в production автоматически."
+}
