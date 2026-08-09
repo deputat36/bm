@@ -1,0 +1,33 @@
+name: Legal owner approval guard
+
+on:
+  pull_request:
+    paths:
+      - "data/legal/legal-owner-approval.json"
+      - "tools/validate-legal-owner-approval.mjs"
+      - ".github/workflows/legal-owner-approval-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "data/legal/legal-owner-approval.json"
+      - "tools/validate-legal-owner-approval.mjs"
+      - ".github/workflows/legal-owner-approval-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check validator syntax
+        run: node --check tools/validate-legal-owner-approval.mjs
+      - name: Validate legal owner approval contract
+        run: node tools/validate-legal-owner-approval.mjs
