@@ -1,0 +1,105 @@
+name: EISZhS primary scan guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/research/eiszh-primary-scan.json"
+      - "data/research/city-inventory-method.json"
+      - "data/research/source-collection.json"
+      - "data/research/priority-projects.json"
+      - "tools/validate-eiszh-primary-scan.mjs"
+      - "docs/portal/EISZH_PRIMARY_SCAN.md"
+      - ".github/workflows/eiszh-primary-scan-guard.yml"
+  pull_request:
+    paths:
+      - "data/research/eiszh-primary-scan.json"
+      - "data/research/city-inventory-method.json"
+      - "data/research/source-collection.json"
+      - "data/research/priority-projects.json"
+      - "tools/validate-eiszh-primary-scan.mjs"
+      - "docs/portal/EISZH_PRIMARY_SCAN.md"
+      - ".github/workflows/eiszh-primary-scan-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-eiszh-primary-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-eiszh-primary-scan.mjs
+
+      - name: Validate EISZhS primary scan
+        run: node tools/validate-eiszh-primary-scan.mjs
+
+      - name: Reject false acceptance of Tellermanov 72480
+        run: |
+          cp data/research/eiszh-primary-scan.json /tmp/eiszh-primary-scan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/eiszh-primary-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const target = data.target_observations.find((item) => item.project_id === 'tellermanov-sad');
+          target.status = 'accepted_primary';
+          target.primary_content_read = true;
+          target.object_identity_match = true;
+          target.acceptance_gaps = [];
+          data.completion_state.accepted_target_observations = 1;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-eiszh-primary-scan.mjs; then
+            echo "EISZhS validator incorrectly allowed 72480 acceptance while source collection remains candidate_found"
+            exit 1
+          fi
+          cp /tmp/eiszh-primary-scan.json data/research/eiszh-primary-scan.json
+
+      - name: Reject registry absence from search no-result
+        run: |
+          cp data/research/eiszh-primary-scan.json /tmp/eiszh-primary-scan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/eiszh-primary-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const target = data.target_observations.find((item) => item.project_id === 'aerodromnaya-18g');
+          target.registry_absence_claimed = true;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-eiszh-primary-scan.mjs; then
+            echo "EISZhS validator incorrectly allowed search no-result as registry absence proof"
+            exit 1
+          fi
+          cp /tmp/eiszh-primary-scan.json data/research/eiszh-primary-scan.json
+
+      - name: Reject false EISZhS completion with unresolved targets
+        run: |
+          cp data/research/eiszh-primary-scan.json /tmp/eiszh-primary-scan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/eiszh-primary-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.status = 'eiszh_scan_complete';
+          data.unresolved_scan_gaps = [];
+          data.completion_state.blocking_gap_ids = [];
+          data.completion_state.citywide_primary_reconciliation_complete = true;
+          data.completion_state.eiszh_scan_complete = true;
+          data.completion_state.completion_claim = 'allowed';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-eiszh-primary-scan.mjs; then
+            echo "EISZhS validator incorrectly allowed completion while target observations remain unresolved"
+            exit 1
+          fi
+          cp /tmp/eiszh-primary-scan.json data/research/eiszh-primary-scan.json
+          node tools/validate-eiszh-primary-scan.mjs
