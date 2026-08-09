@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "requires_external_written_approval",
+  "purpose": "Fail-closed контракт договорных рекламных ограничений BM Group для материалов и кампаний, связанных с ЖК «Теллерманов сад» / Просторной 4А, без распространения этих ограничений на независимый городской портал в целом.",
+  "source_audit": "CONTRACT_AD_AUDIT_2026-07-01.md",
+  "covered_object_ids": [
+    "prostornaya-4a"
+  ],
+  "rules": {
+    "old_single_project_domain_forbidden": true,
+    "old_single_project_domain": "tellermanovsad.ru",
+    "official_site_impression_forbidden": true,
+    "developer_direct_wording_forbidden": true,
+    "forbidden_public_phrases": [
+      "квартиры от застройщика",
+      "цены от застройщика",
+      "напрямую от застройщика",
+      "официальный сайт жк",
+      "официальный сайт теллерманов сад"
+    ],
+    "forbidden_legacy_paths": [
+      "/kvartiry-ot-zastroyschika-borisoglebsk/",
+      "/spisok-ozhidaniya/"
+    ],
+    "brand_or_geo_paid_search_without_written_approval_forbidden": true,
+    "object_specific_publication_without_written_approval_forbidden": true,
+    "object_specific_offline_material_without_written_approval_forbidden": true,
+    "official_social_identity_forbidden": true,
+    "campaign_definition_without_publication_is_allowed": true,
+    "general_portal_campaigns_are_not_bm_object_campaigns": true
+  },
+  "approval": {
+    "status": "requires_external_written_approval",
+    "evidence": [],
+    "checked_at": null,
+    "reviewer_reference": null,
+    "approved_scopes": [],
+    "allowed_scopes": [
+      "portal_object_page_promotion",
+      "vk_object_publication",
+      "telegram_object_publication",
+      "paid_brand_or_geo_search",
+      "offline_object_material",
+      "object_specific_qr",
+      "object_specific_banner_or_cover"
+    ]
+  },
+  "paid_search_brand_terms": [
+    "теллерманов сад",
+    "bm group",
+    "бм групп",
+    "просторная 4а",
+    "просторная 4а борисоглебск"
+  ],
+  "publication_policy": {
+    "covered_object_campaign_requires_approval": true,
+    "approval_must_include_matching_scope": true,
+    "publication_tracker_is_source_of_actual_publication": "data/marketing/campaign-publications.json",
+    "campaign_registry_is_not_proof_of_publication": "data/marketing/utm-campaigns.json",
+    "manual_campaign_publication_gate_still_required": true,
+    "legal_owner_review_still_required": true
+  },
+  "current_migration_state": {
+    "neutral_portal_domain": "novostroyki-borisoglebsk.ru",
+    "old_domain_in_public_core_forbidden": true,
+    "legacy_problem_page_must_not_exist": true,
+    "waitlist_page_must_not_exist": true,
+    "covered_object_page_must_remain_noindex_until_other_gates_pass": true
+  },
+  "note": "Этот контракт не утверждает право или запрет на конкретный будущий рекламный материал вместо договора/письменного согласования. Он только технически блокирует фактическую object-specific публикацию без сохранённого evidence и scope."
+}
