@@ -32,6 +32,7 @@ const summary = {
   derived_metrics: derived.length,
   reporting_dimensions: dimensions.length,
   server_dimensions: dimensions.filter((item) => item.availability === "server_record").length,
+  registry_derived_dimensions: dimensions.filter((item) => item.availability === "registry_derived").length,
   dimension_schema_gaps: dimensions.filter((item) => item.availability === "schema_gap").length,
   known_gaps: gaps.length,
   live_export_enabled: spec.rules?.live_export_enabled === true,
@@ -47,7 +48,7 @@ function renderMarkdown() {
     `Канонических outcome-событий: ${summary.canonical_events}`,
     `Доступно из текущей server schema: ${summary.canonical_available}`,
     `Требуют расширения schema/events: ${summary.canonical_schema_gaps}`,
-    `Измерений: ${summary.reporting_dimensions} (${summary.server_dimensions} доступны, ${summary.dimension_schema_gaps} gap)`,
+    `Измерений: ${summary.reporting_dimensions} (${summary.server_dimensions} server, ${summary.registry_derived_dimensions} registry-derived, ${summary.dimension_schema_gaps} gap)`,
     `Live export: ${summary.live_export_enabled ? "включён" : "выключен"}`,
     "",
     "## Канонические события",
@@ -56,14 +57,10 @@ function renderMarkdown() {
     "|---|---|---|"
   ];
 
-  canonical.forEach((item) => {
-    lines.push(`| ${item.id} | ${item.coverage} | ${item.source || "—"} |`);
-  });
+  canonical.forEach((item) => lines.push(`| ${item.id} | ${item.coverage} | ${item.source || "—"} |`));
 
   lines.push("", "## Измерения", "", "| Измерение | Доступность | Источник |", "|---|---|---|");
-  dimensions.forEach((item) => {
-    lines.push(`| ${item.id} | ${item.availability} | ${item.source || "—"} |`);
-  });
+  dimensions.forEach((item) => lines.push(`| ${item.id} | ${item.availability} | ${item.source || "—"} |`));
 
   lines.push("", "## Известные блокеры", "");
   gaps.forEach((gap) => lines.push(`- ${gap}`));
