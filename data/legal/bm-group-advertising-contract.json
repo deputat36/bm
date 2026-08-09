@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "updated_at": "2026-08-09",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "requires_external_written_approval",
@@ -20,16 +20,44 @@
       "официальный сайт жк",
       "официальный сайт теллерманов сад"
     ],
-    "forbidden_legacy_paths": [
-      "/kvartiry-ot-zastroyschika-borisoglebsk/",
-      "/spisok-ozhidaniya/"
-    ],
+    "legacy_problem_routes_may_exist_only_as_safe_transition_stubs": true,
     "brand_or_geo_paid_search_without_written_approval_forbidden": true,
     "object_specific_publication_without_written_approval_forbidden": true,
     "object_specific_offline_material_without_written_approval_forbidden": true,
     "official_social_identity_forbidden": true,
     "campaign_definition_without_publication_is_allowed": true,
     "general_portal_campaigns_are_not_bm_object_campaigns": true
+  },
+  "legacy_transition_routes": [
+    {
+      "source_url": "/kvartiry-ot-zastroyschika-borisoglebsk/",
+      "source_file": "kvartiry-ot-zastroyschika-borisoglebsk/index.html",
+      "target_url": "/catalog/",
+      "target_href": "../catalog/",
+      "canonical": "https://novostroyki-borisoglebsk.ru/catalog/",
+      "status": "transition_page",
+      "server_redirect_status": "blocked_by_hosting_redirect_format"
+    },
+    {
+      "source_url": "/spisok-ozhidaniya/",
+      "source_file": "spisok-ozhidaniya/index.html",
+      "target_url": "/catalog/",
+      "target_href": "../catalog/",
+      "canonical": "https://novostroyki-borisoglebsk.ru/catalog/",
+      "status": "transition_page",
+      "server_redirect_status": "blocked_by_hosting_redirect_format"
+    }
+  ],
+  "legacy_transition_requirements": {
+    "robots": "noindex,follow",
+    "migration_marker": "data-legacy-migration-stub=\"bm-contract\"",
+    "old_domain_forbidden": true,
+    "old_branding_forbidden": true,
+    "lead_form_forbidden": true,
+    "automatic_redirect_forbidden_until_server_release": true,
+    "object_specific_claims_forbidden": true,
+    "explicit_target_link_required": true,
+    "sitemap_inclusion_forbidden": true
   },
   "approval": {
     "status": "requires_external_written_approval",
@@ -65,9 +93,9 @@
   "current_migration_state": {
     "neutral_portal_domain": "novostroyki-borisoglebsk.ru",
     "old_domain_in_public_core_forbidden": true,
-    "legacy_problem_page_must_not_exist": true,
-    "waitlist_page_must_not_exist": true,
+    "legacy_problem_routes_neutralized_as_transition_stubs": true,
+    "server_redirect_release_still_blocked": true,
     "covered_object_page_must_remain_noindex_until_other_gates_pass": true
   },
-  "note": "Этот контракт не утверждает право или запрет на конкретный будущий рекламный материал вместо договора/письменного согласования. Он только технически блокирует фактическую object-specific публикацию без сохранённого evidence и scope."
+  "note": "Этот контракт не утверждает право или запрет на конкретный будущий рекламный материал вместо договора/письменного согласования. Он технически блокирует фактическую object-specific публикацию без сохранённого evidence и scope. Два старых SEO/lead URL разрешены только как нейтральные noindex transition stubs до отдельного server redirect release."
 }
