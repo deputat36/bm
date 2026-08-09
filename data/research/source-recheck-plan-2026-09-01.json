@@ -48,11 +48,11 @@
       "project_id": "aerodromnaya-18g",
       "address": "г. Борисоглебск, ул. Аэродромная, 18Г",
       "current_source_state": {
-        "developer_entity": "candidate_found",
-        "public_registry": "missing",
-        "building_permit": "missing",
-        "project_or_sale_document": "missing",
-        "media_rights": "missing"
+        "aerodromnaya_18g_public_registry": "missing",
+        "aerodromnaya_18g_developer_entity": "candidate_found",
+        "aerodromnaya_18g_building_permit": "missing",
+        "aerodromnaya_18g_project_declaration": "missing",
+        "aerodromnaya_18g_media_rights": "missing"
       },
       "registry_queries": [
         "точное совпадение адреса Аэродромная 18Г",
@@ -78,11 +78,11 @@
       "project_id": "sennaya-76",
       "address": "г. Борисоглебск, ул. Сенная, 76",
       "current_source_state": {
-        "building_registry": "missing",
-        "commissioning_permit": "missing",
-        "developer_entity": "missing",
-        "ownership_and_sale_scheme": "missing",
-        "media_rights": "missing"
+        "sennaya_76_public_registry": "missing",
+        "sennaya_76_developer_entity": "missing",
+        "sennaya_76_building_permit": "missing",
+        "sennaya_76_project_declaration": "missing",
+        "sennaya_76_media_rights": "missing"
       },
       "registry_queries": [
         "точное совпадение адреса Сенная 76",
@@ -99,8 +99,8 @@
         "идентификаторы, позволяющие сопоставить объект с ЕГРН/правами продавца"
       ],
       "closes_only_if_evidence_matches": [
-        "sennaya_76_building_registry",
-        "sennaya_76_commissioning_permit",
+        "sennaya_76_public_registry",
+        "sennaya_76_building_permit",
         "sennaya_76_developer_entity"
       ]
     }
