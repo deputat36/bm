@@ -1,0 +1,92 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "supabase_project_id": "ofewxuqfjhamgerwzull",
+  "status": "repository_guard_active_live_shared_findings_pending",
+  "purpose": "Отделить security posture портала новостроек от других приложений общего Supabase-проекта и защищать portal-owned newbuild_* migrations без изменения чужих nav/nav_v2 контуров.",
+  "ownership": {
+    "portal_owned_prefixes": [
+      "newbuild_",
+      "set_newbuild_"
+    ],
+    "shared_project_out_of_scope_prefixes": [
+      "nav_",
+      "nav_v2_",
+      "parket_",
+      "broker_"
+    ],
+    "out_of_scope_mutation_forbidden_from_portal_work": true
+  },
+  "live_advisor_snapshot": {
+    "checked_at": "2026-08-09",
+    "security_advisor_checked": true,
+    "portal_findings": [
+      {
+        "lint": "rls_enabled_no_policy",
+        "level": "INFO",
+        "entity": "public.newbuild_leads",
+        "classification": "expected_service_role_only_pattern_verify_grants_statically"
+      },
+      {
+        "lint": "rls_enabled_no_policy",
+        "level": "INFO",
+        "entity": "public.newbuild_lead_events",
+        "classification": "expected_service_role_only_pattern_verify_grants_statically"
+      },
+      {
+        "lint": "rls_enabled_no_policy",
+        "level": "INFO",
+        "entity": "public.newbuild_lead_rate_limits",
+        "classification": "expected_service_role_only_pattern_verify_grants_statically"
+      },
+      {
+        "lint": "rls_enabled_no_policy",
+        "level": "INFO",
+        "entity": "public.newbuild_lead_operational_policies",
+        "classification": "expected_service_role_only_pattern_verify_grants_statically"
+      }
+    ],
+    "portal_security_definer_warn_observed": false,
+    "shared_project_findings": [
+      {
+        "lint": "authenticated_security_definer_function_executable",
+        "level": "WARN",
+        "scope": "nav_/nav_v2_ CRM functions",
+        "classification": "out_of_scope_for_portal_no_automatic_mutation"
+      }
+    ],
+    "global_project_findings": [
+      {
+        "lint": "auth_leaked_password_protection",
+        "level": "WARN",
+        "scope": "shared Supabase Auth",
+        "classification": "shared_project_owner_decision_not_portal_migration"
+      }
+    ]
+  },
+  "repository_rules": {
+    "portal_security_definer_forbidden": true,
+    "portal_functions_require_explicit_security_invoker": true,
+    "portal_functions_require_fixed_search_path": true,
+    "portal_function_public_anon_authenticated_execute_forbidden": true,
+    "portal_tables_require_rls_enable": true,
+    "portal_table_anon_authenticated_grants_forbidden": true,
+    "portal_views_require_security_invoker": true,
+    "portal_views_anon_authenticated_grants_forbidden": true,
+    "service_role_access_may_be_explicitly_granted": true,
+    "browser_direct_database_credentials_forbidden": true
+  },
+  "live_follow_up": {
+    "rerun_security_advisor_after_portal_ddl": true,
+    "global_auth_leaked_password_setting_requires_shared_owner": true,
+    "shared_crm_security_definer_warnings_require_separate_crm_security_work": true,
+    "portal_issue_must_not_claim_shared_project_warns_fixed": true
+  },
+  "documentation_basis": {
+    "supabase_function_security": "https://supabase.com/docs/guides/database/functions",
+    "supabase_view_security": "https://supabase.com/docs/guides/database/tables",
+    "supabase_api_security": "https://supabase.com/docs/guides/api/securing-your-api",
+    "supabase_data_api_change": "https://supabase.com/changelog/45329-breaking-change-tables-not-exposed-to-data-and-graphql-api-automatically"
+  }
+}
