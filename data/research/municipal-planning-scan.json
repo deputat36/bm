@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "partial_access_limited",
+  "purpose": "Фиксировать муниципальные и региональные градостроительные публикации, которые могут выявлять публично подтверждённые планируемые жилые проекты, без вывода о новом ЖК только из общего изменения ПЗЗ.",
+  "rules": {
+    "planning_change_is_not_project_confirmation": true,
+    "exact_address_or_land_plot_required_for_candidate": true,
+    "residential_project_intent_required_for_candidate": true,
+    "missing_map_attachment_blocks_project_inference": true,
+    "secondary_legal_mirror_cannot_replace_missing_map_content": true,
+    "scan_has_no_publication_effect": true,
+    "absence_in_search_is_not_proof_of_absence": true
+  },
+  "documents": [
+    {
+      "id": "voronezh_architecture_pzz_2026_182",
+      "document_type": "pzz_amendment",
+      "authority": "Министерство архитектуры и градостроительства Воронежской области",
+      "number": "45-01-04/182",
+      "document_date": "2026-04-21",
+      "effective_date": "2026-05-30",
+      "official_publication_date": "2026-05-20",
+      "official_publication_number": "3601202605200001",
+      "official_reference": "https://publication.pravo.gov.ru/document/3601202605200001",
+      "readable_legal_mirror": "https://base.garant.ru/414253375/",
+      "checked_at": "2026-08-09",
+      "supports": [
+        "pzz_changed_in_2026",
+        "citywide_zoning_maps_reissued",
+        "public_hearing_results_2025-06-20_and_2026-03-27_referenced"
+      ],
+      "missing_content": [
+        "appendix_1_citywide_zoning_map",
+        "appendix_2_map_fragment",
+        "appendix_3_map_fragment",
+        "appendix_4_special_conditions_map",
+        "appendix_5_special_conditions_fragment",
+        "appendix_6"
+      ],
+      "project_inference_allowed": false,
+      "reason_project_inference_blocked": "Доступный текст приказа прямо публикуется без приложений 1–6; без карт и exact land-plot/address context нельзя установить, относится ли изменение к новому жилому проекту."
+    }
+  ],
+  "candidate_project_observations": [],
+  "unresolved_scan_gaps": [
+    {
+      "id": "pzz_2026_182_map_attachments",
+      "type": "missing_primary_attachment",
+      "blocks": [
+        "exact_changed_zones_reconciliation",
+        "planned_residential_project_detection_from_pzz"
+      ],
+      "next_action": "Получить приложения 1–6 к приказу №45-01-04/182 из официального опубликования/Минархитектуры и сопоставить изменения с кадастровыми участками Борисоглебска."
+    },
+    {
+      "id": "municipal_public_hearing_archive",
+      "type": "access_limited_archive",
+      "blocks": [
+        "systematic_planning_hearing_reconciliation"
+      ],
+      "next_action": "Получить читаемый архив муниципальных публичных слушаний/общественных обсуждений и проверить exact residential addresses/land plots."
+    }
+  ],
+  "completion_state": {
+    "exact_candidate_projects_found": 0,
+    "blocking_gap_ids": [
+      "pzz_2026_182_map_attachments",
+      "municipal_public_hearing_archive"
+    ],
+    "municipal_scan_complete": false,
+    "completion_claim": "not_allowed"
+  }
+}

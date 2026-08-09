@@ -112,16 +112,18 @@
     {
       "id": "municipal_planning_and_address_scan",
       "authority_class": "primary_required",
-      "status": "access_limited_pending",
+      "status": "partial_access_limited",
       "completeness_effect": "required_for_completion",
       "evidence": [
+        "data/research/municipal-planning-scan.json",
         "data/research/source-recheck-plan-2026-09-01.json"
       ],
       "limitations": [
-        "official municipal channel is identified but crawler access is currently restricted",
-        "planning/public-hearing/address records have not been systematically reconciled"
+        "current 2026 PZZ amendment publication is identified, but the readable legal mirror omits map appendices 1-6",
+        "exact changed land plots and residential project intent cannot be derived without the missing maps",
+        "municipal public-hearing archive is not yet systematically readable/reconciled"
       ],
-      "next_action": "obtain readable municipal planning/address records and scan publicly confirmed planned projects"
+      "next_action": "obtain PZZ map appendices and readable hearing archive; reconcile only exact residential address/land-plot observations"
     },
     {
       "id": "registry_entity_reconciliation",
