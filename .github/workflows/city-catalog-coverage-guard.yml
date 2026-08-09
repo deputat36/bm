@@ -1,0 +1,79 @@
+name: City catalog coverage guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/research/city-catalog-coverage.json"
+      - "data/research/priority-projects.json"
+      - "data/research/reference-projects.json"
+      - "data/research/reference-candidates.json"
+      - "catalog/index.html"
+      - "assets/js/reference-catalog.js"
+      - "tools/validate-city-catalog-coverage.mjs"
+      - ".github/workflows/city-catalog-coverage-guard.yml"
+  pull_request:
+    paths:
+      - "data/research/city-catalog-coverage.json"
+      - "data/research/priority-projects.json"
+      - "data/research/reference-projects.json"
+      - "data/research/reference-candidates.json"
+      - "catalog/index.html"
+      - "assets/js/reference-catalog.js"
+      - "tools/validate-city-catalog-coverage.mjs"
+      - ".github/workflows/city-catalog-coverage-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-city-catalog-coverage.mjs
+
+      - name: Validate city catalog coverage
+        run: node tools/validate-city-catalog-coverage.mjs
+
+      - name: Reject false completeness claim
+        run: |
+          cp data/research/city-catalog-coverage.json /tmp/city-catalog-coverage-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/research/city-catalog-coverage.json', 'utf8'));
+          data.rules.completeness_claim_allowed = true;
+          data.coverage_summary.research_queue_complete = true;
+          fs.writeFileSync('data/research/city-catalog-coverage.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-city-catalog-coverage.mjs; then
+            echo "Coverage validator incorrectly allowed a completeness claim"
+            exit 1
+          fi
+          cp /tmp/city-catalog-coverage-baseline.json data/research/city-catalog-coverage.json
+
+      - name: Reject unresolved candidate as reference
+        run: |
+          cp data/research/city-catalog-coverage.json /tmp/city-catalog-coverage-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/research/city-catalog-coverage.json', 'utf8'));
+          const source = data.discovery_sources.find((item) => item.id === 'metallinvestbank_aleks_archive_2026-08-09');
+          source.observed_objects[0].mapping.registry = 'reference';
+          fs.writeFileSync('data/research/city-catalog-coverage.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-city-catalog-coverage.mjs; then
+            echo "Coverage validator incorrectly allowed unresolved candidate as reference"
+            exit 1
+          fi
+          cp /tmp/city-catalog-coverage-baseline.json data/research/city-catalog-coverage.json
