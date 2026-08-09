@@ -1,0 +1,157 @@
+name: Offer history storage guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/offers/history-storage.json"
+      - "data/offers/history-contract.json"
+      - "data/offers/contract.json"
+      - "data/offers/feed.json"
+      - "data/security/portal-supabase-security.json"
+      - "tools/validate-offer-history-storage.mjs"
+      - "tools/validate-offer-history.mjs"
+      - "tools/build-offer-history-storage-sql.mjs"
+      - "tools/build-offer-history-plan.mjs"
+      - "docs/portal/OFFER_HISTORY_STORAGE_DESIGN.md"
+      - "supabase/migrations/**"
+      - ".github/workflows/offer-history-storage-guard.yml"
+  pull_request:
+    paths:
+      - "data/offers/history-storage.json"
+      - "data/offers/history-contract.json"
+      - "data/offers/contract.json"
+      - "data/offers/feed.json"
+      - "data/security/portal-supabase-security.json"
+      - "tools/validate-offer-history-storage.mjs"
+      - "tools/validate-offer-history.mjs"
+      - "tools/build-offer-history-storage-sql.mjs"
+      - "tools/build-offer-history-plan.mjs"
+      - "docs/portal/OFFER_HISTORY_STORAGE_DESIGN.md"
+      - "supabase/migrations/**"
+      - ".github/workflows/offer-history-storage-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-offer-history-storage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-offer-history-storage.mjs
+          node --check tools/validate-offer-history.mjs
+          node --check tools/build-offer-history-storage-sql.mjs
+          node --check tools/build-offer-history-plan.mjs
+
+      - name: Validate storage design and history contract
+        run: |
+          node tools/validate-offer-history-storage.mjs
+          node tools/validate-offer-history.mjs
+
+      - name: Validate implementation plan state
+        run: |
+          node tools/build-offer-history-plan.mjs --format=json > /tmp/offer-history-plan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('/tmp/offer-history-plan.json', 'utf8'));
+          const s = data.summary || {};
+          if (s.store_selected !== true) process.exit(1);
+          if (s.retention_policy_selected !== false) process.exit(1);
+          if (s.backup_export_policy_selected !== false) process.exit(1);
+          if (s.storage_connected !== false) process.exit(1);
+          if (s.history_write_enabled !== false) process.exit(1);
+          if (s.public_history_api_enabled !== false) process.exit(1);
+          if (s.current_feed_connected !== false || s.current_feed_public !== false || s.current_offer_count !== 0) process.exit(1);
+          console.log(`History plan: store=${s.store_selected}; retention=${s.retention_policy_selected}; storage=${s.storage_connected}; writes=${s.history_write_enabled}`);
+          NODE
+
+      - name: Build and inspect SQL preview
+        run: |
+          node tools/build-offer-history-storage-sql.mjs > /tmp/offer-history-storage.sql
+          test "$(head -n 1 /tmp/offer-history-storage.sql)" = "-- PREVIEW ONLY - NOT DEPLOYED"
+          tail -n 1 /tmp/offer-history-storage.sql | grep -F -- "-- PREVIEW ONLY - NOT DEPLOYED"
+          grep -F "create table if not exists public.newbuild_offer_history_events" /tmp/offer-history-storage.sql
+          grep -F "public.newbuild_offer_history_events_append_only" /tmp/offer-history-storage.sql
+          grep -F "enable row level security" /tmp/offer-history-storage.sql
+          grep -F "force row level security" /tmp/offer-history-storage.sql
+          grep -F "security invoker" /tmp/offer-history-storage.sql
+          grep -F "revoke all on table public.newbuild_offer_history_events from public, anon, authenticated" /tmp/offer-history-storage.sql
+          grep -F "grant select, insert on table public.newbuild_offer_history_events to service_role" /tmp/offer-history-storage.sql
+          grep -F "this preview intentionally has no INSERT writer function" /tmp/offer-history-storage.sql
+          if grep -qi "security definer" /tmp/offer-history-storage.sql; then
+            echo "Offer history SQL preview contains SECURITY DEFINER"
+            exit 1
+          fi
+
+      - name: Assert no offer history migration exists
+        run: |
+          if grep -R -n -E "newbuild_offer_history_events|newbuild_offer_history_events_append_only" supabase/migrations; then
+            echo "Design-only phase must not create a Supabase migration for offer history"
+            exit 1
+          fi
+
+      - name: Reject premature production DDL state
+        run: |
+          cp data/offers/history-storage.json /tmp/history-storage-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/offers/history-storage.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.deployment.production_ddl_applied = true;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-offer-history-storage.mjs; then
+            echo "History storage validator incorrectly allowed production DDL without deployment evidence"
+            exit 1
+          fi
+          cp /tmp/history-storage-baseline.json data/offers/history-storage.json
+
+      - name: Reject invented retention policy
+        run: |
+          cp data/offers/history-storage.json /tmp/history-storage-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/offers/history-storage.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.retention.status = 'selected';
+          data.retention.retention_days = 365;
+          data.completion_state.retention_policy_selected = true;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-offer-history-storage.mjs; then
+            echo "History storage validator incorrectly allowed an invented retention policy"
+            exit 1
+          fi
+          cp /tmp/history-storage-baseline.json data/offers/history-storage.json
+
+      - name: Reject premature storage connection
+        run: |
+          cp data/offers/history-contract.json /tmp/history-contract-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/offers/history-contract.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.rules.storage_connected = true;
+          data.history_store.server_side_append_only_enforcement = true;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-offer-history-storage.mjs; then
+            echo "History storage validator incorrectly allowed storage_connected=true before deployment"
+            exit 1
+          fi
+          cp /tmp/history-contract-baseline.json data/offers/history-contract.json
+          node tools/validate-offer-history-storage.mjs
+          node tools/validate-offer-history.mjs
