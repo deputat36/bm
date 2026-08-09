@@ -1,0 +1,110 @@
+name: Commercial outcome event guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/operations/commercial-outcome-events.json"
+      - "data/operations/lead-lifecycle.json"
+      - "data/operations/lead-handling.json"
+      - "data/operations/lead-operations-approval.json"
+      - "data/operations/lead-event-log.json"
+      - "data/analytics/internal-outcomes.json"
+      - "data/analytics/events.json"
+      - "tools/validate-commercial-outcome-events.mjs"
+      - "tools/build-commercial-outcome-event-plan.mjs"
+      - "docs/portal/COMMERCIAL_OUTCOME_EVENT_CONTRACT.md"
+      - ".github/workflows/commercial-outcome-event-guard.yml"
+  pull_request:
+    paths:
+      - "data/operations/commercial-outcome-events.json"
+      - "data/operations/lead-lifecycle.json"
+      - "data/operations/lead-handling.json"
+      - "data/operations/lead-operations-approval.json"
+      - "data/operations/lead-event-log.json"
+      - "data/analytics/internal-outcomes.json"
+      - "data/analytics/events.json"
+      - "tools/validate-commercial-outcome-events.mjs"
+      - "tools/build-commercial-outcome-event-plan.mjs"
+      - "docs/portal/COMMERCIAL_OUTCOME_EVENT_CONTRACT.md"
+      - ".github/workflows/commercial-outcome-event-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-commercial-outcome-events:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-commercial-outcome-events.mjs
+          node --check tools/build-commercial-outcome-event-plan.mjs
+
+      - name: Validate commercial outcome contract
+        run: node tools/validate-commercial-outcome-events.mjs
+
+      - name: Build commercial event plan
+        run: |
+          node tools/build-commercial-outcome-event-plan.mjs --format=json > /tmp/commercial-outcomes.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/commercial-outcomes.json","utf8")); const s=data.summary||{}; if(s.commercial_events!==8||s.terminal_events!==2||s.non_terminal_events!==6||s.closure_reason_candidates!==9||s.closure_policy_status!=="requires_owner_decision"||s.persistence_connected!==false||s.event_write_enabled!==false||s.activation_gates!==6) process.exit(1); console.log(`Commercial events=${s.commercial_events}; terminal=${s.terminal_events}; closure=${s.closure_policy_status}`);'
+
+      - name: Reject closed_lost without reason requirement
+        run: |
+          cp data/operations/commercial-outcome-events.json /tmp/commercial-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/operations/commercial-outcome-events.json', 'utf8'));
+          const event = data.events.find((item) => item.id === 'closed_lost');
+          event.required_non_null_fields = [];
+          fs.writeFileSync('data/operations/commercial-outcome-events.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-commercial-outcome-events.mjs; then
+            echo "Validator incorrectly allowed closed_lost without reason_code"
+            exit 1
+          fi
+          cp /tmp/commercial-baseline.json data/operations/commercial-outcome-events.json
+
+      - name: Reject unapproved closure taxonomy
+        run: |
+          cp data/operations/commercial-outcome-events.json /tmp/commercial-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/operations/commercial-outcome-events.json', 'utf8'));
+          data.closure_reason_policy.candidate_values_from_owner_register.push('price_too_high');
+          fs.writeFileSync('data/operations/commercial-outcome-events.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-commercial-outcome-events.mjs; then
+            echo "Validator incorrectly allowed taxonomy outside owner register"
+            exit 1
+          fi
+          cp /tmp/commercial-baseline.json data/operations/commercial-outcome-events.json
+
+      - name: Reject premature analytics availability
+        run: |
+          cp data/analytics/internal-outcomes.json /tmp/internal-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/analytics/internal-outcomes.json', 'utf8'));
+          const event = data.canonical_outcome_events.find((item) => item.id === 'showing_completed');
+          event.coverage = 'available';
+          event.source = 'future_store.showing_completed';
+          fs.writeFileSync('data/analytics/internal-outcomes.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-commercial-outcome-events.mjs; then
+            echo "Validator incorrectly allowed commercial event availability before persistence"
+            exit 1
+          fi
+          cp /tmp/internal-baseline.json data/analytics/internal-outcomes.json
+          node tools/validate-commercial-outcome-events.mjs
