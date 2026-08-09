@@ -133,6 +133,16 @@
           ]
         },
         {
+          "class": "secondary_industry_project_directory",
+          "title": "Первички.ру — ЖК по пер. Студенческий, 5 от застройщика Алекс",
+          "url": "https://pervichki.ru/city/borisoglebsk/zhk-po-perstudencheskiy-5/",
+          "supports": [
+            "current_cross_check_exact_project_address",
+            "current_cross_check_builder_identity",
+            "secondary_commissioned_2017_claim"
+          ]
+        },
+        {
           "class": "secondary_current_use",
           "title": "Т-Путешествия — размещение по адресу Студенческий переулок, 5",
           "url": "https://www.tbank.ru/travel/hotels/new/hotels/3495164/",
@@ -156,6 +166,7 @@
       ],
       "publication_limits": [
         "do_not_render",
+        "do_not_treat_secondary_commissioned_2017_claim_as_primary_evidence",
         "absence_from_one_regulator_list_is_not_proof_of_absence",
         "secondary_current_use_is_not_commissioning_evidence"
       ],
