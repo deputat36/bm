@@ -1,0 +1,127 @@
+name: BM contract advertising guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "CONTRACT_AD_AUDIT_2026-07-01.md"
+      - "data/legal/bm-group-advertising-contract.json"
+      - "data/marketing/utm-campaigns.json"
+      - "data/marketing/campaign-publications.json"
+      - "data/release/manual-gates.json"
+      - "catalog/prostornaya-4a/**"
+      - "index.html"
+      - "catalog/**"
+      - "developers/**"
+      - "guides/**"
+      - "news/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "about/**"
+      - "sources/**"
+      - "legal/**"
+      - "privacy/**"
+      - "personal-data-consent/**"
+      - "advertising/**"
+      - "karta-sayta/**"
+      - "spasibo/**"
+      - "sitemap.xml"
+      - "tools/validate-bm-contract-advertising.mjs"
+      - "docs/portal/BM_GROUP_ADVERTISING_GUARD.md"
+      - ".github/workflows/bm-contract-advertising-guard.yml"
+  pull_request:
+    paths:
+      - "CONTRACT_AD_AUDIT_2026-07-01.md"
+      - "data/legal/bm-group-advertising-contract.json"
+      - "data/marketing/utm-campaigns.json"
+      - "data/marketing/campaign-publications.json"
+      - "data/release/manual-gates.json"
+      - "catalog/prostornaya-4a/**"
+      - "index.html"
+      - "catalog/**"
+      - "developers/**"
+      - "guides/**"
+      - "news/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "about/**"
+      - "sources/**"
+      - "legal/**"
+      - "privacy/**"
+      - "personal-data-consent/**"
+      - "advertising/**"
+      - "karta-sayta/**"
+      - "spasibo/**"
+      - "sitemap.xml"
+      - "tools/validate-bm-contract-advertising.mjs"
+      - "docs/portal/BM_GROUP_ADVERTISING_GUARD.md"
+      - ".github/workflows/bm-contract-advertising-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-bm-contract-advertising:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator
+        run: node --check tools/validate-bm-contract-advertising.mjs
+
+      - name: Validate current contract-advertising state
+        run: node tools/validate-bm-contract-advertising.mjs
+
+      - name: Reject prohibited public phrase
+        run: |
+          cp catalog/prostornaya-4a/index.html /tmp/prostornaya-baseline.html
+          printf '\n<p>Квартиры от застройщика</p>\n' >> catalog/prostornaya-4a/index.html
+          if node tools/validate-bm-contract-advertising.mjs; then
+            echo "Validator incorrectly allowed prohibited developer-direct wording"
+            exit 1
+          fi
+          cp /tmp/prostornaya-baseline.html catalog/prostornaya-4a/index.html
+
+      - name: Reject old single-project domain
+        run: |
+          cp index.html /tmp/home-baseline.html
+          printf '\n<a href="https://tellermanovsad.ru/">old</a>\n' >> index.html
+          if node tools/validate-bm-contract-advertising.mjs; then
+            echo "Validator incorrectly allowed old single-project domain"
+            exit 1
+          fi
+          cp /tmp/home-baseline.html index.html
+
+      - name: Reject covered-object publication without written approval
+        run: |
+          cp data/marketing/campaign-publications.json /tmp/publications-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/marketing/campaign-publications.json', 'utf8'));
+          data.publications.push({
+            publication_id: 'test_bm_publication',
+            campaign_id: 'prostornaya_4a_vk_launch',
+            status: 'published',
+            channel: 'vk',
+            external_url: 'https://example.com/test-publication',
+            published_at: '2026-08-09T18:00:00+03:00',
+            evidence: 'issue:7',
+            owner: 'role:campaign_owner'
+          });
+          fs.writeFileSync('data/marketing/campaign-publications.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-bm-contract-advertising.mjs; then
+            echo "Validator incorrectly allowed covered-object publication without written approval"
+            exit 1
+          fi
+          cp /tmp/publications-baseline.json data/marketing/campaign-publications.json
+          node tools/validate-bm-contract-advertising.mjs
