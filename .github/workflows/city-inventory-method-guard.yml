@@ -1,0 +1,105 @@
+name: City inventory method guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/research/city-inventory-method.json"
+      - "data/research/city-catalog-coverage.json"
+      - "data/research/priority-projects.json"
+      - "data/research/reference-projects.json"
+      - "data/research/reference-candidates.json"
+      - "data/research/source-collection.json"
+      - "data/research/source-recheck-plan-2026-09-01.json"
+      - "tools/validate-city-inventory-method.mjs"
+      - "docs/portal/CITY_INVENTORY_METHOD.md"
+      - ".github/workflows/city-inventory-method-guard.yml"
+  pull_request:
+    paths:
+      - "data/research/city-inventory-method.json"
+      - "data/research/city-catalog-coverage.json"
+      - "data/research/priority-projects.json"
+      - "data/research/reference-projects.json"
+      - "data/research/reference-candidates.json"
+      - "data/research/source-collection.json"
+      - "data/research/source-recheck-plan-2026-09-01.json"
+      - "tools/validate-city-inventory-method.mjs"
+      - "docs/portal/CITY_INVENTORY_METHOD.md"
+      - ".github/workflows/city-inventory-method-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-city-inventory-method:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-city-inventory-method.mjs
+
+      - name: Validate city inventory method
+        run: node tools/validate-city-inventory-method.mjs
+
+      - name: Reject false inventory completion
+        run: |
+          cp data/research/city-inventory-method.json /tmp/city-inventory-method-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/city-inventory-method.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.status = 'method_defined_execution_complete';
+          data.rules.inventory_complete_allowed = true;
+          data.completion_state.inventory_complete = true;
+          data.completion_state.completion_claim = 'allowed';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-city-inventory-method.mjs; then
+            echo "Inventory validator incorrectly allowed false completion"
+            exit 1
+          fi
+          cp /tmp/city-inventory-method-baseline.json data/research/city-inventory-method.json
+
+      - name: Reject secondary scan as completeness authority
+        run: |
+          cp data/research/city-inventory-method.json /tmp/city-inventory-method-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/city-inventory-method.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const scan = data.required_scans.find((item) => item.id === 'secondary_housing_stock_scan_2018_plus');
+          scan.completeness_effect = 'required_for_completion';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-city-inventory-method.mjs; then
+            echo "Inventory validator incorrectly allowed secondary completeness authority"
+            exit 1
+          fi
+          cp /tmp/city-inventory-method-baseline.json data/research/city-inventory-method.json
+
+      - name: Reject stale permit recheck date
+        run: |
+          cp data/research/city-inventory-method.json /tmp/city-inventory-method-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/city-inventory-method.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const scan = data.required_scans.find((item) => item.id === 'primary_permit_and_commissioning_registry_scan');
+          scan.not_before = '2026-08-31';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-city-inventory-method.mjs; then
+            echo "Inventory validator incorrectly allowed stale permit recheck date"
+            exit 1
+          fi
+          cp /tmp/city-inventory-method-baseline.json data/research/city-inventory-method.json
+          node tools/validate-city-inventory-method.mjs
