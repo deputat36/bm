@@ -60,6 +60,156 @@
         }
       ],
       "notes": ""
+    },
+    {
+      "guide_id": "guide-documents-check",
+      "review_type": "editorial",
+      "status": "passed",
+      "reviewer_reference": "role:content_editor",
+      "checked_at": "2026-08-09",
+      "check_results": {
+        "single_search_intent": true,
+        "title_description_alignment": true,
+        "answer_first_structure": true,
+        "readability_and_navigation": true,
+        "source_claim_alignment": true,
+        "cta_relevance": true,
+        "language_quality": true,
+        "internal_linking": true
+      },
+      "evidence": [
+        {
+          "type": "repository_file",
+          "reference": "docs/portal/reviews/GUIDES_EDITORIAL_BATCH_REVIEW_2026-08-09.md",
+          "note": "Раздел guide-documents-check"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "guide_id": "guide-seller-documents",
+      "review_type": "editorial",
+      "status": "passed",
+      "reviewer_reference": "role:content_editor",
+      "checked_at": "2026-08-09",
+      "check_results": {
+        "single_search_intent": true,
+        "title_description_alignment": true,
+        "answer_first_structure": true,
+        "readability_and_navigation": true,
+        "source_claim_alignment": true,
+        "cta_relevance": true,
+        "language_quality": true,
+        "internal_linking": true
+      },
+      "evidence": [
+        {
+          "type": "repository_file",
+          "reference": "docs/portal/reviews/GUIDES_EDITORIAL_BATCH_REVIEW_2026-08-09.md",
+          "note": "Раздел guide-seller-documents"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "guide_id": "guide-contract-types",
+      "review_type": "editorial",
+      "status": "passed",
+      "reviewer_reference": "role:content_editor",
+      "checked_at": "2026-08-09",
+      "check_results": {
+        "single_search_intent": true,
+        "title_description_alignment": true,
+        "answer_first_structure": true,
+        "readability_and_navigation": true,
+        "source_claim_alignment": true,
+        "cta_relevance": true,
+        "language_quality": true,
+        "internal_linking": true
+      },
+      "evidence": [
+        {
+          "type": "repository_file",
+          "reference": "docs/portal/reviews/GUIDES_EDITORIAL_BATCH_REVIEW_2026-08-09.md",
+          "note": "Раздел guide-contract-types"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "guide_id": "guide-project-declaration",
+      "review_type": "editorial",
+      "status": "passed",
+      "reviewer_reference": "role:content_editor",
+      "checked_at": "2026-08-09",
+      "check_results": {
+        "single_search_intent": true,
+        "title_description_alignment": true,
+        "answer_first_structure": true,
+        "readability_and_navigation": true,
+        "source_claim_alignment": true,
+        "cta_relevance": true,
+        "language_quality": true,
+        "internal_linking": true
+      },
+      "evidence": [
+        {
+          "type": "repository_file",
+          "reference": "docs/portal/reviews/GUIDES_EDITORIAL_BATCH_REVIEW_2026-08-09.md",
+          "note": "Раздел guide-project-declaration"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "guide_id": "guide-permit-commissioning",
+      "review_type": "editorial",
+      "status": "passed",
+      "reviewer_reference": "role:content_editor",
+      "checked_at": "2026-08-09",
+      "check_results": {
+        "single_search_intent": true,
+        "title_description_alignment": true,
+        "answer_first_structure": true,
+        "readability_and_navigation": true,
+        "source_claim_alignment": true,
+        "cta_relevance": true,
+        "language_quality": true,
+        "internal_linking": true
+      },
+      "evidence": [
+        {
+          "type": "repository_file",
+          "reference": "docs/portal/reviews/GUIDES_EDITORIAL_BATCH_REVIEW_2026-08-09.md",
+          "note": "Раздел guide-permit-commissioning"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "guide_id": "guide-uncommissioned-section",
+      "review_type": "editorial",
+      "status": "passed",
+      "reviewer_reference": "role:content_editor",
+      "checked_at": "2026-08-09",
+      "check_results": {
+        "single_search_intent": true,
+        "title_description_alignment": true,
+        "answer_first_structure": true,
+        "readability_and_navigation": true,
+        "source_claim_alignment": true,
+        "cta_relevance": true,
+        "language_quality": true,
+        "internal_linking": true
+      },
+      "evidence": [
+        {
+          "type": "repository_file",
+          "reference": "docs/portal/reviews/GUIDES_EDITORIAL_BATCH_REVIEW_2026-08-09.md",
+          "note": "Раздел guide-uncommissioned-section"
+        }
+      ],
+      "notes": ""
     }
   ]
 }
