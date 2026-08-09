@@ -48,6 +48,26 @@ function validateSourceUrl(value, sourceId) {
   errors.push(`${COVERAGE_PATH}:${sourceId}: invalid source URL ${url || "<empty>"}`);
 }
 
+function validateSecondarySourceBoundary(source, sourceId) {
+  const sourceClass = String(source?.source_class || "");
+  if (!sourceClass.startsWith("secondary_")) return;
+
+  if (source.completeness_use_allowed !== false) {
+    errors.push(`${COVERAGE_PATH}:${sourceId}: secondary source must set completeness_use_allowed=false`);
+  }
+
+  if (!Array.isArray(source.limitations) || source.limitations.length < 1) {
+    errors.push(`${COVERAGE_PATH}:${sourceId}: secondary source must document at least one limitation`);
+    return;
+  }
+
+  for (const [index, limitation] of source.limitations.entries()) {
+    if (!String(limitation || "").trim()) {
+      errors.push(`${COVERAGE_PATH}:${sourceId}: limitation #${index + 1} must be non-empty`);
+    }
+  }
+}
+
 const coverage = readJson(COVERAGE_PATH);
 const priority = readJson(PRIORITY_PATH);
 const reference = readJson(REFERENCE_PATH);
@@ -68,6 +88,7 @@ if (coverage.status !== "coverage_snapshot_not_completeness_claim") {
 requireBooleanRule(coverage.rules, "completeness_claim_allowed", false);
 requireBooleanRule(coverage.rules, "absence_from_discovery_source_is_not_proof_of_absence", true);
 requireBooleanRule(coverage.rules, "secondary_source_is_discovery_only", true);
+requireBooleanRule(coverage.rules, "secondary_source_cannot_establish_completeness", true);
 requireBooleanRule(coverage.rules, "every_observed_object_requires_registry_mapping", true);
 requireBooleanRule(coverage.rules, "unresolved_object_must_map_to_candidate", true);
 requireBooleanRule(coverage.rules, "priority_and_reference_registries_remain_authoritative", true);
@@ -119,6 +140,7 @@ for (const source of coverage.discovery_sources || []) {
   if (!String(source.title || "").trim()) errors.push(`${COVERAGE_PATH}:${sourceId}: title is required`);
   if (!String(source.checked_at || "").trim()) errors.push(`${COVERAGE_PATH}:${sourceId}: checked_at is required`);
   validateSourceUrl(source.url, sourceId);
+  validateSecondarySourceBoundary(source, sourceId);
 
   if (!Array.isArray(source.observed_objects) || source.observed_objects.length < 1) {
     errors.push(`${COVERAGE_PATH}:${sourceId}: observed_objects must be non-empty`);
