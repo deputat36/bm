@@ -1,0 +1,92 @@
+name: Internal outcome analytics guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/analytics/internal-outcomes.json"
+      - "data/analytics/events.json"
+      - "data/operations/lead-lifecycle.json"
+      - "data/operations/lead-event-log.json"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/20260724060538_newbuild_lead_operations_v2.sql"
+      - "tools/validate-internal-outcomes.mjs"
+      - "tools/build-internal-outcome-report-spec.mjs"
+      - "docs/portal/INTERNAL_OUTCOME_ANALYTICS.md"
+      - ".github/workflows/internal-outcome-analytics-guard.yml"
+  pull_request:
+    paths:
+      - "data/analytics/internal-outcomes.json"
+      - "data/analytics/events.json"
+      - "data/operations/lead-lifecycle.json"
+      - "data/operations/lead-event-log.json"
+      - "supabase/functions/newbuild-lead/index.ts"
+      - "supabase/migrations/20260724060538_newbuild_lead_operations_v2.sql"
+      - "tools/validate-internal-outcomes.mjs"
+      - "tools/build-internal-outcome-report-spec.mjs"
+      - "docs/portal/INTERNAL_OUTCOME_ANALYTICS.md"
+      - ".github/workflows/internal-outcome-analytics-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-internal-outcomes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check scripts
+        run: |
+          node --check tools/validate-internal-outcomes.mjs
+          node --check tools/build-internal-outcome-report-spec.mjs
+
+      - name: Validate protected outcome contract
+        run: node tools/validate-internal-outcomes.mjs
+
+      - name: Build outcome report specification
+        run: |
+          node tools/build-internal-outcome-report-spec.mjs --format=json > /tmp/internal-outcomes.json
+          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/internal-outcomes.json","utf8")); const s=data.summary||{}; if(s.canonical_events!==12||s.canonical_available!==4||s.canonical_schema_gaps!==8||s.reporting_dimensions!==8||s.server_dimensions!==7||s.dimension_schema_gaps!==1||s.live_export_enabled!==false) process.exit(1); console.log(`Internal outcomes: ${s.canonical_available}/${s.canonical_events} canonical available; gaps=${s.canonical_schema_gaps}`);'
+
+      - name: Reject public analytics namespace overlap
+        run: |
+          cp data/analytics/events.json /tmp/public-events-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/analytics/events.json', 'utf8'));
+          data.events.push({ id: 'lead_received' });
+          fs.writeFileSync('data/analytics/events.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-internal-outcomes.mjs; then
+            echo "Validator incorrectly allowed internal outcome event in public analytics namespace"
+            exit 1
+          fi
+          cp /tmp/public-events-baseline.json data/analytics/events.json
+
+      - name: Reject inferred commercial event without source
+        run: |
+          cp data/analytics/internal-outcomes.json /tmp/internal-outcomes-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/analytics/internal-outcomes.json', 'utf8'));
+          const event = data.canonical_outcome_events.find((item) => item.id === 'closed_won');
+          event.coverage = 'available';
+          event.source = null;
+          fs.writeFileSync('data/analytics/internal-outcomes.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-internal-outcomes.mjs; then
+            echo "Validator incorrectly allowed inferred closed_won without a source"
+            exit 1
+          fi
+          cp /tmp/internal-outcomes-baseline.json data/analytics/internal-outcomes.json
+          node tools/validate-internal-outcomes.mjs
