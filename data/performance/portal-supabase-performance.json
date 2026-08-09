@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-09",
+  "portal_id": "newbuilds-borisoglebsk",
+  "supabase_project_id": "ofewxuqfjhamgerwzull",
+  "status": "prelaunch_observation_no_index_cleanup",
+  "purpose": "Отделить performance findings portal-owned newbuild_* от общего Supabase-проекта и не удалять prelaunch индексы только потому, что Advisor ещё не видел production workload.",
+  "ownership": {
+    "portal_owned_prefixes": ["newbuild_", "set_newbuild_"],
+    "shared_project_out_of_scope_prefixes": ["nav_", "nav_v2_", "parket_", "broker_", "leader_"],
+    "out_of_scope_mutation_forbidden_from_portal_work": true
+  },
+  "live_advisor_snapshot": {
+    "checked_at": "2026-08-09",
+    "performance_advisor_checked": true,
+    "portal_warn_or_error_count": 0,
+    "portal_info_count": 17,
+    "portal_info_lint": "unused_index",
+    "classification": "prelaunch_usage_not_established_do_not_drop_from_info_alone"
+  },
+  "prelaunch_indexes": [
+    {"name": "newbuild_leads_created_at_idx", "table": "public.newbuild_leads", "purpose": "recent_lead_lookup_and_reporting"},
+    {"name": "newbuild_leads_phone_normalized_idx", "table": "public.newbuild_leads", "purpose": "phone_lookup_and_duplicate_control"},
+    {"name": "newbuild_leads_lead_type_idx", "table": "public.newbuild_leads", "purpose": "lead_type_segmentation"},
+    {"name": "newbuild_leads_crm_status_idx", "table": "public.newbuild_leads", "purpose": "status_filtering_prelaunch"},
+    {"name": "newbuild_leads_complex_idx", "table": "public.newbuild_leads", "purpose": "object_filtering"},
+    {"name": "newbuild_leads_tracking_gin_idx", "table": "public.newbuild_leads", "purpose": "tracking_json_investigation"},
+    {"name": "newbuild_leads_qualification_gin_idx", "table": "public.newbuild_leads", "purpose": "qualification_json_investigation"},
+    {"name": "newbuild_lead_events_lead_id_idx", "table": "public.newbuild_lead_events", "purpose": "lead_event_timeline"},
+    {"name": "newbuild_lead_events_event_type_idx", "table": "public.newbuild_lead_events", "purpose": "event_type_filtering"},
+    {"name": "newbuild_lead_rate_limits_fingerprint_idx", "table": "public.newbuild_lead_rate_limits", "purpose": "rate_limit_fingerprint_lookup"},
+    {"name": "newbuild_lead_rate_limits_window_start_idx", "table": "public.newbuild_lead_rate_limits", "purpose": "rate_limit_window_cleanup"},
+    {"name": "newbuild_leads_operational_status_idx", "table": "public.newbuild_leads", "purpose": "operations_queue_filtering"},
+    {"name": "newbuild_leads_next_action_at_idx", "table": "public.newbuild_leads", "purpose": "next_action_queue"},
+    {"name": "newbuild_leads_first_action_due_at_idx", "table": "public.newbuild_leads", "purpose": "first_response_sla_queue"},
+    {"name": "newbuild_leads_owner_ref_idx", "table": "public.newbuild_leads", "purpose": "owner_queue_filtering"},
+    {"name": "newbuild_leads_lead_class_idx", "table": "public.newbuild_leads", "purpose": "lead_class_segmentation"},
+    {"name": "newbuild_lead_events_actor_role_idx", "table": "public.newbuild_lead_events", "purpose": "actor_role_audit_filtering"}
+  ],
+  "rules": {
+    "unused_index_info_is_not_cleanup_approval": true,
+    "prelaunch_index_drop_forbidden": true,
+    "index_cleanup_requires_live_usage_evidence": true,
+    "index_cleanup_requires_query_path_review": true,
+    "index_cleanup_requires_separate_pull_request": true,
+    "shared_project_performance_mutation_forbidden": true,
+    "advisor_rerun_required_after_portal_index_change": true,
+    "production_index_change_from_this_contract_forbidden": true
+  },
+  "usage_review_gate": {
+    "minimum_real_leads": 30,
+    "minimum_live_days": 7,
+    "both_conditions_required": true,
+    "required_evidence": [
+      "pg_stat_user_indexes_snapshot",
+      "representative_query_paths",
+      "query_plan_or_timing_for_cleanup_candidate",
+      "live_performance_advisor_snapshot"
+    ]
+  },
+  "cleanup_states": [
+    "prelaunch_observation_no_index_cleanup",
+    "usage_review_due",
+    "cleanup_candidate_review",
+    "cleanup_approved"
+  ],
+  "remediation_reference": "https://supabase.com/docs/guides/database/database-linter?lint=0005_unused_index",
+  "note": "Unused-index INFO отражает отсутствие зафиксированного использования на момент Advisor snapshot, а не доказательство бесполезности индекса."
+}
