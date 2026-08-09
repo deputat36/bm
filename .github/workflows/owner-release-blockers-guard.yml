@@ -1,0 +1,47 @@
+name: Owner release blockers guard
+
+on:
+  pull_request:
+    paths:
+      - "data/legal/legal-owner-approval.json"
+      - "data/operations/lead-operations-approval.json"
+      - "data/analytics/live-provider.json"
+      - "data/release/real-lead-test.json"
+      - "data/release/manual-gates.json"
+      - "tools/build-owner-release-blockers.mjs"
+      - "tools/validate-owner-release-blockers.mjs"
+      - ".github/workflows/owner-release-blockers-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "data/legal/legal-owner-approval.json"
+      - "data/operations/lead-operations-approval.json"
+      - "data/analytics/live-provider.json"
+      - "data/release/real-lead-test.json"
+      - "data/release/manual-gates.json"
+      - "tools/build-owner-release-blockers.mjs"
+      - "tools/validate-owner-release-blockers.mjs"
+      - ".github/workflows/owner-release-blockers-guard.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check scripts
+        run: |
+          node --check tools/build-owner-release-blockers.mjs
+          node --check tools/validate-owner-release-blockers.mjs
+      - name: Validate blocker report
+        run: node tools/validate-owner-release-blockers.mjs
+      - name: Publish owner decision summary
+        run: node tools/build-owner-release-blockers.mjs --format=markdown >> "$GITHUB_STEP_SUMMARY"
