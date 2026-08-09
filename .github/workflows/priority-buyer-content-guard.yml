@@ -1,0 +1,97 @@
+name: Priority buyer-content guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "catalog/aerodromnaya-18g/index.html"
+      - "catalog/sennaya-76/index.html"
+      - "data/verification/aerodromnaya-18g.json"
+      - "data/verification/sennaya-76.json"
+      - "data/qa/form-scenarios.json"
+      - "tools/validate-priority-buyer-content.mjs"
+      - "docs/portal/PRIORITY_BUYER_CONTENT_STANDARD.md"
+      - ".github/workflows/priority-buyer-content-guard.yml"
+  pull_request:
+    paths:
+      - "catalog/aerodromnaya-18g/index.html"
+      - "catalog/sennaya-76/index.html"
+      - "data/verification/aerodromnaya-18g.json"
+      - "data/verification/sennaya-76.json"
+      - "data/qa/form-scenarios.json"
+      - "tools/validate-priority-buyer-content.mjs"
+      - "docs/portal/PRIORITY_BUYER_CONTENT_STANDARD.md"
+      - ".github/workflows/priority-buyer-content-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-priority-buyer-content:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-priority-buyer-content.mjs
+
+      - name: Validate priority buyer-content
+        run: node tools/validate-priority-buyer-content.mjs
+
+      - name: Reject removal of noindex safety
+        run: |
+          cp catalog/aerodromnaya-18g/index.html /tmp/aerodromnaya.html
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'catalog/aerodromnaya-18g/index.html';
+          let html = fs.readFileSync(path, 'utf8');
+          html = html.replace('<meta name="robots" content="noindex,follow">', '<meta name="robots" content="index,follow">');
+          fs.writeFileSync(path, html);
+          NODE
+          if node tools/validate-priority-buyer-content.mjs; then
+            echo "Buyer-content validator incorrectly allowed removal of noindex"
+            exit 1
+          fi
+          cp /tmp/aerodromnaya.html catalog/aerodromnaya-18g/index.html
+
+      - name: Reject public claim backed by non-verified source
+        run: |
+          cp data/verification/aerodromnaya-18g.json /tmp/aerodromnaya-verification.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/verification/aerodromnaya-18g.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const source = data.sources.find((item) => item.id === 'cian-complex-card');
+          source.status = 'secondary_only';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-priority-buyer-content.mjs; then
+            echo "Buyer-content validator incorrectly allowed a public claim backed by a non-verified source"
+            exit 1
+          fi
+          cp /tmp/aerodromnaya-verification.json data/verification/aerodromnaya-18g.json
+
+      - name: Reject loss of detailed form
+        run: |
+          cp catalog/sennaya-76/index.html /tmp/sennaya.html
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'catalog/sennaya-76/index.html';
+          let html = fs.readFileSync(path, 'utf8');
+          html = html.replace('data-form-id="catalog_sennaya_76_priority_lead"', 'data-form-id="removed_detailed_form_for_negative_test"');
+          fs.writeFileSync(path, html);
+          NODE
+          if node tools/validate-priority-buyer-content.mjs; then
+            echo "Buyer-content validator incorrectly allowed loss of detailed form"
+            exit 1
+          fi
+          cp /tmp/sennaya.html catalog/sennaya-76/index.html
+          node tools/validate-priority-buyer-content.mjs
