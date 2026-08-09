@@ -6,6 +6,7 @@ const SPEC_PATH = "data/analytics/internal-outcomes.json";
 const LIFECYCLE_PATH = "data/operations/lead-lifecycle.json";
 const EVENT_LOG_PATH = "data/operations/lead-event-log.json";
 const PUBLIC_EVENTS_PATH = "data/analytics/events.json";
+const FORM_REGISTRY_PATH = "data/qa/form-scenarios.json";
 const RUNTIME_PATH = "supabase/functions/newbuild-lead/index.ts";
 const MIGRATION_PATH = "supabase/migrations/20260724060538_newbuild_lead_operations_v2.sql";
 const errors = [];
@@ -46,11 +47,12 @@ const spec = readJson(SPEC_PATH);
 const lifecycle = readJson(LIFECYCLE_PATH);
 const eventLog = readJson(EVENT_LOG_PATH);
 const publicEvents = readJson(PUBLIC_EVENTS_PATH);
+const formRegistry = readJson(FORM_REGISTRY_PATH);
 const runtime = read(RUNTIME_PATH);
 const migration = read(MIGRATION_PATH);
-if (!spec || !lifecycle || !eventLog || !publicEvents || !runtime || !migration) process.exit(1);
+if (!spec || !lifecycle || !eventLog || !publicEvents || !formRegistry || !runtime || !migration) process.exit(1);
 
-if (spec.schema_version !== "1.0") errors.push(`${SPEC_PATH}: schema_version must be 1.0`);
+if (spec.schema_version !== "1.1") errors.push(`${SPEC_PATH}: schema_version must be 1.1`);
 if (!isIsoDate(spec.updated_at)) errors.push(`${SPEC_PATH}: updated_at must be YYYY-MM-DD`);
 if (spec.portal_id !== "newbuilds-borisoglebsk") errors.push(`${SPEC_PATH}: invalid portal_id`);
 if (spec.status !== "specification_only_no_live_outcome_export") errors.push(`${SPEC_PATH}: invalid status`);
@@ -62,7 +64,8 @@ const expectedSources = {
   event_log_contract: EVENT_LOG_PATH,
   runtime_function: RUNTIME_PATH,
   operations_migration: MIGRATION_PATH,
-  public_analytics_contract: PUBLIC_EVENTS_PATH
+  public_analytics_contract: PUBLIC_EVENTS_PATH,
+  form_registry: FORM_REGISTRY_PATH
 };
 for (const [key, value] of Object.entries(expectedSources)) {
   if (spec.sources?.[key] !== value) errors.push(`${SPEC_PATH}: sources.${key} must be ${value}`);
@@ -77,7 +80,8 @@ for (const key of [
   "owner_reference_in_external_analytics_forbidden",
   "missing_commercial_event_must_not_be_inferred",
   "public_and_internal_event_namespaces_separate",
-  "aggregate_reports_only"
+  "aggregate_reports_only",
+  "registry_derived_dimensions_require_unique_mapping"
 ]) {
   if (spec.rules?.[key] !== true) errors.push(`${SPEC_PATH}: rules.${key} must be true`);
 }
@@ -118,9 +122,7 @@ for (const event of canonical) {
     if (event.source !== null) errors.push(`${label}: schema_gap must keep source=null`);
   }
 }
-if (availableCanonical !== 4 || gapCanonical !== 8) {
-  errors.push(`${SPEC_PATH}: current coverage must be 4 available / 8 schema_gap`);
-}
+if (availableCanonical !== 4 || gapCanonical !== 8) errors.push(`${SPEC_PATH}: current coverage must be 4 available / 8 schema_gap`);
 
 const expectedDerived = new Set([
   "contact_attempted",
@@ -152,18 +154,38 @@ const expectedDimensions = new Set([
 const dimensions = Array.isArray(spec.dimensions) ? spec.dimensions : [];
 exactSet(new Set(dimensions.map((item) => item.id)), expectedDimensions, `${SPEC_PATH}: dimensions`);
 for (const dimension of dimensions) {
-  if (!new Set(["server_record", "schema_gap"]).has(dimension.availability)) {
+  if (!new Set(["server_record", "registry_derived", "schema_gap"]).has(dimension.availability)) {
     errors.push(`${SPEC_PATH}:${dimension.id}: invalid availability`);
   }
   if (dimension.availability === "server_record" && !String(dimension.source || "").startsWith("newbuild_leads.")) {
     errors.push(`${SPEC_PATH}:${dimension.id}: server_record dimension requires newbuild_leads source`);
   }
-  if (dimension.availability === "schema_gap" && dimension.source !== null) {
-    errors.push(`${SPEC_PATH}:${dimension.id}: schema_gap must use source=null`);
+  if (dimension.availability === "registry_derived") {
+    if (!String(dimension.source || "").trim()) errors.push(`${SPEC_PATH}:${dimension.id}: registry_derived requires source`);
+    if (!String(dimension.join_key || "").trim()) errors.push(`${SPEC_PATH}:${dimension.id}: registry_derived requires join_key`);
   }
+  if (dimension.availability === "schema_gap" && dimension.source !== null) errors.push(`${SPEC_PATH}:${dimension.id}: schema_gap must use source=null`);
 }
 const formRole = dimensions.find((item) => item.id === "form_role");
-if (formRole?.availability !== "schema_gap") errors.push(`${SPEC_PATH}: form_role must remain explicit schema_gap until server persistence exists`);
+if (formRole?.availability !== "registry_derived") errors.push(`${SPEC_PATH}: form_role must be registry_derived`);
+if (formRole?.source !== "form_scenarios.form_id->form_role") errors.push(`${SPEC_PATH}: form_role source mismatch`);
+if (formRole?.join_key !== "form_id") errors.push(`${SPEC_PATH}: form_role join_key must be form_id`);
+
+const scenarios = Array.isArray(formRegistry.scenarios) ? formRegistry.scenarios : [];
+if (scenarios.length !== 14) errors.push(`${FORM_REGISTRY_PATH}: expected 14 active form scenarios`);
+const formRoleMap = new Map();
+const roleCounts = { primary: 0, detailed: 0 };
+for (const scenario of scenarios) {
+  const formId = String(scenario.form_id || "").trim();
+  const role = String(scenario.form_role || "").trim();
+  if (!formId) errors.push(`${FORM_REGISTRY_PATH}: scenario ${scenario.id || "unknown"} missing form_id`);
+  if (!new Set(["primary", "detailed"]).has(role)) errors.push(`${FORM_REGISTRY_PATH}:${formId || "unknown"}: invalid form_role=${role}`);
+  if (formRoleMap.has(formId)) errors.push(`${FORM_REGISTRY_PATH}: duplicate form_id ${formId}`);
+  formRoleMap.set(formId, role);
+  if (role === "primary" || role === "detailed") roleCounts[role] += 1;
+}
+if (formRoleMap.size !== scenarios.length) errors.push(`${FORM_REGISTRY_PATH}: form_id -> form_role mapping must be one-to-one`);
+if (roleCounts.primary !== 7 || roleCounts.detailed !== 7) errors.push(`${FORM_REGISTRY_PATH}: expected 7 primary / 7 detailed forms`);
 
 const forbiddenReportFields = new Set(spec.privacy?.forbidden_report_fields || []);
 for (const field of [
@@ -185,14 +207,11 @@ for (const field of [
 ]) {
   if (!forbiddenReportFields.has(field)) errors.push(`${SPEC_PATH}: privacy must forbid ${field}`);
 }
-if (!Number.isInteger(spec.privacy?.minimum_group_size) || spec.privacy.minimum_group_size < 3) {
-  errors.push(`${SPEC_PATH}: minimum_group_size must be integer >= 3`);
-}
+if (!Number.isInteger(spec.privacy?.minimum_group_size) || spec.privacy.minimum_group_size < 3) errors.push(`${SPEC_PATH}: minimum_group_size must be integer >= 3`);
 if (spec.privacy?.small_groups_must_be_suppressed !== true) errors.push(`${SPEC_PATH}: small groups must be suppressed`);
 
 const knownGaps = new Set(spec.known_gaps || []);
-for (const gap of [
-  "form_role_not_persisted_as_server_dimension",
+exactSet(knownGaps, new Set([
   "consultation_scheduled_event_missing",
   "consultation_completed_event_missing",
   "selection_sent_event_missing",
@@ -202,17 +221,12 @@ for (const gap of [
   "closed_won_event_missing",
   "closed_lost_event_missing",
   "cost_data_not_connected"
-]) {
-  if (!knownGaps.has(gap)) errors.push(`${SPEC_PATH}: known gap missing ${gap}`);
-}
+]), `${SPEC_PATH}: known gaps`);
+if (knownGaps.has("form_role_not_persisted_as_server_dimension")) errors.push(`${SPEC_PATH}: form_role persistence is no longer a reporting gap because role derives from canonical form_id mapping`);
 
 if (lifecycle.status !== "server_connected_owner_activation_pending") errors.push(`${LIFECYCLE_PATH}: unexpected lifecycle status`);
-if (!Array.isArray(lifecycle.states) || !lifecycle.states.some((item) => item.id === "consultation_active")) {
-  errors.push(`${LIFECYCLE_PATH}: consultation_active state is required for current derived metric`);
-}
-if (eventLog.status !== "server_append_only_connected" || eventLog.rules?.append_only !== true) {
-  errors.push(`${EVENT_LOG_PATH}: append-only event log must remain connected`);
-}
+if (!Array.isArray(lifecycle.states) || !lifecycle.states.some((item) => item.id === "consultation_active")) errors.push(`${LIFECYCLE_PATH}: consultation_active state is required for current derived metric`);
+if (eventLog.status !== "server_append_only_connected" || eventLog.rules?.append_only !== true) errors.push(`${EVENT_LOG_PATH}: append-only event log must remain connected`);
 
 for (const fragment of [
   "lead_source: cleanText(payload.lead_source",
@@ -223,9 +237,6 @@ for (const fragment of [
   "lead_class: leadClass"
 ]) {
   if (!runtime.includes(fragment)) errors.push(`${RUNTIME_PATH}: missing server attribution fragment ${fragment}`);
-}
-if (runtime.includes("form_role: cleanText(payload.form_role")) {
-  errors.push(`${RUNTIME_PATH}: form_role is now persisted; update internal-outcomes contract instead of keeping schema_gap`);
 }
 for (const fragment of [
   "contacted_at timestamptz",
@@ -241,17 +252,17 @@ const publicIds = new Set((publicEvents.events || []).map((item) => item.id));
 for (const eventId of expectedCanonical) {
   if (publicIds.has(eventId)) errors.push(`${PUBLIC_EVENTS_PATH}: protected internal event ${eventId} must not be a public analytics event`);
 }
-if (publicEvents.rules?.personal_data_in_analytics_forbidden !== true) {
-  errors.push(`${PUBLIC_EVENTS_PATH}: public analytics PII guard must remain enabled`);
-}
-if (publicEvents.rules?.restricted_field_external_channels_forbidden !== true) {
-  errors.push(`${PUBLIC_EVENTS_PATH}: restricted internal IDs must remain forbidden externally`);
-}
+if (publicEvents.rules?.personal_data_in_analytics_forbidden !== true) errors.push(`${PUBLIC_EVENTS_PATH}: public analytics PII guard must remain enabled`);
+if (publicEvents.rules?.restricted_field_external_channels_forbidden !== true) errors.push(`${PUBLIC_EVENTS_PATH}: restricted internal IDs must remain forbidden externally`);
 
+const serverDimensions = dimensions.filter((item) => item.availability === "server_record").length;
+const registryDimensions = dimensions.filter((item) => item.availability === "registry_derived").length;
+const gapDimensions = dimensions.filter((item) => item.availability === "schema_gap").length;
 console.log(`Canonical internal outcomes: ${canonical.length}`);
 console.log(`Current canonical coverage: available=${availableCanonical}; schema_gap=${gapCanonical}`);
 console.log(`Derived internal metrics: ${derived.length}`);
-console.log(`Reporting dimensions: ${dimensions.length}; schema gaps=${dimensions.filter((item) => item.availability === "schema_gap").length}`);
+console.log(`Reporting dimensions: ${dimensions.length}; server=${serverDimensions}; registry_derived=${registryDimensions}; schema_gaps=${gapDimensions}`);
+console.log(`Form-role mapping: ${formRoleMap.size} forms; primary=${roleCounts.primary}; detailed=${roleCounts.detailed}`);
 console.log(`Live outcome export enabled: ${spec.rules.live_export_enabled === true}`);
 
 if (errors.length) {
