@@ -1,0 +1,101 @@
+name: Municipal planning scan guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/research/municipal-planning-scan.json"
+      - "data/research/city-inventory-method.json"
+      - "tools/validate-municipal-planning-scan.mjs"
+      - "docs/portal/MUNICIPAL_PLANNING_SCAN.md"
+      - ".github/workflows/municipal-planning-scan-guard.yml"
+  pull_request:
+    paths:
+      - "data/research/municipal-planning-scan.json"
+      - "data/research/city-inventory-method.json"
+      - "tools/validate-municipal-planning-scan.mjs"
+      - "docs/portal/MUNICIPAL_PLANNING_SCAN.md"
+      - ".github/workflows/municipal-planning-scan-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-municipal-planning-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-municipal-planning-scan.mjs
+
+      - name: Validate municipal planning scan
+        run: node tools/validate-municipal-planning-scan.mjs
+
+      - name: Reject project inference from missing map attachments
+        run: |
+          cp data/research/municipal-planning-scan.json /tmp/municipal-planning-scan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/municipal-planning-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.documents[0].project_inference_allowed = true;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-municipal-planning-scan.mjs; then
+            echo "Validator incorrectly allowed project inference while map attachments are missing"
+            exit 1
+          fi
+          cp /tmp/municipal-planning-scan.json data/research/municipal-planning-scan.json
+
+      - name: Reject vague planned-project candidate
+        run: |
+          cp data/research/municipal-planning-scan.json /tmp/municipal-planning-scan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/municipal-planning-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.candidate_project_observations.push({
+            id: 'test-vague-project',
+            exact_address: '',
+            land_plot_identifier: '',
+            residential_project_intent_confirmed: false,
+            source_reference: 'https://example.invalid/',
+            publication_effect: 'none'
+          });
+          data.completion_state.exact_candidate_projects_found = 1;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-municipal-planning-scan.mjs; then
+            echo "Validator incorrectly allowed vague planned-project candidate"
+            exit 1
+          fi
+          cp /tmp/municipal-planning-scan.json data/research/municipal-planning-scan.json
+
+      - name: Reject false municipal completion
+        run: |
+          cp data/research/municipal-planning-scan.json /tmp/municipal-planning-scan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/municipal-planning-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.status = 'municipal_scan_complete';
+          data.completion_state.blocking_gap_ids = [];
+          data.completion_state.municipal_scan_complete = true;
+          data.completion_state.completion_claim = 'allowed';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-municipal-planning-scan.mjs; then
+            echo "Validator incorrectly allowed false municipal completion"
+            exit 1
+          fi
+          cp /tmp/municipal-planning-scan.json data/research/municipal-planning-scan.json
+          node tools/validate-municipal-planning-scan.mjs
