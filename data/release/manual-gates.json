@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-08-06",
+  "updated_at": "2026-08-09",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Журнал только фактически пройденных ручных ворот запуска. Отсутствие доказательств не может считаться положительным результатом.",
   "rules": {
@@ -27,7 +27,7 @@
       "evidence": [],
       "checked_at": null,
       "reviewer": "",
-      "notes": "Реальная тестовая заявка ещё не отправлялась. Требуется отдельное согласование пользователя."
+      "notes": "Реальная тестовая заявка ещё не отправлялась. Серверный маршрут, dry-run и browser delivery guards проверены, но для этого gate требуется отдельное согласие владельца на одну реальную отправку и разрешённый контакт."
     },
     {
       "id": "live_analytics_debug",
@@ -43,7 +43,7 @@
       "evidence": [],
       "checked_at": null,
       "reviewer": "",
-      "notes": "Локальный analytics debug фактически выполнен на 14 desktop-сценариях для commit 8b9845d; исторические материалы: evidence/qa/2026-08-03/form-qa-evidence.json и evidence/qa/2026-08-03/event-log-desktop.json. Выявленные дефекты исправлены в PR #153 и слиты в main коммитом 6fa7c1e8, но повторный browser QA ещё не выполнен. Рабочий GA4/Яндекс Метрика не подключался и не проверялся; Android и iPhone заблокированы отсутствием устройства или эмуляции."
+      "notes": "Browser analytics/debug контракт повторно проверен после PR #153: production-domain desktop 15/15 + storage 2/2; Android Chromium emulation 15/15 + storage 2/2; iPhone WebKit emulation 15/15 + storage 2/2. Mobile evidence помечен physical_device=false. Gate остаётся blocked только потому, что фактически подключённый внешний GA4/Яндекс Метрика счётчик отсутствует и live debug evidence получить неоткуда."
     },
     {
       "id": "legal_owner_review",
@@ -59,7 +59,7 @@
       "evidence": [],
       "checked_at": null,
       "reviewer": "",
-      "notes": "Тексты содержат безопасную структуру, но окончательные реквизиты и юридическое согласование не подтверждены."
+      "notes": "Fail-closed legal owner approval contract и безопасная структура публичных текстов готовы, но фактический оператор/реквизиты, retention/withdrawal policy и окончательное юридическое согласование не подтверждены."
     },
     {
       "id": "campaign_publication_approval",
@@ -75,7 +75,7 @@
       "evidence": [],
       "checked_at": null,
       "reviewer": "",
-      "notes": "Release pack из 11 ссылок подготовлен, но публикация требует ручного решения."
+      "notes": "Канонический release pack из 11 UTM-ссылок и первая управляемая волна из 5 unique placements / 2 общих офферов подготовлены. Фактических публикаций нет; external target, owner, дата и стоимость не утверждены."
     },
     {
       "id": "hosting_redirect_format",
