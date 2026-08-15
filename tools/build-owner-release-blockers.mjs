@@ -8,7 +8,8 @@ const PATHS = {
   operations: "data/operations/lead-operations-approval.json",
   analytics: "data/analytics/live-provider.json",
   realLead: "data/release/real-lead-test.json",
-  manualGates: "data/release/manual-gates.json"
+  manualGates: "data/release/manual-gates.json",
+  mobileQaPolicy: "data/qa/mobile-release-policy.json"
 };
 
 function readJson(relativePath) {
@@ -29,6 +30,7 @@ const operations = readJson(PATHS.operations);
 const analytics = readJson(PATHS.analytics);
 const realLead = readJson(PATHS.realLead);
 const manual = readJson(PATHS.manualGates);
+const mobileQaPolicy = readJson(PATHS.mobileQaPolicy);
 
 const legalPending = (legal.decisions || []).filter((item) => item.status === "requires_owner_decision");
 const operationsPending = (operations.decisions || []).filter((item) => item.status === "requires_owner_decision");
@@ -52,6 +54,17 @@ const decisions = [
     source: PATHS.operations
   }))
 ];
+
+if (mobileQaPolicy.status === "requires_owner_decision") {
+  decisions.push({
+    group: "qa",
+    id: mobileQaPolicy.decision?.id || "mobile_device_release_policy",
+    title: "Политика физического mobile QA перед запуском",
+    question: mobileQaPolicy.decision?.question || "Нужно определить, обязательны ли физические Android/iPhone до campaign launch.",
+    secure_value_required: false,
+    source: PATHS.mobileQaPolicy
+  });
+}
 
 if (!analytics.provider || analytics.rules?.live_delivery_enabled !== true || analytics.rules?.debug_verified !== true) {
   decisions.push({
@@ -104,7 +117,7 @@ if (bmApproval.status !== "passed") {
 }
 
 const report = {
-  schema_version: "1.1",
+  schema_version: "1.2",
   portal_id: "newbuilds-borisoglebsk",
   generated_at: new Date().toISOString(),
   status: decisions.length ? "owner_decisions_required" : "owner_decisions_complete",
@@ -112,6 +125,7 @@ const report = {
     total_owner_decisions: decisions.length,
     legal_pending: legalPending.length,
     operations_pending: operationsPending.length,
+    qa_policy_decision_required: decisions.some((item) => item.group === "qa"),
     analytics_configuration_required: decisions.some((item) => item.group === "analytics"),
     real_lead_consent_required: decisions.some((item) => item.group === "real_lead"),
     campaign_approval_required: decisions.some((item) => item.group === "campaign"),
@@ -126,7 +140,8 @@ const report = {
     no_personal_contact_values: true,
     no_secret_credentials: true,
     source_contracts_remain_authoritative: true,
-    conditional_blockers_do_not_block_general_portal_release: true
+    conditional_blockers_do_not_block_general_portal_release: true,
+    qa_policy_decision_does_not_rewrite_historical_results: true
   }
 };
 

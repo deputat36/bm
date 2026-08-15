@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-08-16",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "requires_owner_decision",
+  "purpose": "Отделить доказанную browser-emulation совместимость от решения, обязательны ли физические Android/iPhone устройства как отдельный release gate. Контракт не переписывает исторический manual QA registry и сам по себе не повышает form_manual_qa.",
+  "decision": {
+    "id": "mobile_device_release_policy",
+    "question": "Достаточно ли подтверждённых Android Chromium + iPhone WebKit emulation прогонов для ограниченного запуска, или физические Android и iPhone обязательны до campaign launch?",
+    "allowed_values": [
+      "emulation_sufficient_for_controlled_launch",
+      "physical_android_and_iphone_required_before_campaign_launch"
+    ],
+    "value": null,
+    "checked_at": null,
+    "reviewer_reference": null,
+    "evidence": []
+  },
+  "current_evidence": {
+    "desktop_production": {
+      "classification": "browser_automation_not_physical_device",
+      "physical_device": false,
+      "browser_runs_passed": 15,
+      "browser_runs_total": 15,
+      "storage_cases_passed": 2,
+      "storage_cases_total": 2,
+      "reference": "evidence/qa/2026-08-06-production-browser/README.md"
+    },
+    "android": {
+      "classification": "playwright_device_emulation",
+      "physical_device": false,
+      "browser_runs_passed": 15,
+      "browser_runs_total": 15,
+      "storage_cases_passed": 2,
+      "storage_cases_total": 2,
+      "reference": "evidence/qa/2026-08-09-mobile-emulation/README.md"
+    },
+    "iphone": {
+      "classification": "playwright_device_emulation",
+      "physical_device": false,
+      "browser_runs_passed": 15,
+      "browser_runs_total": 15,
+      "storage_cases_passed": 2,
+      "storage_cases_total": 2,
+      "reference": "evidence/qa/2026-08-09-mobile-emulation/README.md"
+    }
+  },
+  "historical_manual_registry": {
+    "path": "data/qa/form-results.json",
+    "updated_at": "2026-08-03",
+    "must_not_be_rewritten_from_emulation": true,
+    "missing_or_historical_failed_slots_must_not_be_inferred_passed": true
+  },
+  "rules": {
+    "emulation_must_not_be_labeled_physical": true,
+    "policy_decision_is_not_qa_evidence": true,
+    "historical_manual_results_are_immutable_evidence": true,
+    "owner_decision_required_before_release_policy_change": true,
+    "owner_decision_must_not_directly_mutate_form_results": true,
+    "form_manual_qa_must_not_be_auto_passed_by_this_contract": true,
+    "real_lead_delivery_gate_unchanged": true,
+    "live_analytics_gate_unchanged": true,
+    "legal_and_operations_gates_unchanged": true
+  },
+  "future_effect": {
+    "if_emulation_sufficient": "Отдельный review/PR должен явно изменить release-readiness semantics, сохранив evidence boundary и не переписывая исторический form-results.json.",
+    "if_physical_devices_required": "Нужно получить отдельное privacy-safe evidence фактических Android и iPhone устройств и только затем пересматривать form_manual_qa.",
+    "current_effect": "none_form_manual_qa_remains_derived_from_existing_registry"
+  }
+}
