@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "data/legal/legal-owner-approval.json"
+      - "data/legal/bm-group-advertising-contract.json"
       - "data/operations/lead-operations-approval.json"
       - "data/analytics/live-provider.json"
       - "data/release/real-lead-test.json"
@@ -16,6 +17,7 @@ on:
       - main
     paths:
       - "data/legal/legal-owner-approval.json"
+      - "data/legal/bm-group-advertising-contract.json"
       - "data/operations/lead-operations-approval.json"
       - "data/analytics/live-provider.json"
       - "data/release/real-lead-test.json"
@@ -43,5 +45,18 @@ jobs:
           node --check tools/validate-owner-release-blockers.mjs
       - name: Validate blocker report
         run: node tools/validate-owner-release-blockers.mjs
+      - name: Verify BM approval remains conditional
+        run: |
+          node tools/build-owner-release-blockers.mjs --format=json > /tmp/owner-blockers.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('/tmp/owner-blockers.json', 'utf8'));
+          const bm = JSON.parse(fs.readFileSync('data/legal/bm-group-advertising-contract.json', 'utf8'));
+          const blocker = (report.conditional_blockers || []).find((item) => item.id === 'bm_group_written_approval');
+          const pending = bm.approval?.status !== 'passed';
+          if (pending !== Boolean(blocker)) process.exit(1);
+          if (blocker && (blocker.blocks_global_release !== false || blocker.scope !== 'prostornaya-4a_object_specific_advertising')) process.exit(1);
+          console.log(`BM approval pending=${pending}; conditional blocker=${Boolean(blocker)}; global release unaffected=${blocker ? !blocker.blocks_global_release : true}`);
+          NODE
       - name: Publish owner decision summary
         run: node tools/build-owner-release-blockers.mjs --format=markdown >> "$GITHUB_STEP_SUMMARY"
