@@ -1,0 +1,133 @@
+{
+  "schema_version": "1.1",
+  "updated_at": "2026-08-16",
+  "portal_id": "newbuilds-borisoglebsk",
+  "status": "store_design_selected_not_deployed",
+  "purpose": "Выбрать защищённый append-only store для price/availability history без подключения live offer source, migration, production DDL, writer или публичного history API.",
+  "store": {
+    "kind": "dedicated_postgres_table",
+    "schema": "public",
+    "table": "newbuild_offer_history_events",
+    "reason": "История цены/наличия должна храниться отдельно от current feed и не публиковаться браузеру; dedicated newbuild_* table позволяет использовать portal security scope и append-only enforcement.",
+    "append_only": true,
+    "rls_enabled": true,
+    "rls_forced": true,
+    "anon_access": "none",
+    "authenticated_access": "none",
+    "service_role_access": ["select", "insert"],
+    "browser_direct_access": false
+  },
+  "deployment": {
+    "migration_file_created": false,
+    "production_ddl_applied": false,
+    "history_writer_deployed": false,
+    "history_write_enabled": false,
+    "sql_preview_only": true
+  },
+  "canonical_mapping": {
+    "event_id": ["event_id"],
+    "event_type": ["event_type"],
+    "observed_at": ["observed_at"],
+    "object_id": ["object_id"],
+    "section_or_entrance": ["section_or_entrance"],
+    "apartment_number_public": ["apartment_number_public"],
+    "source_id": ["source_id"],
+    "value": ["price", "availability_status"],
+    "previous_event_hash": ["previous_event_hash"],
+    "event_hash": ["event_hash"]
+  },
+  "columns": [
+    {"name":"event_id","type":"uuid","nullable":false,"source":"server_generated"},
+    {"name":"offer_identity","type":"text","nullable":false,"source":"canonical_offer_identity"},
+    {"name":"object_id","type":"text","nullable":false,"source":"registered_object_reference"},
+    {"name":"section_or_entrance","type":"text","nullable":false,"source":"validated_offer_identity"},
+    {"name":"apartment_number_public","type":"text","nullable":false,"source":"validated_offer_identity"},
+    {"name":"event_type","type":"text","nullable":false,"source":"history_contract"},
+    {"name":"observed_at","type":"timestamptz","nullable":false,"source":"server_or_validated_source_timestamp"},
+    {"name":"price","type":"numeric(14,2)","nullable":true,"source":"validated_offer_event"},
+    {"name":"availability_status","type":"text","nullable":true,"source":"validated_offer_event"},
+    {"name":"source_id","type":"text","nullable":false,"source":"approved_live_source_reference"},
+    {"name":"source_checked_at","type":"timestamptz","nullable":false,"source":"validated_source_timestamp"},
+    {"name":"previous_event_hash","type":"text","nullable":true,"source":"protected_history_writer"},
+    {"name":"event_hash","type":"text","nullable":false,"source":"protected_history_writer"},
+    {"name":"idempotency_key","type":"text","nullable":false,"source":"protected_history_writer"},
+    {"name":"created_at","type":"timestamptz","nullable":false,"source":"server_timestamp"}
+  ],
+  "constraints": {
+    "event_types_source": "data/offers/history-contract.json#event_types",
+    "availability_status_source": "data/offers/contract.json#allowed_values.availability_status",
+    "event_hash_unique": true,
+    "idempotency_unique": ["offer_identity", "idempotency_key"],
+    "forbid_update": true,
+    "forbid_delete": true,
+    "event_value_shape_matches_contract": true,
+    "price_number_must_be_positive": true,
+    "price_null_allowed_when_source_has_no_price": true,
+    "availability_observed_requires_status": true,
+    "generic_json_payload_forbidden": true
+  },
+  "hash_chain": {
+    "algorithm": "sha256",
+    "canonical_field_order_source": "data/offers/history-contract.json#hash_chain.event_hash_input_fields",
+    "first_event_previous_hash": null,
+    "same_offer_chain_only": true,
+    "writer_must_verify_previous_hash_before_append": true,
+    "writer_must_compute_hash_server_side": true,
+    "writer_design_status": "not_implemented_until_live_source_and_store_review"
+  },
+  "retention": {
+    "status": "requires_policy_before_deployment",
+    "retention_days": null,
+    "automatic_delete_enabled": false,
+    "reason": "Не выбирается произвольный срок хранения до определения объёма, бизнес-ценности истории, стоимости хранения и backup/export требований."
+  },
+  "backup_export": {
+    "status": "requires_policy_before_deployment",
+    "managed_backup_verified": false,
+    "export_schedule": null,
+    "restore_test_verified": false
+  },
+  "privacy": {
+    "pii_forbidden": true,
+    "client_identity_forbidden": true,
+    "internal_seller_identity_forbidden": true,
+    "browser_context_forbidden": true,
+    "forbidden_columns": [
+      "name",
+      "phone",
+      "email",
+      "client_fixation_id",
+      "seller_internal_id",
+      "page_url",
+      "referrer",
+      "user_agent"
+    ]
+  },
+  "sql_preview": {
+    "generator": "tools/build-offer-history-storage-sql.mjs",
+    "must_not_write_migration": true,
+    "must_not_execute_sql": true,
+    "preview_requires_banner": "PREVIEW ONLY - NOT DEPLOYED",
+    "expected_objects": [
+      "public.newbuild_offer_history_events",
+      "public.newbuild_offer_history_events_append_only"
+    ]
+  },
+  "activation_gates": [
+    "live_offer_source_selected",
+    "offer_identity_mapping_reviewed",
+    "retention_policy_approved",
+    "backup_export_policy_approved",
+    "hash_chain_writer_reviewed",
+    "migration_reviewed_and_explicitly_approved",
+    "production_schema_verified_after_apply"
+  ],
+  "completion_state": {
+    "store_selected": true,
+    "retention_policy_selected": false,
+    "backup_export_policy_selected": false,
+    "server_history_store_available": false,
+    "hash_chain_writer_available": false,
+    "production_history_write_enabled": false
+  }
+}
