@@ -60,7 +60,9 @@
     "idempotency_unique": ["offer_identity", "idempotency_key"],
     "forbid_update": true,
     "forbid_delete": true,
-    "price_observed_requires_price": true,
+    "event_value_shape_matches_contract": true,
+    "price_number_must_be_positive": true,
+    "price_null_allowed_when_source_has_no_price": true,
     "availability_observed_requires_status": true,
     "generic_json_payload_forbidden": true
   },
