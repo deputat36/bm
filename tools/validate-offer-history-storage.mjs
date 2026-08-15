@@ -104,7 +104,16 @@ for (const field of [...canonicalFields].filter((item) => item !== "value")) {
 
 if (storage.constraints?.event_types_source !== `${HISTORY_PATH}#event_types`) errors.push(`${STORAGE_PATH}: event_types_source mismatch`);
 if (storage.constraints?.availability_status_source !== `${OFFER_PATH}#allowed_values.availability_status`) errors.push(`${STORAGE_PATH}: availability_status_source mismatch`);
-for (const key of ["event_hash_unique", "forbid_update", "forbid_delete", "price_observed_requires_price", "availability_observed_requires_status", "generic_json_payload_forbidden"]) {
+for (const key of [
+  "event_hash_unique",
+  "forbid_update",
+  "forbid_delete",
+  "event_value_shape_matches_contract",
+  "price_number_must_be_positive",
+  "price_null_allowed_when_source_has_no_price",
+  "availability_observed_requires_status",
+  "generic_json_payload_forbidden"
+]) {
   if (storage.constraints?.[key] !== true) errors.push(`${STORAGE_PATH}: constraints.${key} must be true`);
 }
 exactSet(new Set(storage.constraints?.idempotency_unique || []), new Set(["offer_identity", "idempotency_key"]), `${STORAGE_PATH}: idempotency_unique`);
@@ -112,6 +121,7 @@ if (columns.some((column) => ["metadata", "payload", "data", "context"].includes
 
 exactSet(new Set(history.event_types || []), new Set(["price_observed", "availability_observed"]), `${HISTORY_PATH}: event types`);
 exactSet(new Set(offer.allowed_values?.availability_status || []), new Set(history.event_value_rules?.availability_observed?.values || []), `${STORAGE_PATH}: availability enum must match offer/history contracts`);
+if (history.event_value_rules?.price_observed?.type !== "number_or_null" || history.event_value_rules?.price_observed?.positive_when_number !== true) errors.push(`${HISTORY_PATH}: price event must allow null but require positive number when present`);
 
 if (storage.hash_chain?.algorithm !== history.hash_chain?.algorithm) errors.push(`${STORAGE_PATH}: hash algorithm must match history contract`);
 if (storage.hash_chain?.canonical_field_order_source !== `${HISTORY_PATH}#hash_chain.event_hash_input_fields`) errors.push(`${STORAGE_PATH}: canonical_field_order_source mismatch`);
