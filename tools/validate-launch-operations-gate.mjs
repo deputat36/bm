@@ -44,16 +44,20 @@ if (!builder || !approval) process.exit(1);
 const decisions = Array.isArray(approval.decisions) ? approval.decisions : [];
 const approved = decisions.filter((item) => item.status === "approved").length;
 const pending = decisions.filter((item) => item.status === "requires_owner_decision").length;
+const rejected = decisions.filter((item) => item.status === "rejected").length;
+const superseded = decisions.filter((item) => item.status === "superseded").length;
 const activationEnabled = approval.rules?.operational_activation_enabled === true;
 const systemOfRecord = decisions.find((item) => item.id === "system_of_record");
+const allApproved = decisions.length === 8 && approved === decisions.length && pending === 0 && rejected === 0 && superseded === 0;
+const operationsReady = allApproved && activationEnabled;
+const expectedGateStatus = operationsReady ? "passed" : "blocked";
 
 if (decisions.length !== 8) errors.push(`${APPROVAL_PATH}: expected 8 decisions`);
-if (approved !== 1) errors.push(`${APPROVAL_PATH}: current baseline must have 1 approved decision`);
-if (pending !== 7) errors.push(`${APPROVAL_PATH}: current baseline must have 7 pending decisions`);
+if (approved + pending + rejected + superseded !== decisions.length) errors.push(`${APPROVAL_PATH}: decision status counts must sum to ${decisions.length}`);
 if (systemOfRecord?.status !== "approved" || systemOfRecord?.approved_value !== "supabase:newbuild_leads") {
-  errors.push(`${APPROVAL_PATH}: approved decision must be system_of_record=supabase:newbuild_leads`);
+  errors.push(`${APPROVAL_PATH}: system_of_record must remain approved as supabase:newbuild_leads`);
 }
-if (activationEnabled) errors.push(`${APPROVAL_PATH}: operational activation must remain disabled`);
+if (activationEnabled && !allApproved) errors.push(`${APPROVAL_PATH}: activation cannot be enabled before all 8 decisions are approved`);
 
 const result = spawnSync(process.execPath, [BUILDER_PATH, "--format=json"], {
   cwd: ROOT,
@@ -67,26 +71,33 @@ if (result.status !== 0) {
     const gates = Array.isArray(report.gates) ? report.gates : [];
     const gate = gates.find((item) => item.id === "lead_operations_approval");
     const campaign = (report.profiles || []).find((item) => item.id === "campaign_launch");
+    const metrics = report.metrics?.lead_operations || {};
 
     if (!gate) errors.push("launch report: lead_operations_approval gate is missing");
-    if (gate?.status !== "blocked") errors.push("launch report: lead_operations_approval must remain blocked");
-    if (gate?.evidence_count !== 1) errors.push("launch report: operations evidence_count must be 1");
+    if (gate?.status !== expectedGateStatus) errors.push(`launch report: lead_operations_approval must be ${expectedGateStatus}`);
+    if (gate?.evidence_count !== approved) errors.push(`launch report: operations evidence_count must equal approved decisions (${approved})`);
     if (!campaign?.required_gates?.includes("lead_operations_approval")) {
       errors.push("launch report: campaign_launch must require lead_operations_approval");
     }
-    if (!campaign?.blocked_gates?.includes("lead_operations_approval")) {
-      errors.push("launch report: campaign_launch must be blocked by lead_operations_approval");
+    if (operationsReady) {
+      if (!campaign?.passed_gates?.includes("lead_operations_approval")) errors.push("launch report: ready operations gate must appear in campaign passed_gates");
+      if (campaign?.blocked_gates?.includes("lead_operations_approval")) errors.push("launch report: ready operations gate must not remain blocked");
+    } else {
+      if (!campaign?.blocked_gates?.includes("lead_operations_approval")) errors.push("launch report: unresolved operations must block campaign_launch");
     }
+
     if (report.summary?.total_gates !== gates.length) errors.push("launch report: total_gates must match generated gate count");
     const gateStatusTotal = ["passed", "blocked", "in_review", "not_applicable"].reduce((sum, key) => sum + Number(report.summary?.[key] || 0), 0);
     if (gateStatusTotal !== report.summary?.total_gates) errors.push("gate status counts must match total_gates");
-    if (report.summary?.total_profiles !== 4) errors.push("launch report: total_profiles must be 4");
-    if (report.summary?.ready_profiles !== 0) errors.push("launch report: ready_profiles must remain 0");
-    if (report.metrics?.lead_operations?.total_decisions !== 8) errors.push("launch report: total operations decisions must be 8");
-    if (report.metrics?.lead_operations?.approved !== 1) errors.push("launch report: approved operations decisions must be 1");
-    if (report.metrics?.lead_operations?.pending !== 7) errors.push("launch report: pending operations decisions must be 7");
-    if (report.metrics?.lead_operations?.activation_enabled !== false) errors.push("launch report: operations activation must be false");
-    if (report.metrics?.lead_operations?.ready !== false) errors.push("launch report: operations ready must be false");
+    if (report.summary?.total_profiles !== (report.profiles || []).length) errors.push("launch report: total_profiles must match generated profiles");
+
+    if (metrics.total_decisions !== decisions.length) errors.push(`launch report: total operations decisions must be ${decisions.length}`);
+    if (metrics.approved !== approved) errors.push(`launch report: approved operations decisions must be ${approved}`);
+    if (metrics.pending !== pending) errors.push(`launch report: pending operations decisions must be ${pending}`);
+    if (metrics.rejected !== rejected) errors.push(`launch report: rejected operations decisions must be ${rejected}`);
+    if (metrics.superseded !== superseded) errors.push(`launch report: superseded operations decisions must be ${superseded}`);
+    if (metrics.activation_enabled !== activationEnabled) errors.push(`launch report: activation_enabled must be ${activationEnabled}`);
+    if (metrics.ready !== operationsReady) errors.push(`launch report: operations ready must be ${operationsReady}`);
   } catch (error) {
     errors.push(`${BUILDER_PATH}: generated invalid JSON: ${error.message}`);
   }
@@ -95,8 +106,11 @@ if (result.status !== 0) {
 console.log(`Operations decisions: ${decisions.length}`);
 console.log(`Approved operations decisions: ${approved}`);
 console.log(`Pending operations decisions: ${pending}`);
+console.log(`Rejected operations decisions: ${rejected}`);
+console.log(`Superseded operations decisions: ${superseded}`);
 console.log(`System of record: ${systemOfRecord?.approved_value || "missing"}`);
 console.log(`Operational activation enabled: ${activationEnabled}`);
+console.log(`Operations readiness: ${operationsReady}`);
 
 if (errors.length) {
   console.error("\nLaunch operations gate validation errors:");
