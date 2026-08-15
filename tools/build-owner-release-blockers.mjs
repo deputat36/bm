@@ -33,7 +33,15 @@ const manual = readJson(PATHS.manualGates);
 const mobileQaPolicy = readJson(PATHS.mobileQaPolicy);
 
 const legalPending = (legal.decisions || []).filter((item) => item.status === "requires_owner_decision");
-const operationsPending = (operations.decisions || []).filter((item) => item.status === "requires_owner_decision");
+const operationsDecisions = Array.isArray(operations.decisions) ? operations.decisions : [];
+const operationsUnresolved = operationsDecisions.filter((item) => item.status !== "approved");
+const operationsPending = operationsDecisions.filter((item) => item.status === "requires_owner_decision");
+const operationsRejected = operationsDecisions.filter((item) => item.status === "rejected");
+const operationsSuperseded = operationsDecisions.filter((item) => item.status === "superseded");
+const operationsApproved = operationsDecisions.filter((item) => item.status === "approved");
+const allOperationsApproved = operationsDecisions.length === 8 && operationsApproved.length === 8;
+const operationsActivationEnabled = operations.rules?.operational_activation_enabled === true;
+const operationsActivationRequired = allOperationsApproved && !operationsActivationEnabled;
 const manualBlocked = (manual.gates || []).filter((item) => !["passed", "not_applicable"].includes(item.status));
 
 const decisions = [
@@ -42,18 +50,32 @@ const decisions = [
     id: item.id,
     title: item.title,
     question: item.question,
+    decision_status: item.status,
     secure_value_required: false,
     source: PATHS.legal
   })),
-  ...operationsPending.map((item) => ({
+  ...operationsUnresolved.map((item) => ({
     group: "operations",
     id: item.id,
     title: item.approval_question || item.id,
     question: item.approval_question,
+    decision_status: item.status,
     secure_value_required: item.decision_type === "secure_role_reference",
     source: PATHS.operations
   }))
 ];
+
+if (operationsActivationRequired) {
+  decisions.push({
+    group: "operations",
+    id: "operational_activation_approval",
+    title: "Явная операционная активация после 8/8 решений",
+    question: "После проверки owner references, графика/SLA, security и контрольного сценария разрешено ли отдельным изменением включить operational_activation_enabled?",
+    decision_status: "requires_activation_decision",
+    secure_value_required: false,
+    source: PATHS.operations
+  });
+}
 
 if (mobileQaPolicy.status === "requires_owner_decision") {
   decisions.push({
@@ -61,6 +83,7 @@ if (mobileQaPolicy.status === "requires_owner_decision") {
     id: mobileQaPolicy.decision?.id || "mobile_device_release_policy",
     title: "Политика физического mobile QA перед запуском",
     question: mobileQaPolicy.decision?.question || "Нужно определить, обязательны ли физические Android/iPhone до campaign launch.",
+    decision_status: mobileQaPolicy.status,
     secure_value_required: false,
     source: PATHS.mobileQaPolicy
   });
@@ -72,6 +95,7 @@ if (!analytics.provider || analytics.rules?.live_delivery_enabled !== true || an
     id: "live_analytics_provider",
     title: "Фактически используемый аналитический счётчик",
     question: "Какой счётчик использовать для production: GA4 или Яндекс Метрика, и какой его публичный counter/measurement ID?",
+    decision_status: "requires_configuration",
     secure_value_required: false,
     source: PATHS.analytics
   });
@@ -83,6 +107,7 @@ if (realLead.execution?.approved_by_owner !== true) {
     id: "real_lead_test_consent",
     title: "Разрешение на одну контролируемую реальную заявку",
     question: "Разрешена ли одна реальная тестовая заявка и какой тестовый контакт передан через безопасный канал?",
+    decision_status: "requires_owner_decision",
     secure_value_required: true,
     source: PATHS.realLead
   });
@@ -95,6 +120,7 @@ if (campaignGate && campaignGate.status !== "passed") {
     id: "campaign_publication_approval",
     title: "Фактический рекламный запуск",
     question: "Какие площадки, дата, формат и бюджет первой ограниченной рекламной волны утверждены?",
+    decision_status: campaignGate.status,
     secure_value_required: false,
     source: PATHS.manualGates
   });
@@ -108,6 +134,7 @@ if (bmApproval.status !== "passed") {
     id: "bm_group_written_approval",
     title: "Письменное согласование BM Group для object-specific рекламы",
     question: "Какие object-specific рекламные scopes по ЖК «Теллерманов сад» / Просторной 4А письменно согласованы BM Group?",
+    decision_status: bmApproval.status || "requires_external_written_approval",
     secure_value_required: false,
     source: PATHS.bmAdvertising,
     scope: "prostornaya-4a_object_specific_advertising",
@@ -117,7 +144,7 @@ if (bmApproval.status !== "passed") {
 }
 
 const report = {
-  schema_version: "1.2",
+  schema_version: "1.3",
   portal_id: "newbuilds-borisoglebsk",
   generated_at: new Date().toISOString(),
   status: decisions.length ? "owner_decisions_required" : "owner_decisions_complete",
@@ -125,6 +152,11 @@ const report = {
     total_owner_decisions: decisions.length,
     legal_pending: legalPending.length,
     operations_pending: operationsPending.length,
+    operations_unresolved: operationsUnresolved.length,
+    operations_rejected: operationsRejected.length,
+    operations_superseded: operationsSuperseded.length,
+    operations_approved: operationsApproved.length,
+    operations_activation_required: operationsActivationRequired,
     qa_policy_decision_required: decisions.some((item) => item.group === "qa"),
     analytics_configuration_required: decisions.some((item) => item.group === "analytics"),
     real_lead_consent_required: decisions.some((item) => item.group === "real_lead"),
@@ -141,7 +173,9 @@ const report = {
     no_secret_credentials: true,
     source_contracts_remain_authoritative: true,
     conditional_blockers_do_not_block_general_portal_release: true,
-    qa_policy_decision_does_not_rewrite_historical_results: true
+    qa_policy_decision_does_not_rewrite_historical_results: true,
+    non_approved_operations_decisions_remain_visible: true,
+    operations_activation_must_remain_visible_after_8_of_8_approval: true
   }
 };
 
@@ -162,6 +196,8 @@ if (format === "json") {
       "",
       item.question,
       "",
+      `Статус решения: ${item.decision_status}.`,
+      "",
       `Группа: ${item.group}. Источник: \`${item.source}\`.${item.secure_value_required ? " Значение должно передаваться через безопасный канал и не храниться как PII в GitHub." : ""}`,
       ""
     ])
@@ -170,7 +206,7 @@ if (format === "json") {
   if (conditionalBlockers.length) {
     lines.push("## Условные внешние блокеры", "", "Они относятся только к указанному scope и не превращаются в глобальный блокер независимого городского портала.", "");
     conditionalBlockers.forEach((item) => {
-      lines.push(`### ${item.title}`, "", item.question, "", `Scope: \`${item.scope}\`. ${item.blocking_effect}`, "", `Источник: \`${item.source}\`.`, "");
+      lines.push(`### ${item.title}`, "", item.question, "", `Статус: ${item.decision_status}.`, "", `Scope: \`${item.scope}\`. ${item.blocking_effect}`, "", `Источник: \`${item.source}\`.`, "");
     });
   }
 
