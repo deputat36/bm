@@ -61,9 +61,6 @@ if (!spec || !matrix || !handling || !lifecycle || !handoff || !eventLog || !run
 if (spec.schema_version !== "1.1") errors.push(`${SPEC_PATH}: schema_version must be 1.1`);
 if (!isIsoDate(spec.updated_at)) errors.push(`${SPEC_PATH}: updated_at must be an ISO date`);
 if (spec.portal_id !== "newbuilds-borisoglebsk") errors.push(`${SPEC_PATH}: invalid portal_id`);
-if (spec.status !== "requires_owner_approval_not_operational") {
-  errors.push(`${SPEC_PATH}: status must remain requires_owner_approval_not_operational`);
-}
 
 const expectedSources = {
   handling_playbook: CONTRACTS.handling,
@@ -102,7 +99,7 @@ for (const key of [
   "automatic_owner_assignment_enabled",
   "test_leads_only_until_activation"
 ]) {
-  if (rules[key] !== false) errors.push(`${SPEC_PATH}: rules.${key} must be false`);
+  if (rules[key] !== false) errors.push(`${SPEC_PATH}: rules.${key} must remain false before the separate activation stage`);
 }
 
 const allowedStatuses = new Set(Array.isArray(rules.allowed_decision_statuses) ? rules.allowed_decision_statuses : []);
@@ -155,12 +152,24 @@ exactSet(decisionIds, expectedDecisionIds, `${SPEC_PATH}: decision ids`);
 
 const pending = decisions.filter((item) => item.status === "requires_owner_decision");
 const approved = decisions.filter((item) => item.status === "approved");
-if (pending.length !== 7 || approved.length !== 1) {
-  errors.push(`${SPEC_PATH}: expected 7 pending and 1 approved decision`);
+const rejected = decisions.filter((item) => item.status === "rejected");
+const superseded = decisions.filter((item) => item.status === "superseded");
+if (pending.length + approved.length + rejected.length + superseded.length !== decisions.length) {
+  errors.push(`${SPEC_PATH}: decision status counts must sum to ${decisions.length}`);
+}
+const allApproved = decisions.length === 8 && approved.length === decisions.length;
+const expectedSpecStatus = allApproved
+  ? "ready_for_activation_not_operational"
+  : "requires_owner_approval_not_operational";
+if (spec.status !== expectedSpecStatus) {
+  errors.push(`${SPEC_PATH}: status must be ${expectedSpecStatus} for current decision distribution`);
+}
+if (rules.operational_activation_enabled === true && !allApproved) {
+  errors.push(`${SPEC_PATH}: operational activation cannot be enabled before all decisions are approved`);
 }
 
 const systemOfRecord = decisions.find((item) => item.id === "system_of_record");
-if (systemOfRecord?.status !== "approved") errors.push(`${SPEC_PATH}: system_of_record must be approved`);
+if (systemOfRecord?.status !== "approved") errors.push(`${SPEC_PATH}: system_of_record must remain approved`);
 if (systemOfRecord?.approved_value !== "supabase:newbuild_leads") {
   errors.push(`${SPEC_PATH}: system_of_record approved_value must be supabase:newbuild_leads`);
 }
@@ -215,7 +224,7 @@ if (handling.rules?.system_of_record_available !== true || handling.rules?.autom
   errors.push(`${CONTRACTS.handling}: storage and automatic triage must be connected`);
 }
 if (handling.rules?.approved_sla_exists !== false || handling.rules?.live_owner_assignment_exists !== false || handling.rules?.automatic_owner_assignment_enabled !== false || handling.rules?.crm_mutation_enabled !== false) {
-  errors.push(`${CONTRACTS.handling}: owner/SLA/CRM activation flags must remain false`);
+  errors.push(`${CONTRACTS.handling}: owner/SLA/CRM activation flags must remain false before separate activation`);
 }
 
 if (lifecycle.status !== "server_connected_owner_activation_pending") errors.push(`${CONTRACTS.lifecycle}: invalid connected status`);
@@ -223,7 +232,7 @@ if (lifecycle.rules?.system_of_record_available !== true || lifecycle.rules?.ser
   errors.push(`${CONTRACTS.lifecycle}: server lifecycle must be connected with triage-only automation`);
 }
 if (lifecycle.rules?.approved_sla_exists !== false || lifecycle.rules?.live_owner_assignment_exists !== false || lifecycle.rules?.automatic_owner_assignment_enabled !== false || lifecycle.rules?.crm_connected !== false) {
-  errors.push(`${CONTRACTS.lifecycle}: owner/SLA/CRM activation flags must remain false`);
+  errors.push(`${CONTRACTS.lifecycle}: owner/SLA/CRM activation flags must remain false before separate activation`);
 }
 
 if (handoff.status !== "server_storage_connected_owner_assignment_pending") errors.push(`${CONTRACTS.handoff}: invalid connected status`);
@@ -231,7 +240,7 @@ if (handoff.rules?.server_storage_connected !== true || handoff.rules?.automatic
   errors.push(`${CONTRACTS.handoff}: server storage and triage must be connected`);
 }
 if (handoff.rules?.approved_sla_exists !== false || handoff.rules?.automatic_owner_assignment_enabled !== false || handoff.rules?.crm_connected !== false) {
-  errors.push(`${CONTRACTS.handoff}: owner/SLA/CRM activation flags must remain false`);
+  errors.push(`${CONTRACTS.handoff}: owner/SLA/CRM activation flags must remain false before separate activation`);
 }
 
 if (eventLog.status !== "server_append_only_connected") errors.push(`${CONTRACTS.event_log}: invalid connected status`);
@@ -239,7 +248,7 @@ if (eventLog.rules?.append_only !== true || eventLog.rules?.database_append_only
   errors.push(`${CONTRACTS.event_log}: append-only server log and triage automation must be connected`);
 }
 if (eventLog.rules?.approved_sla_exists !== false || eventLog.rules?.automatic_owner_assignment_enabled !== false || eventLog.rules?.crm_connected !== false) {
-  errors.push(`${CONTRACTS.event_log}: owner/SLA/CRM activation flags must remain false`);
+  errors.push(`${CONTRACTS.event_log}: owner/SLA/CRM activation flags must remain false before separate activation`);
 }
 
 for (const fragment of [
@@ -265,6 +274,8 @@ for (const fragment of [
 console.log(`Owner decisions checked: ${decisions.length}`);
 console.log(`Pending decisions: ${pending.length}`);
 console.log(`Approved decisions: ${approved.length}`);
+console.log(`Rejected decisions: ${rejected.length}`);
+console.log(`Superseded decisions: ${superseded.length}`);
 console.log(`Active form scenarios preserved: ${matrix.scenarios?.length || 0}`);
 console.log(`System of record: ${systemOfRecord?.approved_value || "missing"}`);
 console.log(`Operational activation enabled: ${rules.operational_activation_enabled === true}`);
