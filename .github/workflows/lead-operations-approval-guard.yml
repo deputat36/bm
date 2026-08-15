@@ -69,4 +69,53 @@ jobs:
       - name: Generate approval readiness report
         run: |
           node tools/build-lead-operations-approval-report.mjs --format=json > /tmp/lead-operations-approval.json
-          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/lead-operations-approval.json","utf8")); const s=data.summary||{}; if(s.total_decisions!==8||s.required_operational_fields!==13||s.activation_gates!==7) process.exit(1); const total=Number(s.approved_decisions||0)+Number(s.pending_decisions||0)+Number(s.rejected_decisions||0)+Number(s.superseded_decisions||0); if(total!==8) process.exit(1); const ready=s.activation_enabled===true&&s.all_decisions_approved===true&&s.approved_decisions===8&&s.pending_decisions===0&&s.rejected_decisions===0&&s.superseded_decisions===0; const expected=ready?"operational_activation_ready_for_controlled_test":"owner_decisions_required_not_operational"; if(data.status!==expected) process.exit(1); console.log(`Owner decisions: ${s.approved_decisions}/${s.total_decisions}; pending=${s.pending_decisions}; rejected=${s.rejected_decisions}; superseded=${s.superseded_decisions}; activation=${s.activation_enabled}; status=${data.status}`);'
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('/tmp/lead-operations-approval.json', 'utf8'));
+          const s = data.summary || {};
+          if (s.total_decisions !== 8 || s.required_operational_fields !== 13 || s.activation_gates !== 7) process.exit(1);
+          const total = Number(s.approved_decisions||0)+Number(s.pending_decisions||0)+Number(s.rejected_decisions||0)+Number(s.superseded_decisions||0);
+          if (total !== 8) process.exit(1);
+          const ready = s.activation_enabled===true && s.all_decisions_approved===true && s.approved_decisions===8 && s.pending_decisions===0 && s.rejected_decisions===0 && s.superseded_decisions===0;
+          const expectedStatus = ready ? 'operational_activation_ready_for_controlled_test' : 'owner_decisions_required_not_operational';
+          const expectedPhase = s.all_decisions_approved
+            ? (s.activation_enabled ? 'activated_ready_for_controlled_test' : 'decisions_approved_activation_pending')
+            : 'owner_decisions_pending';
+          if (data.status !== expectedStatus || data.decision_phase !== expectedPhase) process.exit(1);
+          if (s.activation_required !== (s.all_decisions_approved === true && s.activation_enabled === false)) process.exit(1);
+          console.log(`Owner decisions: ${s.approved_decisions}/${s.total_decisions}; pending=${s.pending_decisions}; phase=${data.decision_phase}; activation=${s.activation_enabled}; status=${data.status}`);
+          NODE
+
+      - name: Verify 8 of 8 approved reports activation-pending phase
+        run: |
+          cp data/operations/lead-operations-approval.json /tmp/operations-approval.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const p = 'data/operations/lead-operations-approval.json';
+          const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+          for (const item of data.decisions) {
+            item.status = 'approved';
+            if (item.id === 'system_of_record') continue;
+            item.approved_value = ['primary_owner_assignment','backup_owner_assignment'].includes(item.id)
+              ? `role:test_${item.id}`
+              : `approved:${item.id}`;
+            item.secure_reference = null;
+          }
+          data.status = 'ready_for_activation_not_operational';
+          data.updated_at = '2026-08-16';
+          data.rules.operational_activation_enabled = false;
+          fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          node tools/validate-lead-operations-approval.mjs
+          node tools/build-lead-operations-approval-report.mjs --format=json > /tmp/approved-operations-report.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('/tmp/approved-operations-report.json', 'utf8'));
+          const s = data.summary || {};
+          if (data.decision_phase !== 'decisions_approved_activation_pending') process.exit(1);
+          if (data.status !== 'owner_decisions_required_not_operational') process.exit(1);
+          if (s.approved_decisions !== 8 || s.pending_decisions !== 0 || s.all_decisions_approved !== true || s.activation_enabled !== false || s.activation_required !== true) process.exit(1);
+          console.log('8/8 approved is explicitly reported as decisions_approved_activation_pending.');
+          NODE
+          cp /tmp/operations-approval.json data/operations/lead-operations-approval.json
+          node tools/validate-lead-operations-approval.mjs
