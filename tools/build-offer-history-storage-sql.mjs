@@ -28,8 +28,13 @@ if (storage.deployment?.sql_preview_only !== true
 
 const table = `${storage.store.schema}.${storage.store.table}`;
 const appendFunction = "public.newbuild_offer_history_events_append_only";
-const eventTypes = Object.keys(history.event_types || {});
-const statuses = offer.allowed_availability_statuses || [];
+const eventTypes = Array.isArray(history.event_types) ? history.event_types : [];
+const statuses = Array.isArray(offer.allowed_values?.availability_status) ? offer.allowed_values.availability_status : [];
+
+if (eventTypes.length !== 2 || !eventTypes.includes("price_observed") || !eventTypes.includes("availability_observed")) {
+  throw new Error("Canonical offer history event types are invalid");
+}
+if (!statuses.length) throw new Error("Availability enum is missing from offer contract");
 
 const sql = `-- PREVIEW ONLY - NOT DEPLOYED
 -- Review-only table/append-only preview. No hash-chain writer is included.
@@ -56,10 +61,12 @@ create table if not exists ${table} (
     check (event_type in (${eventTypes.map(quote).join(", ")})),
   constraint newbuild_offer_history_availability_check
     check (availability_status is null or availability_status in (${statuses.map(quote).join(", ")})),
-  constraint newbuild_offer_history_price_event_check
-    check (event_type <> 'price_observed' or (price is not null and price >= 0)),
-  constraint newbuild_offer_history_status_event_check
-    check (event_type <> 'availability_observed' or availability_status is not null),
+  constraint newbuild_offer_history_value_shape_check
+    check (
+      (event_type = 'price_observed' and availability_status is null and (price is null or price > 0))
+      or
+      (event_type = 'availability_observed' and price is null and availability_status is not null)
+    ),
   constraint newbuild_offer_history_hash_check
     check (event_hash ~ '^[0-9a-f]{64}$'),
   constraint newbuild_offer_history_previous_hash_check
