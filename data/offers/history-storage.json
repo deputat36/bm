@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-08-09",
+  "schema_version": "1.1",
+  "updated_at": "2026-08-16",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "store_design_selected_not_deployed",
   "purpose": "Выбрать защищённый append-only store для price/availability history без подключения live offer source, migration, production DDL, writer или публичного history API.",
@@ -24,6 +24,18 @@
     "history_write_enabled": false,
     "sql_preview_only": true
   },
+  "canonical_mapping": {
+    "event_id": ["event_id"],
+    "event_type": ["event_type"],
+    "observed_at": ["observed_at"],
+    "object_id": ["object_id"],
+    "section_or_entrance": ["section_or_entrance"],
+    "apartment_number_public": ["apartment_number_public"],
+    "source_id": ["source_id"],
+    "value": ["price", "availability_status"],
+    "previous_event_hash": ["previous_event_hash"],
+    "event_hash": ["event_hash"]
+  },
   "columns": [
     {"name":"event_id","type":"uuid","nullable":false,"source":"server_generated"},
     {"name":"offer_identity","type":"text","nullable":false,"source":"canonical_offer_identity"},
@@ -43,7 +55,7 @@
   ],
   "constraints": {
     "event_types_source": "data/offers/history-contract.json#event_types",
-    "availability_status_source": "data/offers/contract.json#allowed_availability_statuses",
+    "availability_status_source": "data/offers/contract.json#allowed_values.availability_status",
     "event_hash_unique": true,
     "idempotency_unique": ["offer_identity", "idempotency_key"],
     "forbid_update": true,
@@ -54,7 +66,7 @@
   },
   "hash_chain": {
     "algorithm": "sha256",
-    "canonical_field_order_source": "data/offers/history-contract.json#hash_chain.canonical_field_order",
+    "canonical_field_order_source": "data/offers/history-contract.json#hash_chain.event_hash_input_fields",
     "first_event_previous_hash": null,
     "same_offer_chain_only": true,
     "writer_must_verify_previous_hash_before_append": true,
