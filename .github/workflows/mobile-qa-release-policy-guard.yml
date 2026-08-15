@@ -8,6 +8,8 @@ on:
       - "evidence/qa/2026-08-06-production-browser/README.md"
       - "evidence/qa/2026-08-09-mobile-emulation/README.md"
       - "tools/validate-mobile-release-policy.mjs"
+      - "tools/build-launch-readiness-report.mjs"
+      - "tools/validate-launch-readiness-invariants.mjs"
       - ".github/workflows/mobile-qa-release-policy-guard.yml"
   push:
     branches: [main]
@@ -17,6 +19,8 @@ on:
       - "evidence/qa/2026-08-06-production-browser/README.md"
       - "evidence/qa/2026-08-09-mobile-emulation/README.md"
       - "tools/validate-mobile-release-policy.mjs"
+      - "tools/build-launch-readiness-report.mjs"
+      - "tools/validate-launch-readiness-invariants.mjs"
       - ".github/workflows/mobile-qa-release-policy-guard.yml"
 
 permissions:
@@ -33,10 +37,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Check validator
-        run: node --check tools/validate-mobile-release-policy.mjs
-      - name: Validate release policy
-        run: node tools/validate-mobile-release-policy.mjs
+      - name: Check validators
+        run: |
+          node --check tools/validate-mobile-release-policy.mjs
+          node --check tools/build-launch-readiness-report.mjs
+          node --check tools/validate-launch-readiness-invariants.mjs
+      - name: Validate release policy and launch-readiness boundary
+        run: |
+          node tools/validate-mobile-release-policy.mjs
+          node tools/validate-launch-readiness-invariants.mjs
+      - name: Verify current policy is an explicit campaign launch gate
+        run: |
+          node tools/build-launch-readiness-report.mjs --format=json > /tmp/launch-readiness.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('/tmp/launch-readiness.json', 'utf8'));
+          const policy = JSON.parse(fs.readFileSync('data/qa/mobile-release-policy.json', 'utf8'));
+          const gate = (report.gates || []).find((item) => item.id === 'mobile_qa_release_policy');
+          const profile = (report.profiles || []).find((item) => item.id === 'campaign_launch');
+          if (!gate || !profile?.required_gates?.includes('mobile_qa_release_policy')) process.exit(1);
+          if (policy.status === 'requires_owner_decision' && (gate.status !== 'blocked' || !profile.blocked_gates?.includes('mobile_qa_release_policy'))) process.exit(1);
+          console.log(`Mobile QA gate=${gate.status}; policy=${policy.status}; campaign_ready=${profile.ready}`);
+          NODE
       - name: Reject emulation labeled as physical device
         run: |
           cp data/qa/mobile-release-policy.json /tmp/mobile-policy.json
@@ -68,3 +90,4 @@ jobs:
           fi
           cp /tmp/mobile-policy.json data/qa/mobile-release-policy.json
           node tools/validate-mobile-release-policy.mjs
+          node tools/validate-launch-readiness-invariants.mjs
