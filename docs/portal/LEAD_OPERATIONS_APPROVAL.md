@@ -1,12 +1,12 @@
 # Утверждение SLA и обработки обращений
 
-Дата обновления: 2026-07-16
+Дата обновления: 2026-08-16
 
 ## Назначение
 
 Этот пакет отделяет готовые технические контракты от решений, которые может принять только владелец процесса.
 
-Портал уже умеет сформировать структурированное обращение, квалификацию и контекст. Но до утверждения ответственных, рабочего календаря, SLA и системы учёта нельзя считать обработку операционной.
+Портал уже умеет сформировать структурированное обращение, квалификацию и контекст. Но до утверждения ответственных, рабочего календаря, SLA и отдельной операционной активации нельзя считать обработку операционной.
 
 Канонический реестр:
 
@@ -14,21 +14,56 @@
 data/operations/lead-operations-approval.json
 ```
 
-## Текущий статус
+## Текущее состояние
+
+На 16 августа 2026 года:
 
 ```text
-requires_owner_approval_not_operational
+status=requires_owner_approval_not_operational
+decision_phase=owner_decisions_pending
+approved=1
+pending=7
+rejected=0
+superseded=0
+operational_activation_enabled=false
 ```
 
-На текущем этапе:
+Уже утверждено только решение:
 
-- 8 решений ожидают утверждения;
-- 0 решений утверждено;
-- операционная активация выключена;
-- CRM mutation выключен;
-- реальные имена, телефоны и email ответственных в GitHub запрещены;
-- разрешены только роли или защищённые ссылки на запись в утверждённой системе;
-- действующие формы и доставка заявки не изменяются.
+```text
+system_of_record=supabase:newbuild_leads
+```
+
+Остальные семь решений остаются owner-dependent.
+
+## Decision phases
+
+`tools/build-lead-operations-approval-report.mjs` отдельно выводит `decision_phase`, чтобы не смешивать утверждение решений с фактической активацией.
+
+### `owner_decisions_pending`
+
+Есть хотя бы одно решение, которое ещё не approved. Это текущее состояние.
+
+### `decisions_approved_activation_pending`
+
+Все 8/8 decisions утверждены, но:
+
+```text
+operational_activation_enabled=false
+```
+
+Это важный отдельный handoff: решения уже завершены, но runtime/операционный режим ещё не активирован. В этой фазе Owner release blockers должен показывать отдельный `operational_activation_approval`.
+
+### `activated_ready_for_controlled_test`
+
+Все 8/8 decisions approved и отдельная операционная активация выполнена. Только после этого можно переходить к контролируемому real-lead evidence в рамках остальных launch gates.
+
+Top-level report status пока сохраняет обратную совместимость с действующим package contract:
+
+- до фактической activation — `owner_decisions_required_not_operational`;
+- после 8/8 + activation — `operational_activation_ready_for_controlled_test`.
+
+Точная стадия определяется по `decision_phase`.
 
 ## Решения владельца
 
@@ -41,7 +76,7 @@ requires_owner_approval_not_operational
 | Распределение | Правила по объекту, типу, квалификации и нагрузке | Требует решения |
 | Попытки связи | Количество, каналы и интервалы | Требует решения |
 | Причины закрытия | Контролируемый словарь и обязательность комментария | Требует решения |
-| Система учёта | CRM, защищённый endpoint или другой единый источник | Требует решения |
+| Система учёта | `supabase:newbuild_leads` | Утверждено |
 
 ## Как утверждать безопасно
 
@@ -146,9 +181,9 @@ record_locator
 ## Что не изменяется этим пакетом
 
 - реальная заявка не отправляется;
-- CRM и Supabase не подключаются;
+- operational activation не включается автоматически;
 - ответственный автоматически не назначается;
-- действующий email payload не меняется;
+- CRM mutation выключен;
 - персональные данные в отчёты и GitHub не попадают;
 - SLA не объявляется утверждённым;
 - реклама и снятие `noindex` не выполняются.
@@ -166,3 +201,12 @@ Guard:
 ```text
 .github/workflows/lead-operations-approval-guard.yml
 ```
+
+CI дополнительно моделирует future state `8/8 approved + activation=false` и требует:
+
+```text
+decision_phase=decisions_approved_activation_pending
+activation_required=true
+```
+
+Это гарантирует, что завершённые owner decisions не будут ошибочно смешаны с уже активированным операционным режимом.
