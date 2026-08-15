@@ -4,6 +4,7 @@ import path from "node:path";
 const ROOT = process.cwd();
 const PATHS = {
   legal: "data/legal/legal-owner-approval.json",
+  bmAdvertising: "data/legal/bm-group-advertising-contract.json",
   operations: "data/operations/lead-operations-approval.json",
   analytics: "data/analytics/live-provider.json",
   realLead: "data/release/real-lead-test.json",
@@ -23,6 +24,7 @@ function getArg(name, fallback = "") {
 }
 
 const legal = readJson(PATHS.legal);
+const bmAdvertising = readJson(PATHS.bmAdvertising);
 const operations = readJson(PATHS.operations);
 const analytics = readJson(PATHS.analytics);
 const realLead = readJson(PATHS.realLead);
@@ -85,8 +87,24 @@ if (campaignGate && campaignGate.status !== "passed") {
   });
 }
 
+const conditionalBlockers = [];
+const bmApproval = bmAdvertising.approval || {};
+if (bmApproval.status !== "passed") {
+  conditionalBlockers.push({
+    group: "external_approval",
+    id: "bm_group_written_approval",
+    title: "Письменное согласование BM Group для object-specific рекламы",
+    question: "Какие object-specific рекламные scopes по ЖК «Теллерманов сад» / Просторной 4А письменно согласованы BM Group?",
+    secure_value_required: false,
+    source: PATHS.bmAdvertising,
+    scope: "prostornaya-4a_object_specific_advertising",
+    blocks_global_release: false,
+    blocking_effect: "Только object-specific реклама Просторной 4А; общие кампании независимого городского портала этим blocker не блокируются."
+  });
+}
+
 const report = {
-  schema_version: "1.0",
+  schema_version: "1.1",
   portal_id: "newbuilds-borisoglebsk",
   generated_at: new Date().toISOString(),
   status: decisions.length ? "owner_decisions_required" : "owner_decisions_complete",
@@ -97,14 +115,18 @@ const report = {
     analytics_configuration_required: decisions.some((item) => item.group === "analytics"),
     real_lead_consent_required: decisions.some((item) => item.group === "real_lead"),
     campaign_approval_required: decisions.some((item) => item.group === "campaign"),
+    conditional_external_approvals: conditionalBlockers.length,
+    bm_object_approval_required: conditionalBlockers.some((item) => item.id === "bm_group_written_approval"),
     manual_blocked_gates: manualBlocked.length
   },
   decisions,
+  conditional_blockers: conditionalBlockers,
   rules: {
     report_is_not_approval: true,
     no_personal_contact_values: true,
     no_secret_credentials: true,
-    source_contracts_remain_authoritative: true
+    source_contracts_remain_authoritative: true,
+    conditional_blockers_do_not_block_general_portal_release: true
   }
 };
 
@@ -117,7 +139,8 @@ if (format === "json") {
     "",
     `Статус: ${report.status}`,
     "",
-    `Всего незавершённых решений: ${report.summary.total_owner_decisions}`,
+    `Всего незавершённых owner-решений: ${report.summary.total_owner_decisions}`,
+    `Условных внешних согласований: ${report.summary.conditional_external_approvals}`,
     "",
     ...decisions.flatMap((item, index) => [
       `## ${index + 1}. ${item.title}`,
@@ -128,6 +151,14 @@ if (format === "json") {
       ""
     ])
   ];
+
+  if (conditionalBlockers.length) {
+    lines.push("## Условные внешние блокеры", "", "Они относятся только к указанному scope и не превращаются в глобальный блокер независимого городского портала.", "");
+    conditionalBlockers.forEach((item) => {
+      lines.push(`### ${item.title}`, "", item.question, "", `Scope: \`${item.scope}\`. ${item.blocking_effect}`, "", `Источник: \`${item.source}\`.`, "");
+    });
+  }
+
   process.stdout.write(`${lines.join("\n")}\n`);
 } else {
   throw new Error(`Unsupported format: ${format}`);
