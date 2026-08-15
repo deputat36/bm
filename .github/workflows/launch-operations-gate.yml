@@ -11,6 +11,7 @@ on:
       - "supabase/functions/newbuild-lead/index.ts"
       - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/build-launch-readiness-report.mjs"
+      - "tools/validate-lead-operations-approval.mjs"
       - "tools/validate-launch-operations-gate.mjs"
       - "docs/portal/LAUNCH_OPERATIONS_GATE.md"
       - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
@@ -28,6 +29,7 @@ on:
       - "supabase/functions/newbuild-lead/index.ts"
       - "supabase/migrations/*newbuild_lead_operations*.sql"
       - "tools/build-launch-readiness-report.mjs"
+      - "tools/validate-lead-operations-approval.mjs"
       - "tools/validate-launch-operations-gate.mjs"
       - "docs/portal/LAUNCH_OPERATIONS_GATE.md"
       - "docs/portal/LEAD_OPERATIONS_RUNBOOK.md"
@@ -52,12 +54,62 @@ jobs:
       - name: Check scripts
         run: |
           node --check tools/build-launch-readiness-report.mjs
+          node --check tools/validate-lead-operations-approval.mjs
           node --check tools/validate-launch-operations-gate.mjs
 
-      - name: Validate launch operations gate
-        run: node tools/validate-launch-operations-gate.mjs
+      - name: Validate owner decision registry and launch operations gate
+        run: |
+          node tools/validate-lead-operations-approval.mjs
+          node tools/validate-launch-operations-gate.mjs
 
-      - name: Generate launch readiness report
+      - name: Generate and cross-check launch readiness report
         run: |
           node tools/build-launch-readiness-report.mjs --format=json > /tmp/launch-readiness.json
-          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/launch-readiness.json","utf8")); const gate=data.gates.find((item)=>item.id==="lead_operations_approval"); const profile=data.profiles.find((item)=>item.id==="campaign_launch"); if(gate?.status!=="blocked"||gate?.evidence_count!==1||!profile?.blocked_gates?.includes("lead_operations_approval")||data.metrics?.lead_operations?.approved!==1||data.metrics?.lead_operations?.pending!==7||data.metrics?.lead_operations?.activation_enabled!==false||data.metrics?.lead_operations?.ready!==false) process.exit(1); console.log(`Operations gate: ${gate.status}; approved: ${data.metrics.lead_operations.approved}; pending: ${data.metrics.lead_operations.pending}`);'
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('/tmp/launch-readiness.json', 'utf8'));
+          const approval = JSON.parse(fs.readFileSync('data/operations/lead-operations-approval.json', 'utf8'));
+          const decisions = Array.isArray(approval.decisions) ? approval.decisions : [];
+          const counts = {
+            approved: decisions.filter((item) => item.status === 'approved').length,
+            pending: decisions.filter((item) => item.status === 'requires_owner_decision').length,
+            rejected: decisions.filter((item) => item.status === 'rejected').length,
+            superseded: decisions.filter((item) => item.status === 'superseded').length
+          };
+          const activation = approval.rules?.operational_activation_enabled === true;
+          const ready = decisions.length === 8 && counts.approved === 8 && counts.pending === 0 && counts.rejected === 0 && counts.superseded === 0 && activation;
+          const gate = (data.gates || []).find((item) => item.id === 'lead_operations_approval');
+          const profile = (data.profiles || []).find((item) => item.id === 'campaign_launch');
+          const metrics = data.metrics?.lead_operations || {};
+          if (gate?.status !== (ready ? 'passed' : 'blocked')) process.exit(1);
+          if (gate?.evidence_count !== counts.approved) process.exit(1);
+          if (!profile?.required_gates?.includes('lead_operations_approval')) process.exit(1);
+          if (ready && !profile?.passed_gates?.includes('lead_operations_approval')) process.exit(1);
+          if (!ready && !profile?.blocked_gates?.includes('lead_operations_approval')) process.exit(1);
+          if (metrics.total_decisions !== decisions.length) process.exit(1);
+          for (const key of ['approved','pending','rejected','superseded']) if (metrics[key] !== counts[key]) process.exit(1);
+          if (metrics.activation_enabled !== activation || metrics.ready !== ready) process.exit(1);
+          console.log(`Operations gate=${gate.status}; approved=${counts.approved}; pending=${counts.pending}; rejected=${counts.rejected}; superseded=${counts.superseded}; activation=${activation}`);
+          NODE
+
+      - name: Negative test partial approval must not activate operations
+        run: |
+          cp data/operations/lead-operations-approval.json /tmp/operations-approval.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const p = 'data/operations/lead-operations-approval.json';
+          const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+          const item = data.decisions.find((decision) => decision.id === 'routing_policy');
+          item.status = 'approved';
+          item.approved_value = 'role:manager_routing';
+          item.secure_reference = null;
+          data.updated_at = '2026-08-16';
+          fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          node tools/validate-lead-operations-approval.mjs
+          node tools/validate-launch-operations-gate.mjs
+          node tools/build-launch-readiness-report.mjs --format=json > /tmp/partial-launch.json
+          node -e 'const fs=require("fs"); const d=JSON.parse(fs.readFileSync("/tmp/partial-launch.json","utf8")); const g=d.gates.find(x=>x.id==="lead_operations_approval"); const m=d.metrics.lead_operations; if(g.status!=="blocked"||g.evidence_count!==2||m.approved!==2||m.pending!==6||m.ready!==false) process.exit(1); console.log(`Partial decision progression accepted safely: ${m.approved}/8 approved; gate=${g.status}`);'
+          cp /tmp/operations-approval.json data/operations/lead-operations-approval.json
+          node tools/validate-lead-operations-approval.mjs
+          node tools/validate-launch-operations-gate.mjs
