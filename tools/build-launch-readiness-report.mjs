@@ -6,6 +6,7 @@ const PATHS = {
   manualGates: "data/release/manual-gates.json",
   formScenarios: "data/qa/form-scenarios.json",
   formResults: "data/qa/form-results.json",
+  mobileReleasePolicy: "data/qa/mobile-release-policy.json",
   sourceCollection: "data/research/source-collection.json",
   projectIndex: "data/projects/index.json",
   campaignRelease: "data/marketing/campaign-release.json",
@@ -39,9 +40,14 @@ function csvCell(value) {
   return `"${text.replace(/"/g, '""')}"`;
 }
 
+function isDate(value) {
+  return Boolean(value && Number.isFinite(Date.parse(String(value))));
+}
+
 const manualRegistry = readJson(PATHS.manualGates);
 const formScenarios = readJson(PATHS.formScenarios);
 const formResults = readJson(PATHS.formResults);
+const mobileReleasePolicy = readJson(PATHS.mobileReleasePolicy);
 const sourceCollection = readJson(PATHS.sourceCollection);
 const projectIndex = readJson(PATHS.projectIndex);
 const campaignRelease = readJson(PATHS.campaignRelease);
@@ -59,6 +65,17 @@ const formStatusCounts = {
   blocked: results.filter((item) => item.status === "blocked").length,
   not_run: Math.max(0, expectedFormSlots - results.length)
 };
+
+const mobilePolicyDecision = mobileReleasePolicy.decision || {};
+const mobilePolicyAllowedValues = Array.isArray(mobilePolicyDecision.allowed_values) ? mobilePolicyDecision.allowed_values : [];
+const mobilePolicyResolved = mobileReleasePolicy.status === "approved"
+  && mobilePolicyAllowedValues.includes(mobilePolicyDecision.value)
+  && isDate(mobilePolicyDecision.checked_at)
+  && String(mobilePolicyDecision.reviewer_reference || "").trim() !== ""
+  && Array.isArray(mobilePolicyDecision.evidence)
+  && mobilePolicyDecision.evidence.length > 0;
+const mobilePolicyEvidence = mobileReleasePolicy.current_evidence || {};
+const mobileEmulationProfiles = ["android", "iphone"].filter((id) => mobilePolicyEvidence[id]?.physical_device === false).length;
 
 const sourceTasks = (Array.isArray(sourceCollection.projects) ? sourceCollection.projects : [])
   .flatMap((project) => Array.isArray(project.tasks) ? project.tasks : []);
@@ -124,6 +141,15 @@ const derivedGates = [
     evidence_count: results.length
   },
   {
+    id: "mobile_qa_release_policy",
+    title: "Решение по достаточности mobile emulation или обязательности физических устройств",
+    category: "derived",
+    scope: "campaign_launch",
+    status: mobilePolicyResolved ? "passed" : "blocked",
+    details: `policy_status=${mobileReleasePolicy.status || "missing"}; decision=${mobilePolicyDecision.value || "unset"}; emulation_profiles=${mobileEmulationProfiles}/2; physical_device_evidence=0`,
+    evidence_count: mobilePolicyResolved ? mobilePolicyDecision.evidence.length : 0
+  },
+  {
     id: "lead_operations_approval",
     title: "Утверждённая операционная обработка обращений",
     category: "derived",
@@ -187,6 +213,7 @@ const profiles = [
     title: "Запуск рекламы и сбор реальных заявок",
     required_gates: [
       "form_manual_qa",
+      "mobile_qa_release_policy",
       "lead_operations_approval",
       "real_lead_delivery",
       "live_analytics_debug",
@@ -249,6 +276,13 @@ const metrics = {
     devices: devices.length,
     expected_slots: expectedFormSlots,
     ...formStatusCounts
+  },
+  mobile_qa_policy: {
+    status: mobileReleasePolicy.status || "",
+    decision: mobilePolicyDecision.value || null,
+    resolved: mobilePolicyResolved,
+    emulation_profiles: mobileEmulationProfiles,
+    physical_device_evidence: 0
   },
   lead_operations: {
     total_decisions: operationsDecisions.length,

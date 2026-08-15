@@ -105,6 +105,7 @@ for (const key of [
 
 const expectedGates = new Set([
   "form_manual_qa",
+  "mobile_qa_release_policy",
   "lead_operations_approval",
   "real_lead_delivery",
   "live_analytics_debug",
@@ -120,6 +121,12 @@ else exactSet(new Set(campaignLaunch.required_gates || []), expectedGates, `${RE
 const launchReady = campaignLaunch?.ready === true;
 const blockers = new Set(campaignLaunch?.blocked_gates || []);
 if (!launchReady && blockers.size === 0) errors.push(`${READINESS_SCRIPT}: campaign launch is not ready but blockers are empty`);
+const mobilePolicyGate = (readiness.gates || []).find((item) => item.id === "mobile_qa_release_policy");
+if (!mobilePolicyGate) errors.push(`${READINESS_SCRIPT}: mobile_qa_release_policy gate missing`);
+if (readiness.metrics?.mobile_qa_policy?.status === "requires_owner_decision") {
+  if (mobilePolicyGate?.status !== "blocked") errors.push(`${READINESS_SCRIPT}: pending mobile QA policy must remain blocked`);
+  if (!blockers.has("mobile_qa_release_policy")) errors.push(`${READINESS_SCRIPT}: campaign_launch must include mobile_qa_release_policy blocker while policy is pending`);
+}
 
 const activeCampaigns = new Map((campaignRegistry.campaigns || []).filter((item) => item.status === "active").map((item) => [item.id, item]));
 const releaseIds = new Set(release.campaign_ids || []);

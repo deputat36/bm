@@ -11,6 +11,7 @@ on:
       - "data/release/manual-gates.json"
       - "data/operations/lead-operations-approval.json"
       - "data/qa/form-results.json"
+      - "data/qa/mobile-release-policy.json"
       - "tools/build-launch-readiness-report.mjs"
       - "tools/validate-first-wave.mjs"
       - "tools/build-first-wave-pack.mjs"
@@ -25,6 +26,7 @@ on:
       - "data/release/manual-gates.json"
       - "data/operations/lead-operations-approval.json"
       - "data/qa/form-results.json"
+      - "data/qa/mobile-release-policy.json"
       - "tools/build-launch-readiness-report.mjs"
       - "tools/validate-first-wave.mjs"
       - "tools/build-first-wave-pack.mjs"
@@ -56,6 +58,23 @@ jobs:
 
       - name: Validate current first-wave plan
         run: node tools/validate-first-wave.mjs
+
+      - name: Verify pending mobile QA policy blocks campaign launch
+        run: |
+          node tools/build-launch-readiness-report.mjs --format=json > /tmp/launch-readiness.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('/tmp/launch-readiness.json', 'utf8'));
+          const policy = JSON.parse(fs.readFileSync('data/qa/mobile-release-policy.json', 'utf8'));
+          const profile = (report.profiles || []).find((item) => item.id === 'campaign_launch');
+          const gate = (report.gates || []).find((item) => item.id === 'mobile_qa_release_policy');
+          if (!profile?.required_gates?.includes('mobile_qa_release_policy')) process.exit(1);
+          if (policy.status === 'requires_owner_decision') {
+            if (gate?.status !== 'blocked') process.exit(1);
+            if (!profile?.blocked_gates?.includes('mobile_qa_release_policy')) process.exit(1);
+          }
+          console.log(`Mobile QA launch gate=${gate?.status}; policy=${policy.status}; campaign_ready=${profile?.ready}`);
+          NODE
 
       - name: Build first-wave release pack
         run: |

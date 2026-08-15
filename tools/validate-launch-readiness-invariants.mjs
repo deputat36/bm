@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 
 const RESULTS_PATH = "data/qa/form-results.json";
 const SCENARIOS_PATH = "data/qa/form-scenarios.json";
+const MOBILE_POLICY_PATH = "data/qa/mobile-release-policy.json";
 const PACKAGE_PATH = "package.json";
 const WORKFLOW_PATH = ".github/workflows/form-qa-execution-pack-guard.yml";
 const BUILDER_PATH = "tools/build-launch-readiness-report.mjs";
@@ -10,6 +11,7 @@ const errors = [];
 const readJson = (file) => JSON.parse(fs.readFileSync(file, "utf8"));
 const resultsFile = readJson(RESULTS_PATH);
 const scenariosFile = readJson(SCENARIOS_PATH);
+const mobilePolicy = readJson(MOBILE_POLICY_PATH);
 const packageFile = readJson(PACKAGE_PATH);
 const launchReadinessCommand = String(packageFile.scripts?.["validate:launch-readiness"] || "");
 const workflowSource = fs.readFileSync(WORKFLOW_PATH, "utf8");
@@ -62,9 +64,34 @@ try {
   const gateStatusTotal = ["passed", "blocked", "in_review", "not_applicable"].reduce((sum, key) => sum + Number(report.summary?.[key] || 0), 0);
   if (gateStatusTotal !== gates.length) errors.push("launch report gate status counts are inconsistent");
   if (report.summary?.total_profiles !== profiles.length) errors.push("launch report profile count is inconsistent");
+
   const qa = report.metrics?.form_qa || {};
   validateCounts("launch report form_qa", qa);
   if (qa.expected_slots !== 42) errors.push("launch report form_qa expected_slots must be 42");
+  if (qa.passed !== current.passed || qa.failed !== current.failed || qa.blocked !== current.blocked || qa.not_run !== current.not_run) {
+    errors.push("mobile policy must not alter historical form_qa counts");
+  }
+
+  const mobileGate = gates.find((item) => item.id === "mobile_qa_release_policy");
+  const campaign = profiles.find((item) => item.id === "campaign_launch");
+  const mobileMetrics = report.metrics?.mobile_qa_policy || {};
+  if (!mobileGate) errors.push("mobile_qa_release_policy gate is missing");
+  if (!campaign?.required_gates?.includes("mobile_qa_release_policy")) errors.push("campaign_launch must require mobile_qa_release_policy");
+  if (mobileMetrics.status !== mobilePolicy.status) errors.push("mobile QA policy metric status mismatch");
+  if (mobileMetrics.decision !== (mobilePolicy.decision?.value || null)) errors.push("mobile QA policy metric decision mismatch");
+  if (mobileMetrics.physical_device_evidence !== 0) errors.push("current mobile QA policy must not claim physical device evidence");
+  if (mobileMetrics.emulation_profiles !== 2) errors.push("current mobile QA evidence must identify two emulation profiles");
+
+  if (mobilePolicy.status === "requires_owner_decision") {
+    if (mobileGate?.status !== "blocked") errors.push("pending mobile QA policy must produce blocked gate");
+    if (mobileMetrics.resolved !== false) errors.push("pending mobile QA policy must not be resolved");
+    if (!campaign?.blocked_gates?.includes("mobile_qa_release_policy")) errors.push("campaign_launch must expose pending mobile QA policy blocker");
+  } else if (mobilePolicy.status === "approved") {
+    if (mobileGate?.status !== "passed") errors.push("valid approved mobile QA policy must produce passed policy gate");
+    if (mobileMetrics.resolved !== true) errors.push("approved mobile QA policy must be resolved");
+  } else {
+    errors.push(`unsupported mobile QA policy status: ${mobilePolicy.status}`);
+  }
 } catch (error) {
   errors.push(`${BUILDER_PATH}: ${error.message}`);
 }
@@ -74,4 +101,4 @@ if (errors.length) {
   errors.forEach((error) => console.error(`- ${error}`));
   process.exit(1);
 }
-console.log(`Launch readiness invariants passed: current=${current.passed}/${current.failed}/${current.blocked}/${current.not_run}; total=42.`);
+console.log(`Launch readiness invariants passed: current=${current.passed}/${current.failed}/${current.blocked}/${current.not_run}; total=42; mobile_policy=${mobilePolicy.status}.`);
