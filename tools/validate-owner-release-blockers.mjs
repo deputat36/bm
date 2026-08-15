@@ -5,21 +5,23 @@ import process from "node:process";
 
 const ROOT = process.cwd();
 const BM_PATH = "data/legal/bm-group-advertising-contract.json";
+const MOBILE_QA_PATH = "data/qa/mobile-release-policy.json";
 const output = execFileSync(process.execPath, ["tools/build-owner-release-blockers.mjs", "--format=json"], {
   encoding: "utf8"
 });
 const data = JSON.parse(output);
 const bm = JSON.parse(fs.readFileSync(path.join(ROOT, BM_PATH), "utf8"));
+const mobileQa = JSON.parse(fs.readFileSync(path.join(ROOT, MOBILE_QA_PATH), "utf8"));
 const errors = [];
 
-if (data.schema_version !== "1.1") errors.push("schema_version must be 1.1");
+if (data.schema_version !== "1.2") errors.push("schema_version must be 1.2");
 if (data.portal_id !== "newbuilds-borisoglebsk") errors.push("portal_id mismatch");
 if (!Array.isArray(data.decisions)) errors.push("decisions must be array");
 if (!Array.isArray(data.conditional_blockers)) errors.push("conditional_blockers must be array");
 
 const decisions = Array.isArray(data.decisions) ? data.decisions : [];
 const conditional = Array.isArray(data.conditional_blockers) ? data.conditional_blockers : [];
-const groups = new Set(["legal", "operations", "analytics", "real_lead", "campaign"]);
+const groups = new Set(["legal", "operations", "qa", "analytics", "real_lead", "campaign"]);
 const ids = new Set();
 for (const item of decisions) {
   if (!groups.has(item.group)) errors.push(`${item.id}: unsupported group=${item.group}`);
@@ -44,6 +46,16 @@ for (const item of conditional) {
   if (!String(item.blocking_effect || "").trim()) errors.push(`${item.id}: blocking_effect missing`);
 }
 
+const qaDecision = decisions.find((item) => item.id === "mobile_device_release_policy");
+const qaPending = mobileQa.status === "requires_owner_decision";
+if (qaPending && !qaDecision) errors.push("pending mobile QA policy must appear in owner decisions");
+if (!qaPending && qaDecision) errors.push("resolved mobile QA policy must be removed from owner decisions");
+if (qaDecision) {
+  if (qaDecision.group !== "qa") errors.push("mobile QA owner decision group mismatch");
+  if (qaDecision.source !== MOBILE_QA_PATH) errors.push("mobile QA owner decision source mismatch");
+  if (qaDecision.question !== mobileQa.decision?.question) errors.push("mobile QA owner decision question mismatch");
+}
+
 const bmPending = bm.approval?.status !== "passed";
 const bmBlocker = conditional.find((item) => item.id === "bm_group_written_approval");
 if (bmPending && !bmBlocker) errors.push("pending BM written approval must appear as conditional blocker");
@@ -58,6 +70,7 @@ const summary = data.summary || {};
 if (Number(summary.total_owner_decisions) !== decisions.length) errors.push("summary.total_owner_decisions mismatch");
 if (Number(summary.legal_pending) !== decisions.filter((item) => item.group === "legal").length) errors.push("legal_pending mismatch");
 if (Number(summary.operations_pending) !== decisions.filter((item) => item.group === "operations").length) errors.push("operations_pending mismatch");
+if (Boolean(summary.qa_policy_decision_required) !== Boolean(qaDecision)) errors.push("qa_policy_decision_required mismatch");
 if (Boolean(summary.analytics_configuration_required) !== decisions.some((item) => item.group === "analytics")) errors.push("analytics flag mismatch");
 if (Boolean(summary.real_lead_consent_required) !== decisions.some((item) => item.group === "real_lead")) errors.push("real lead flag mismatch");
 if (Boolean(summary.campaign_approval_required) !== decisions.some((item) => item.group === "campaign")) errors.push("campaign flag mismatch");
@@ -70,13 +83,14 @@ if (data.rules?.no_personal_contact_values !== true) errors.push("no_personal_co
 if (data.rules?.no_secret_credentials !== true) errors.push("no_secret_credentials must be true");
 if (data.rules?.source_contracts_remain_authoritative !== true) errors.push("source_contracts_remain_authoritative must be true");
 if (data.rules?.conditional_blockers_do_not_block_general_portal_release !== true) errors.push("conditional blocker boundary must be explicit");
+if (data.rules?.qa_policy_decision_does_not_rewrite_historical_results !== true) errors.push("QA policy must not rewrite historical results");
 
 const serialized = JSON.stringify(data).toLowerCase();
 for (const forbidden of ["access_token", "api_secret", "client_secret", "password", "bearer "]) {
   if (serialized.includes(forbidden)) errors.push(`secret-like content forbidden: ${forbidden}`);
 }
 
-console.log(`Owner release blockers: ${decisions.length}; legal=${summary.legal_pending}; operations=${summary.operations_pending}; conditional=${conditional.length}; manual_blocked=${summary.manual_blocked_gates}`);
+console.log(`Owner release blockers: ${decisions.length}; legal=${summary.legal_pending}; operations=${summary.operations_pending}; qa=${Boolean(qaDecision)}; conditional=${conditional.length}; manual_blocked=${summary.manual_blocked_gates}`);
 
 if (errors.length) {
   console.error("\nOwner release blockers validation errors:");
