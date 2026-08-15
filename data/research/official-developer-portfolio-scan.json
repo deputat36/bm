@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-08-09",
+  "updated_at": "2026-08-16",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "known_entities_scan_partial",
   "purpose": "Системно сверять официальные публичные портфели уже обнаруженных застройщиков/компаний по Борисоглебску без вывода об отсутствии других проектов или безадресной привязки очередей.",
@@ -206,6 +206,24 @@
           "url": "https://ria-glas.ru/2024/blagoustroistvo/novyj-dom-na-ulicze-sennaya-76-chto-za-fasadom/",
           "checked_at": "2026-08-09",
           "effect": "representative_role_and_object_statement_only"
+        },
+        {
+          "title": "Этажи — карточка ЖК на Сенной 76",
+          "url": "https://borisoglebsk.etagi.com/zastr/jk/zhilojj-kompleks-na-sennojj-76-50449/",
+          "checked_at": "2026-08-16",
+          "effect": "secondary_marketplace_names_ip_tarasov_mk_for_exact_project"
+        },
+        {
+          "title": "Яндекс Недвижимость — сравнение новостроек Борисоглебска",
+          "url": "https://realty.yandex.ru/borisoglebsk/sravnenie-novostroek/",
+          "checked_at": "2026-08-16",
+          "effect": "independent_secondary_directory_names_ip_tarasov_mk_for_sennaya_76"
+        },
+        {
+          "title": "1С — внедрение у ИП Тарасова Максима Константиновича в Борисоглебске",
+          "url": "https://solutions.1c.ru/projects/1381349/",
+          "checked_at": "2026-08-16",
+          "effect": "industry_identity_clue_ip_tarasov_maksim_konstantinovich_borisoglebsk_real_estate_and_construction_no_object_link"
         }
       ],
       "canonical_project_links": [
@@ -220,12 +238,14 @@
         {
           "id": "sennaya-76-legal-developer-entity",
           "observed_label": "Юридическое лицо компании-застройщика",
-          "reason_unresolved": "Публичное интервью подтверждает роль собеседника как главного инженера компании-застройщика, но не называет проверяемое юридическое лицо, ИНН/ОГРН и официальный portfolio channel.",
-          "must_not_assume_from_secondary_marketplace": "ИП Тарасов М.К."
+          "reason_unresolved": "Два независимых secondary-каталога связывают точный объект Сенная 76 с «ИП Тарасов М.К.», а отраслевой кейс 1С идентифицирует в Борисоглебске ИП Тарасова Максима Константиновича и описывает деятельность в недвижимости/строительстве. Однако ни один из этих источников не является первичным объектным реестром и не связывает предпринимателя с Сенной 76 разрешением, кадастровым документом, вводом, проектной декларацией или иным первичным документом. Публичное интервью также не называет юридическое лицо.",
+          "must_not_assume_from_secondary_marketplace": "ИП Тарасов М.К. / Максим Константинович"
         }
       ],
       "limitations": [
         "representative interview is not a legal-entity registry",
+        "independent secondary consensus can identify a candidate but cannot close primary developer identity",
+        "1C industry identity clue does not provide an object-level link to Sennaya 76",
         "marketplace developer naming cannot close primary developer identity"
       ]
     }
