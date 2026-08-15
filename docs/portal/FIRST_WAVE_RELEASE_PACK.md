@@ -1,6 +1,6 @@
 # Первая управляемая волна трафика
 
-Дата: 2026-08-09
+Дата: 2026-08-16
 
 Статус: подготовлена, но заблокирована campaign-launch gates. Фактических публикаций нет.
 
@@ -33,10 +33,11 @@ vk_city_community_mortgage_01
 
 ## Обязательные gates
 
-Используется существующий профиль `campaign_launch` из `tools/build-launch-readiness-report.mjs`:
+Используется профиль `campaign_launch` из `tools/build-launch-readiness-report.mjs`:
 
 ```text
 form_manual_qa
+mobile_qa_release_policy
 lead_operations_approval
 real_lead_delivery
 live_analytics_debug
@@ -46,6 +47,21 @@ campaign_publication_approval
 ```
 
 Пока хотя бы один gate blocked, placement не может получить `approved_to_publish`.
+
+### Почему mobile QA имеет два отдельных gate
+
+`mobile_qa_release_policy` отвечает только на вопрос, какое правило выпуска утверждено владельцем:
+
+- подтверждённая Android/iPhone emulation достаточна для controlled launch; или
+- реальные Android и iPhone обязательны до campaign launch.
+
+Этот gate не является доказательством физического теста и не подменяет `form_manual_qa`.
+
+`form_manual_qa` по-прежнему строится из фактического исторического `data/qa/form-results.json`. Пока отдельный review не изменит его semantics на основании валидного owner decision, поздние browser-emulation прогоны не переписывают старые failed/blocked результаты.
+
+Если владелец выберет обязательные физические устройства, `mobile_qa_release_policy` сможет стать passed после корректного утверждения policy, но `form_manual_qa` останется blocked до отдельного physical-device evidence.
+
+Если владелец выберет emulation sufficient, всё равно нужен отдельный review/PR перед изменением semantics `form_manual_qa`; сам policy contract не повышает этот gate.
 
 ## Где хранится факт публикации
 
@@ -69,4 +85,5 @@ Placement должен быть остановлен или переведён �
 node tools/validate-first-wave.mjs
 node tools/build-first-wave-pack.mjs
 node tools/build-first-wave-pack.mjs --format=json
+node tools/build-launch-readiness-report.mjs --format=json
 ```
