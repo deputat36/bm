@@ -13,6 +13,7 @@ on:
       - "tools/build-owner-release-blockers.mjs"
       - "tools/validate-owner-release-blockers.mjs"
       - "tools/validate-mobile-release-policy.mjs"
+      - "tools/validate-lead-operations-approval.mjs"
       - ".github/workflows/owner-release-blockers-guard.yml"
   push:
     branches:
@@ -28,6 +29,7 @@ on:
       - "tools/build-owner-release-blockers.mjs"
       - "tools/validate-owner-release-blockers.mjs"
       - "tools/validate-mobile-release-policy.mjs"
+      - "tools/validate-lead-operations-approval.mjs"
       - ".github/workflows/owner-release-blockers-guard.yml"
 
 permissions:
@@ -48,10 +50,86 @@ jobs:
           node --check tools/build-owner-release-blockers.mjs
           node --check tools/validate-owner-release-blockers.mjs
           node --check tools/validate-mobile-release-policy.mjs
-      - name: Validate mobile QA release policy
-        run: node tools/validate-mobile-release-policy.mjs
-      - name: Validate blocker report
-        run: node tools/validate-owner-release-blockers.mjs
+          node --check tools/validate-lead-operations-approval.mjs
+      - name: Validate current contracts and blocker report
+        run: |
+          node tools/validate-mobile-release-policy.mjs
+          node tools/validate-lead-operations-approval.mjs
+          node tools/validate-owner-release-blockers.mjs
+      - name: Verify current operations progression remains visible
+        run: |
+          node tools/build-owner-release-blockers.mjs --format=json > /tmp/owner-blockers.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('/tmp/owner-blockers.json', 'utf8'));
+          const ops = JSON.parse(fs.readFileSync('data/operations/lead-operations-approval.json', 'utf8'));
+          const unresolved = ops.decisions.filter((item) => item.status !== 'approved');
+          const operationItems = report.decisions.filter((item) => item.group === 'operations');
+          if (report.summary.operations_unresolved !== unresolved.length) process.exit(1);
+          if (operationItems.length !== unresolved.length) process.exit(1);
+          if (report.summary.operations_activation_required !== false) process.exit(1);
+          if (report.decisions.some((item) => item.id === 'operational_activation_approval')) process.exit(1);
+          console.log(`Operations owner blockers=${operationItems.length}; approved=${report.summary.operations_approved}; activation_required=${report.summary.operations_activation_required}`);
+          NODE
+      - name: Reject hiding a rejected operations decision
+        run: |
+          cp data/operations/lead-operations-approval.json /tmp/operations-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const p = 'data/operations/lead-operations-approval.json';
+          const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+          const item = data.decisions.find((decision) => decision.id === 'routing_policy');
+          item.status = 'rejected';
+          item.approved_value = null;
+          item.secure_reference = null;
+          data.updated_at = '2026-08-16';
+          fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          node tools/validate-lead-operations-approval.mjs
+          node tools/validate-owner-release-blockers.mjs
+          node tools/build-owner-release-blockers.mjs --format=json > /tmp/rejected-owner-blockers.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('/tmp/rejected-owner-blockers.json', 'utf8'));
+          const item = report.decisions.find((decision) => decision.id === 'routing_policy');
+          if (!item || item.group !== 'operations' || item.decision_status !== 'rejected') process.exit(1);
+          if (report.summary.operations_rejected !== 1) process.exit(1);
+          console.log('Rejected operations decision remains visible in owner blockers.');
+          NODE
+          cp /tmp/operations-baseline.json data/operations/lead-operations-approval.json
+      - name: Verify 8 of 8 approvals hand off to explicit activation decision
+        run: |
+          cp data/operations/lead-operations-approval.json /tmp/operations-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const p = 'data/operations/lead-operations-approval.json';
+          const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+          for (const item of data.decisions) {
+            item.status = 'approved';
+            if (item.id === 'system_of_record') continue;
+            item.approved_value = ['primary_owner_assignment','backup_owner_assignment'].includes(item.id)
+              ? `role:test_${item.id}`
+              : `approved:${item.id}`;
+            item.secure_reference = null;
+          }
+          data.status = 'ready_for_activation_not_operational';
+          data.updated_at = '2026-08-16';
+          data.rules.operational_activation_enabled = false;
+          fs.writeFileSync(p, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          node tools/validate-lead-operations-approval.mjs
+          node tools/validate-owner-release-blockers.mjs
+          node tools/build-owner-release-blockers.mjs --format=json > /tmp/activation-owner-blockers.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('/tmp/activation-owner-blockers.json', 'utf8'));
+          const activation = report.decisions.find((item) => item.id === 'operational_activation_approval');
+          if (!activation || activation.group !== 'operations' || activation.decision_status !== 'requires_activation_decision') process.exit(1);
+          if (report.summary.operations_approved !== 8 || report.summary.operations_unresolved !== 0 || report.summary.operations_activation_required !== true) process.exit(1);
+          console.log('8/8 approvals correctly hand off to explicit operational activation decision.');
+          NODE
+          cp /tmp/operations-baseline.json data/operations/lead-operations-approval.json
+          node tools/validate-owner-release-blockers.mjs
       - name: Verify pending QA decision remains explicit
         run: |
           node tools/build-owner-release-blockers.mjs --format=json > /tmp/owner-blockers.json
