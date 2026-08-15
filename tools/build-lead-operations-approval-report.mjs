@@ -22,8 +22,18 @@ function buildReport(spec) {
   }, {});
   const approved = byStatus.approved || 0;
   const pending = byStatus.requires_owner_decision || 0;
+  const rejected = byStatus.rejected || 0;
+  const superseded = byStatus.superseded || 0;
   const activationEnabled = spec.rules?.operational_activation_enabled === true;
-  const allApproved = decisions.length > 0 && approved === decisions.length;
+  const allApproved = decisions.length === 8
+    && approved === decisions.length
+    && pending === 0
+    && rejected === 0
+    && superseded === 0;
+
+  const decisionPhase = allApproved
+    ? (activationEnabled ? "activated_ready_for_controlled_test" : "decisions_approved_activation_pending")
+    : "owner_decisions_pending";
 
   return {
     schema_version: spec.schema_version,
@@ -32,14 +42,16 @@ function buildReport(spec) {
     status: activationEnabled && allApproved
       ? "operational_activation_ready_for_controlled_test"
       : "owner_decisions_required_not_operational",
+    decision_phase: decisionPhase,
     summary: {
       total_decisions: decisions.length,
       approved_decisions: approved,
       pending_decisions: pending,
-      rejected_decisions: byStatus.rejected || 0,
-      superseded_decisions: byStatus.superseded || 0,
+      rejected_decisions: rejected,
+      superseded_decisions: superseded,
       activation_enabled: activationEnabled,
       all_decisions_approved: allApproved,
+      activation_required: allApproved && !activationEnabled,
       required_operational_fields: Array.isArray(spec.required_operational_fields)
         ? spec.required_operational_fields.length
         : 0,
@@ -67,8 +79,10 @@ function buildReport(spec) {
 
 function printText(report) {
   console.log(`Статус: ${report.status}`);
+  console.log(`Фаза решений: ${report.decision_phase}`);
   console.log(`Решения: ${report.summary.approved_decisions}/${report.summary.total_decisions} утверждено`);
   console.log(`Ожидают владельца: ${report.summary.pending_decisions}`);
+  console.log(`Rejected: ${report.summary.rejected_decisions}; superseded: ${report.summary.superseded_decisions}`);
   console.log(`Операционная активация: ${report.summary.activation_enabled ? "включена" : "выключена"}`);
   console.log("");
   report.decisions.forEach((item) => {
