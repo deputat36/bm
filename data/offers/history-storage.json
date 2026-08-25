@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.1",
-  "updated_at": "2026-08-16",
+  "schema_version": "1.2",
+  "updated_at": "2026-08-25",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "store_design_selected_not_deployed",
   "purpose": "Выбрать защищённый append-only store для price/availability history без подключения live offer source, migration, production DDL, writer или публичного history API.",
@@ -77,14 +77,22 @@
   },
   "retention": {
     "status": "requires_policy_before_deployment",
+    "approval_status": "requires_owner_decision",
+    "approval_reference": null,
+    "approved_at": null,
     "retention_days": null,
     "automatic_delete_enabled": false,
     "reason": "Не выбирается произвольный срок хранения до определения объёма, бизнес-ценности истории, стоимости хранения и backup/export требований."
   },
   "backup_export": {
     "status": "requires_policy_before_deployment",
+    "approval_status": "requires_owner_decision",
+    "approval_reference": null,
+    "approved_at": null,
+    "policy_mode": null,
     "managed_backup_verified": false,
     "export_schedule": null,
+    "restore_test_interval_days": null,
     "restore_test_verified": false
   },
   "privacy": {
