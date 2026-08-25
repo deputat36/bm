@@ -103,6 +103,24 @@ function hasNoindexFollow(html) {
     || /<meta\s+content=["']noindex\s*,\s*follow["']\s+name=["']robots["'][^>]*>/i.test(html);
 }
 
+function validateSafeTransitionStub({ sourceFile, canonical, targetHref, oldDomain, forbiddenPhrases }) {
+  const html = fs.readFileSync(path.join(ROOT, sourceFile), "utf8");
+  const lower = html.toLowerCase();
+  if (!hasNoindexFollow(html)) errors.push(`${sourceFile}: safe transition stub requires noindex,follow`);
+  if (!html.includes('data-legacy-migration-stub="bm-contract"')) errors.push(`${sourceFile}: BM transition marker missing`);
+  if (!html.includes(`<link rel="canonical" href="${canonical}">`)) errors.push(`${sourceFile}: neutral canonical mismatch`);
+  if (!html.includes(`href="${targetHref}"`)) errors.push(`${sourceFile}: explicit neutral target link missing`);
+  if (oldDomain && lower.includes(oldDomain)) errors.push(`${sourceFile}: old single-project domain is forbidden in transition stub`);
+  if (/<form\b/i.test(html) || /data-lead-form/i.test(html) || /<input\b|<textarea\b|<select\b/i.test(html)) errors.push(`${sourceFile}: legacy lead form/contact fields are forbidden`);
+  if (/http-equiv=["']refresh["']/i.test(html) || /location\.(?:href|replace|assign)\s*\(/i.test(html) || /window\.location\s*=/i.test(html)) errors.push(`${sourceFile}: client-side auto redirect is forbidden; verified redirect must be server/edge-side`);
+  for (const fragment of LEGACY_FORBIDDEN_FRAGMENTS) {
+    if (lower.includes(fragment)) errors.push(`${sourceFile}: object-specific/old-brand fragment forbidden in transition stub: ${fragment}`);
+  }
+  for (const phrase of forbiddenPhrases) {
+    if (lower.includes(String(phrase).toLowerCase())) errors.push(`${sourceFile}: prohibited advertising phrase forbidden in transition stub: ${phrase}`);
+  }
+}
+
 const contract = readJson(CONTRACT_PATH);
 const campaignRegistry = readJson(CAMPAIGNS_PATH);
 const publicationRegistry = readJson(PUBLICATIONS_PATH);
@@ -111,7 +129,7 @@ const sitemap = read(SITEMAP_PATH);
 const coveredPage = read(COVERED_PAGE);
 if (!contract || !campaignRegistry || !publicationRegistry || !manualGates || !sitemap || !coveredPage) process.exit(1);
 
-if (contract.schema_version !== "1.1") errors.push(`${CONTRACT_PATH}: schema_version must be 1.1`);
+if (contract.schema_version !== "1.2") errors.push(`${CONTRACT_PATH}: schema_version must be 1.2`);
 if (!isIsoDate(contract.updated_at)) errors.push(`${CONTRACT_PATH}: updated_at must be YYYY-MM-DD`);
 if (contract.portal_id !== "newbuilds-borisoglebsk") errors.push(`${CONTRACT_PATH}: invalid portal_id`);
 if (contract.source_audit !== "CONTRACT_AD_AUDIT_2026-07-01.md") errors.push(`${CONTRACT_PATH}: source_audit mismatch`);
@@ -124,6 +142,7 @@ for (const key of [
   "official_site_impression_forbidden",
   "developer_direct_wording_forbidden",
   "legacy_problem_routes_may_exist_only_as_safe_transition_stubs",
+  "legacy_redirect_release_requires_evidence",
   "brand_or_geo_paid_search_without_written_approval_forbidden",
   "object_specific_publication_without_written_approval_forbidden",
   "object_specific_offline_material_without_written_approval_forbidden",
@@ -159,6 +178,18 @@ for (const key of [
 }
 if (legacyRequirements.robots !== "noindex,follow") errors.push(`${CONTRACT_PATH}: legacy transition robots must be noindex,follow`);
 if (legacyRequirements.migration_marker !== 'data-legacy-migration-stub="bm-contract"') errors.push(`${CONTRACT_PATH}: legacy transition marker mismatch`);
+
+const redirectRequirements = contract.legacy_server_redirect_requirements || {};
+exactSet(new Set(redirectRequirements.allowed_http_statuses || []), new Set([301, 308]), `${CONTRACT_PATH}: allowed legacy redirect HTTP statuses`);
+for (const key of [
+  "preserve_query_required",
+  "hosting_reference_required",
+  "evidence_required",
+  "reviewer_reference_required",
+  "released_route_may_remove_transition_file"
+]) {
+  if (redirectRequirements[key] !== true) errors.push(`${CONTRACT_PATH}: legacy_server_redirect_requirements.${key} must be true`);
+}
 
 const approval = contract.approval || {};
 const allowedScopes = new Set(approval.allowed_scopes || []);
@@ -202,36 +233,55 @@ for (const relativePath of publicFiles) {
   }
 }
 
+let releasedRedirectCount = 0;
+let transitionFileCount = 0;
 for (const route of legacyRoutes) {
   const label = `${CONTRACT_PATH}:${route.source_url || "unknown-route"}`;
   const sourceFile = String(route.source_file || "").trim();
   const sourceUrl = String(route.source_url || "").trim();
   const targetHref = String(route.target_href || "").trim();
   const canonical = String(route.canonical || "").trim();
-  if (!sourceFile || !fs.existsSync(path.join(ROOT, sourceFile))) {
-    errors.push(`${label}: transition source file must exist until server redirect release`);
-    continue;
+  const sourceExists = Boolean(sourceFile && fs.existsSync(path.join(ROOT, sourceFile)));
+  const redirect = route.server_redirect || {};
+  const redirectReleased = route.server_redirect_status === "released";
+
+  if (!sourceFile) errors.push(`${label}: source_file path is required for migration provenance`);
+  if (!new Set(["blocked_by_hosting_redirect_format", "released"]).has(route.server_redirect_status)) {
+    errors.push(`${label}: unsupported server_redirect_status ${route.server_redirect_status}`);
   }
-  if (route.status !== "transition_page") errors.push(`${label}: status must be transition_page`);
-  if (route.server_redirect_status !== "blocked_by_hosting_redirect_format") errors.push(`${label}: server redirect must remain blocked_by_hosting_redirect_format in current phase`);
   if (route.target_url !== "/catalog/" || targetHref !== "../catalog/") errors.push(`${label}: transition target must be neutral city catalog`);
   if (canonical !== "https://novostroyki-borisoglebsk.ru/catalog/") errors.push(`${label}: canonical must point to neutral city catalog`);
-  if (sitemap.includes(sourceUrl)) errors.push(`${SITEMAP_PATH}: transition source must not be indexed ${sourceUrl}`);
+  if (sitemap.includes(sourceUrl)) errors.push(`${SITEMAP_PATH}: legacy source must not be indexed ${sourceUrl}`);
 
-  const html = fs.readFileSync(path.join(ROOT, sourceFile), "utf8");
-  const lower = html.toLowerCase();
-  if (!hasNoindexFollow(html)) errors.push(`${sourceFile}: safe transition stub requires noindex,follow`);
-  if (!html.includes('data-legacy-migration-stub="bm-contract"')) errors.push(`${sourceFile}: BM transition marker missing`);
-  if (!html.includes(`<link rel="canonical" href="${canonical}">`)) errors.push(`${sourceFile}: neutral canonical mismatch`);
-  if (!html.includes(`href="${targetHref}"`)) errors.push(`${sourceFile}: explicit neutral target link missing`);
-  if (oldDomain && lower.includes(oldDomain)) errors.push(`${sourceFile}: old single-project domain is forbidden in transition stub`);
-  if (/<form\b/i.test(html) || /data-lead-form/i.test(html) || /<input\b|<textarea\b|<select\b/i.test(html)) errors.push(`${sourceFile}: legacy lead form/contact fields are forbidden`);
-  if (/http-equiv=["']refresh["']/i.test(html) || /location\.(?:href|replace|assign)\s*\(/i.test(html) || /window\.location\s*=/i.test(html)) errors.push(`${sourceFile}: automatic client redirect forbidden before server redirect release`);
-  for (const fragment of LEGACY_FORBIDDEN_FRAGMENTS) {
-    if (lower.includes(fragment)) errors.push(`${sourceFile}: object-specific/old-brand fragment forbidden in transition stub: ${fragment}`);
-  }
-  for (const phrase of forbiddenPhrases) {
-    if (lower.includes(String(phrase).toLowerCase())) errors.push(`${sourceFile}: prohibited advertising phrase forbidden in transition stub: ${phrase}`);
+  if (redirectReleased) {
+    releasedRedirectCount += 1;
+    if (route.status !== "server_redirect_released") errors.push(`${label}: released redirect requires status=server_redirect_released`);
+    if (!(redirectRequirements.allowed_http_statuses || []).includes(redirect.http_status)) errors.push(`${label}: released redirect requires HTTP 301 or 308`);
+    if (redirect.preserve_query !== true) errors.push(`${label}: released redirect must preserve query/UTM`);
+    if (!isEvidenceReference(redirect.hosting_reference)) errors.push(`${label}: released redirect requires hosting_reference`);
+    if (!Array.isArray(redirect.evidence) || redirect.evidence.length === 0) errors.push(`${label}: released redirect requires evidence`);
+    for (const [index, item] of (redirect.evidence || []).entries()) {
+      if (!isEvidenceReference(item)) errors.push(`${label}: redirect evidence #${index + 1} has unsupported reference`);
+    }
+    if (!isIsoDateTimeOrDate(redirect.checked_at)) errors.push(`${label}: released redirect requires checked_at`);
+    if (!/^(role|secure_reference):[a-z0-9_./-]+$/i.test(String(redirect.reviewer_reference || ""))) errors.push(`${label}: released redirect requires role:/secure_reference: reviewer`);
+    if (sourceExists) {
+      transitionFileCount += 1;
+      validateSafeTransitionStub({ sourceFile, canonical, targetHref, oldDomain, forbiddenPhrases });
+    }
+  } else {
+    if (route.status !== "transition_page") errors.push(`${label}: blocked redirect requires status=transition_page`);
+    if (!sourceExists) errors.push(`${label}: transition source file must exist until verified server redirect release`);
+    if (redirect.http_status !== null) errors.push(`${label}: pending redirect http_status must remain null`);
+    if (redirect.preserve_query !== null) errors.push(`${label}: pending redirect preserve_query must remain null`);
+    if (redirect.hosting_reference !== null) errors.push(`${label}: pending redirect hosting_reference must remain null`);
+    if ((redirect.evidence || []).length !== 0) errors.push(`${label}: pending redirect evidence must remain empty`);
+    if (redirect.checked_at !== null) errors.push(`${label}: pending redirect checked_at must remain null`);
+    if (redirect.reviewer_reference !== null) errors.push(`${label}: pending redirect reviewer_reference must remain null`);
+    if (sourceExists) {
+      transitionFileCount += 1;
+      validateSafeTransitionStub({ sourceFile, canonical, targetHref, oldDomain, forbiddenPhrases });
+    }
   }
 }
 
@@ -286,12 +336,23 @@ if (contract.publication_policy?.covered_object_campaign_requires_approval !== t
 if (contract.publication_policy?.approval_must_include_matching_scope !== true) errors.push(`${CONTRACT_PATH}: matching approval scope must stay enabled`);
 if (contract.publication_policy?.manual_campaign_publication_gate_still_required !== true) errors.push(`${CONTRACT_PATH}: campaign manual gate must stay required`);
 if (contract.publication_policy?.legal_owner_review_still_required !== true) errors.push(`${CONTRACT_PATH}: legal owner gate must stay required`);
-if (contract.current_migration_state?.neutral_portal_domain !== "novostroyki-borisoglebsk.ru") errors.push(`${CONTRACT_PATH}: neutral portal domain mismatch`);
-if (contract.current_migration_state?.legacy_problem_routes_neutralized_as_transition_stubs !== true) errors.push(`${CONTRACT_PATH}: legacy problem routes must be marked neutralized`);
-if (contract.current_migration_state?.server_redirect_release_still_blocked !== true) errors.push(`${CONTRACT_PATH}: server redirect release must remain blocked in current phase`);
+
+const migration = contract.current_migration_state || {};
+if (migration.neutral_portal_domain !== "novostroyki-borisoglebsk.ru") errors.push(`${CONTRACT_PATH}: neutral portal domain mismatch`);
+const redirectReleaseBlocked = releasedRedirectCount !== legacyRoutes.length;
+const allTransitionFilesPresent = transitionFileCount === legacyRoutes.length;
+const allRoutesSafeOrRedirected = legacyRoutes.every((route) => {
+  const sourceFile = String(route.source_file || "").trim();
+  return route.server_redirect_status === "released" || Boolean(sourceFile && fs.existsSync(path.join(ROOT, sourceFile)));
+});
+if (migration.legacy_problem_routes_neutralized_as_transition_stubs !== allTransitionFilesPresent) errors.push(`${CONTRACT_PATH}: transition-stub migration flag must match files currently present`);
+if (migration.legacy_problem_routes_safe_or_redirected !== allRoutesSafeOrRedirected) errors.push(`${CONTRACT_PATH}: safe-or-redirected migration flag must match route state`);
+if (migration.server_redirect_release_still_blocked !== redirectReleaseBlocked) errors.push(`${CONTRACT_PATH}: server redirect release blocker flag must match route state`);
+if (migration.covered_object_page_must_remain_noindex_until_other_gates_pass !== true) errors.push(`${CONTRACT_PATH}: covered object noindex boundary must remain true`);
 
 console.log(`Public core HTML files checked: ${publicFiles.length}`);
-console.log(`Safe BM legacy transition stubs checked: ${legacyRoutes.length}`);
+console.log(`Safe BM legacy transition files present: ${transitionFileCount}/${legacyRoutes.length}`);
+console.log(`Verified server redirects released: ${releasedRedirectCount}/${legacyRoutes.length}`);
 console.log(`Covered object campaigns defined: ${campaigns.filter((item) => coveredObjects.has(item.object_id)).length}`);
 console.log(`Covered object publications recorded: ${coveredPublicationCount}`);
 console.log(`External written approval status: ${approval.status}`);
