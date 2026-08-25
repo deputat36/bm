@@ -167,9 +167,18 @@ if (closedWon?.terminal !== true || !closedWon?.required_non_null_fields?.includ
 if (!deposit?.required_non_null_fields?.includes("evidence_ref") || !deposit?.required_non_null_fields?.includes("object_id")) errors.push(`${CONTRACT_PATH}: deposit must require object_id + evidence_ref`);
 
 const closureDecision = (approval.decisions || []).find((item) => item.id === "closure_reason_policy");
+const allowedClosureDecisionStatuses = new Set(["requires_owner_decision", "approved", "rejected", "superseded"]);
 if (!closureDecision) errors.push(`${APPROVAL_PATH}: closure_reason_policy decision missing`);
-if (closureDecision?.status !== "requires_owner_decision") errors.push(`${APPROVAL_PATH}: closure_reason_policy must remain owner-gated in current phase`);
-if (contract.closure_reason_policy?.status !== "owner_decision_required") errors.push(`${CONTRACT_PATH}: closure reason policy must remain owner_decision_required`);
+if (closureDecision && !allowedClosureDecisionStatuses.has(closureDecision.status)) {
+  errors.push(`${APPROVAL_PATH}: closure_reason_policy has unsupported status ${closureDecision.status}`);
+}
+if (closureDecision?.status === "approved") {
+  const approvedValuePresent = closureDecision.approved_value !== null
+    && closureDecision.approved_value !== undefined
+    && String(closureDecision.approved_value).trim() !== "";
+  if (!approvedValuePresent) errors.push(`${APPROVAL_PATH}: approved closure_reason_policy requires approved_value`);
+}
+if (contract.closure_reason_policy?.status !== "owner_decision_required") errors.push(`${CONTRACT_PATH}: closure reason policy contract must remain owner_decision_required until the owner register resolves the activation gate`);
 if (contract.closure_reason_policy?.decision_id !== "closure_reason_policy") errors.push(`${CONTRACT_PATH}: closure decision id mismatch`);
 
 const candidateReasons = new Set(contract.closure_reason_policy?.candidate_values_from_owner_register || []);

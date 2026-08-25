@@ -58,7 +58,46 @@ jobs:
       - name: Build commercial event plan
         run: |
           node tools/build-commercial-outcome-event-plan.mjs --format=json > /tmp/commercial-outcomes.json
-          node -e 'const fs=require("fs"); const data=JSON.parse(fs.readFileSync("/tmp/commercial-outcomes.json","utf8")); const s=data.summary||{}; if(s.commercial_events!==8||s.terminal_events!==2||s.non_terminal_events!==6||s.closure_reason_candidates!==9||s.closure_policy_status!=="requires_owner_decision"||s.persistence_connected!==false||s.event_write_enabled!==false||s.activation_gates!==6) process.exit(1); console.log(`Commercial events=${s.commercial_events}; terminal=${s.terminal_events}; closure=${s.closure_policy_status}`);'
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('/tmp/commercial-outcomes.json', 'utf8'));
+          const approval = JSON.parse(fs.readFileSync('data/operations/lead-operations-approval.json', 'utf8'));
+          const decision = (approval.decisions || []).find((item) => item.id === 'closure_reason_policy');
+          const s = data.summary || {};
+          const allowed = new Set(['requires_owner_decision', 'approved', 'rejected', 'superseded']);
+          if (s.commercial_events !== 8 || s.terminal_events !== 2 || s.non_terminal_events !== 6 || s.closure_reason_candidates !== 9 || s.persistence_connected !== false || s.event_write_enabled !== false || s.activation_gates !== 6) process.exit(1);
+          if (!allowed.has(s.closure_policy_status) || s.closure_policy_status !== decision?.status) process.exit(1);
+          console.log(`Commercial events=${s.commercial_events}; terminal=${s.terminal_events}; closure=${s.closure_policy_status}`);
+          NODE
+
+      - name: Accept approved closure policy without enabling persistence
+        run: |
+          cp data/operations/lead-operations-approval.json /tmp/operations-approval-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const approvalPath = 'data/operations/lead-operations-approval.json';
+          const contract = JSON.parse(fs.readFileSync('data/operations/commercial-outcome-events.json', 'utf8'));
+          const approval = JSON.parse(fs.readFileSync(approvalPath, 'utf8'));
+          const decision = approval.decisions.find((item) => item.id === 'closure_reason_policy');
+          decision.status = 'approved';
+          decision.approved_value = [...contract.closure_reason_policy.candidate_values_from_owner_register];
+          decision.secure_reference = null;
+          decision.approved_at = '2026-08-25';
+          decision.approved_by_basis = 'CI future-state fixture only';
+          fs.writeFileSync(approvalPath, JSON.stringify(approval, null, 2) + '\n');
+          NODE
+          node tools/validate-commercial-outcome-events.mjs
+          node tools/build-commercial-outcome-event-plan.mjs --format=json > /tmp/commercial-approved-closure.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('/tmp/commercial-approved-closure.json', 'utf8'));
+          const s = data.summary || {};
+          if (s.closure_policy_status !== 'approved') process.exit(1);
+          if (s.persistence_connected !== false || s.event_write_enabled !== false) process.exit(1);
+          console.log(`Approved closure policy accepted; persistence=${s.persistence_connected}; writes=${s.event_write_enabled}`);
+          NODE
+          cp /tmp/operations-approval-baseline.json data/operations/lead-operations-approval.json
+          node tools/validate-commercial-outcome-events.mjs
 
       - name: Reject closed_lost without reason requirement
         run: |
