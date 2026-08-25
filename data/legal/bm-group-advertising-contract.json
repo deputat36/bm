@@ -13,6 +13,13 @@
     "old_single_project_domain": "tellermanovsad.ru",
     "official_site_impression_forbidden": true,
     "developer_direct_wording_forbidden": true,
+    "forbidden_public_phrases": [
+      "квартиры от застройщика",
+      "цены от застройщика",
+      "напрямую от застройщика",
+      "официальный сайт жк",
+      "официальный сайт теллерманов сад"
+    ],
     "legacy_problem_routes_may_exist_only_as_safe_transition_stubs": true,
     "legacy_redirect_release_requires_evidence": true,
     "brand_or_geo_paid_search_without_written_approval_forbidden": true,
