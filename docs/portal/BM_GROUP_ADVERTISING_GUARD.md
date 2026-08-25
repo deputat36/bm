@@ -1,6 +1,6 @@
 # BM Group advertising guard
 
-Дата: 2026-08-09
+Дата актуализации: 2026-08-25
 
 Основание: `CONTRACT_AD_AUDIT_2026-07-01.md`.
 
@@ -17,11 +17,27 @@
 
 больше не содержат старый объектный/рекламный контент. До выпуска подтверждённых server 301/308 они сохранены только как нейтральные `noindex,follow` transition pages на городской каталог.
 
-Это соответствует общей миграционной модели проекта: не оставлять устаревший контент, но и не превращать старый URL в 404 до решения `hosting_redirect_format`.
-
 Портал сохраняет нейтральный домен `novostroyki-borisoglebsk.ru` и независимое позиционирование.
 
-## Требования к двум transition pages
+## Текущий hosting/redirect state
+
+В репозитории есть признаки статического deployment (`CNAME`, `.nojekyll`, static frontend), но нет versioned server/origin/edge redirect configuration и нет подтверждённого redirect syntax/runtime для production host.
+
+Поэтому текущий контракт честно остаётся:
+
+```text
+status=transition_page
+server_redirect_status=blocked_by_hosting_redirect_format
+server_redirect.http_status=null
+server_redirect.preserve_query=null
+server_redirect.hosting_reference=null
+server_redirect.evidence=[]
+server_redirect_release_still_blocked=true
+```
+
+Наличие `CNAME`/`.nojekyll` само по себе не считается доказательством фактического production redirect engine и не разрешает объявить 301/308 выполненным.
+
+## Требования к transition pages до server release
 
 Каждый старый URL обязан:
 
@@ -36,7 +52,65 @@
 - не содержать факты, площади, ипотечные обещания или ранний список по конкретному ЖК;
 - отсутствовать в sitemap.
 
-После определения hosting redirect syntax эти stubs можно заменить server 301/308 отдельным release-изменением с сохранением query/UTM.
+Client-side meta refresh / `window.location` не считается заменой server release.
+
+## Future server redirect progression
+
+Validator больше не hardcode-ит вечное `blocked_by_hosting_redirect_format`.
+
+Future route может перейти в:
+
+```text
+status=server_redirect_released
+server_redirect_status=released
+```
+
+только при одновременном наличии:
+
+```text
+http_status=301|308
+preserve_query=true
+hosting_reference=<safe evidence reference>
+evidence=[...]
+checked_at=<date/datetime>
+reviewer_reference=role:* | secure_reference:*
+```
+
+Разрешённые evidence references следуют общему contract format: HTTPS, repository/docs reference, `issue:*` или `secure_reference:*`.
+
+### Почему `preserve_query=true` обязательно
+
+Legacy URL могут приходить с UTM/attribution query. Server/edge redirect release не должен молча обрезать этот контекст.
+
+### Что происходит со static stubs после verified redirect
+
+После фактического server/edge release допускаются оба безопасных состояния:
+
+1. оставить neutral static stubs как unreachable/fallback content — они по-прежнему обязаны проходить все transition safety checks;
+2. удалить static stub files после того, как verified 301/308 работает раньше static origin.
+
+Contract отдельно различает:
+
+```text
+legacy_problem_routes_neutralized_as_transition_stubs
+legacy_problem_routes_safe_or_redirected
+server_redirect_release_still_blocked
+```
+
+Так удаление файла после verified redirect не превращается в ложный 404-regression в contract state.
+
+## CI progression tests
+
+`BM contract advertising guard` проверяет:
+
+- текущие transition stubs;
+- future 308 fixture с query preservation, hosting/evidence reference и reviewer;
+- сохранение отдельного `requires_external_written_approval` для BM advertising даже после redirect release;
+- возможность удалить static stubs только после verified redirect fixture;
+- отказ для `released` без evidence или с `preserve_query=false`;
+- прежние негативные тесты для запрещённых формулировок, old domain, legacy lead form и object publication без written approval.
+
+CI fixture — только тест state machine. `issue:7`, статус 308 и дата fixture не являются доказательством реального production redirect.
 
 ## Covered scope
 
@@ -64,19 +138,11 @@
 - записывать фактическую VK/Telegram/offline/object publication без matching approval scope;
 - считать наличие кампании в `utm-campaigns.json` доказательством её публикации.
 
-## Почему object campaigns могут оставаться в UTM registry
-
-`prostornaya_4a_vk_launch` и `prostornaya_4a_telegram_launch` — это подготовленные campaign definitions. Само наличие записи не означает, что реклама опубликована.
-
-Факт публикации существует только при записи в `data/marketing/campaign-publications.json`.
-
-До written approval covered-object publication там должна отсутствовать.
-
 ## Written approval
 
 `data/legal/bm-group-advertising-contract.json` хранит только status/evidence reference/scopes, но не текст договора или приватную переписку.
 
-До фактического согласования:
+Текущий advertising approval остаётся:
 
 ```text
 status=requires_external_written_approval
@@ -84,7 +150,11 @@ evidence=[]
 approved_scopes=[]
 ```
 
-После получения подтверждения допустимы HTTPS/repository/issue/secure references и только явно согласованные scopes.
+Redirect release и advertising approval — независимые состояния.
+
+Даже verified 301/308 не даёт право публиковать object-specific рекламу. И наоборот, письменное согласование рекламы не доказывает, что legacy redirect реально работает.
+
+После получения BM written approval допустимы только сохранённые safe evidence references и явно согласованные scopes.
 
 Даже written approval не заменяет общие gates:
 
@@ -104,10 +174,24 @@ Paid brand/geo search → `paid_brand_or_geo_search`.
 
 Иные covered-object promotion → `portal_object_page_promotion`.
 
+## Следующий реальный redirect step
+
+1. установить фактический production hosting/origin/edge layer;
+2. определить versioned redirect configuration или управляемое правило;
+3. настроить оба exact legacy path → `/catalog/`;
+4. использовать 301 или 308;
+5. сохранить query string;
+6. проверить внешним HTTP request оба URL с test UTM query;
+7. сохранить безопасный hosting/evidence reference, checked_at и reviewer reference;
+8. только затем перевести routes в `server_redirect_released`;
+9. после повторного CI при необходимости удалить static stubs.
+
+До этих фактов transition pages остаются правильным fail-closed состоянием.
+
 ## Команда
 
 ```bash
 node tools/validate-bm-contract-advertising.mjs
 ```
 
-После любого изменения BM-related campaign/publication/legal copy или двух legacy transition pages этот guard должен оставаться зелёным.
+После любого изменения BM-related campaign/publication/legal copy, redirect evidence или двух legacy transition pages этот guard должен оставаться зелёным.
