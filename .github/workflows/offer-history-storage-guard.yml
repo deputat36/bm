@@ -69,15 +69,54 @@ jobs:
           const data = JSON.parse(fs.readFileSync('/tmp/offer-history-plan.json', 'utf8'));
           const s = data.summary || {};
           if (s.store_selected !== true) process.exit(1);
-          if (s.retention_policy_selected !== false) process.exit(1);
-          if (s.backup_export_policy_selected !== false) process.exit(1);
+          if (s.retention_policy_selected !== false || s.retention_approval_status !== 'requires_owner_decision' || s.retention_days !== null) process.exit(1);
+          if (s.backup_export_policy_selected !== false || s.backup_export_approval_status !== 'requires_owner_decision' || s.backup_export_policy_mode !== null) process.exit(1);
           if (s.storage_connected !== false) process.exit(1);
           if (s.history_write_enabled !== false) process.exit(1);
           if (s.public_history_api_enabled !== false) process.exit(1);
           if (s.hash_chain_writer_available !== false) process.exit(1);
           if (s.current_feed_connected !== false || s.current_feed_public !== false || s.current_offer_count !== 0) process.exit(1);
-          console.log(`History plan: store=${s.store_selected}; retention=${s.retention_policy_selected}; storage=${s.storage_connected}; writes=${s.history_write_enabled}`);
+          console.log(`History plan: store=${s.store_selected}; retention=${s.retention_policy_selected}; backup=${s.backup_export_policy_selected}; storage=${s.storage_connected}; writes=${s.history_write_enabled}`);
           NODE
+
+      - name: Accept approved policies without deployment
+        run: |
+          cp data/offers/history-storage.json /tmp/history-storage-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/offers/history-storage.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.retention.status = 'selected_not_deployed';
+          data.retention.approval_status = 'approved';
+          data.retention.approval_reference = 'ci_fixture:owner_retention_decision';
+          data.retention.approved_at = '2026-08-25';
+          data.retention.retention_days = 365;
+          data.backup_export.status = 'selected_not_deployed';
+          data.backup_export.approval_status = 'approved';
+          data.backup_export.approval_reference = 'ci_fixture:owner_backup_export_decision';
+          data.backup_export.approved_at = '2026-08-25';
+          data.backup_export.policy_mode = 'managed_backup_and_export';
+          data.backup_export.export_schedule = 'monthly';
+          data.backup_export.restore_test_interval_days = 180;
+          data.completion_state.retention_policy_selected = true;
+          data.completion_state.backup_export_policy_selected = true;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          node tools/validate-offer-history-storage.mjs
+          node tools/validate-offer-history.mjs
+          node tools/build-offer-history-plan.mjs --format=json > /tmp/offer-history-approved-policies.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('/tmp/offer-history-approved-policies.json', 'utf8'));
+          const s = data.summary || {};
+          if (s.retention_policy_selected !== true || s.retention_approval_status !== 'approved' || s.retention_days !== 365) process.exit(1);
+          if (s.backup_export_policy_selected !== true || s.backup_export_approval_status !== 'approved' || s.backup_export_policy_mode !== 'managed_backup_and_export') process.exit(1);
+          if (s.storage_connected !== false || s.history_write_enabled !== false || s.public_history_api_enabled !== false || s.hash_chain_writer_available !== false) process.exit(1);
+          console.log(`Approved policy fixture accepted; retention=${s.retention_days}; backup=${s.backup_export_policy_mode}; writes=${s.history_write_enabled}`);
+          NODE
+          cp /tmp/history-storage-baseline.json data/offers/history-storage.json
+          node tools/validate-offer-history-storage.mjs
+          node tools/validate-offer-history.mjs
 
       - name: Build and inspect SQL preview
         run: |
@@ -124,20 +163,20 @@ jobs:
           fi
           cp /tmp/history-storage-baseline.json data/offers/history-storage.json
 
-      - name: Reject invented retention policy
+      - name: Reject invented retention policy without approval evidence
         run: |
           cp data/offers/history-storage.json /tmp/history-storage-baseline.json
           node - <<'NODE'
           const fs = require('fs');
           const path = 'data/offers/history-storage.json';
           const data = JSON.parse(fs.readFileSync(path, 'utf8'));
-          data.retention.status = 'selected';
+          data.retention.status = 'selected_not_deployed';
           data.retention.retention_days = 365;
           data.completion_state.retention_policy_selected = true;
           fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
           NODE
           if node tools/validate-offer-history-storage.mjs; then
-            echo "History storage validator incorrectly allowed an invented retention policy"
+            echo "History storage validator incorrectly allowed retention policy without approval evidence"
             exit 1
           fi
           cp /tmp/history-storage-baseline.json data/offers/history-storage.json

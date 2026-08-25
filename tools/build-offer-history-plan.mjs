@@ -28,6 +28,8 @@ const offer = readJson(OFFER_PATH);
 const feed = readJson(FEED_PATH);
 const requirements = Array.isArray(contract.store?.activation_requires) ? contract.store.activation_requires : [];
 const completion = storage.completion_state || {};
+const retention = storage.retention || {};
+const backupExport = storage.backup_export || {};
 
 const summary = {
   status: contract.status,
@@ -40,9 +42,12 @@ const summary = {
   history_write_enabled: contract.rules?.history_write_enabled === true,
   writes_enabled: contract.rules?.history_write_enabled === true,
   public_history_api_enabled: contract.rules?.public_history_api_enabled === true,
-  retention_days: contract.store?.retention_days ?? null,
+  retention_days: completion.retention_policy_selected === true ? retention.retention_days ?? null : null,
   retention_policy_selected: completion.retention_policy_selected === true,
+  retention_approval_status: retention.approval_status || "missing",
   backup_export_policy_selected: completion.backup_export_policy_selected === true,
+  backup_export_approval_status: backupExport.approval_status || "missing",
+  backup_export_policy_mode: completion.backup_export_policy_selected === true ? backupExport.policy_mode || null : null,
   hash_chain_writer_available: completion.hash_chain_writer_available === true,
   current_feed_connected: offer.rules?.live_source_connected === true,
   current_feed_public: offer.rules?.public_render_enabled === true,
@@ -67,8 +72,10 @@ function renderMarkdown() {
     `Append-only: ${summary.append_only ? "да" : "нет"}`,
     `Hash chain: ${summary.hash_chain_required ? "обязателен" : "нет"}`,
     `Hash-chain writer: ${summary.hash_chain_writer_available ? "готов" : "не реализован"}`,
+    `Retention approval: ${summary.retention_approval_status}`,
     `Retention: ${summary.retention_days === null ? "не определён" : `${summary.retention_days} дней`}`,
-    `Backup/export policy: ${summary.backup_export_policy_selected ? "выбрана" : "не выбрана"}`,
+    `Backup/export approval: ${summary.backup_export_approval_status}`,
+    `Backup/export policy: ${summary.backup_export_policy_selected ? summary.backup_export_policy_mode : "не выбрана"}`,
     `Current live feed: ${summary.current_feed_connected ? "подключён" : "не подключён"}; public=${summary.current_feed_public ? "да" : "нет"}; rows=${summary.current_offer_count}`,
     "",
     "## События",
@@ -77,7 +84,7 @@ function renderMarkdown() {
   (contract.event_types || []).forEach((event) => lines.push(`- ${event}`));
   lines.push("", "## Условия активации", "");
   requirements.forEach((item) => lines.push(`- ${item}`));
-  lines.push("", "Выбор store design не является deployment: до выполнения остальных условий история не записывается и не доступна браузеру.");
+  lines.push("", "Выбор store design или approval retention/backup policy не является deployment: до выполнения остальных условий история не записывается и не доступна браузеру.");
   return lines.join("\n");
 }
 

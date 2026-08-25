@@ -1,12 +1,10 @@
 # Offer history storage design
 
-Дата: 2026-08-09
+Дата актуализации: 2026-08-25
 
 ## Назначение
 
-История цены и наличия уже имеет канонический append-only/hash-chain contract, но ранее не был выбран конкретный managed store.
-
-Теперь выбран design:
+История цены и наличия имеет канонический append-only/hash-chain contract и выбранный protected store design:
 
 ```text
 public.newbuild_offer_history_events
@@ -28,7 +26,7 @@ History store отвечает на другой вопрос: «какие по
 
 ## Поля
 
-Таблица design хранит 13 полей канонического event contract:
+Таблица design хранит канонические поля события:
 
 ```text
 event_id
@@ -78,17 +76,21 @@ previous_event_hash = null
 
 Каждый следующий event обязан ссылаться на exact `event_hash` предыдущего события той же квартиры/offer identity.
 
-Важно: текущий SQL-preview намеренно НЕ содержит INSERT writer.
+Текущий SQL-preview намеренно НЕ содержит INSERT writer. Live offer source ещё не выбран, поэтому окончательную server-side логику нельзя считать готовой до final offer identity mapping/source semantics.
 
-Причина — live offer source ещё не выбран. До него невозможно безопасно спроектировать окончательную server-side логику, которая:
+Будущий writer обязан:
 
-1. сериализует канонические поля строго в заданном порядке;
-2. читает последний hash той же квартиры;
-3. проверяет previous hash;
-4. вычисляет SHA-256;
-5. вставляет событие идемпотентно.
+1. сериализовать канонические поля строго в заданном порядке;
+2. читать последний hash той же квартиры;
+3. проверять previous hash;
+4. вычислять SHA-256 server-side;
+5. вставлять событие идемпотентно.
 
-Поэтому `hash_chain_writer_available=false` остаётся обязательным.
+Сейчас:
+
+```text
+hash_chain_writer_available=false
+```
 
 ## SQL preview
 
@@ -104,32 +106,66 @@ PREVIEW ONLY - NOT DEPLOYED
 
 ## Retention и backup/export
 
-Срок хранения намеренно не придуман:
+Реальные policy values не выбраны.
+
+Текущий baseline:
 
 ```text
-retention_days = null
-```
-
-До deployment нужно определить:
-
-- ценность глубины истории для аналитики;
-- ожидаемый объём событий;
-- допустимую стоимость хранения;
-- backup/export требования;
-- restore-test policy.
-
-Поэтому:
-
-```text
+retention.approval_status=requires_owner_decision
+retention.retention_days=null
+backup_export.approval_status=requires_owner_decision
+backup_export.policy_mode=null
 retention_policy_selected=false
 backup_export_policy_selected=false
 ```
 
-Автоматическое удаление выключено.
+Автоматическое удаление, backup verification и restore verification выключены.
+
+### Почему approval отделён от deployment
+
+Validator теперь допускает будущий переход policy в `approved`, но только если вместе с выбранным значением сохранены:
+
+```text
+approval_status=approved
+approval_reference=<safe reference>
+approved_at=YYYY-MM-DD
+```
+
+Для retention дополнительно нужен положительный `retention_days`.
+
+Для backup/export поддерживаются design modes:
+
+```text
+managed_backup_only
+scheduled_export_only
+managed_backup_and_export
+```
+
+Approved backup/export policy также требует положительный `restore_test_interval_days`; режим с export требует непустой `export_schedule`.
+
+Это только policy selection. Даже после корректного approval CI продолжает требовать:
+
+```text
+migration_file_created=false
+production_ddl_applied=false
+history_writer_deployed=false
+history_write_enabled=false
+server_history_store_available=false
+hash_chain_writer_available=false
+production_history_write_enabled=false
+```
+
+Таким образом owner/business decision не может автоматически превратиться в deployment.
+
+### Защита от придуманной policy
+
+Недостаточно просто записать, например, `retention_days=365` и поставить completion flag. Без approval reference и даты такой state отклоняется validator-ом.
+
+CI отдельно моделирует approved future-state только как временный fixture, затем восстанавливает исходный pending baseline. Fixture не является реальной рекомендацией срока хранения или backup schedule.
 
 ## Связь с current feed
 
-Выбор history store не подключает live source.
+Выбор history store или approval policy не подключают live source.
 
 Current offer contract сохраняет:
 
@@ -144,25 +180,28 @@ History writes не могут быть активированы раньше, �
 
 ## Следующий controlled этап
 
-После выбора live source:
+После фактических owner/business решений и выбора live source:
 
 1. зафиксировать mapping `offer_identity`;
-2. утвердить retention policy;
-3. утвердить backup/export policy;
+2. записать утверждённую retention policy с safe approval reference;
+3. записать утверждённую backup/export policy с safe approval reference;
 4. спроектировать protected hash-chain writer;
 5. провести security review;
 6. создать migration отдельным explicit change;
 7. применить только в разрешённое environment;
 8. проверить append-only/idempotency/hash chain;
-9. повторить security advisor;
-10. только после evidence перевести storage/writes в available.
+9. проверить backup/export и restore procedure;
+10. повторить security advisor;
+11. только после evidence перевести storage/writes в available.
 
-## Граница этого этапа
+## Граница этапа
 
 Store selected != store deployed.
+
+Policy approved != policy enforced in production.
 
 SQL preview != migration.
 
 Append-only table preview != hash-chain writer.
 
-Выбор store не разрешает публикацию текущих цен и наличия и не снимает source/legal/project-readiness gates.
+Выбор store или policy не разрешает публикацию текущих цен и наличия и не снимает source/legal/project-readiness gates.

@@ -37,6 +37,11 @@ function exactSet(actual, expected, label) {
   }
 }
 
+function isIsoDate(value) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ""))
+    && Number.isFinite(Date.parse(`${value}T00:00:00Z`));
+}
+
 const storage = readJson(STORAGE_PATH);
 const history = readJson(HISTORY_PATH);
 const offer = readJson(OFFER_PATH);
@@ -44,7 +49,7 @@ const feed = readJson(FEED_PATH);
 const security = readJson(SECURITY_PATH);
 if (!storage || !history || !offer || !feed || !security) process.exit(1);
 
-if (storage.schema_version !== "1.1") errors.push(`${STORAGE_PATH}: schema_version must be 1.1`);
+if (storage.schema_version !== "1.2") errors.push(`${STORAGE_PATH}: schema_version must be 1.2`);
 if (storage.portal_id !== "newbuilds-borisoglebsk") errors.push(`${STORAGE_PATH}: invalid portal_id`);
 if (storage.status !== "store_design_selected_not_deployed") errors.push(`${STORAGE_PATH}: status must remain store_design_selected_not_deployed`);
 
@@ -131,12 +136,49 @@ for (const key of ["same_offer_chain_only", "writer_must_verify_previous_hash_be
 }
 if (storage.hash_chain?.writer_design_status !== "not_implemented_until_live_source_and_store_review") errors.push(`${STORAGE_PATH}: writer design must remain not implemented`);
 
-if (storage.retention?.status !== "requires_policy_before_deployment") errors.push(`${STORAGE_PATH}: retention status must remain requires_policy_before_deployment`);
-if (storage.retention?.retention_days !== null) errors.push(`${STORAGE_PATH}: retention_days must remain null until policy is approved`);
-if (storage.retention?.automatic_delete_enabled !== false) errors.push(`${STORAGE_PATH}: automatic delete must remain disabled`);
-if (storage.backup_export?.status !== "requires_policy_before_deployment") errors.push(`${STORAGE_PATH}: backup/export status must remain requires_policy_before_deployment`);
-if (storage.backup_export?.managed_backup_verified !== false || storage.backup_export?.restore_test_verified !== false) errors.push(`${STORAGE_PATH}: backup/restore must not be claimed verified`);
-if (storage.backup_export?.export_schedule !== null) errors.push(`${STORAGE_PATH}: export schedule must remain null until policy is selected`);
+const allowedApprovalStatuses = new Set(["requires_owner_decision", "approved"]);
+const retention = storage.retention || {};
+const retentionApproved = retention.approval_status === "approved";
+if (!allowedApprovalStatuses.has(retention.approval_status)) errors.push(`${STORAGE_PATH}: unsupported retention.approval_status ${retention.approval_status}`);
+if (retentionApproved) {
+  if (retention.status !== "selected_not_deployed") errors.push(`${STORAGE_PATH}: approved retention must use status=selected_not_deployed`);
+  if (!Number.isInteger(retention.retention_days) || retention.retention_days <= 0) errors.push(`${STORAGE_PATH}: approved retention requires positive integer retention_days`);
+  if (!String(retention.approval_reference || "").trim()) errors.push(`${STORAGE_PATH}: approved retention requires approval_reference`);
+  if (!isIsoDate(retention.approved_at)) errors.push(`${STORAGE_PATH}: approved retention requires approved_at YYYY-MM-DD`);
+} else {
+  if (retention.status !== "requires_policy_before_deployment") errors.push(`${STORAGE_PATH}: pending retention must use status=requires_policy_before_deployment`);
+  if (retention.retention_days !== null) errors.push(`${STORAGE_PATH}: pending retention_days must remain null`);
+  if (retention.approval_reference !== null) errors.push(`${STORAGE_PATH}: pending retention approval_reference must remain null`);
+  if (retention.approved_at !== null) errors.push(`${STORAGE_PATH}: pending retention approved_at must remain null`);
+}
+if (retention.automatic_delete_enabled !== false) errors.push(`${STORAGE_PATH}: automatic delete must remain disabled before deployment`);
+
+const backup = storage.backup_export || {};
+const backupApproved = backup.approval_status === "approved";
+const allowedBackupModes = new Set(["managed_backup_only", "scheduled_export_only", "managed_backup_and_export"]);
+if (!allowedApprovalStatuses.has(backup.approval_status)) errors.push(`${STORAGE_PATH}: unsupported backup_export.approval_status ${backup.approval_status}`);
+if (backupApproved) {
+  if (backup.status !== "selected_not_deployed") errors.push(`${STORAGE_PATH}: approved backup/export policy must use status=selected_not_deployed`);
+  if (!String(backup.approval_reference || "").trim()) errors.push(`${STORAGE_PATH}: approved backup/export policy requires approval_reference`);
+  if (!isIsoDate(backup.approved_at)) errors.push(`${STORAGE_PATH}: approved backup/export policy requires approved_at YYYY-MM-DD`);
+  if (!allowedBackupModes.has(backup.policy_mode)) errors.push(`${STORAGE_PATH}: approved backup/export policy requires supported policy_mode`);
+  if (!Number.isInteger(backup.restore_test_interval_days) || backup.restore_test_interval_days <= 0) errors.push(`${STORAGE_PATH}: approved backup/export policy requires positive restore_test_interval_days`);
+  const exportRequired = ["scheduled_export_only", "managed_backup_and_export"].includes(backup.policy_mode);
+  if (exportRequired && !String(backup.export_schedule || "").trim()) errors.push(`${STORAGE_PATH}: ${backup.policy_mode} requires export_schedule`);
+  if (!exportRequired && backup.export_schedule !== null) errors.push(`${STORAGE_PATH}: managed_backup_only must keep export_schedule=null`);
+} else {
+  if (backup.status !== "requires_policy_before_deployment") errors.push(`${STORAGE_PATH}: pending backup/export must use status=requires_policy_before_deployment`);
+  for (const [key, value] of [
+    ["approval_reference", backup.approval_reference],
+    ["approved_at", backup.approved_at],
+    ["policy_mode", backup.policy_mode],
+    ["export_schedule", backup.export_schedule],
+    ["restore_test_interval_days", backup.restore_test_interval_days]
+  ]) {
+    if (value !== null) errors.push(`${STORAGE_PATH}: pending backup/export ${key} must remain null`);
+  }
+}
+if (backup.managed_backup_verified !== false || backup.restore_test_verified !== false) errors.push(`${STORAGE_PATH}: backup/restore verification must remain false before deployment evidence`);
 
 for (const key of ["pii_forbidden", "client_identity_forbidden", "internal_seller_identity_forbidden", "browser_context_forbidden"]) {
   if (storage.privacy?.[key] !== true) errors.push(`${STORAGE_PATH}: privacy.${key} must be true`);
@@ -154,7 +196,7 @@ if (storage.sql_preview?.preview_requires_banner !== "PREVIEW ONLY - NOT DEPLOYE
 if (history.schema_version !== "1.1" || history.status !== "store_design_selected_not_connected") errors.push(`${HISTORY_PATH}: history contract must reflect selected but disconnected store design`);
 if (history.sources?.storage_design !== STORAGE_PATH) errors.push(`${HISTORY_PATH}: storage design source mismatch`);
 if (history.store?.status !== "design_selected_not_deployed" || history.store?.type !== "supabase_private_table" || history.store?.design_reference !== STORAGE_PATH) errors.push(`${HISTORY_PATH}: store selection must point to dedicated Supabase-private design`);
-if (history.store?.secure_reference !== null || history.store?.retention_days !== null) errors.push(`${HISTORY_PATH}: secure runtime reference and retention must remain unresolved`);
+if (history.store?.secure_reference !== null || history.store?.retention_days !== null) errors.push(`${HISTORY_PATH}: secure runtime reference and deployed retention must remain unresolved`);
 if (history.rules?.history_store_connected !== false || history.rules?.history_write_enabled !== false || history.rules?.public_history_api_enabled !== false) errors.push(`${HISTORY_PATH}: history contract must remain disconnected/write-disabled/private`);
 if (offer.rules?.live_source_connected !== false || offer.rules?.public_render_enabled !== false) errors.push(`${OFFER_PATH}: live source and public renderer must remain disabled`);
 if (!Array.isArray(feed.offers) || feed.offers.length !== 0) errors.push(`${FEED_PATH}: design-only phase expects empty current offer feed`);
@@ -166,8 +208,10 @@ if (security.repository_rules?.portal_tables_require_rls_enable !== true) errors
 
 const completion = storage.completion_state || {};
 if (completion.store_selected !== true) errors.push(`${STORAGE_PATH}: store_selected must be true`);
-for (const key of ["retention_policy_selected", "backup_export_policy_selected", "server_history_store_available", "hash_chain_writer_available", "production_history_write_enabled"]) {
-  if (completion[key] !== false) errors.push(`${STORAGE_PATH}: completion_state.${key} must remain false`);
+if (completion.retention_policy_selected !== retentionApproved) errors.push(`${STORAGE_PATH}: retention_policy_selected must match retention approval state`);
+if (completion.backup_export_policy_selected !== backupApproved) errors.push(`${STORAGE_PATH}: backup_export_policy_selected must match backup/export approval state`);
+for (const key of ["server_history_store_available", "hash_chain_writer_available", "production_history_write_enabled"]) {
+  if (completion[key] !== false) errors.push(`${STORAGE_PATH}: completion_state.${key} must remain false before deployment evidence`);
 }
 
 console.log(`Offer history store: ${storage.store.schema}.${storage.store.table}`);
