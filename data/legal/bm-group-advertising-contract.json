@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.1",
-  "updated_at": "2026-08-09",
+  "schema_version": "1.2",
+  "updated_at": "2026-08-25",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "requires_external_written_approval",
   "purpose": "Fail-closed контракт договорных рекламных ограничений BM Group для материалов и кампаний, связанных с ЖК «Теллерманов сад» / Просторной 4А, без распространения этих ограничений на независимый городской портал в целом.",
@@ -13,14 +13,8 @@
     "old_single_project_domain": "tellermanovsad.ru",
     "official_site_impression_forbidden": true,
     "developer_direct_wording_forbidden": true,
-    "forbidden_public_phrases": [
-      "квартиры от застройщика",
-      "цены от застройщика",
-      "напрямую от застройщика",
-      "официальный сайт жк",
-      "официальный сайт теллерманов сад"
-    ],
     "legacy_problem_routes_may_exist_only_as_safe_transition_stubs": true,
+    "legacy_redirect_release_requires_evidence": true,
     "brand_or_geo_paid_search_without_written_approval_forbidden": true,
     "object_specific_publication_without_written_approval_forbidden": true,
     "object_specific_offline_material_without_written_approval_forbidden": true,
@@ -36,7 +30,15 @@
       "target_href": "../catalog/",
       "canonical": "https://novostroyki-borisoglebsk.ru/catalog/",
       "status": "transition_page",
-      "server_redirect_status": "blocked_by_hosting_redirect_format"
+      "server_redirect_status": "blocked_by_hosting_redirect_format",
+      "server_redirect": {
+        "http_status": null,
+        "preserve_query": null,
+        "hosting_reference": null,
+        "evidence": [],
+        "checked_at": null,
+        "reviewer_reference": null
+      }
     },
     {
       "source_url": "/spisok-ozhidaniya/",
@@ -45,7 +47,15 @@
       "target_href": "../catalog/",
       "canonical": "https://novostroyki-borisoglebsk.ru/catalog/",
       "status": "transition_page",
-      "server_redirect_status": "blocked_by_hosting_redirect_format"
+      "server_redirect_status": "blocked_by_hosting_redirect_format",
+      "server_redirect": {
+        "http_status": null,
+        "preserve_query": null,
+        "hosting_reference": null,
+        "evidence": [],
+        "checked_at": null,
+        "reviewer_reference": null
+      }
     }
   ],
   "legacy_transition_requirements": {
@@ -58,6 +68,14 @@
     "object_specific_claims_forbidden": true,
     "explicit_target_link_required": true,
     "sitemap_inclusion_forbidden": true
+  },
+  "legacy_server_redirect_requirements": {
+    "allowed_http_statuses": [301, 308],
+    "preserve_query_required": true,
+    "hosting_reference_required": true,
+    "evidence_required": true,
+    "reviewer_reference_required": true,
+    "released_route_may_remove_transition_file": true
   },
   "approval": {
     "status": "requires_external_written_approval",
@@ -97,5 +115,5 @@
     "server_redirect_release_still_blocked": true,
     "covered_object_page_must_remain_noindex_until_other_gates_pass": true
   },
-  "note": "Этот контракт не утверждает право или запрет на конкретный будущий рекламный материал вместо договора/письменного согласования. Он технически блокирует фактическую object-specific публикацию без сохранённого evidence и scope. Два старых SEO/lead URL разрешены только как нейтральные noindex transition stubs до отдельного server redirect release."
+  "note": "Этот контракт не утверждает право или запрет на конкретный будущий рекламный материал вместо договора/письменного согласования. Он технически блокирует фактическую object-specific публикацию без сохранённого evidence и scope. Два старых SEO/lead URL разрешены только как нейтральные noindex transition stubs до отдельного server redirect release; future 301/308 release допустим только с hosting/evidence reference, сохранением query и отдельной проверкой."
 }
