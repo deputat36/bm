@@ -112,6 +112,7 @@
     "neutral_portal_domain": "novostroyki-borisoglebsk.ru",
     "old_domain_in_public_core_forbidden": true,
     "legacy_problem_routes_neutralized_as_transition_stubs": true,
+    "legacy_problem_routes_safe_or_redirected": true,
     "server_redirect_release_still_blocked": true,
     "covered_object_page_must_remain_noindex_until_other_gates_pass": true
   },
