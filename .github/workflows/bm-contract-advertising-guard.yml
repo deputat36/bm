@@ -85,6 +85,77 @@ jobs:
       - name: Validate current contract-advertising state
         run: node tools/validate-bm-contract-advertising.mjs
 
+      - name: Accept verified server redirect release without BM ad approval
+        run: |
+          cp data/legal/bm-group-advertising-contract.json /tmp/bm-contract-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const file = 'data/legal/bm-group-advertising-contract.json';
+          const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+          for (const route of data.legacy_transition_routes) {
+            route.status = 'server_redirect_released';
+            route.server_redirect_status = 'released';
+            route.server_redirect.http_status = 308;
+            route.server_redirect.preserve_query = true;
+            route.server_redirect.hosting_reference = 'issue:7';
+            route.server_redirect.evidence = ['issue:7'];
+            route.server_redirect.checked_at = '2026-08-25';
+            route.server_redirect.reviewer_reference = 'role:release_reviewer';
+          }
+          data.current_migration_state.server_redirect_release_still_blocked = false;
+          fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          node tools/validate-bm-contract-advertising.mjs
+          node - <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('data/legal/bm-group-advertising-contract.json', 'utf8'));
+          if (data.approval.status !== 'requires_external_written_approval') process.exit(1);
+          if (data.current_migration_state.server_redirect_release_still_blocked !== false) process.exit(1);
+          console.log('Verified redirect fixture accepted without changing BM advertising approval.');
+          NODE
+
+      - name: Accept removal of static stubs after verified server redirect
+        run: |
+          mv kvartiry-ot-zastroyschika-borisoglebsk /tmp/kvartiry-legacy-stub
+          mv spisok-ozhidaniya /tmp/spisok-legacy-stub
+          node - <<'NODE'
+          const fs = require('fs');
+          const file = 'data/legal/bm-group-advertising-contract.json';
+          const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+          data.current_migration_state.legacy_problem_routes_neutralized_as_transition_stubs = false;
+          fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          node tools/validate-bm-contract-advertising.mjs
+          mv /tmp/kvartiry-legacy-stub kvartiry-ot-zastroyschika-borisoglebsk
+          mv /tmp/spisok-legacy-stub spisok-ozhidaniya
+          cp /tmp/bm-contract-baseline.json data/legal/bm-group-advertising-contract.json
+          node tools/validate-bm-contract-advertising.mjs
+
+      - name: Reject released redirect without evidence or query preservation
+        run: |
+          cp data/legal/bm-group-advertising-contract.json /tmp/bm-contract-baseline.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const file = 'data/legal/bm-group-advertising-contract.json';
+          const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+          const route = data.legacy_transition_routes[0];
+          route.status = 'server_redirect_released';
+          route.server_redirect_status = 'released';
+          route.server_redirect.http_status = 301;
+          route.server_redirect.preserve_query = false;
+          route.server_redirect.hosting_reference = null;
+          route.server_redirect.evidence = [];
+          route.server_redirect.checked_at = '2026-08-25';
+          route.server_redirect.reviewer_reference = 'role:release_reviewer';
+          fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-bm-contract-advertising.mjs; then
+            echo "Validator incorrectly allowed server redirect release without evidence/query preservation"
+            exit 1
+          fi
+          cp /tmp/bm-contract-baseline.json data/legal/bm-group-advertising-contract.json
+          node tools/validate-bm-contract-advertising.mjs
+
       - name: Reject prohibited public phrase
         run: |
           cp catalog/prostornaya-4a/index.html /tmp/prostornaya-baseline.html
