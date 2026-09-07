@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "executed_at": "2026-09-07",
+  "portal_id": "newbuilds-borisoglebsk",
+  "plan_reference": "data/research/source-recheck-plan-2026-09-01.json",
+  "status": "executed_access_limited_no_acceptance",
+  "purpose": "Зафиксировать первый фактический recheck разрешительных/вводных реестров после 01.09.2026 без повышения source/publication status при отсутствии exact object-level primary record.",
+  "rules": {
+    "result_has_no_publication_effect": true,
+    "negative_search_result_is_not_proof_of_absence": true,
+    "secondary_sources_cannot_close_task": true,
+    "accepted_requires_exact_object_match": true,
+    "accepted_requires_repository_evidence": true,
+    "accepted_requires_source_collection_update": true
+  },
+  "authority_resolution": {
+    "regional_or_municipal_permits": {
+      "system_name": "ГИС ОГД Воронежской области",
+      "public_portal": "https://gisogd36.govvrn.ru/",
+      "status": "primary_route_identified_direct_record_not_obtained",
+      "legal_basis": [
+        {
+          "title": "Письмо ФНС России от 10.08.2026 № СД-36-21/6833@",
+          "reference": "https://www.nalog.gov.ru/rn77/taxation/taxes/imuchorg/16642255/",
+          "supports": "С 01.09.2026 реестры разрешений на ввод, выдаваемых органами субъектов РФ и органами местного самоуправления, ведутся в государственных информационных системах обеспечения градостроительной деятельности субъектов РФ."
+        },
+        {
+          "title": "Постановление администрации городского округа город Воронеж от 31.07.2026 №1143",
+          "reference": "https://base.garant.ru/414712541/",
+          "supports": "Актуальный региональный регламент прямо указывает, что реестр разрешений на ввод ведётся в ГИС ОГД Воронежской области."
+        }
+      ]
+    },
+    "federal_registry": {
+      "system_name": "ЕГИС Стройкомплекс.РФ",
+      "reference": "https://base.garant.ru/414285666/",
+      "status": "federal_registry_effective_but_not_sufficient_as_sole_expected_route_for_local_permits",
+      "note": "Постановление Правительства РФ №596 действует с 01.09.2026. Для разрешений, выдаваемых субъектами/муниципалитетами, recheck должен учитывать региональную ГИС ОГД, а не ожидать только федеральную выдачу."
+    }
+  },
+  "execution": {
+    "method": "exact-address web/index recheck + authority-route verification",
+    "direct_registry_record_export_obtained": false,
+    "source_collection_tasks_changed": [],
+    "publication_effect": "none"
+  },
+  "projects": [
+    {
+      "project_id": "aerodromnaya-18g",
+      "address": "г. Борисоглебск, ул. Аэродромная, 18Г",
+      "checked_at": "2026-09-07",
+      "result": "not_found_recheck_required",
+      "source_reference": "https://gisogd36.govvrn.ru/",
+      "matched_identifiers": [],
+      "evidence_note": "После наступления даты recheck проверен актуальный authority route и выполнен exact-address поиск по разрешениям/вводу. Exact официальная реестровая запись с номером разрешения, заявителем и адресной/кадастровой привязкой к Аэродромной 18Г не получена. Вторичные объявления и marketplace-claims не использованы для acceptance. Отсутствие индексируемого результата не считается доказательством отсутствия документа.",
+      "source_tasks_affected": [],
+      "next_action": "Получить прямую запись/выписку ГИС ОГД Воронежской области или иной официальный primary record по точному адресу/земельному участку и только после этого обновлять public_registry/building_permit/developer tasks."
+    },
+    {
+      "project_id": "sennaya-76",
+      "address": "г. Борисоглебск, ул. Сенная, 76",
+      "checked_at": "2026-09-07",
+      "result": "not_found_recheck_required",
+      "source_reference": "https://gisogd36.govvrn.ru/",
+      "matched_identifiers": [],
+      "evidence_note": "После наступления даты recheck проверен актуальный authority route и выполнен exact-address поиск по разрешениям/вводу. Exact официальная реестровая запись, связывающая Сенную 76 с разрешением и юридическим лицом застройщика/правообладателя, не получена. Secondary candidate ИП Тарасов не повышался. Отсутствие индексируемого результата не считается доказательством отсутствия документа.",
+      "source_tasks_affected": [],
+      "next_action": "Получить прямую запись/выписку ГИС ОГД Воронежской области или иной официальный primary record по адресу/кадастровой привязке; при exact match обновить только соответствующие source tasks с сохранённым evidence."
+    }
+  ],
+  "conclusion": {
+    "accepted_records": 0,
+    "candidate_records_promoted": 0,
+    "source_tasks_closed": 0,
+    "recheck_completed": true,
+    "permit_inventory_scan_complete": false,
+    "blocking_reason": "direct regional registry records for target objects not obtained",
+    "next_recheck_trigger": "direct GIS OGD access/export, new exact official record, or additional official identifier"
+  }
+}
