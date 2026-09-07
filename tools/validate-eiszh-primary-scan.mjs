@@ -167,8 +167,17 @@ for (const observation of observations) {
     if (Number(observation.project_apartments_total) !== apartmentSum || apartmentSum <= 0) {
       errors.push(`${SCAN_PATH}:${id}: project_apartments_total must equal positive sum of house apartment totals`);
     }
-    if (!observation.current_model_conflict || !String(observation.current_model_conflict.description || "").trim()) {
-      errors.push(`${SCAN_PATH}:${id}: current_model_conflict must remain explicit until canonical reconciliation`);
+
+    const canonicalReconciled = observation.canonical_model_reconciled === true;
+    const hasCurrentModelConflict = Boolean(observation.current_model_conflict && String(observation.current_model_conflict.description || "").trim());
+    if (!canonicalReconciled && !hasCurrentModelConflict) {
+      errors.push(`${SCAN_PATH}:${id}: unresolved project-set status requires current_model_conflict until canonical reconciliation`);
+    }
+    if (canonicalReconciled && hasCurrentModelConflict) {
+      errors.push(`${SCAN_PATH}:${id}: reconciled canonical model must not retain current_model_conflict`);
+    }
+    if (canonicalReconciled && observation.source_collection_reconciliation_required !== true) {
+      errors.push(`${SCAN_PATH}:${id}: canonical reconciliation with unresolved project-set status must explicitly require source collection reconciliation`);
     }
     if ((observation.acceptance_gaps || []).length < 1) errors.push(`${SCAN_PATH}:${id}: project set reconciliation status requires acceptance gaps`);
   }
@@ -222,15 +231,22 @@ if (!sourceTask) {
       errors.push(`${SCAN_PATH}: legacy source task object id ${sourceObjectId || "<empty>"} must be included in discovered Tellermanov house set`);
     }
     if (sourceTask.status === "accepted") {
-      errors.push(`${SCAN_PATH}: source collection cannot be accepted while Tellermanov canonical project-set reconciliation is still required`);
+      errors.push(`${SCAN_PATH}: source collection cannot be accepted while Tellermanov source-collection project-set reconciliation is still required`);
     }
   } else {
-    const expectedObjectId = String(sourceTask.expected_identifiers?.object_id || "");
-    if (String(tellermanov.expected_object_id || "") !== expectedObjectId) {
-      errors.push(`${SCAN_PATH}: Tellermanov object id must match source collection (${expectedObjectId})`);
-    }
+    const sourceObjectIds = Array.isArray(sourceTask.expected_identifiers?.object_ids)
+      ? sourceTask.expected_identifiers.object_ids.map(String)
+      : [];
     const sourceAccepted = sourceTask.status === "accepted";
     const scanAccepted = tellermanov.status === "accepted_primary";
+    if (scanAccepted && sourceObjectIds.length > 0) {
+      const scanIds = new Set((tellermanov.expected_object_ids || []).map(String));
+      if (sourceObjectIds.length !== scanIds.size || sourceObjectIds.some((id) => !scanIds.has(id))) {
+        errors.push(`${SCAN_PATH}: accepted Tellermanov source object_ids must match scan project set`);
+      }
+    } else if (String(tellermanov.expected_object_id || "") !== String(sourceTask.expected_identifiers?.object_id || "")) {
+      errors.push(`${SCAN_PATH}: Tellermanov object id must match source collection`);
+    }
     if (sourceAccepted !== scanAccepted) errors.push(`${SCAN_PATH}: Tellermanov EISZhS acceptance must stay synchronized with source collection`);
   }
 }
