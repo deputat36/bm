@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "updated_at": "2026-09-07",
+  "portal_id": "newbuilds-borisoglebsk",
+  "purpose": "Воспроизводимый browser-level visual QA ключевых buyer-facing страниц после изменений дизайна. Screenshots являются CI evidence и не меняют release/publication gates.",
+  "rules": {
+    "screenshots_are_ci_artifacts_only": true,
+    "browser_emulation_is_not_physical_device_qa": true,
+    "visual_qa_has_no_publication_effect": true,
+    "visual_qa_must_not_submit_forms": true,
+    "visual_qa_must_not_call_live_lead_endpoint": true,
+    "horizontal_overflow_is_failure": true,
+    "page_error_is_failure": true
+  },
+  "viewports": [
+    {
+      "id": "desktop",
+      "browser_engine": "chromium",
+      "width": 1440,
+      "height": 1100,
+      "device_scale_factor": 1
+    },
+    {
+      "id": "mobile",
+      "browser_engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "device_scale_factor": 1
+    }
+  ],
+  "pages": [
+    {
+      "id": "homepage",
+      "path": "/",
+      "required_markers": ["Новостройки Борисоглебска"]
+    },
+    {
+      "id": "catalog",
+      "path": "/catalog/",
+      "required_markers": ["Каталог"]
+    },
+    {
+      "id": "prostornaya-4a",
+      "path": "/catalog/prostornaya-4a/",
+      "required_markers": ["Теллерманов сад"]
+    },
+    {
+      "id": "aerodromnaya-18g",
+      "path": "/catalog/aerodromnaya-18g/",
+      "required_markers": ["Патриот"]
+    },
+    {
+      "id": "sennaya-76",
+      "path": "/catalog/sennaya-76/",
+      "required_markers": ["Сенной 76"]
+    }
+  ],
+  "expected_capture_count": 10,
+  "artifact_retention_days": 14
+}
