@@ -39,7 +39,7 @@
     }
   },
   "execution": {
-    "method": "exact-address web/index recheck + authority-route verification",
+    "method": "exact-address web/index recheck + authority-route verification + candidate identifier enrichment",
     "direct_registry_record_export_obtained": false,
     "source_collection_tasks_changed": [],
     "publication_effect": "none"
@@ -60,12 +60,34 @@
       "project_id": "sennaya-76",
       "address": "г. Борисоглебск, ул. Сенная, 76",
       "checked_at": "2026-09-07",
+      "identifier_enrichment_checked_at": "2026-09-07",
       "result": "not_found_recheck_required",
       "source_reference": "https://gisogd36.govvrn.ru/",
       "matched_identifiers": [],
-      "evidence_note": "После наступления даты recheck проверен актуальный authority route и выполнен exact-address поиск по разрешениям/вводу. Exact официальная реестровая запись, связывающая Сенную 76 с разрешением и юридическим лицом застройщика/правообладателя, не получена. Secondary candidate ИП Тарасов не повышался. Отсутствие индексируемого результата не считается доказательством отсутствия документа.",
+      "candidate_search_identifiers": {
+        "candidate_name": "ИП Тарасов Максим Константинович",
+        "candidate_inn": "360400764470",
+        "candidate_ogrnip": "306360421600026",
+        "candidate_role": "object-specific advertiser / secondary developer candidate only",
+        "acceptance_effect": "none"
+      },
+      "identifier_clue_sources": [
+        {
+          "source_class": "secondary_object_specific_advertising_disclosure",
+          "reference": "https://segodnyazavtra.ru/borisoglebsk/borisoglebsk-podslushano/erid-2vtzquh6wizmalchishki-i-devchonki-a-takzhe-ikh-roditeli-za-shkolnoy-549289/",
+          "supports": "Публикация рекламирует дом на Сенной 76 и раскрывает рекламодателя ИП Тарасов М.К., ИНН 360400764470.",
+          "does_not_support": "Не подтверждает роль застройщика, правообладателя, заявителя по разрешению или продавца конкретной квартиры."
+        },
+        {
+          "source_class": "secondary_corporate_identity_crosscheck",
+          "reference": "https://companies.rbc.ru/persons/ogrnip/306360421600026-tarasov-maksim-konstantinovich/",
+          "supports": "Связывает ИНН 360400764470 и ОГРНИП 306360421600026 с ИП Тарасов Максим Константинович в Воронежской области.",
+          "does_not_support": "Не является object-level primary document по Сенной 76."
+        }
+      ],
+      "evidence_note": "После наступления даты recheck проверен актуальный authority route и выполнен exact-address поиск по разрешениям/вводу. Exact официальная реестровая запись, связывающая Сенную 76 с разрешением и юридическим лицом застройщика/правообладателя, не получена. Дополнительный object-specific advertising disclosure дал точный candidate ИНН 360400764470 для последующего primary search, но advertiser identity не повышалась до developer/rightsholder identity. Повторный индексируемый поиск по адресу, candidate ИНН и полному имени также не дал exact object-level primary record. Отсутствие индексируемого результата не считается доказательством отсутствия документа.",
       "source_tasks_affected": [],
-      "next_action": "Получить прямую запись/выписку ГИС ОГД Воронежской области или иной официальный primary record по адресу/кадастровой привязке; при exact match обновить только соответствующие source tasks с сохранённым evidence."
+      "next_action": "Получить прямую запись/выписку ГИС ОГД Воронежской области или иной официальный primary record, используя одновременно exact address Сенная 76, candidate ИНН 360400764470, полное имя Тарасов Максим Константинович и candidate ОГРНИП 306360421600026 как поисковые ключи; при exact object/entity match обновить только соответствующие source tasks с сохранённым evidence."
     }
   ],
   "conclusion": {
@@ -75,6 +97,6 @@
     "recheck_completed": true,
     "permit_inventory_scan_complete": false,
     "blocking_reason": "direct regional registry records for target objects not obtained",
-    "next_recheck_trigger": "direct GIS OGD access/export, new exact official record, or additional official identifier"
+    "next_recheck_trigger": "direct GIS OGD access/export, new exact official record, or searchable official match for Sennaya candidate INN 360400764470 / other object identifier"
   }
 }
