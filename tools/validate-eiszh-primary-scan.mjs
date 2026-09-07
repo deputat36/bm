@@ -46,7 +46,9 @@ const priority = readJson(PRIORITY_PATH);
 const sourceCollection = readJson(SOURCE_COLLECTION_PATH);
 if (!scan || !inventory || !priority || !sourceCollection) process.exit(1);
 
-if (scan.schema_version !== "1.0") errors.push(`${SCAN_PATH}: schema_version must be 1.0`);
+if (!new Set(["1.0", "1.1"]).has(scan.schema_version)) {
+  errors.push(`${SCAN_PATH}: schema_version must be 1.0 or 1.1`);
+}
 if (scan.portal_id !== "newbuilds-borisoglebsk") errors.push(`${SCAN_PATH}: invalid portal_id`);
 if (!new Set(["partial_access_limited", "eiszh_scan_complete"]).has(scan.status)) {
   errors.push(`${SCAN_PATH}: unsupported status ${scan.status}`);
@@ -65,6 +67,16 @@ for (const key of [
   if (scan.rules?.[key] !== true) errors.push(`${SCAN_PATH}: rules.${key} must be true`);
 }
 
+if (scan.schema_version === "1.1") {
+  for (const key of [
+    "primary_project_listing_may_identify_multi_house_set",
+    "multi_house_project_requires_all_house_ids_recorded",
+    "project_set_discovery_does_not_auto_change_public_project_claims"
+  ]) {
+    if (scan.rules?.[key] !== true) errors.push(`${SCAN_PATH}: rules.${key} must be true for schema 1.1`);
+  }
+}
+
 const priorityIds = new Set((priority.projects || []).map((item) => item.id));
 const routeExamples = Array.isArray(scan.official_route_examples) ? scan.official_route_examples : [];
 if (routeExamples.length < 1) errors.push(`${SCAN_PATH}: at least one official route example is required`);
@@ -79,6 +91,7 @@ for (const [index, example] of routeExamples.entries()) {
 
 const allowedObservationStatuses = new Set([
   "candidate_exact_id_unread",
+  "primary_project_set_read_reconciliation_required",
   "no_exact_primary_match_in_search",
   "accepted_primary",
   "equivalent_primary_resolved"
@@ -91,6 +104,7 @@ const allowedEquivalentTypes = new Set([
 const observations = Array.isArray(scan.target_observations) ? scan.target_observations : [];
 const observationIds = new Set();
 let acceptedCount = 0;
+let primaryIdentityResolvedCount = 0;
 
 for (const observation of observations) {
   const id = String(observation?.id || "").trim();
@@ -122,6 +136,43 @@ for (const observation of observations) {
     if ((observation.acceptance_gaps || []).length < 1) errors.push(`${SCAN_PATH}:${id}: unread candidate requires acceptance gaps`);
   }
 
+  if (observation.status === "primary_project_set_read_reconciliation_required") {
+    primaryIdentityResolvedCount += 1;
+    const expectedIds = Array.isArray(observation.expected_object_ids)
+      ? observation.expected_object_ids.map((value) => String(value)).filter(Boolean)
+      : [];
+    if (expectedIds.length < 2 || new Set(expectedIds).size !== expectedIds.length) {
+      errors.push(`${SCAN_PATH}:${id}: multi-house project requires at least two unique expected_object_ids`);
+    }
+    if (observation.primary_content_read !== true) errors.push(`${SCAN_PATH}:${id}: project set requires primary_content_read=true`);
+    if (observation.object_identity_match !== true) errors.push(`${SCAN_PATH}:${id}: project set requires object_identity_match=true`);
+    if (!Array.isArray(observation.primary_references) || observation.primary_references.length < 2) {
+      errors.push(`${SCAN_PATH}:${id}: project set requires multiple primary_references`);
+    } else {
+      for (const [index, reference] of observation.primary_references.entries()) {
+        if (!isHttps(reference.url)) errors.push(`${SCAN_PATH}:${id}: primary reference #${index + 1} must be HTTPS`);
+        if (!String(reference.checked_at || "").trim()) errors.push(`${SCAN_PATH}:${id}: primary reference #${index + 1} missing checked_at`);
+        if (!Array.isArray(reference.supports) || reference.supports.length < 1) errors.push(`${SCAN_PATH}:${id}: primary reference #${index + 1} requires supports`);
+      }
+    }
+
+    const houses = Array.isArray(observation.house_records) ? observation.house_records : [];
+    const houseIds = houses.map((item) => String(item.object_id || "")).filter(Boolean);
+    if (houses.length !== expectedIds.length || new Set(houseIds).size !== expectedIds.length || expectedIds.some((objectId) => !houseIds.includes(objectId))) {
+      errors.push(`${SCAN_PATH}:${id}: house_records must cover every expected_object_id exactly once`);
+    }
+    const declaredHouseCount = Number(observation.project_house_count);
+    if (declaredHouseCount !== expectedIds.length) errors.push(`${SCAN_PATH}:${id}: project_house_count must equal expected object count`);
+    const apartmentSum = houses.reduce((sum, item) => sum + Number(item.apartments_total || 0), 0);
+    if (Number(observation.project_apartments_total) !== apartmentSum || apartmentSum <= 0) {
+      errors.push(`${SCAN_PATH}:${id}: project_apartments_total must equal positive sum of house apartment totals`);
+    }
+    if (!observation.current_model_conflict || !String(observation.current_model_conflict.description || "").trim()) {
+      errors.push(`${SCAN_PATH}:${id}: current_model_conflict must remain explicit until canonical reconciliation`);
+    }
+    if ((observation.acceptance_gaps || []).length < 1) errors.push(`${SCAN_PATH}:${id}: project set reconciliation status requires acceptance gaps`);
+  }
+
   if (observation.status === "no_exact_primary_match_in_search") {
     if (observation.expected_object_id !== null || observation.candidate_url !== null) errors.push(`${SCAN_PATH}:${id}: no-match search observation must not invent object id/url`);
     if (observation.primary_content_read !== false || observation.object_identity_match !== false) errors.push(`${SCAN_PATH}:${id}: no-match search observation cannot claim primary read/identity`);
@@ -130,8 +181,13 @@ for (const observation of observations) {
 
   if (observation.status === "accepted_primary") {
     acceptedCount += 1;
-    if (!isHttps(observation.candidate_url)) errors.push(`${SCAN_PATH}:${id}: accepted primary requires HTTPS card URL`);
-    if (!String(observation.expected_object_id || "").trim()) errors.push(`${SCAN_PATH}:${id}: accepted primary requires object id`);
+    primaryIdentityResolvedCount += 1;
+    const hasSingleId = String(observation.expected_object_id || "").trim() && isHttps(observation.candidate_url);
+    const hasProjectSet = Array.isArray(observation.expected_object_ids)
+      && observation.expected_object_ids.length > 0
+      && Array.isArray(observation.primary_references)
+      && observation.primary_references.some((item) => isHttps(item.url));
+    if (!hasSingleId && !hasProjectSet) errors.push(`${SCAN_PATH}:${id}: accepted primary requires exact object id/url or a validated project set`);
     if (observation.primary_content_read !== true) errors.push(`${SCAN_PATH}:${id}: accepted primary requires primary_content_read=true`);
     if (observation.object_identity_match !== true) errors.push(`${SCAN_PATH}:${id}: accepted primary requires object_identity_match=true`);
     if ((observation.acceptance_gaps || []).length !== 0) errors.push(`${SCAN_PATH}:${id}: accepted primary must have no acceptance gaps`);
@@ -139,6 +195,7 @@ for (const observation of observations) {
 
   if (observation.status === "equivalent_primary_resolved") {
     acceptedCount += 1;
+    primaryIdentityResolvedCount += 1;
     if (!isHttps(observation.equivalent_primary_reference)) errors.push(`${SCAN_PATH}:${id}: equivalent primary resolution requires HTTPS equivalent_primary_reference`);
     if (!allowedEquivalentTypes.has(observation.equivalent_primary_source_type)) errors.push(`${SCAN_PATH}:${id}: equivalent primary resolution requires an allowed official source type`);
     if (observation.equivalent_primary_content_read !== true) errors.push(`${SCAN_PATH}:${id}: equivalent primary resolution requires read primary content`);
@@ -149,18 +206,48 @@ for (const observation of observations) {
 
 const expectedPriorityIds = new Set(["tellermanov-sad", "aerodromnaya-18g", "sennaya-76"]);
 const observedProjectIds = new Set(observations.map((item) => item.project_id));
-if (observedProjectIds.size !== expectedPriorityIds.size || [...expectedPriorityIds].some((id) => !observedProjectIds.has(id))) errors.push(`${SCAN_PATH}: target observations must cover all three priority projects`);
+if (observedProjectIds.size !== expectedPriorityIds.size || [...expectedPriorityIds].some((id) => !observedProjectIds.has(id))) {
+  errors.push(`${SCAN_PATH}: target observations must cover all three priority projects`);
+}
 
 const tellermanov = observations.find((item) => item.project_id === "tellermanov-sad");
 const sourceTask = findSourceTask(sourceCollection, "prostornaya_4a_eiszh_project_card");
 if (!sourceTask) {
   errors.push(`${SOURCE_COLLECTION_PATH}: prostornaya_4a_eiszh_project_card is missing`);
 } else if (tellermanov) {
-  const expectedObjectId = String(sourceTask.expected_identifiers?.object_id || "");
-  if (String(tellermanov.expected_object_id || "") !== expectedObjectId) errors.push(`${SCAN_PATH}: Tellermanov object id must match source collection (${expectedObjectId})`);
-  const sourceAccepted = sourceTask.status === "accepted";
-  const scanAccepted = tellermanov.status === "accepted_primary";
-  if (sourceAccepted !== scanAccepted) errors.push(`${SCAN_PATH}: Tellermanov EISZhS acceptance must stay synchronized with source collection`);
+  const sourceObjectId = String(sourceTask.expected_identifiers?.object_id || "");
+  if (tellermanov.status === "primary_project_set_read_reconciliation_required") {
+    const projectSetIds = new Set((tellermanov.expected_object_ids || []).map(String));
+    if (!sourceObjectId || !projectSetIds.has(sourceObjectId)) {
+      errors.push(`${SCAN_PATH}: legacy source task object id ${sourceObjectId || "<empty>"} must be included in discovered Tellermanov house set`);
+    }
+    if (sourceTask.status === "accepted") {
+      errors.push(`${SCAN_PATH}: source collection cannot be accepted while Tellermanov canonical project-set reconciliation is still required`);
+    }
+  } else {
+    const expectedObjectId = String(sourceTask.expected_identifiers?.object_id || "");
+    if (String(tellermanov.expected_object_id || "") !== expectedObjectId) {
+      errors.push(`${SCAN_PATH}: Tellermanov object id must match source collection (${expectedObjectId})`);
+    }
+    const sourceAccepted = sourceTask.status === "accepted";
+    const scanAccepted = tellermanov.status === "accepted_primary";
+    if (sourceAccepted !== scanAccepted) errors.push(`${SCAN_PATH}: Tellermanov EISZhS acceptance must stay synchronized with source collection`);
+  }
+}
+
+const primaryListings = Array.isArray(scan.citywide_primary_listings) ? scan.citywide_primary_listings : [];
+for (const listing of primaryListings) {
+  const label = `${SCAN_PATH}:${listing.id || "<citywide-primary-listing>"}`;
+  if (!String(listing.id || "").trim()) errors.push(`${SCAN_PATH}: citywide primary listing without id`);
+  if (!isHttps(listing.url)) errors.push(`${label}: url must be HTTPS`);
+  if (!String(listing.checked_at || "").trim()) errors.push(`${label}: checked_at is required`);
+  if (!Number.isInteger(Number(listing.reported_project_entries)) || Number(listing.reported_project_entries) < 1) {
+    errors.push(`${label}: reported_project_entries must be a positive integer`);
+  }
+  if (!Array.isArray(listing.limitations) || listing.limitations.length < 1) errors.push(`${label}: limitations are required`);
+  if (listing.reconciliation_complete === true && listing.completeness_effect !== "primary_reconciled") {
+    errors.push(`${label}: reconciled listing requires completeness_effect=primary_reconciled`);
+  }
 }
 
 const searchPasses = Array.isArray(scan.citywide_search_passes) ? scan.citywide_search_passes : [];
@@ -189,10 +276,21 @@ for (const gap of gaps) {
 
 const completion = scan.completion_state || {};
 const declaredBlocking = new Set(completion.blocking_gap_ids || []);
-if (declaredBlocking.size !== gapIds.size || [...gapIds].some((id) => !declaredBlocking.has(id))) errors.push(`${SCAN_PATH}: blocking_gap_ids must match unresolved_scan_gaps`);
-if (Number(completion.accepted_target_observations) !== acceptedCount) errors.push(`${SCAN_PATH}: accepted_target_observations must equal derived accepted/resolved target count`);
+if (declaredBlocking.size !== gapIds.size || [...gapIds].some((id) => !declaredBlocking.has(id))) {
+  errors.push(`${SCAN_PATH}: blocking_gap_ids must match unresolved_scan_gaps`);
+}
+if (Number(completion.accepted_target_observations) !== acceptedCount) {
+  errors.push(`${SCAN_PATH}: accepted_target_observations must equal derived accepted/resolved target count`);
+}
+if (completion.primary_identity_resolved_target_observations !== undefined
+  && Number(completion.primary_identity_resolved_target_observations) !== primaryIdentityResolvedCount) {
+  errors.push(`${SCAN_PATH}: primary_identity_resolved_target_observations must equal derived primary identity count`);
+}
 
 const citywideComplete = completion.citywide_primary_reconciliation_complete === true;
+if (completion.citywide_primary_listing_available === true && primaryListings.length < 1) {
+  errors.push(`${SCAN_PATH}: citywide_primary_listing_available requires at least one primary listing`);
+}
 const allTargetsResolved = observations.length === expectedPriorityIds.size && acceptedCount === observations.length;
 const scanComplete = gapIds.size === 0 && citywideComplete && allTargetsResolved;
 if (completion.eiszh_scan_complete !== scanComplete) errors.push(`${SCAN_PATH}: eiszh_scan_complete must equal derived state (${scanComplete})`);
@@ -211,8 +309,10 @@ if (!inventoryScan) {
 
 console.log(`EISZhS route examples: ${routeExamples.length}`);
 console.log(`Target observations: ${observations.length}`);
+console.log(`Primary identity resolved targets: ${primaryIdentityResolvedCount}`);
 console.log(`Accepted/resolved targets: ${acceptedCount}`);
 console.log(`All targets resolved: ${allTargetsResolved}`);
+console.log(`Citywide primary listings: ${primaryListings.length}`);
 console.log(`Citywide search passes: ${searchPasses.length}`);
 console.log(`Blocking EISZhS gaps: ${gapIds.size}`);
 console.log(`Citywide primary reconciliation complete: ${citywideComplete}`);
