@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-08-09",
+  "updated_at": "2026-09-07",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "coverage_snapshot_not_completeness_claim",
   "purpose": "Контроль того, что обнаруженные в публичных источниках новостройки Борисоглебска сопоставлены с priority/reference/candidate registry. Карта не доказывает отсутствие иных объектов.",
@@ -31,6 +31,63 @@
     ]
   },
   "discovery_sources": [
+    {
+      "id": "eiszh_borisoglebsk_city_listing_2026-09-07",
+      "source_class": "official_primary_city_listing",
+      "title": "ЕИСЖС / наш.дом.рф — городской listing новостроек Борисоглебска",
+      "url": "https://xn--80az8a.xn--d1aqf.xn--p1ai/новостройки/борисоглебск/",
+      "checked_at": "2026-09-07",
+      "scope_effect": "seven_listing_entries_reconciled_only",
+      "limitations": [
+        "official listing reconciliation does not prove completeness of all historical or planned multifamily housing in Borisoglebsk",
+        "absence of an object from this listing is not proof of registry absence or legal status",
+        "Аэродромная 18Г and Сенная 76 remain separate priority-source gaps"
+      ],
+      "observed_objects": [
+        {
+          "observed_label": "ЕИСЖС 34882 — ЖК «Европейский»",
+          "observed_address": "г. Борисоглебск",
+          "mapping": {"registry": "reference", "project_id": "evropeyskiy-proekt-invest"},
+          "note": "Официальный listing называет ЖК «Европейский», ООО СЗ СТРОЙАРТ и 45 квартир; отдельная новая карточка не создаётся."
+        },
+        {
+          "observed_label": "ЕИСЖС 25033 — ЖК «Уютный»",
+          "observed_address": "ул. Дорожная, 50А",
+          "mapping": {"registry": "reference", "project_id": "uyutnyy-voronezh-grad"},
+          "note": "Exact address и ООО ВОРОНЕЖ ГРАД совпадают с принятой reference-карточкой ЖК «Уютный»."
+        },
+        {
+          "observed_label": "ЕИСЖС 32931 — ЖК «Уютный»",
+          "observed_address": "ул. Уютная, 5, литера А",
+          "mapping": {"registry": "reference", "project_id": "uyutnyy-voronezh-grad"},
+          "note": "Exact address и ООО ВОРОНЕЖ ГРАД совпадают с принятой reference-карточкой ЖК «Уютный»."
+        },
+        {
+          "observed_label": "ЕИСЖС 72480 — Теллерманов сад",
+          "observed_address": "ул. Просторная, 4А",
+          "mapping": {"registry": "priority", "project_id": "tellermanov-sad"},
+          "note": "Один из двух домов принятого multi-house project set Теллерманова сада."
+        },
+        {
+          "observed_label": "ЕИСЖС 72481 — Теллерманов сад",
+          "observed_address": "ул. Просторная, 4А",
+          "mapping": {"registry": "priority", "project_id": "tellermanov-sad"},
+          "note": "Второй дом принятого multi-house project set; exact-card 72481 прочитана отдельно."
+        },
+        {
+          "observed_label": "ЕИСЖС 39663 — блок-секция 9",
+          "observed_address": "г. Борисоглебск, блок-секция 9",
+          "mapping": {"registry": "reference", "project_id": "evropeyskiy-proekt-invest"},
+          "note": "Официальный listing указывает ООО СЗ СТРОЙАРТ и 51 квартиру; независимые проектные каталоги связывают 51-квартирный корпус 2022 года с ЖК «Европейский». Exact public address в reference-карточку не повышается."
+        },
+        {
+          "observed_label": "ЕИСЖС 33426 — Аэродромная 32",
+          "observed_address": "ул. Аэродромная, 32",
+          "mapping": {"registry": "reference", "project_id": "aerodromnaya-32-aleks"},
+          "note": "Exact address и ООО АЛЕКС совпадают с ранее принятой reference-карточкой."
+        }
+      ]
+    },
     {
       "id": "yandex_borisoglebsk_compare_2026-08-09",
       "source_class": "secondary_marketplace_discovery",
@@ -171,10 +228,11 @@
     "priority_projects_accounted_for": 3,
     "reference_projects_accounted_for": 4,
     "unresolved_candidates_accounted_for": 2,
-    "observations_mapped": 11,
+    "observations_mapped": 18,
     "unmapped_observations": 0,
     "research_queue_complete": false,
     "known_limitations": [
+      "Официальный ЕИСЖС listing на 07.09.2026 reconciled по всем семи отображаемым записям, но это не является доказательством полноты всего городского жилищного фонда или всех будущих проектов.",
       "Публичные каталоги не гарантируют полноту всех построенных домов города.",
       "Исторические и малые объекты могут отсутствовать в агрегаторах.",
       "Жилищные реестры вторичного уровня используются для discovery и entity resolution, но не доказывают полноту домов по годам и не заменяют первичные разрешительные документы.",
