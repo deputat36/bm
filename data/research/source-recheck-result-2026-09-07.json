@@ -49,12 +49,46 @@
       "project_id": "aerodromnaya-18g",
       "address": "г. Борисоглебск, ул. Аэродромная, 18Г",
       "checked_at": "2026-09-07",
+      "identifier_enrichment_checked_at": "2026-09-07",
       "result": "not_found_recheck_required",
       "source_reference": "https://gisogd36.govvrn.ru/",
       "matched_identifiers": [],
-      "evidence_note": "После наступления даты recheck проверен актуальный authority route и выполнен exact-address поиск по разрешениям/вводу. Exact официальная реестровая запись с номером разрешения, заявителем и адресной/кадастровой привязкой к Аэродромной 18Г не получена. Вторичные объявления и marketplace-claims не использованы для acceptance. Отсутствие индексируемого результата не считается доказательством отсутствия документа.",
+      "candidate_search_identifiers": {
+        "candidate_name": "ООО «Первая Строительная Компания»",
+        "candidate_inn": "3665114243",
+        "candidate_ogrn": "1153668053076",
+        "candidate_role": "official company candidate / secondary corporate identity cross-check; exact object link unresolved",
+        "acceptance_effect": "none"
+      },
+      "identifier_clue_sources": [
+        {
+          "source_class": "official_company_page",
+          "reference": "https://zhbi36.ru/psk/",
+          "supports": "Официальная страница называет ООО «Первая Строительная Компания» и сообщает, что компания основана в сентябре 2015 года для строительства многоквартирных жилых домов в Борисоглебске.",
+          "does_not_support": "Страница не связывает юридическое лицо с точным адресом Аэродромная 18Г, разрешением или кадастровым участком."
+        },
+        {
+          "source_class": "official_company_contacts",
+          "reference": "https://zhbi36.ru/contacts/",
+          "supports": "Официальный сайт публикует отдельный контактный канал ООО «Первая Строительная Компания» в контуре Борисоглебского ЖБИ.",
+          "does_not_support": "Контактная страница не содержит object-level link к 18Г и не подтверждает ИНН/ОГРН."
+        },
+        {
+          "source_class": "secondary_corporate_identity_crosscheck",
+          "reference": "https://spark-interfax.ru/voronezhskaya-oblast-voronezh/ooo-pervaya-stroitelnaya-kompaniya-inn-3665114243-ogrn-1153668053076-5126026fb6414352889851e758124dad",
+          "supports": "Связывает ООО «Первая Строительная Компания» с ИНН 3665114243, ОГРН 1153668053076 и датой регистрации 30.09.2015, совпадающей с временным ориентиром официальной страницы ПСК.",
+          "does_not_support": "Не является primary object document и не доказывает связь компании с Аэродромной 18Г."
+        },
+        {
+          "source_class": "secondary_corporate_identity_crosscheck",
+          "reference": "https://www.tbank.ru/business/contractor/legal/1153668053076/",
+          "supports": "Независимо подтверждает candidate legal entity ООО «Первая Строительная Компания», ИНН 3665114243 и ОГРН 1153668053076.",
+          "does_not_support": "Не является разрешением, кадастровой записью или иным object-level primary source по 18Г."
+        }
+      ],
+      "evidence_note": "После наступления даты recheck проверен актуальный authority route и выполнен exact-address поиск по разрешениям/вводу. Exact официальная реестровая запись с номером разрешения, заявителем и адресной/кадастровой привязкой к Аэродромной 18Г не получена. Официальный сайт ПСК даёт точное название компании и временной ориентир основания, а corporate cross-check позволяет сузить candidate до ИНН 3665114243 / ОГРН 1153668053076. Эти реквизиты используются только как search identifiers: object-level связь с 18Г не доказана, вторичные marketplace claims не использованы для acceptance. Повторный индексируемый поиск по адресу, ИНН, ОГРН и наименованию exact primary record по 18Г не дал. Отсутствие индексируемого результата не считается доказательством отсутствия документа.",
       "source_tasks_affected": [],
-      "next_action": "Получить прямую запись/выписку ГИС ОГД Воронежской области или иной официальный primary record по точному адресу/земельному участку и только после этого обновлять public_registry/building_permit/developer tasks."
+      "next_action": "Получить прямую запись/выписку ГИС ОГД Воронежской области или иной официальный primary record, используя одновременно exact address Аэродромная 18Г, candidate ИНН 3665114243, ОГРН 1153668053076 и ООО «Первая Строительная Компания» как поисковые ключи; при exact object/entity match обновить только public_registry/building_permit/developer tasks с сохранённым evidence."
     },
     {
       "project_id": "sennaya-76",
@@ -97,6 +131,6 @@
     "recheck_completed": true,
     "permit_inventory_scan_complete": false,
     "blocking_reason": "direct regional registry records for target objects not obtained",
-    "next_recheck_trigger": "direct GIS OGD access/export, new exact official record, or searchable official match for Sennaya candidate INN 360400764470 / other object identifier"
+    "next_recheck_trigger": "direct GIS OGD access/export, new exact official record, or searchable official match using candidate identifiers for Аэродромная 18Г (ИНН 3665114243 / ОГРН 1153668053076) or Сенная 76 (ИНН 360400764470 / ОГРНИП 306360421600026)"
   }
 }
