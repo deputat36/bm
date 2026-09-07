@@ -44,26 +44,25 @@ jobs:
       - name: Validate EISZhS primary scan
         run: node tools/validate-eiszh-primary-scan.mjs
 
-      - name: Reject false acceptance of Tellermanov 72480
+      - name: Reject incomplete accepted Tellermanov project set
         run: |
-          cp data/research/eiszh-primary-scan.json /tmp/eiszh-primary-scan.json
+          cp data/research/source-collection.json /tmp/source-collection.json
           node - <<'NODE'
           const fs = require('fs');
-          const path = 'data/research/eiszh-primary-scan.json';
+          const path = 'data/research/source-collection.json';
           const data = JSON.parse(fs.readFileSync(path, 'utf8'));
-          const target = data.target_observations.find((item) => item.project_id === 'tellermanov-sad');
-          target.status = 'accepted_primary';
-          target.primary_content_read = true;
-          target.object_identity_match = true;
-          target.acceptance_gaps = [];
-          data.completion_state.accepted_target_observations = 1;
+          const project = data.projects.find((item) => item.project_id === 'tellermanov-sad');
+          const task = project.tasks.find((item) => item.id === 'prostornaya_4a_eiszh_project_card');
+          task.expected_identifiers.object_ids = ['72480'];
+          task.expected_identifiers.buildings_total = 1;
+          task.expected_identifiers.apartments_total = 70;
           fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
           NODE
           if node tools/validate-eiszh-primary-scan.mjs; then
-            echo "EISZhS validator incorrectly allowed 72480 acceptance while source collection remains candidate_found"
+            echo "EISZhS validator incorrectly allowed accepted source with an incomplete Tellermanov house set"
             exit 1
           fi
-          cp /tmp/eiszh-primary-scan.json data/research/eiszh-primary-scan.json
+          cp /tmp/source-collection.json data/research/source-collection.json
 
       - name: Reject registry absence from search no-result
         run: |

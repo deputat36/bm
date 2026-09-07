@@ -16,7 +16,7 @@ const ALLOWED_PRIORITIES = new Set(["critical", "standard"]);
 const ALLOWED_AUTHORITIES = new Set(["primary_required", "rights_evidence_required"]);
 const ALLOWED_COLLECTION_STATUSES = new Set(["blocked", "in_progress", "ready_for_review"]);
 const REQUIRED_SOURCE_TYPES = new Map([
-  ["tellermanov-sad", new Set(["eiszh_project_card", "project_declaration", "building_permit", "media_rights"])],
+  ["tellermanov-sad", new Set(["eiszh_project_set", "project_declaration", "building_permit", "media_rights"])],
   ["aerodromnaya-18g", new Set(["public_object_registry", "developer_legal_entity", "building_permit", "project_declaration", "media_rights"])],
   ["sennaya-76", new Set(["public_object_registry", "developer_legal_entity", "building_permit", "project_declaration", "media_rights"])]
 ]);
@@ -177,6 +177,26 @@ if (!registry || !Array.isArray(registry.projects)) {
       }
       if (sourceType !== "media_rights" && authority !== "primary_required") {
         errors.push(`${taskLabel}: документальный источник требует authority=primary_required`);
+      }
+
+      if (sourceType === "eiszh_project_set") {
+        const objectIds = Array.isArray(task.expected_identifiers?.object_ids)
+          ? task.expected_identifiers.object_ids.map((value) => String(value)).filter(Boolean)
+          : [];
+        const buildingsTotal = Number(task.expected_identifiers?.buildings_total);
+        const apartmentsTotal = Number(task.expected_identifiers?.apartments_total);
+        if (objectIds.length < 2 || new Set(objectIds).size !== objectIds.length) {
+          errors.push(`${taskLabel}: eiszh_project_set требует минимум два уникальных object_ids`);
+        }
+        if (!Number.isInteger(buildingsTotal) || buildingsTotal !== objectIds.length) {
+          errors.push(`${taskLabel}: buildings_total должен совпадать с количеством object_ids`);
+        }
+        if (!Number.isInteger(apartmentsTotal) || apartmentsTotal <= 0) {
+          errors.push(`${taskLabel}: apartments_total должен быть положительным целым числом`);
+        }
+        if (status !== "accepted") {
+          errors.push(`${taskLabel}: зарегистрированный eiszh_project_set должен быть accepted; до acceptance используйте отдельный candidate source type/state`);
+        }
       }
 
       if (status === "missing") {

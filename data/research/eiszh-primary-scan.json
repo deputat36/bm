@@ -3,7 +3,7 @@
   "updated_at": "2026-09-07",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "partial_access_limited",
-  "purpose": "Системно сверять ЕИСЖС / наш.дом.рф как первичный проектный слой Борисоглебска, поддерживать многодомовые проекты и отделять прочитанный primary project/house set от незавершённой source-collection reconciliation.",
+  "purpose": "Системно сверять ЕИСЖС / наш.дом.рф как первичный проектный слой Борисоглебска, поддерживать многодомовые проекты и отделять принятый primary project/house set от непрочитанных house-level деталей и незавершённого citywide reconciliation.",
   "rules": {
     "route_pattern_is_not_object_identity": true,
     "marketplace_nash_dom_badge_is_not_primary_card": true,
@@ -77,7 +77,7 @@
           ]
         }
       ],
-      "status": "primary_project_set_read_reconciliation_required",
+      "status": "accepted_primary",
       "primary_content_read": true,
       "object_identity_match": true,
       "house_records": [
@@ -100,11 +100,13 @@
       "project_house_count": 2,
       "project_apartments_total": 194,
       "canonical_model_reconciled": true,
-      "source_collection_reconciliation_required": true,
-      "supporting_secondary_clues": [],
-      "acceptance_gaps": [
-        "reconcile_source_collection_from_single_object_id_to_project_house_set"
+      "source_collection_reconciliation_required": false,
+      "house_level_limits": [
+        "exact_card_72480_not_read",
+        "do_not_promote_72480_working_copy_details_from_project_set_identity"
       ],
+      "supporting_secondary_clues": [],
+      "acceptance_gaps": [],
       "publication_effect": "none"
     },
     {
@@ -170,13 +172,6 @@
   ],
   "unresolved_scan_gaps": [
     {
-      "id": "reconcile_tellermanov_source_collection_project_set",
-      "blocks": [
-        "tellermanov_eiszh_source_acceptance"
-      ],
-      "next_action": "Перевести source collection с single object_id 72480 на explicit project house set 72480+72481, не считая непрочитанные house-level характеристики подтверждёнными."
-    },
-    {
       "id": "citywide_eiszh_reconciliation_of_7_listed_projects",
       "blocks": [
         "citywide_eiszh_reconciliation"
@@ -185,10 +180,9 @@
     }
   ],
   "completion_state": {
-    "accepted_target_observations": 0,
+    "accepted_target_observations": 1,
     "primary_identity_resolved_target_observations": 1,
     "blocking_gap_ids": [
-      "reconcile_tellermanov_source_collection_project_set",
       "citywide_eiszh_reconciliation_of_7_listed_projects"
     ],
     "citywide_primary_listing_available": true,
