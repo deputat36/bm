@@ -42,17 +42,17 @@
     {
       "id": "prostornaya-4a",
       "path": "/catalog/prostornaya-4a/",
-      "required_markers": ["Просторная"]
+      "required_markers": ["Теллерманов сад"]
     },
     {
       "id": "aerodromnaya-18g",
       "path": "/catalog/aerodromnaya-18g/",
-      "required_markers": ["Аэродромная"]
+      "required_markers": ["Патриот"]
     },
     {
       "id": "sennaya-76",
       "path": "/catalog/sennaya-76/",
-      "required_markers": ["Сенная"]
+      "required_markers": ["Сенной 76"]
     }
   ],
   "expected_capture_count": 10,
