@@ -1,0 +1,95 @@
+name: Project house model guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/projects/tellermanov-sad.json"
+      - "data/projects/index.json"
+      - "data/verification/prostornaya-4a.json"
+      - "data/research/eiszh-primary-scan.json"
+      - "data/research/source-collection.json"
+      - "tools/validate-project-house-model.mjs"
+      - ".github/workflows/project-house-model-guard.yml"
+  pull_request:
+    paths:
+      - "data/projects/tellermanov-sad.json"
+      - "data/projects/index.json"
+      - "data/verification/prostornaya-4a.json"
+      - "data/research/eiszh-primary-scan.json"
+      - "data/research/source-collection.json"
+      - "tools/validate-project-house-model.mjs"
+      - ".github/workflows/project-house-model-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-project-house-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-project-house-model.mjs
+
+      - name: Validate project house model
+        run: node tools/validate-project-house-model.mjs
+
+      - name: Reject one-house total promoted to complex
+        run: |
+          cp data/projects/tellermanov-sad.json /tmp/tellermanov-sad.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/projects/tellermanov-sad.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.apartments_total = 70;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-project-house-model.mjs; then
+            echo "Project house validator incorrectly allowed one-house total as complex total"
+            exit 1
+          fi
+          cp /tmp/tellermanov-sad.json data/projects/tellermanov-sad.json
+
+      - name: Reject incomplete EISZhS house ID set
+        run: |
+          cp data/projects/tellermanov-sad.json /tmp/tellermanov-sad.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/projects/tellermanov-sad.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.nash_dom_rf_ids = ['72480'];
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-project-house-model.mjs; then
+            echo "Project house validator incorrectly allowed incomplete house ID set"
+            exit 1
+          fi
+          cp /tmp/tellermanov-sad.json data/projects/tellermanov-sad.json
+
+      - name: Reject house-specific ranges promoted to complex
+        run: |
+          cp data/projects/tellermanov-sad.json /tmp/tellermanov-sad.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/projects/tellermanov-sad.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.area_min = 27.71;
+          data.area_max = 63.76;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-project-house-model.mjs; then
+            echo "Project house validator incorrectly allowed one-house area range at complex level"
+            exit 1
+          fi
+          cp /tmp/tellermanov-sad.json data/projects/tellermanov-sad.json
+          node tools/validate-project-house-model.mjs
