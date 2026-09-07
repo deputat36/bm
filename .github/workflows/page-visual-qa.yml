@@ -1,0 +1,91 @@
+name: Page visual QA
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "assets/css/**"
+      - "assets/js/main.js"
+      - "assets/js/mobile-lead-bar.js"
+      - "data/qa/page-visual-qa.json"
+      - "tools/run-page-visual-qa.mjs"
+      - ".github/workflows/page-visual-qa.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "assets/css/**"
+      - "assets/js/main.js"
+      - "assets/js/mobile-lead-bar.js"
+      - "data/qa/page-visual-qa.json"
+      - "tools/run-page-visual-qa.mjs"
+      - ".github/workflows/page-visual-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: page-visual-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pinned Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.62.0
+          npx playwright install --with-deps chromium
+
+      - name: Check runner syntax
+        run: node --check tools/run-page-visual-qa.mjs
+
+      - name: Capture desktop and mobile visual evidence
+        env:
+          VISUAL_QA_OUTPUT_DIR: artifacts/page-visual-qa
+        run: node tools/run-page-visual-qa.mjs
+
+      - name: Publish summary
+        if: always()
+        run: |
+          if [[ ! -f artifacts/page-visual-qa/summary.json ]]; then
+            echo '### Page visual QA' >> "$GITHUB_STEP_SUMMARY"
+            echo '' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Summary was not created; inspect the uploaded partial artifact and failed runner step.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+          const fs = require('fs');
+          const summary = JSON.parse(fs.readFileSync('artifacts/page-visual-qa/summary.json', 'utf8'));
+          console.log('### Page visual QA');
+          console.log('');
+          console.log(`- Captures: ${summary.capture_count}`);
+          console.log(`- Page errors: ${summary.page_error_count}`);
+          console.log(`- Console errors recorded: ${summary.console_error_count}`);
+          console.log(`- Max horizontal overflow: ${summary.max_horizontal_overflow_px}px`);
+          console.log(`- Live lead requests attempted: ${summary.blocked_live_lead_requests}`);
+          console.log('- Device type: browser emulation only; this is not physical-device QA.');
+          NODE
+
+      - name: Upload visual QA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: page-visual-qa-${{ github.run_id }}
+          path: artifacts/page-visual-qa/
+          retention-days: 14
+          if-no-files-found: warn
