@@ -3,7 +3,7 @@
   "updated_at": "2026-09-07",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "partial_access_limited",
-  "purpose": "Системно сверять ЕИСЖС / наш.дом.рф как первичный проектный слой Борисоглебска, поддерживать многодомовые проекты и отделять прочитанный primary project/house set от незавершённой canonical-model reconciliation.",
+  "purpose": "Системно сверять ЕИСЖС / наш.дом.рф как первичный проектный слой Борисоглебска, поддерживать многодомовые проекты и отделять прочитанный primary project/house set от незавершённой source-collection reconciliation.",
   "rules": {
     "route_pattern_is_not_object_identity": true,
     "marketplace_nash_dom_badge_is_not_primary_card": true,
@@ -99,17 +99,11 @@
       ],
       "project_house_count": 2,
       "project_apartments_total": 194,
-      "current_model_conflict": {
-        "source_collection_expected_object_id": "72480",
-        "project_data_nash_dom_rf_id": "72480",
-        "project_data_apartments_total": 70,
-        "verification_complex_apartments_total": 194,
-        "description": "Canonical data model still mixes one-house fields with complex-level fields and must be reconciled before EISZhS source acceptance/public claim expansion."
-      },
+      "canonical_model_reconciled": true,
+      "source_collection_reconciliation_required": true,
       "supporting_secondary_clues": [],
       "acceptance_gaps": [
-        "reconcile_source_collection_from_single_object_id_to_project_house_set",
-        "reconcile_project_data_house_vs_complex_fields"
+        "reconcile_source_collection_from_single_object_id_to_project_house_set"
       ],
       "publication_effect": "none"
     },
@@ -176,12 +170,11 @@
   ],
   "unresolved_scan_gaps": [
     {
-      "id": "reconcile_tellermanov_two_house_project_model",
+      "id": "reconcile_tellermanov_source_collection_project_set",
       "blocks": [
-        "tellermanov_eiszh_source_acceptance",
-        "tellermanov_house_level_public_claims"
+        "tellermanov_eiszh_source_acceptance"
       ],
-      "next_action": "Перевести source collection и canonical project data с single object_id 72480 на explicit project house set 72480+72481, отделив house-level и complex-level поля."
+      "next_action": "Перевести source collection с single object_id 72480 на explicit project house set 72480+72481, не считая непрочитанные house-level характеристики подтверждёнными."
     },
     {
       "id": "citywide_eiszh_reconciliation_of_7_listed_projects",
@@ -195,7 +188,7 @@
     "accepted_target_observations": 0,
     "primary_identity_resolved_target_observations": 1,
     "blocking_gap_ids": [
-      "reconcile_tellermanov_two_house_project_model",
+      "reconcile_tellermanov_source_collection_project_set",
       "citywide_eiszh_reconciliation_of_7_listed_projects"
     ],
     "citywide_primary_listing_available": true,

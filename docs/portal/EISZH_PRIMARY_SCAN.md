@@ -11,7 +11,8 @@
 2. известен candidate object ID;
 3. сторонняя площадка маркирует ЖК как проверенный наш.дом.рф;
 4. прочитан первичный project/house listing и установлена идентичность объекта;
-5. canonical source/project model приведён в соответствие первичному набору домов.
+5. canonical project model приведён в соответствие первичному набору домов;
+6. source collection отдельно синхронизирован с multi-house project set.
 
 Для многодомового ЖК чтение одного дома не означает, что весь проект можно моделировать одним `object_id`.
 
@@ -33,42 +34,81 @@
 - официальный профиль застройщика в реестре;
 - точную индексируемую карточку дома `72481`, которая связывает дом с ЖК «Теллерманов сад» и адресом Просторная 4А.
 
-Это согласуется с уже существующим verification-профилем, где подтверждены:
+Это согласуется с verification-профилем:
 
 ```text
 buildings_total=2
 complex_apartments_total=194
 ```
 
-При этом canonical project/source data исторически смешивает уровень одного дома и всего комплекса:
+## Canonical project model — reconciled
+
+После текущего изменения `data/projects/tellermanov-sad.json` больше не смешивает один дом и весь ЖК.
+
+Верхний уровень хранит параметры комплекса:
 
 ```text
-source collection expected object_id=72480
-project data nash_dom_rf_id=72480
-project data apartments_total=70
-verification complex_apartments_total=194
+model_scope=residential_complex
+buildings_total=2
+apartments_total=194
+nash_dom_rf_ids=[72480,72481]
 ```
 
-Поэтому dedicated EISZhS scan фиксирует состояние:
+House-level данные вынесены в `houses[]`.
+
+Для `72480` сохраняются ранее собранные рабочие характеристики 70-квартирного дома, но поскольку exact EISЖS card этого дома отдельно не прочитана, они явно маркированы:
+
+```text
+detail_status=working_copy_requires_house_level_recheck
+```
+
+Для `72481` сохраняются только сведения, которые dedicated primary scan уже может связать с точной карточкой.
+
+Диапазон площадей и квартирография 72480 больше не используются как характеристики всего комплекса.
+
+`data/projects/index.json` также хранит complex-level итог `194`, а `area_min/area_max` остаются `null`, пока оба дома не reconciled на house level.
+
+## Что ещё не завершено
+
+Canonical project model уже reconciled, но `data/research/source-collection.json` всё ещё содержит историческую single-ID задачу `prostornaya_4a_eiszh_project_card` с expected `72480`.
+
+Поэтому dedicated scan остаётся:
 
 ```text
 status=primary_project_set_read_reconciliation_required
-primary_content_read=true
-object_identity_match=true
+canonical_model_reconciled=true
+source_collection_reconciliation_required=true
 publication_effect=none
 ```
 
-Это сильнее прежнего `candidate_exact_id_unread`, но ещё не является автоматическим разрешением менять публичные house-level характеристики. Следующий шаг — отдельно привести canonical source/project model к явной структуре `project → houses 72480 + 72481`.
+Оставшийся Tellermanov gap теперь только:
 
-## Почему source task не повышается автоматически
+```text
+reconcile_tellermanov_source_collection_project_set
+```
 
-`data/research/source-collection.json` остаётся отдельным источником истины для acceptance/public readiness. Пока его single-ID задача и canonical project data не переработаны согласованно, dedicated scan не может самовольно сделать задачу `accepted`.
+Source task нельзя автоматически перевести в `accepted`, пока его acceptance criteria не будут согласованы с первичным multi-house evidence и не перестанут требовать только одну exact-card 72480.
 
-Guard требует, чтобы legacy `72480` входил в обнаруженный house set, и запрещает принять source task, пока `reconcile_tellermanov_two_house_project_model` остаётся blocking gap.
+## House/complex regression guard
+
+`tools/validate-project-house-model.mjs` связывает четыре слоя:
+
+- canonical project;
+- project index;
+- verification claims;
+- dedicated EISЖS scan.
+
+CI должен отклонить минимум три регрессии:
+
+- `70` квартир снова объявлены итогом всего ЖК;
+- из `nash_dom_rf_ids` потерян один дом;
+- house-level диапазон площадей перенесён на complex level.
+
+Guard также не позволяет canonical reconciliation автоматически менять `is_public_ready=false`.
 
 ## Аэродромная 18Г и Сенная 76
 
-Даже после повторного поиска 7 сентября 2026 года exact primary EISZhS cards для этих двух priority projects не приняты.
+После повторного поиска 7 сентября 2026 года exact primary EISЖS cards для этих двух priority projects не приняты.
 
 Состояние сохраняется как:
 
@@ -99,7 +139,7 @@ no_exact_primary_match_in_search
 
 `eiszh_scan_complete=true` разрешён только если:
 
-- unresolved EISZhS scan gaps отсутствуют;
+- unresolved EISЖS scan gaps отсутствуют;
 - citywide primary reconciliation отдельно подтверждена;
 - все target observations имеют accepted primary content либо эквивалентный primary evidence;
 - source collection и dedicated scan синхронизированы.
