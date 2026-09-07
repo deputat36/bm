@@ -1,0 +1,93 @@
+name: Source recheck result guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/research/source-recheck-result-2026-09-07.json"
+      - "data/research/source-recheck-plan-2026-09-01.json"
+      - "tools/validate-source-recheck-result.mjs"
+      - ".github/workflows/source-recheck-result-guard.yml"
+  pull_request:
+    paths:
+      - "data/research/source-recheck-result-2026-09-07.json"
+      - "data/research/source-recheck-plan-2026-09-01.json"
+      - "tools/validate-source-recheck-result.mjs"
+      - ".github/workflows/source-recheck-result-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-source-recheck-result:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check validator syntax
+        run: node --check tools/validate-source-recheck-result.mjs
+
+      - name: Validate historical source recheck result
+        run: node tools/validate-source-recheck-result.mjs
+
+      - name: Reject publication effect
+        run: |
+          cp data/research/source-recheck-result-2026-09-07.json /tmp/source-recheck-result.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/source-recheck-result-2026-09-07.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.rules.result_has_no_publication_effect = false;
+          data.execution.publication_effect = 'allowed';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-source-recheck-result.mjs; then
+            echo "Validator incorrectly allowed publication effect"
+            exit 1
+          fi
+          cp /tmp/source-recheck-result.json data/research/source-recheck-result-2026-09-07.json
+
+      - name: Reject fake accepted record without evidence
+        run: |
+          cp data/research/source-recheck-result-2026-09-07.json /tmp/source-recheck-result.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/source-recheck-result-2026-09-07.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.status = 'executed_with_acceptance';
+          data.projects[0].result = 'accepted';
+          data.projects[0].matched_identifiers = ['fake-permit'];
+          data.conclusion.accepted_records = 1;
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-source-recheck-result.mjs; then
+            echo "Validator incorrectly allowed fake accepted primary record"
+            exit 1
+          fi
+          cp /tmp/source-recheck-result.json data/research/source-recheck-result-2026-09-07.json
+
+      - name: Reject execution before planned date
+        run: |
+          cp data/research/source-recheck-result-2026-09-07.json /tmp/source-recheck-result.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/source-recheck-result-2026-09-07.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          data.executed_at = '2026-08-31';
+          data.projects.forEach((item) => { item.checked_at = '2026-08-31'; });
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-source-recheck-result.mjs; then
+            echo "Validator incorrectly allowed recheck before not-before date"
+            exit 1
+          fi
+          cp /tmp/source-recheck-result.json data/research/source-recheck-result-2026-09-07.json
+          node tools/validate-source-recheck-result.mjs
