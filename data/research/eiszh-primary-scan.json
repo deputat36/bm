@@ -1,15 +1,18 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-08-09",
+  "schema_version": "1.1",
+  "updated_at": "2026-09-07",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "partial_access_limited",
-  "purpose": "Системно сверять ЕИСЖС / наш.дом.рф как первичный проектный слой Борисоглебска и отделять точную прочитанную карточку от route candidate, marketplace badge и отсутствия поисковой индексации.",
+  "purpose": "Системно сверять ЕИСЖС / наш.дом.рф как первичный проектный слой Борисоглебска, поддерживать многодомовые проекты и отделять прочитанный primary project/house set от незавершённой canonical-model reconciliation.",
   "rules": {
     "route_pattern_is_not_object_identity": true,
     "marketplace_nash_dom_badge_is_not_primary_card": true,
     "search_no_result_is_not_registry_absence": true,
     "accepted_object_requires_primary_content_read": true,
     "accepted_object_requires_exact_identity_match": true,
+    "primary_project_listing_may_identify_multi_house_set": true,
+    "multi_house_project_requires_all_house_ids_recorded": true,
+    "project_set_discovery_does_not_auto_change_public_project_claims": true,
     "citywide_completion_requires_primary_listing_or_equivalent_export": true,
     "equivalent_primary_evidence_may_resolve_non_eiszh_object": true,
     "scan_has_no_publication_effect": true
@@ -25,40 +28,88 @@
       ],
       "does_not_support": [
         "borisoglebsk_object_identity",
-        "tellermanov_object_id_72480"
+        "tellermanov_house_identity"
       ]
     }
   ],
   "target_observations": [
     {
-      "id": "tellermanov-sad-eiszh-72480",
+      "id": "tellermanov-sad-eiszh-project-set",
       "project_id": "tellermanov-sad",
-      "expected_object_id": "72480",
-      "candidate_url": "https://xn--80az8a.xn--d1aqf.xn--p1ai/сервисы/каталог-новостроек/объект/72480",
-      "status": "candidate_exact_id_unread",
-      "primary_content_read": false,
-      "object_identity_match": false,
-      "supporting_secondary_clues": [
+      "expected_object_ids": [
+        "72480",
+        "72481"
+      ],
+      "primary_references": [
         {
-          "title": "ЦИАН — ЖК «Теллерманов сад»",
-          "url": "https://zhk-po-ul-prostornaya-voronezh-i.cian.ru/",
-          "checked_at": "2026-08-09",
+          "type": "official_city_project_listing",
+          "url": "https://xn--80az8a.xn--d1aqf.xn--p1ai/новостройки/борисоглебск/",
+          "checked_at": "2026-09-07",
           "supports": [
-            "marketplace_marks_project_checked_by_nash_dom_rf"
+            "project_name_tellermanov_sad",
+            "address_prostornaya_4a_borisoglebsk",
+            "developer_sz_bm_group_chernozemye",
+            "house_ids_72480_and_72481"
           ]
         },
         {
-          "title": "Яндекс Недвижимость — ЖК «Теллерманов сад»",
-          "url": "https://realty.yandex.ru/borisoglebsk/kupit/novostrojka/tellermanov-sad-4875222/",
-          "checked_at": "2026-08-09",
+          "type": "official_developer_registry_profile",
+          "url": "https://xn--80az8a.xn--d1aqf.xn--p1ai/сервисы/единый-реестр-застройщиков/застройщик/36867",
+          "checked_at": "2026-09-07",
           "supports": [
-            "project_page_points_to_project_declarations_on_nash_dom_rf"
+            "developer_legal_name",
+            "developer_inn_3604086278",
+            "two_houses_under_construction",
+            "194_apartments_total",
+            "house_ids_72480_and_72481"
+          ]
+        },
+        {
+          "type": "official_exact_house_card",
+          "url": "https://xn--80az8a.xn--d1aqf.xn--p1ai/сервисы/каталог-новостроек/объект/72481",
+          "checked_at": "2026-09-07",
+          "supports": [
+            "house_id_72481",
+            "project_name_tellermanov_sad",
+            "address_prostornaya_4a_borisoglebsk",
+            "status_under_construction",
+            "developer_sz_bm_group_chernozemye"
           ]
         }
       ],
+      "status": "primary_project_set_read_reconciliation_required",
+      "primary_content_read": true,
+      "object_identity_match": true,
+      "house_records": [
+        {
+          "object_id": "72480",
+          "apartments_total": 70,
+          "handover": "I квартал 2028",
+          "exact_card_read": false,
+          "identity_basis": "official_city_listing_and_developer_registry"
+        },
+        {
+          "object_id": "72481",
+          "apartments_total": 124,
+          "handover": "I квартал 2028",
+          "exact_card_read": true,
+          "land_plot_cadastral_number": "36:04:0102053:267",
+          "identity_basis": "official_exact_house_card_plus_city_listing"
+        }
+      ],
+      "project_house_count": 2,
+      "project_apartments_total": 194,
+      "current_model_conflict": {
+        "source_collection_expected_object_id": "72480",
+        "project_data_nash_dom_rf_id": "72480",
+        "project_data_apartments_total": 70,
+        "verification_complex_apartments_total": 194,
+        "description": "Canonical data model still mixes one-house fields with complex-level fields and must be reconciled before EISZhS source acceptance/public claim expansion."
+      },
+      "supporting_secondary_clues": [],
       "acceptance_gaps": [
-        "read_exact_primary_card_72480",
-        "confirm_card_72480_identity_is_tellermanov_sad_prostornaya_borisoglebsk"
+        "reconcile_source_collection_from_single_object_id_to_project_house_set",
+        "reconcile_project_data_house_vs_complex_fields"
       ],
       "publication_effect": "none"
     },
@@ -93,6 +144,21 @@
       "publication_effect": "none"
     }
   ],
+  "citywide_primary_listings": [
+    {
+      "id": "eiszh_borisoglebsk_city_listing_2026-09-07",
+      "url": "https://xn--80az8a.xn--d1aqf.xn--p1ai/новостройки/борисоглебск/",
+      "checked_at": "2026-09-07",
+      "reported_project_entries": 7,
+      "result": "official_city_listing_found_reconciliation_incomplete",
+      "reconciliation_complete": false,
+      "completeness_effect": "partial_primary_evidence",
+      "limitations": [
+        "all seven listed entries have not yet been mapped one-by-one to priority/reference/candidate registries",
+        "a city listing is strong primary discovery evidence but completeness is not passed until exact reconciliation is saved"
+      ]
+    }
+  ],
   "citywide_search_passes": [
     {
       "id": "eiszh_search_borisoglebsk_2026-08-09",
@@ -103,33 +169,36 @@
         "site:xn--80az8a.xn--d1aqf.xn--p1ai Борисоглебск Просторная 4А",
         "site:xn--80az8a.xn--d1aqf.xn--p1ai Борисоглебск Сенная 76"
       ],
-      "result": "no_reliable_citywide_exact_primary_listing",
+      "result": "no_reliable_citywide_exact_primary_listing_at_that_time",
       "completeness_effect": "none",
-      "reason": "Поисковая индексация возвращает нерелевантные ЕИСЖС-объекты и не является официальной выгрузкой/полным городским фильтром."
+      "reason": "Исторический web-index pass от 09.08.2026 сохраняется как evidence того состояния и не переписывается задним числом."
     }
   ],
   "unresolved_scan_gaps": [
     {
-      "id": "read_tellermanov_72480_primary_card",
+      "id": "reconcile_tellermanov_two_house_project_model",
       "blocks": [
-        "tellermanov_eiszh_acceptance"
+        "tellermanov_eiszh_source_acceptance",
+        "tellermanov_house_level_public_claims"
       ],
-      "next_action": "Получить читаемое содержимое точной первичной карточки 72480 и сопоставить название, город, адрес и застройщика."
+      "next_action": "Перевести source collection и canonical project data с single object_id 72480 на explicit project house set 72480+72481, отделив house-level и complex-level поля."
     },
     {
-      "id": "citywide_eiszh_primary_listing_or_export",
+      "id": "citywide_eiszh_reconciliation_of_7_listed_projects",
       "blocks": [
         "citywide_eiszh_reconciliation"
       ],
-      "next_action": "Получить официальный city/region filter, API/export или иной воспроизводимый primary listing ЕИСЖС и сопоставить все Борисоглебские объекты с priority/reference/candidate registry."
+      "next_action": "Сопоставить семь записей официального городского листинга ЕИСЖС с priority/reference/candidate registry и сохранить exact IDs/addresses without duplicate project creation."
     }
   ],
   "completion_state": {
     "accepted_target_observations": 0,
+    "primary_identity_resolved_target_observations": 1,
     "blocking_gap_ids": [
-      "read_tellermanov_72480_primary_card",
-      "citywide_eiszh_primary_listing_or_export"
+      "reconcile_tellermanov_two_house_project_model",
+      "citywide_eiszh_reconciliation_of_7_listed_projects"
     ],
+    "citywide_primary_listing_available": true,
     "citywide_primary_reconciliation_complete": false,
     "eiszh_scan_complete": false,
     "completion_claim": "not_allowed"
