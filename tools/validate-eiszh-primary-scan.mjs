@@ -5,6 +5,8 @@ const ROOT = process.cwd();
 const SCAN_PATH = "data/research/eiszh-primary-scan.json";
 const INVENTORY_PATH = "data/research/city-inventory-method.json";
 const PRIORITY_PATH = "data/research/priority-projects.json";
+const REFERENCE_PATH = "data/research/reference-projects.json";
+const CANDIDATE_PATH = "data/research/reference-candidates.json";
 const SOURCE_COLLECTION_PATH = "data/research/source-collection.json";
 const errors = [];
 
@@ -40,11 +42,25 @@ function findSourceTask(collection, taskId) {
   return null;
 }
 
+function validateRegistryMapping(mapping, label, registrySets) {
+  const registry = String(mapping?.registry || "");
+  const projectId = String(mapping?.project_id || "").trim();
+  if (!projectId || !["priority", "reference", "candidate"].includes(registry)) {
+    errors.push(`${label}: valid registry mapping is required`);
+    return;
+  }
+  if (!registrySets[registry].has(projectId)) {
+    errors.push(`${label}: unknown ${registry} project ${projectId}`);
+  }
+}
+
 const scan = readJson(SCAN_PATH);
 const inventory = readJson(INVENTORY_PATH);
 const priority = readJson(PRIORITY_PATH);
+const reference = readJson(REFERENCE_PATH);
+const candidates = readJson(CANDIDATE_PATH);
 const sourceCollection = readJson(SOURCE_COLLECTION_PATH);
-if (!scan || !inventory || !priority || !sourceCollection) process.exit(1);
+if (!scan || !inventory || !priority || !reference || !candidates || !sourceCollection) process.exit(1);
 
 if (!new Set(["1.0", "1.1"]).has(scan.schema_version)) {
   errors.push(`${SCAN_PATH}: schema_version must be 1.0 or 1.1`);
@@ -78,6 +94,14 @@ if (scan.schema_version === "1.1") {
 }
 
 const priorityIds = new Set((priority.projects || []).map((item) => item.id));
+const referenceIds = new Set((reference.projects || []).map((item) => item.id));
+const candidateIds = new Set((candidates.candidates || []).filter((item) => item.status !== "promoted").map((item) => item.id));
+const registrySets = {
+  priority: priorityIds,
+  reference: referenceIds,
+  candidate: candidateIds
+};
+
 const routeExamples = Array.isArray(scan.official_route_examples) ? scan.official_route_examples : [];
 if (routeExamples.length < 1) errors.push(`${SCAN_PATH}: at least one official route example is required`);
 for (const [index, example] of routeExamples.entries()) {
@@ -149,10 +173,10 @@ for (const observation of observations) {
     if (!Array.isArray(observation.primary_references) || observation.primary_references.length < 2) {
       errors.push(`${SCAN_PATH}:${id}: project set requires multiple primary_references`);
     } else {
-      for (const [index, reference] of observation.primary_references.entries()) {
-        if (!isHttps(reference.url)) errors.push(`${SCAN_PATH}:${id}: primary reference #${index + 1} must be HTTPS`);
-        if (!String(reference.checked_at || "").trim()) errors.push(`${SCAN_PATH}:${id}: primary reference #${index + 1} missing checked_at`);
-        if (!Array.isArray(reference.supports) || reference.supports.length < 1) errors.push(`${SCAN_PATH}:${id}: primary reference #${index + 1} requires supports`);
+      for (const [index, source] of observation.primary_references.entries()) {
+        if (!isHttps(source.url)) errors.push(`${SCAN_PATH}:${id}: primary reference #${index + 1} must be HTTPS`);
+        if (!String(source.checked_at || "").trim()) errors.push(`${SCAN_PATH}:${id}: primary reference #${index + 1} missing checked_at`);
+        if (!Array.isArray(source.supports) || source.supports.length < 1) errors.push(`${SCAN_PATH}:${id}: primary reference #${index + 1} requires supports`);
       }
     }
 
@@ -252,17 +276,51 @@ if (!sourceTask) {
 }
 
 const primaryListings = Array.isArray(scan.citywide_primary_listings) ? scan.citywide_primary_listings : [];
+let reconciledListingCount = 0;
 for (const listing of primaryListings) {
   const label = `${SCAN_PATH}:${listing.id || "<citywide-primary-listing>"}`;
   if (!String(listing.id || "").trim()) errors.push(`${SCAN_PATH}: citywide primary listing without id`);
   if (!isHttps(listing.url)) errors.push(`${label}: url must be HTTPS`);
   if (!String(listing.checked_at || "").trim()) errors.push(`${label}: checked_at is required`);
-  if (!Number.isInteger(Number(listing.reported_project_entries)) || Number(listing.reported_project_entries) < 1) {
+  const reportedEntries = Number(listing.reported_project_entries);
+  if (!Number.isInteger(reportedEntries) || reportedEntries < 1) {
     errors.push(`${label}: reported_project_entries must be a positive integer`);
   }
   if (!Array.isArray(listing.limitations) || listing.limitations.length < 1) errors.push(`${label}: limitations are required`);
-  if (listing.reconciliation_complete === true && listing.completeness_effect !== "primary_reconciled") {
-    errors.push(`${label}: reconciled listing requires completeness_effect=primary_reconciled`);
+
+  if (listing.reconciliation_complete === true) {
+    reconciledListingCount += 1;
+    if (listing.completeness_effect !== "primary_reconciled") {
+      errors.push(`${label}: reconciled listing requires completeness_effect=primary_reconciled`);
+    }
+    const entries = Array.isArray(listing.entries) ? listing.entries : [];
+    if (entries.length !== reportedEntries) {
+      errors.push(`${label}: reconciled listing entries must equal reported_project_entries (${reportedEntries})`);
+    }
+    const seenObjectIds = new Set();
+    for (const [index, entry] of entries.entries()) {
+      const entryLabel = `${label}:entry#${index + 1}`;
+      const objectId = String(entry.object_id || "").trim();
+      if (!objectId) errors.push(`${entryLabel}: object_id is required`);
+      if (seenObjectIds.has(objectId)) errors.push(`${entryLabel}: duplicate object_id ${objectId}`);
+      seenObjectIds.add(objectId);
+      for (const field of ["observed_label", "observed_address", "developer", "status", "mapping_basis"]) {
+        if (!String(entry[field] || "").trim()) errors.push(`${entryLabel}: ${field} is required`);
+      }
+      if (!Number.isInteger(Number(entry.apartments_total)) || Number(entry.apartments_total) < 1) {
+        errors.push(`${entryLabel}: apartments_total must be a positive integer`);
+      }
+      validateRegistryMapping(entry.mapping, entryLabel, registrySets);
+    }
+
+    if (listing.id === "eiszh_borisoglebsk_city_listing_2026-09-07") {
+      const expectedIds = new Set(["34882", "25033", "32931", "72480", "72481", "39663", "33426"]);
+      if (reportedEntries !== expectedIds.size || seenObjectIds.size !== expectedIds.size || [...expectedIds].some((id) => !seenObjectIds.has(id))) {
+        errors.push(`${label}: dated reconciliation must contain exact object set 34882,25033,32931,72480,72481,39663,33426`);
+      }
+    }
+  } else if (listing.completeness_effect === "primary_reconciled") {
+    errors.push(`${label}: unreconciled listing cannot claim completeness_effect=primary_reconciled`);
   }
 }
 
@@ -303,7 +361,11 @@ if (completion.primary_identity_resolved_target_observations !== undefined
   errors.push(`${SCAN_PATH}: primary_identity_resolved_target_observations must equal derived primary identity count`);
 }
 
+const derivedCitywideComplete = primaryListings.length > 0 && reconciledListingCount === primaryListings.length;
 const citywideComplete = completion.citywide_primary_reconciliation_complete === true;
+if (citywideComplete !== derivedCitywideComplete) {
+  errors.push(`${SCAN_PATH}: citywide_primary_reconciliation_complete must equal derived listing state (${derivedCitywideComplete})`);
+}
 if (completion.citywide_primary_listing_available === true && primaryListings.length < 1) {
   errors.push(`${SCAN_PATH}: citywide_primary_listing_available requires at least one primary listing`);
 }
@@ -329,6 +391,7 @@ console.log(`Primary identity resolved targets: ${primaryIdentityResolvedCount}`
 console.log(`Accepted/resolved targets: ${acceptedCount}`);
 console.log(`All targets resolved: ${allTargetsResolved}`);
 console.log(`Citywide primary listings: ${primaryListings.length}`);
+console.log(`Reconciled citywide listings: ${reconciledListingCount}`);
 console.log(`Citywide search passes: ${searchPasses.length}`);
 console.log(`Blocking EISZhS gaps: ${gapIds.size}`);
 console.log(`Citywide primary reconciliation complete: ${citywideComplete}`);

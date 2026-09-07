@@ -8,6 +8,8 @@ on:
       - "data/research/city-inventory-method.json"
       - "data/research/source-collection.json"
       - "data/research/priority-projects.json"
+      - "data/research/reference-projects.json"
+      - "data/research/reference-candidates.json"
       - "tools/validate-eiszh-primary-scan.mjs"
       - "docs/portal/EISZH_PRIMARY_SCAN.md"
       - ".github/workflows/eiszh-primary-scan-guard.yml"
@@ -17,6 +19,8 @@ on:
       - "data/research/city-inventory-method.json"
       - "data/research/source-collection.json"
       - "data/research/priority-projects.json"
+      - "data/research/reference-projects.json"
+      - "data/research/reference-candidates.json"
       - "tools/validate-eiszh-primary-scan.mjs"
       - "docs/portal/EISZH_PRIMARY_SCAN.md"
       - ".github/workflows/eiszh-primary-scan-guard.yml"
@@ -63,6 +67,41 @@ jobs:
             exit 1
           fi
           cp /tmp/source-collection.json data/research/source-collection.json
+
+      - name: Reject incomplete reconciled Borisoglebsk listing
+        run: |
+          cp data/research/eiszh-primary-scan.json /tmp/eiszh-primary-scan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/eiszh-primary-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const listing = data.citywide_primary_listings.find((item) => item.id === 'eiszh_borisoglebsk_city_listing_2026-09-07');
+          listing.entries = listing.entries.filter((item) => item.object_id !== '39663');
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-eiszh-primary-scan.mjs; then
+            echo "EISZhS validator incorrectly allowed citywide reconciliation with one listed object missing"
+            exit 1
+          fi
+          cp /tmp/eiszh-primary-scan.json data/research/eiszh-primary-scan.json
+
+      - name: Reject invalid citywide registry mapping
+        run: |
+          cp data/research/eiszh-primary-scan.json /tmp/eiszh-primary-scan.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = 'data/research/eiszh-primary-scan.json';
+          const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const listing = data.citywide_primary_listings.find((item) => item.id === 'eiszh_borisoglebsk_city_listing_2026-09-07');
+          const entry = listing.entries.find((item) => item.object_id === '33426');
+          entry.mapping.project_id = 'unknown-project';
+          fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n');
+          NODE
+          if node tools/validate-eiszh-primary-scan.mjs; then
+            echo "EISZhS validator incorrectly allowed an unknown citywide registry mapping"
+            exit 1
+          fi
+          cp /tmp/eiszh-primary-scan.json data/research/eiszh-primary-scan.json
 
       - name: Reject registry absence from search no-result
         run: |
