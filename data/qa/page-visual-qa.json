@@ -13,7 +13,8 @@
     "page_error_is_failure": true,
     "mobile_nav_clipping_is_failure": true,
     "duplicate_mobile_header_cta_is_failure": true,
-    "webkit_mobile_visual_qa_required": true
+    "webkit_mobile_visual_qa_required": true,
+    "screenshot_mode_must_be_explicit": true
   },
   "viewports": [
     {
@@ -22,7 +23,8 @@
       "width": 1440,
       "height": 1100,
       "device_scale_factor": 1,
-      "mobile_ui_checks": false
+      "mobile_ui_checks": false,
+      "screenshot_mode": "full_page"
     },
     {
       "id": "mobile",
@@ -30,7 +32,8 @@
       "width": 390,
       "height": 844,
       "device_scale_factor": 1,
-      "mobile_ui_checks": true
+      "mobile_ui_checks": true,
+      "screenshot_mode": "full_page"
     },
     {
       "id": "iphone-webkit",
@@ -39,7 +42,8 @@
       "width": 390,
       "height": 664,
       "device_scale_factor": 3,
-      "mobile_ui_checks": true
+      "mobile_ui_checks": true,
+      "screenshot_mode": "viewport"
     }
   ],
   "pages": [
