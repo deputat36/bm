@@ -3,12 +3,14 @@ import fsp from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import process from "node:process";
-import { chromium } from "playwright";
+import { chromium, devices, webkit } from "playwright";
 
 const ROOT = process.cwd();
 const CONTRACT_PATH = path.join(ROOT, "data/qa/page-visual-qa.json");
 const OUTPUT_DIR = path.resolve(process.env.VISUAL_QA_OUTPUT_DIR || path.join(ROOT, "artifacts/page-visual-qa"));
 const BASE_URL = new URL(process.env.VISUAL_QA_BASE_URL || "http://127.0.0.1:4174");
+const BROWSER_TYPES = Object.freeze({ chromium, webkit });
+const SCREENSHOT_MODES = new Set(["full_page", "viewport"]);
 const MIME_TYPES = new Map([
   [".html", "text/html; charset=utf-8"], [".js", "text/javascript; charset=utf-8"],
   [".mjs", "text/javascript; charset=utf-8"], [".css", "text/css; charset=utf-8"],
@@ -79,25 +81,137 @@ function validateContract(contract) {
     "horizontal_overflow_is_failure",
     "page_error_is_failure",
     "mobile_nav_clipping_is_failure",
-    "duplicate_mobile_header_cta_is_failure"
+    "duplicate_mobile_header_cta_is_failure",
+    "webkit_mobile_visual_qa_required",
+    "screenshot_mode_must_be_explicit"
   ]) if (contract.rules?.[key] !== true) errors.push(`rules.${key} must be true`);
 
   const viewports = Array.isArray(contract.viewports) ? contract.viewports : [];
   const pages = Array.isArray(contract.pages) ? contract.pages : [];
-  if (viewports.length !== 2) errors.push("exactly two viewports are required");
+  if (viewports.length !== 3) errors.push("exactly three visual QA profiles are required");
   if (pages.length !== 5) errors.push("exactly five pages are required");
   const expected = viewports.length * pages.length;
   if (Number(contract.expected_capture_count) !== expected) errors.push(`expected_capture_count must equal ${expected}`);
+
+  const ids = new Set(viewports.map((viewport) => viewport.id));
+  for (const requiredId of ["desktop", "mobile", "iphone-webkit"]) {
+    if (!ids.has(requiredId)) errors.push(`required visual QA profile missing: ${requiredId}`);
+  }
+
   for (const viewport of viewports) {
     if (!String(viewport.id || "").trim()) errors.push("viewport id is required");
-    if (viewport.browser_engine !== "chromium") errors.push(`${viewport.id}: only chromium is supported by this runner`);
+    if (!BROWSER_TYPES[viewport.browser_engine]) errors.push(`${viewport.id}: unsupported browser engine ${viewport.browser_engine}`);
     if (Number(viewport.width) < 320 || Number(viewport.height) < 600) errors.push(`${viewport.id}: invalid dimensions`);
+    if (!SCREENSHOT_MODES.has(viewport.screenshot_mode)) errors.push(`${viewport.id}: screenshot_mode must be full_page or viewport`);
+    if (viewport.emulated_device) {
+      const descriptor = devices[viewport.emulated_device];
+      if (!descriptor) errors.push(`${viewport.id}: unknown Playwright device ${viewport.emulated_device}`);
+      else if (descriptor.defaultBrowserType !== viewport.browser_engine) {
+        errors.push(`${viewport.id}: ${viewport.emulated_device} requires ${descriptor.defaultBrowserType}, got ${viewport.browser_engine}`);
+      }
+    }
   }
+
+  const desktop = viewports.find((viewport) => viewport.id === "desktop");
+  const mobile = viewports.find((viewport) => viewport.id === "mobile");
+  const iphone = viewports.find((viewport) => viewport.id === "iphone-webkit");
+  if (desktop?.screenshot_mode !== "full_page" || mobile?.screenshot_mode !== "full_page") {
+    errors.push("desktop and mobile Chromium profiles must retain full_page screenshots");
+  }
+  if (
+    iphone?.browser_engine !== "webkit"
+    || iphone?.emulated_device !== "iPhone 13"
+    || iphone?.mobile_ui_checks !== true
+    || iphone?.screenshot_mode !== "viewport"
+  ) {
+    errors.push("iphone-webkit must use WebKit, iPhone 13 emulation, mobile_ui_checks=true and screenshot_mode=viewport");
+  }
+
   for (const page of pages) {
     if (!String(page.id || "").trim() || !String(page.path || "").startsWith("/")) errors.push("page id/path is invalid");
     if (!Array.isArray(page.required_markers) || page.required_markers.length < 1) errors.push(`${page.id}: required_markers are required`);
   }
   if (errors.length) throw new Error(`Visual QA contract errors:\n- ${errors.join("\n- ")}`);
+}
+
+function buildContextOptions(viewport) {
+  const baseOptions = {
+    locale: "ru-RU",
+    timezoneId: "Europe/Moscow",
+    reducedMotion: "reduce"
+  };
+
+  if (viewport.emulated_device) {
+    const descriptor = devices[viewport.emulated_device];
+    const { defaultBrowserType: _defaultBrowserType, ...deviceOptions } = descriptor;
+    return { ...deviceOptions, ...baseOptions };
+  }
+
+  return {
+    viewport: { width: Number(viewport.width), height: Number(viewport.height) },
+    deviceScaleFactor: Number(viewport.device_scale_factor || 1),
+    ...baseOptions
+  };
+}
+
+async function getMobileNavigationState(page) {
+  return page.evaluate(() => {
+    const nav = document.querySelector(".nav");
+    if (!nav) return { found: false };
+    const links = [...nav.querySelectorAll(":scope > a:not(.button)")];
+    const clippedLinks = links.map((link) => {
+      const rect = link.getBoundingClientRect();
+      const style = getComputedStyle(link);
+      const visible = style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+      const clipped = visible && (rect.left < -1 || rect.right > window.innerWidth + 1);
+      return clipped ? String(link.textContent || "").trim().slice(0, 80) : null;
+    }).filter(Boolean);
+    const headerCta = nav.querySelector(":scope > .button");
+    const headerCtaStyle = headerCta ? getComputedStyle(headerCta) : null;
+    const headerCtaRect = headerCta?.getBoundingClientRect();
+    const headerCtaVisible = Boolean(
+      headerCta
+      && headerCtaStyle?.display !== "none"
+      && headerCtaStyle?.visibility !== "hidden"
+      && headerCtaRect?.width > 0
+      && headerCtaRect?.height > 0
+    );
+    const leadBar = document.querySelector("[data-mobile-lead-bar]");
+    const leadBarStyle = leadBar ? getComputedStyle(leadBar) : null;
+    const leadBarRect = leadBar?.getBoundingClientRect();
+    const leadBarVisible = Boolean(
+      leadBar
+      && leadBarStyle?.display !== "none"
+      && leadBarStyle?.visibility !== "hidden"
+      && leadBarRect?.width > 0
+      && leadBarRect?.height > 0
+    );
+    return {
+      found: true,
+      link_count: links.length,
+      clipped_links: clippedLinks,
+      horizontal_overflow_px: Math.max(0, nav.scrollWidth - nav.clientWidth),
+      has_mobile_lead_bar_class: document.documentElement.classList.contains("has-mobile-lead-bar"),
+      mobile_lead_bar_visible: leadBarVisible,
+      header_cta_visible: headerCtaVisible
+    };
+  });
+}
+
+function assertMobileNavigation(target, viewport, mobileNavigation) {
+  if (!mobileNavigation.found) throw new Error(`${target.id}/${viewport.id}: primary nav not found`);
+  if (mobileNavigation.horizontal_overflow_px > 1) {
+    throw new Error(`${target.id}/${viewport.id}: mobile nav horizontal overflow ${mobileNavigation.horizontal_overflow_px}px`);
+  }
+  if (mobileNavigation.clipped_links.length) {
+    throw new Error(`${target.id}/${viewport.id}: clipped mobile nav links: ${mobileNavigation.clipped_links.join(", ")}`);
+  }
+  if (mobileNavigation.has_mobile_lead_bar_class && !mobileNavigation.mobile_lead_bar_visible) {
+    throw new Error(`${target.id}/${viewport.id}: mobile lead bar class is active but bar is not visible`);
+  }
+  if (mobileNavigation.has_mobile_lead_bar_class && mobileNavigation.header_cta_visible) {
+    throw new Error(`${target.id}/${viewport.id}: duplicate header CTA is visible while mobile lead bar is active`);
+  }
 }
 
 async function main() {
@@ -107,18 +221,17 @@ async function main() {
   await fsp.mkdir(path.join(OUTPUT_DIR, "screenshots"), { recursive: true });
 
   const server = await startStaticServer();
-  const browser = await chromium.launch({ headless: true });
+  const browsers = new Map();
   const results = [];
   let blockedLiveLeadRequests = 0;
   try {
     for (const viewport of contract.viewports) {
-      const context = await browser.newContext({
-        viewport: { width: Number(viewport.width), height: Number(viewport.height) },
-        deviceScaleFactor: Number(viewport.device_scale_factor || 1),
-        locale: "ru-RU",
-        timezoneId: "Europe/Moscow",
-        reducedMotion: "reduce"
-      });
+      let browser = browsers.get(viewport.browser_engine);
+      if (!browser) {
+        browser = await BROWSER_TYPES[viewport.browser_engine].launch({ headless: true });
+        browsers.set(viewport.browser_engine, browser);
+      }
+      const context = await browser.newContext(buildContextOptions(viewport));
       for (const target of contract.pages) {
         const page = await context.newPage();
         const pageErrors = [];
@@ -148,78 +261,34 @@ async function main() {
         await page.addStyleTag({ content: "*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important;}" });
         const geometry = await page.evaluate(() => ({
           innerWidth: window.innerWidth,
+          innerHeight: window.innerHeight,
           documentWidth: document.documentElement.scrollWidth,
           bodyWidth: document.body?.scrollWidth || 0,
           documentHeight: document.documentElement.scrollHeight
         }));
         const overflowPx = Math.max(geometry.documentWidth, geometry.bodyWidth) - geometry.innerWidth;
 
-        const mobileNavigation = viewport.id === "mobile" ? await page.evaluate(() => {
-          const nav = document.querySelector(".nav");
-          if (!nav) return { found: false };
-          const links = [...nav.querySelectorAll(":scope > a:not(.button)")];
-          const clippedLinks = links.map((link) => {
-            const rect = link.getBoundingClientRect();
-            const style = getComputedStyle(link);
-            const visible = style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
-            const clipped = visible && (rect.left < -1 || rect.right > window.innerWidth + 1);
-            return clipped ? String(link.textContent || "").trim().slice(0, 80) : null;
-          }).filter(Boolean);
-          const headerCta = nav.querySelector(":scope > .button");
-          const headerCtaStyle = headerCta ? getComputedStyle(headerCta) : null;
-          const headerCtaRect = headerCta?.getBoundingClientRect();
-          const headerCtaVisible = Boolean(
-            headerCta
-            && headerCtaStyle?.display !== "none"
-            && headerCtaStyle?.visibility !== "hidden"
-            && headerCtaRect?.width > 0
-            && headerCtaRect?.height > 0
-          );
-          const leadBar = document.querySelector("[data-mobile-lead-bar]");
-          const leadBarStyle = leadBar ? getComputedStyle(leadBar) : null;
-          const leadBarRect = leadBar?.getBoundingClientRect();
-          const leadBarVisible = Boolean(
-            leadBar
-            && leadBarStyle?.display !== "none"
-            && leadBarStyle?.visibility !== "hidden"
-            && leadBarRect?.width > 0
-            && leadBarRect?.height > 0
-          );
-          return {
-            found: true,
-            link_count: links.length,
-            clipped_links: clippedLinks,
-            horizontal_overflow_px: Math.max(0, nav.scrollWidth - nav.clientWidth),
-            has_mobile_lead_bar_class: document.documentElement.classList.contains("has-mobile-lead-bar"),
-            mobile_lead_bar_visible: leadBarVisible,
-            header_cta_visible: headerCtaVisible
-          };
-        }) : null;
-
-        if (mobileNavigation) {
-          if (!mobileNavigation.found) throw new Error(`${target.id}/${viewport.id}: primary nav not found`);
-          if (mobileNavigation.horizontal_overflow_px > 1) {
-            throw new Error(`${target.id}/${viewport.id}: mobile nav horizontal overflow ${mobileNavigation.horizontal_overflow_px}px`);
-          }
-          if (mobileNavigation.clipped_links.length) {
-            throw new Error(`${target.id}/${viewport.id}: clipped mobile nav links: ${mobileNavigation.clipped_links.join(", ")}`);
-          }
-          if (mobileNavigation.has_mobile_lead_bar_class && !mobileNavigation.mobile_lead_bar_visible) {
-            throw new Error(`${target.id}/${viewport.id}: mobile lead bar class is active but bar is not visible`);
-          }
-          if (mobileNavigation.has_mobile_lead_bar_class && mobileNavigation.header_cta_visible) {
-            throw new Error(`${target.id}/${viewport.id}: duplicate header CTA is visible while mobile lead bar is active`);
-          }
-        }
+        const mobileNavigation = viewport.mobile_ui_checks === true ? await getMobileNavigationState(page) : null;
+        if (mobileNavigation) assertMobileNavigation(target, viewport, mobileNavigation);
 
         const filename = `${target.id}--${viewport.id}.png`;
-        await page.screenshot({ path: path.join(OUTPUT_DIR, "screenshots", filename), fullPage: true, animations: "disabled" });
+        const screenshotMode = viewport.screenshot_mode;
+        await page.screenshot({
+          path: path.join(OUTPUT_DIR, "screenshots", filename),
+          fullPage: screenshotMode === "full_page",
+          animations: "disabled"
+        });
         const result = {
           page_id: target.id,
           path: target.path,
           viewport_id: viewport.id,
-          width: viewport.width,
-          height: viewport.height,
+          browser_engine: viewport.browser_engine,
+          emulated_device: viewport.emulated_device || null,
+          screenshot_mode: screenshotMode,
+          configured_width: viewport.width,
+          configured_height: viewport.height,
+          actual_inner_width: geometry.innerWidth,
+          actual_inner_height: geometry.innerHeight,
           screenshot: `screenshots/${filename}`,
           horizontal_overflow_px: overflowPx,
           document_height: geometry.documentHeight,
@@ -235,7 +304,7 @@ async function main() {
       await context.close();
     }
   } finally {
-    await browser.close();
+    for (const browser of browsers.values()) await browser.close();
     await new Promise((resolve) => server.close(resolve));
   }
 
@@ -247,6 +316,13 @@ async function main() {
     schema_version: "1.0",
     generated_at: new Date().toISOString(),
     target: { mode: "local_static", origin: BASE_URL.origin, physical_device: false },
+    browser_profiles: contract.viewports.map((viewport) => ({
+      id: viewport.id,
+      browser_engine: viewport.browser_engine,
+      emulated_device: viewport.emulated_device || null,
+      screenshot_mode: viewport.screenshot_mode,
+      mobile_ui_checks: viewport.mobile_ui_checks === true
+    })),
     capture_count: results.length,
     blocked_live_lead_requests: blockedLiveLeadRequests,
     page_error_count: results.reduce((sum, item) => sum + item.page_errors.length, 0),
@@ -259,6 +335,7 @@ async function main() {
   };
   await fsp.writeFile(path.join(OUTPUT_DIR, "summary.json"), `${JSON.stringify(summary, null, 2)}\n`, "utf8");
   console.log(`Visual QA passed: ${summary.capture_count} screenshots, max overflow ${summary.max_horizontal_overflow_px}px, page errors ${summary.page_error_count}.`);
+  console.log(`Profiles: ${summary.browser_profiles.map((profile) => `${profile.id}:${profile.browser_engine}/${profile.screenshot_mode}`).join(", ")}.`);
   console.log(`Mobile nav: max overflow ${summary.max_mobile_nav_overflow_px}px, clipped links ${summary.clipped_mobile_nav_links}, duplicate header CTA ${summary.duplicate_mobile_header_cta_count}.`);
   if (summary.console_error_count) console.log(`Console errors recorded for review: ${summary.console_error_count}.`);
 }
