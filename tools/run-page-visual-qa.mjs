@@ -77,7 +77,9 @@ function validateContract(contract) {
     "visual_qa_must_not_submit_forms",
     "visual_qa_must_not_call_live_lead_endpoint",
     "horizontal_overflow_is_failure",
-    "page_error_is_failure"
+    "page_error_is_failure",
+    "mobile_nav_clipping_is_failure",
+    "duplicate_mobile_header_cta_is_failure"
   ]) if (contract.rules?.[key] !== true) errors.push(`rules.${key} must be true`);
 
   const viewports = Array.isArray(contract.viewports) ? contract.viewports : [];
@@ -151,6 +153,65 @@ async function main() {
           documentHeight: document.documentElement.scrollHeight
         }));
         const overflowPx = Math.max(geometry.documentWidth, geometry.bodyWidth) - geometry.innerWidth;
+
+        const mobileNavigation = viewport.id === "mobile" ? await page.evaluate(() => {
+          const nav = document.querySelector(".nav");
+          if (!nav) return { found: false };
+          const links = [...nav.querySelectorAll(":scope > a:not(.button)")];
+          const clippedLinks = links.map((link) => {
+            const rect = link.getBoundingClientRect();
+            const style = getComputedStyle(link);
+            const visible = style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+            const clipped = visible && (rect.left < -1 || rect.right > window.innerWidth + 1);
+            return clipped ? String(link.textContent || "").trim().slice(0, 80) : null;
+          }).filter(Boolean);
+          const headerCta = nav.querySelector(":scope > .button");
+          const headerCtaStyle = headerCta ? getComputedStyle(headerCta) : null;
+          const headerCtaRect = headerCta?.getBoundingClientRect();
+          const headerCtaVisible = Boolean(
+            headerCta
+            && headerCtaStyle?.display !== "none"
+            && headerCtaStyle?.visibility !== "hidden"
+            && headerCtaRect?.width > 0
+            && headerCtaRect?.height > 0
+          );
+          const leadBar = document.querySelector("[data-mobile-lead-bar]");
+          const leadBarStyle = leadBar ? getComputedStyle(leadBar) : null;
+          const leadBarRect = leadBar?.getBoundingClientRect();
+          const leadBarVisible = Boolean(
+            leadBar
+            && leadBarStyle?.display !== "none"
+            && leadBarStyle?.visibility !== "hidden"
+            && leadBarRect?.width > 0
+            && leadBarRect?.height > 0
+          );
+          return {
+            found: true,
+            link_count: links.length,
+            clipped_links: clippedLinks,
+            horizontal_overflow_px: Math.max(0, nav.scrollWidth - nav.clientWidth),
+            has_mobile_lead_bar_class: document.documentElement.classList.contains("has-mobile-lead-bar"),
+            mobile_lead_bar_visible: leadBarVisible,
+            header_cta_visible: headerCtaVisible
+          };
+        }) : null;
+
+        if (mobileNavigation) {
+          if (!mobileNavigation.found) throw new Error(`${target.id}/${viewport.id}: primary nav not found`);
+          if (mobileNavigation.horizontal_overflow_px > 1) {
+            throw new Error(`${target.id}/${viewport.id}: mobile nav horizontal overflow ${mobileNavigation.horizontal_overflow_px}px`);
+          }
+          if (mobileNavigation.clipped_links.length) {
+            throw new Error(`${target.id}/${viewport.id}: clipped mobile nav links: ${mobileNavigation.clipped_links.join(", ")}`);
+          }
+          if (mobileNavigation.has_mobile_lead_bar_class && !mobileNavigation.mobile_lead_bar_visible) {
+            throw new Error(`${target.id}/${viewport.id}: mobile lead bar class is active but bar is not visible`);
+          }
+          if (mobileNavigation.has_mobile_lead_bar_class && mobileNavigation.header_cta_visible) {
+            throw new Error(`${target.id}/${viewport.id}: duplicate header CTA is visible while mobile lead bar is active`);
+          }
+        }
+
         const filename = `${target.id}--${viewport.id}.png`;
         await page.screenshot({ path: path.join(OUTPUT_DIR, "screenshots", filename), fullPage: true, animations: "disabled" });
         const result = {
@@ -162,6 +223,7 @@ async function main() {
           screenshot: `screenshots/${filename}`,
           horizontal_overflow_px: overflowPx,
           document_height: geometry.documentHeight,
+          mobile_navigation: mobileNavigation,
           page_errors: pageErrors,
           console_errors: consoleErrors
         };
@@ -180,6 +242,7 @@ async function main() {
   if (blockedLiveLeadRequests !== 0) throw new Error(`Visual QA attempted ${blockedLiveLeadRequests} live lead request(s)`);
   if (results.length !== Number(contract.expected_capture_count)) throw new Error(`Expected ${contract.expected_capture_count} captures, got ${results.length}`);
 
+  const mobileResults = results.filter((item) => item.mobile_navigation);
   const summary = {
     schema_version: "1.0",
     generated_at: new Date().toISOString(),
@@ -189,10 +252,14 @@ async function main() {
     page_error_count: results.reduce((sum, item) => sum + item.page_errors.length, 0),
     console_error_count: results.reduce((sum, item) => sum + item.console_errors.length, 0),
     max_horizontal_overflow_px: Math.max(...results.map((item) => item.horizontal_overflow_px)),
+    max_mobile_nav_overflow_px: Math.max(0, ...mobileResults.map((item) => item.mobile_navigation?.horizontal_overflow_px || 0)),
+    clipped_mobile_nav_links: mobileResults.reduce((sum, item) => sum + (item.mobile_navigation?.clipped_links?.length || 0), 0),
+    duplicate_mobile_header_cta_count: mobileResults.reduce((sum, item) => sum + (item.mobile_navigation?.has_mobile_lead_bar_class && item.mobile_navigation?.header_cta_visible ? 1 : 0), 0),
     results
   };
   await fsp.writeFile(path.join(OUTPUT_DIR, "summary.json"), `${JSON.stringify(summary, null, 2)}\n`, "utf8");
   console.log(`Visual QA passed: ${summary.capture_count} screenshots, max overflow ${summary.max_horizontal_overflow_px}px, page errors ${summary.page_error_count}.`);
+  console.log(`Mobile nav: max overflow ${summary.max_mobile_nav_overflow_px}px, clipped links ${summary.clipped_mobile_nav_links}, duplicate header CTA ${summary.duplicate_mobile_header_cta_count}.`);
   if (summary.console_error_count) console.log(`Console errors recorded for review: ${summary.console_error_count}.`);
 }
 
