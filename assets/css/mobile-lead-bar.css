@@ -47,6 +47,11 @@
     scroll-snap-align: none;
   }
 
+  /* Если обычных ссылок нечётное число, последняя занимает всю строку вместо одинокой половины. */
+  .has-mobile-lead-bar .nav > a:not(.button):nth-last-child(2):nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
   .has-mobile-lead-bar .nav > .button {
     display: none !important;
   }
