@@ -7,6 +7,55 @@
     padding-bottom: calc(76px + env(safe-area-inset-bottom));
   }
 
+  /*
+   * На buyer-facing страницах sticky lead bar уже держит главный CTA в зоне большого пальца.
+   * Поэтому верхняя навигация на телефоне остаётся только навигацией: без скрытого горизонтального
+   * скролла и без дублирующей оранжевой кнопки, которая раньше обрезала «Справочник» справа.
+   */
+  .has-mobile-lead-bar .topbar__inner {
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 9px;
+  }
+
+  .has-mobile-lead-bar .nav {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0;
+    padding: 2px 0 0;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .has-mobile-lead-bar .nav > a:not(.button) {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 7px;
+    border: 1px solid rgba(184, 197, 200, 0.72);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    font-size: 12px;
+    line-height: 1.1;
+    text-align: center;
+    white-space: nowrap;
+    scroll-snap-align: none;
+  }
+
+  /* Если обычных ссылок нечётное число, последняя занимает всю строку вместо одинокой половины. */
+  .has-mobile-lead-bar .nav > a:not(.button):nth-last-child(2):nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .has-mobile-lead-bar .nav > .button {
+    display: none !important;
+  }
+
   .mobile-lead-bar {
     position: fixed;
     z-index: 1000;
