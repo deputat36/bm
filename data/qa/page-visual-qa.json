@@ -12,7 +12,8 @@
     "horizontal_overflow_is_failure": true,
     "page_error_is_failure": true,
     "mobile_nav_clipping_is_failure": true,
-    "duplicate_mobile_header_cta_is_failure": true
+    "duplicate_mobile_header_cta_is_failure": true,
+    "webkit_mobile_visual_qa_required": true
   },
   "viewports": [
     {
@@ -20,14 +21,25 @@
       "browser_engine": "chromium",
       "width": 1440,
       "height": 1100,
-      "device_scale_factor": 1
+      "device_scale_factor": 1,
+      "mobile_ui_checks": false
     },
     {
       "id": "mobile",
       "browser_engine": "chromium",
       "width": 390,
       "height": 844,
-      "device_scale_factor": 1
+      "device_scale_factor": 1,
+      "mobile_ui_checks": true
+    },
+    {
+      "id": "iphone-webkit",
+      "browser_engine": "webkit",
+      "emulated_device": "iPhone 13",
+      "width": 390,
+      "height": 664,
+      "device_scale_factor": 3,
+      "mobile_ui_checks": true
     }
   ],
   "pages": [
@@ -57,6 +69,6 @@
       "required_markers": ["Сенной 76"]
     }
   ],
-  "expected_capture_count": 10,
+  "expected_capture_count": 15,
   "artifact_retention_days": 14
 }
