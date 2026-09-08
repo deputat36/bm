@@ -10,6 +10,7 @@ const CONTRACT_PATH = path.join(ROOT, "data/qa/page-visual-qa.json");
 const OUTPUT_DIR = path.resolve(process.env.VISUAL_QA_OUTPUT_DIR || path.join(ROOT, "artifacts/page-visual-qa"));
 const BASE_URL = new URL(process.env.VISUAL_QA_BASE_URL || "http://127.0.0.1:4174");
 const BROWSER_TYPES = Object.freeze({ chromium, webkit });
+const SCREENSHOT_MODES = new Set(["full_page", "viewport"]);
 const MIME_TYPES = new Map([
   [".html", "text/html; charset=utf-8"], [".js", "text/javascript; charset=utf-8"],
   [".mjs", "text/javascript; charset=utf-8"], [".css", "text/css; charset=utf-8"],
@@ -81,7 +82,8 @@ function validateContract(contract) {
     "page_error_is_failure",
     "mobile_nav_clipping_is_failure",
     "duplicate_mobile_header_cta_is_failure",
-    "webkit_mobile_visual_qa_required"
+    "webkit_mobile_visual_qa_required",
+    "screenshot_mode_must_be_explicit"
   ]) if (contract.rules?.[key] !== true) errors.push(`rules.${key} must be true`);
 
   const viewports = Array.isArray(contract.viewports) ? contract.viewports : [];
@@ -100,6 +102,7 @@ function validateContract(contract) {
     if (!String(viewport.id || "").trim()) errors.push("viewport id is required");
     if (!BROWSER_TYPES[viewport.browser_engine]) errors.push(`${viewport.id}: unsupported browser engine ${viewport.browser_engine}`);
     if (Number(viewport.width) < 320 || Number(viewport.height) < 600) errors.push(`${viewport.id}: invalid dimensions`);
+    if (!SCREENSHOT_MODES.has(viewport.screenshot_mode)) errors.push(`${viewport.id}: screenshot_mode must be full_page or viewport`);
     if (viewport.emulated_device) {
       const descriptor = devices[viewport.emulated_device];
       if (!descriptor) errors.push(`${viewport.id}: unknown Playwright device ${viewport.emulated_device}`);
@@ -109,9 +112,19 @@ function validateContract(contract) {
     }
   }
 
+  const desktop = viewports.find((viewport) => viewport.id === "desktop");
+  const mobile = viewports.find((viewport) => viewport.id === "mobile");
   const iphone = viewports.find((viewport) => viewport.id === "iphone-webkit");
-  if (iphone?.browser_engine !== "webkit" || iphone?.emulated_device !== "iPhone 13" || iphone?.mobile_ui_checks !== true) {
-    errors.push("iphone-webkit must use WebKit, iPhone 13 emulation and mobile_ui_checks=true");
+  if (desktop?.screenshot_mode !== "full_page" || mobile?.screenshot_mode !== "full_page") {
+    errors.push("desktop and mobile Chromium profiles must retain full_page screenshots");
+  }
+  if (
+    iphone?.browser_engine !== "webkit"
+    || iphone?.emulated_device !== "iPhone 13"
+    || iphone?.mobile_ui_checks !== true
+    || iphone?.screenshot_mode !== "viewport"
+  ) {
+    errors.push("iphone-webkit must use WebKit, iPhone 13 emulation, mobile_ui_checks=true and screenshot_mode=viewport");
   }
 
   for (const page of pages) {
@@ -259,13 +272,19 @@ async function main() {
         if (mobileNavigation) assertMobileNavigation(target, viewport, mobileNavigation);
 
         const filename = `${target.id}--${viewport.id}.png`;
-        await page.screenshot({ path: path.join(OUTPUT_DIR, "screenshots", filename), fullPage: true, animations: "disabled" });
+        const screenshotMode = viewport.screenshot_mode;
+        await page.screenshot({
+          path: path.join(OUTPUT_DIR, "screenshots", filename),
+          fullPage: screenshotMode === "full_page",
+          animations: "disabled"
+        });
         const result = {
           page_id: target.id,
           path: target.path,
           viewport_id: viewport.id,
           browser_engine: viewport.browser_engine,
           emulated_device: viewport.emulated_device || null,
+          screenshot_mode: screenshotMode,
           configured_width: viewport.width,
           configured_height: viewport.height,
           actual_inner_width: geometry.innerWidth,
@@ -301,6 +320,7 @@ async function main() {
       id: viewport.id,
       browser_engine: viewport.browser_engine,
       emulated_device: viewport.emulated_device || null,
+      screenshot_mode: viewport.screenshot_mode,
       mobile_ui_checks: viewport.mobile_ui_checks === true
     })),
     capture_count: results.length,
@@ -315,7 +335,7 @@ async function main() {
   };
   await fsp.writeFile(path.join(OUTPUT_DIR, "summary.json"), `${JSON.stringify(summary, null, 2)}\n`, "utf8");
   console.log(`Visual QA passed: ${summary.capture_count} screenshots, max overflow ${summary.max_horizontal_overflow_px}px, page errors ${summary.page_error_count}.`);
-  console.log(`Profiles: ${summary.browser_profiles.map((profile) => `${profile.id}:${profile.browser_engine}`).join(", ")}.`);
+  console.log(`Profiles: ${summary.browser_profiles.map((profile) => `${profile.id}:${profile.browser_engine}/${profile.screenshot_mode}`).join(", ")}.`);
   console.log(`Mobile nav: max overflow ${summary.max_mobile_nav_overflow_px}px, clipped links ${summary.clipped_mobile_nav_links}, duplicate header CTA ${summary.duplicate_mobile_header_cta_count}.`);
   if (summary.console_error_count) console.log(`Console errors recorded for review: ${summary.console_error_count}.`);
 }
