@@ -35,7 +35,7 @@ concurrency:
 jobs:
   visual-qa:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -46,15 +46,15 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install pinned Playwright Chromium
+      - name: Install pinned Playwright Chromium and WebKit
         run: |
           npm install --no-save playwright@1.62.0
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium webkit
 
       - name: Check runner syntax
         run: node --check tools/run-page-visual-qa.mjs
 
-      - name: Capture desktop and mobile visual evidence
+      - name: Capture desktop and mobile Chromium/WebKit evidence
         env:
           VISUAL_QA_OUTPUT_DIR: artifacts/page-visual-qa
         run: node tools/run-page-visual-qa.mjs
@@ -74,11 +74,15 @@ jobs:
           console.log('### Page visual QA');
           console.log('');
           console.log(`- Captures: ${summary.capture_count}`);
+          console.log(`- Profiles: ${(summary.browser_profiles || []).map((profile) => `${profile.id}:${profile.browser_engine}${profile.emulated_device ? `/${profile.emulated_device}` : ''}`).join(', ')}`);
           console.log(`- Page errors: ${summary.page_error_count}`);
           console.log(`- Console errors recorded: ${summary.console_error_count}`);
           console.log(`- Max horizontal overflow: ${summary.max_horizontal_overflow_px}px`);
+          console.log(`- Max mobile nav overflow: ${summary.max_mobile_nav_overflow_px}px`);
+          console.log(`- Clipped mobile nav links: ${summary.clipped_mobile_nav_links}`);
+          console.log(`- Duplicate mobile header CTA: ${summary.duplicate_mobile_header_cta_count}`);
           console.log(`- Live lead requests attempted: ${summary.blocked_live_lead_requests}`);
-          console.log('- Device type: browser emulation only; this is not physical-device QA.');
+          console.log('- Device type: browser/device emulation only; this is not physical-device QA.');
           NODE
 
       - name: Upload visual QA artifact
