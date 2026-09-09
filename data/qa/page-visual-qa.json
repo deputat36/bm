@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-09-08",
+  "updated_at": "2026-09-09",
   "portal_id": "newbuilds-borisoglebsk",
-  "purpose": "Воспроизводимый browser-level visual QA ключевых buyer-facing страниц после изменений дизайна. Screenshots являются CI evidence и не меняют release/publication gates.",
+  "purpose": "Воспроизводимый browser-level visual QA всех buyer-facing страниц с активными lead forms. Screenshots являются CI evidence и не меняют release/publication gates.",
   "rules": {
     "screenshots_are_ci_artifacts_only": true,
     "browser_emulation_is_not_physical_device_qa": true,
@@ -14,7 +14,8 @@
     "mobile_nav_clipping_is_failure": true,
     "duplicate_mobile_header_cta_is_failure": true,
     "webkit_mobile_visual_qa_required": true,
-    "screenshot_mode_must_be_explicit": true
+    "screenshot_mode_must_be_explicit": true,
+    "all_lead_pages_must_be_visual_qa_covered": true
   },
   "viewports": [
     {
@@ -71,8 +72,18 @@
       "id": "sennaya-76",
       "path": "/catalog/sennaya-76/",
       "required_markers": ["Сенной 76"]
+    },
+    {
+      "id": "contacts",
+      "path": "/contacts/",
+      "required_markers": ["Консультация по новостройкам Борисоглебска"]
+    },
+    {
+      "id": "mortgage",
+      "path": "/ipoteka/",
+      "required_markers": ["Ипотека и способы покупки новостройки"]
     }
   ],
-  "expected_capture_count": 15,
+  "expected_capture_count": 21,
   "artifact_retention_days": 14
 }
