@@ -7,6 +7,7 @@ import { chromium, devices, webkit } from "playwright";
 
 const ROOT = process.cwd();
 const CONTRACT_PATH = path.join(ROOT, "data/qa/page-visual-qa.json");
+const FORM_SCENARIOS_PATH = path.join(ROOT, "data/qa/form-scenarios.json");
 const OUTPUT_DIR = path.resolve(process.env.VISUAL_QA_OUTPUT_DIR || path.join(ROOT, "artifacts/page-visual-qa"));
 const BASE_URL = new URL(process.env.VISUAL_QA_BASE_URL || "http://127.0.0.1:4174");
 const BROWSER_TYPES = Object.freeze({ chromium, webkit });
@@ -68,7 +69,7 @@ async function startStaticServer() {
   return server;
 }
 
-function validateContract(contract) {
+function validateContract(contract, formMatrix) {
   const errors = [];
   if (contract.schema_version !== "1.0") errors.push("schema_version must be 1.0");
   if (contract.portal_id !== "newbuilds-borisoglebsk") errors.push("invalid portal_id");
@@ -83,13 +84,14 @@ function validateContract(contract) {
     "mobile_nav_clipping_is_failure",
     "duplicate_mobile_header_cta_is_failure",
     "webkit_mobile_visual_qa_required",
-    "screenshot_mode_must_be_explicit"
+    "screenshot_mode_must_be_explicit",
+    "all_lead_pages_must_be_visual_qa_covered"
   ]) if (contract.rules?.[key] !== true) errors.push(`rules.${key} must be true`);
 
   const viewports = Array.isArray(contract.viewports) ? contract.viewports : [];
   const pages = Array.isArray(contract.pages) ? contract.pages : [];
   if (viewports.length !== 3) errors.push("exactly three visual QA profiles are required");
-  if (pages.length !== 5) errors.push("exactly five pages are required");
+  if (pages.length !== 7) errors.push("exactly seven lead-bearing pages are required");
   const expected = viewports.length * pages.length;
   if (Number(contract.expected_capture_count) !== expected) errors.push(`expected_capture_count must equal ${expected}`);
 
@@ -131,6 +133,18 @@ function validateContract(contract) {
     if (!String(page.id || "").trim() || !String(page.path || "").startsWith("/")) errors.push("page id/path is invalid");
     if (!Array.isArray(page.required_markers) || page.required_markers.length < 1) errors.push(`${page.id}: required_markers are required`);
   }
+
+  const scenarioPaths = [...new Set((formMatrix?.scenarios || []).map((scenario) => String(scenario.page_path || "").trim()).filter(Boolean))].sort();
+  const visualPaths = [...new Set(pages.map((page) => String(page.path || "").trim()).filter(Boolean))].sort();
+  if (scenarioPaths.length !== 7) errors.push(`form scenarios must resolve to exactly seven lead-bearing pages, got ${scenarioPaths.length}`);
+  if (visualPaths.length !== pages.length) errors.push("visual QA page paths must be unique");
+  for (const pagePath of scenarioPaths) {
+    if (!visualPaths.includes(pagePath)) errors.push(`lead-bearing page missing from visual QA: ${pagePath}`);
+  }
+  for (const pagePath of visualPaths) {
+    if (!scenarioPaths.includes(pagePath)) errors.push(`visual QA page is not in canonical form scenarios: ${pagePath}`);
+  }
+
   if (errors.length) throw new Error(`Visual QA contract errors:\n- ${errors.join("\n- ")}`);
 }
 
@@ -216,7 +230,8 @@ function assertMobileNavigation(target, viewport, mobileNavigation) {
 
 async function main() {
   const contract = JSON.parse(await fsp.readFile(CONTRACT_PATH, "utf8"));
-  validateContract(contract);
+  const formMatrix = JSON.parse(await fsp.readFile(FORM_SCENARIOS_PATH, "utf8"));
+  validateContract(contract, formMatrix);
   await fsp.rm(OUTPUT_DIR, { recursive: true, force: true });
   await fsp.mkdir(path.join(OUTPUT_DIR, "screenshots"), { recursive: true });
 
@@ -323,6 +338,7 @@ async function main() {
       screenshot_mode: viewport.screenshot_mode,
       mobile_ui_checks: viewport.mobile_ui_checks === true
     })),
+    lead_page_paths: [...new Set((formMatrix.scenarios || []).map((scenario) => scenario.page_path))].sort(),
     capture_count: results.length,
     blocked_live_lead_requests: blockedLiveLeadRequests,
     page_error_count: results.reduce((sum, item) => sum + item.page_errors.length, 0),
@@ -336,6 +352,7 @@ async function main() {
   await fsp.writeFile(path.join(OUTPUT_DIR, "summary.json"), `${JSON.stringify(summary, null, 2)}\n`, "utf8");
   console.log(`Visual QA passed: ${summary.capture_count} screenshots, max overflow ${summary.max_horizontal_overflow_px}px, page errors ${summary.page_error_count}.`);
   console.log(`Profiles: ${summary.browser_profiles.map((profile) => `${profile.id}:${profile.browser_engine}/${profile.screenshot_mode}`).join(", ")}.`);
+  console.log(`Lead pages covered: ${summary.lead_page_paths.length}.`);
   console.log(`Mobile nav: max overflow ${summary.max_mobile_nav_overflow_px}px, clipped links ${summary.clipped_mobile_nav_links}, duplicate header CTA ${summary.duplicate_mobile_header_cta_count}.`);
   if (summary.console_error_count) console.log(`Console errors recorded for review: ${summary.console_error_count}.`);
 }
