@@ -1,0 +1,102 @@
+name: Lead page accessibility QA
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "assets/css/**"
+      - "assets/js/main.js"
+      - "assets/js/form-accessibility.js"
+      - "assets/js/mobile-lead-bar.js"
+      - "data/qa/form-scenarios.json"
+      - "data/qa/page-visual-qa.json"
+      - "tools/run-lead-page-accessibility-qa.mjs"
+      - "docs/portal/LEAD_PAGE_ACCESSIBILITY_QA.md"
+      - ".github/workflows/lead-page-accessibility-qa.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "assets/css/**"
+      - "assets/js/main.js"
+      - "assets/js/form-accessibility.js"
+      - "assets/js/mobile-lead-bar.js"
+      - "data/qa/form-scenarios.json"
+      - "data/qa/page-visual-qa.json"
+      - "tools/run-lead-page-accessibility-qa.mjs"
+      - "docs/portal/LEAD_PAGE_ACCESSIBILITY_QA.md"
+      - ".github/workflows/lead-page-accessibility-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lead-page-accessibility-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  accessibility-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pinned browser accessibility tooling
+        run: |
+          npm install --no-save playwright@1.62.0 @axe-core/playwright@4.10.2
+          npx playwright install --with-deps chromium
+
+      - name: Check runner syntax
+        run: node --check tools/run-lead-page-accessibility-qa.mjs
+
+      - name: Audit all lead pages
+        env:
+          ACCESSIBILITY_QA_OUTPUT_DIR: artifacts/lead-page-accessibility-qa
+        run: node tools/run-lead-page-accessibility-qa.mjs
+
+      - name: Publish summary
+        if: always()
+        run: |
+          if [[ ! -f artifacts/lead-page-accessibility-qa/summary.json ]]; then
+            echo '### Lead page accessibility QA' >> "$GITHUB_STEP_SUMMARY"
+            echo '' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Summary was not created; inspect the failed audit step.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+          const fs = require('fs');
+          const summary = JSON.parse(fs.readFileSync('artifacts/lead-page-accessibility-qa/summary.json', 'utf8'));
+          console.log('### Lead page accessibility QA');
+          console.log('');
+          console.log(`- Lead pages: ${(summary.lead_page_paths || []).length}`);
+          console.log(`- Audits: ${summary.audit_count}/${summary.expected_audit_count}`);
+          console.log(`- Profiles: ${(summary.profiles || []).map((profile) => profile.id).join(', ')}`);
+          console.log(`- Serious/critical violations: ${summary.failing_violation_count}`);
+          console.log(`- Audits with serious/critical violations: ${summary.failing_audit_count}`);
+          console.log(`- All WCAG-tagged violations recorded: ${summary.total_violation_count}`);
+          console.log('- This is automated browser accessibility evidence, not a complete manual WCAG audit.');
+          NODE
+
+      - name: Upload accessibility artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lead-page-accessibility-qa-${{ github.run_id }}
+          path: artifacts/lead-page-accessibility-qa/
+          retention-days: 14
+          if-no-files-found: warn
