@@ -1,5 +1,14 @@
 /* Формы и лидогенерация в Design System v2. */
 
+/*
+ * Accessibility-safe coral tokens для buyer-facing/lead pages.
+ * Белый текст на primary CTA и тёмный coral на coral-100 должны держать WCAG AA >= 4.5:1.
+ */
+:root {
+  --coral-500: #c23b26;
+  --coral-600: #a93422;
+}
+
 .leadgen-hero {
   background:
     radial-gradient(circle at 88% 16%, rgba(244,184,96,.2), transparent 25%),
