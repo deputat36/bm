@@ -45,14 +45,20 @@ requireFragments("assets/js/page-accessibility.js", runtime, [
 ]);
 
 requireFragments("assets/css/accessibility.css", styles, [
-  "--focus-ring: #005fcc",
+  "--a11y-focus-color: #005fcc",
   ".skip-link",
+  ".skip-link:focus-visible",
+  "outline: 3px solid var(--a11y-focus-color)",
   ":focus-visible",
   'main[tabindex="-1"]:focus',
   "@media (prefers-reduced-motion: reduce)",
   "scroll-behavior: auto !important",
   "transition-duration: 0.01ms !important"
 ]);
+
+if (styles.includes("--focus-ring: #005fcc")) {
+  errors.push("assets/css/accessibility.css: accessibility layer must not overwrite Design System --focus-ring token with a color value");
+}
 
 requireFragments("assets/js/conversion-tracking.js", conversion, [
   'const runtimeScriptUrl = document.currentScript?.src || "";',
