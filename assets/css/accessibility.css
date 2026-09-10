@@ -23,14 +23,14 @@
 .skip-link:focus,
 .skip-link:focus-visible {
   transform: translateY(0);
-  outline: 3px solid var(--a11y-focus-color);
-  outline-offset: 3px;
-  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.96), 0 0 0 8px var(--a11y-focus-color), 0 8px 24px rgba(0, 0, 0, 0.3);
+  outline: 3px solid var(--a11y-focus-color) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.96), 0 0 0 8px var(--a11y-focus-color), 0 8px 24px rgba(0, 0, 0, 0.3) !important;
 }
 
 :where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
-  outline: 3px solid var(--a11y-focus-color);
-  outline-offset: 3px;
+  outline: 3px solid var(--a11y-focus-color) !important;
+  outline-offset: 3px !important;
 }
 
 .form :where(input, select, textarea):focus-visible {
