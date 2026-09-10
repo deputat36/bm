@@ -1,0 +1,101 @@
+name: Lead page keyboard QA
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "assets/css/**"
+      - "assets/js/main.js"
+      - "assets/js/form-accessibility.js"
+      - "assets/js/mobile-lead-bar.js"
+      - "data/qa/form-scenarios.json"
+      - "data/qa/page-visual-qa.json"
+      - "tools/run-lead-page-keyboard-qa.mjs"
+      - "docs/portal/LEAD_PAGE_KEYBOARD_QA.md"
+      - ".github/workflows/lead-page-keyboard-qa.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "assets/css/**"
+      - "assets/js/main.js"
+      - "assets/js/form-accessibility.js"
+      - "assets/js/mobile-lead-bar.js"
+      - "data/qa/form-scenarios.json"
+      - "data/qa/page-visual-qa.json"
+      - "tools/run-lead-page-keyboard-qa.mjs"
+      - "docs/portal/LEAD_PAGE_KEYBOARD_QA.md"
+      - ".github/workflows/lead-page-keyboard-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lead-page-keyboard-qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  keyboard-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pinned Chromium
+        run: |
+          npm install --no-save playwright@1.62.0
+          npx playwright install --with-deps chromium
+
+      - name: Check runner syntax
+        run: node --check tools/run-lead-page-keyboard-qa.mjs
+
+      - name: Audit keyboard focus path to primary lead
+        env:
+          KEYBOARD_QA_OUTPUT_DIR: artifacts/lead-page-keyboard-qa
+        run: node tools/run-lead-page-keyboard-qa.mjs
+
+      - name: Publish summary
+        if: always()
+        run: |
+          if [[ ! -f artifacts/lead-page-keyboard-qa/summary.json ]]; then
+            echo '### Lead page keyboard QA' >> "$GITHUB_STEP_SUMMARY"
+            echo '' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Summary was not created; inspect the failed keyboard audit step.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+          const fs = require('fs');
+          const summary = JSON.parse(fs.readFileSync('artifacts/lead-page-keyboard-qa/summary.json', 'utf8'));
+          console.log('### Lead page keyboard QA');
+          console.log('');
+          console.log(`- Lead pages: ${(summary.lead_page_paths || []).length}`);
+          console.log(`- Audits: ${summary.audit_count}/${summary.expected_audit_count}`);
+          console.log(`- Primary lead keyboard reachable: ${summary.all_primary_lead_forms_keyboard_reachable}`);
+          console.log(`- Max Tab steps to primary lead: ${summary.max_tab_steps_to_primary_lead}`);
+          console.log('- Checks: visible/non-disabled focus target, in-viewport focus, detectable focus indicator.');
+          console.log('- Browser emulation only; this does not replace manual keyboard or screen-reader QA.');
+          NODE
+
+      - name: Upload keyboard QA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lead-page-keyboard-qa-${{ github.run_id }}
+          path: artifacts/lead-page-keyboard-qa/
+          retention-days: 14
+          if-no-files-found: warn
