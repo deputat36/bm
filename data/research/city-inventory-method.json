@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "updated_at": "2026-09-07",
+  "updated_at": "2026-09-10",
   "portal_id": "newbuilds-borisoglebsk",
   "status": "method_defined_execution_partial",
   "purpose": "Определить воспроизводимый fail-closed путь от текущего discovery snapshot к обоснованному заявлению о системном охвате новостроек Борисоглебска без объявления абсолютной полноты по агрегаторам.",
@@ -90,11 +90,12 @@
         "data/research/source-collection.json"
       ],
       "limitations": [
-        "exact Tellermanov object candidate ID 72480 and route are known but the exact primary card content has not been read and identity-matched",
-        "public web-index search is not an official city filter/export and returns unrelated EISZhS objects",
-        "city-wide EISZhS or equivalent primary project reconciliation has not been completed"
+        "Tellermanov multi-house project set is accepted at project identity level with object IDs 72480 and 72481; exact house-card details that were not separately read remain bounded",
+        "the official Borisoglebsk EISZhS listing exposed on 2026-09-07 contains seven entries and all seven are reconciled to existing priority/reference registry entities",
+        "Аэродромная 18Г and Сенная 76 still have no accepted exact EISZhS card or equivalent primary project-status identity; absence from the seven-entry listing is not registry-absence proof",
+        "EISZhS listing reconciliation alone does not prove completeness of all historical, non-EISZhS or planned city housing projects"
       ],
-      "next_action": "read exact primary card 72480 and obtain a reproducible city/region primary listing, API/export or equivalent primary project dataset for Borisoglebsk reconciliation"
+      "next_action": "resolve Аэродромная 18Г and Сенная 76 with exact EISZhS or equivalent primary object/status evidence; keep the seven-entry city listing reconciled when its primary data changes"
     },
     {
       "id": "official_developer_project_scan",
