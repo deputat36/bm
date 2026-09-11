@@ -185,3 +185,9 @@ start
 ```
 
 Live lead endpoint блокируется, submit не выполняется, production data не меняется. Browser emulation не заменяет manual keyboard, screen-reader или physical-device QA.
+
+### Evidence при падении
+
+Runner обязан записывать `artifacts/catalog-quiz-keyboard-qa/summary.json` не только при успехе, но и при browser/assertion failure. В failure-summary фиксируются `status=failed`, число уже завершённых profile audits и неперсональное сообщение об ошибке; workflow публикует эти данные в job summary и загружает тот же artifact даже при красном browser step.
+
+Отсутствие `summary.json` после запуска считается отдельным runner/bootstrap failure и не трактуется как успешное QA-доказательство.

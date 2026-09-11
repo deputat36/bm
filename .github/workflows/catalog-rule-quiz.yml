@@ -75,13 +75,38 @@ jobs:
           CATALOG_QUIZ_KEYBOARD_QA_OUTPUT_DIR: artifacts/catalog-quiz-keyboard-qa
         run: node tools/run-catalog-quiz-keyboard-qa.mjs
 
+      - name: Validate failed-run evidence contract
+        run: |
+          rm -rf artifacts/catalog-quiz-keyboard-qa-failure-contract
+          set +e
+          CATALOG_QUIZ_KEYBOARD_QA_OUTPUT_DIR=artifacts/catalog-quiz-keyboard-qa-failure-contract \
+          CATALOG_QUIZ_KEYBOARD_QA_BASE_URL=http://127.0.0.1:0 \
+          node tools/run-catalog-quiz-keyboard-qa.mjs
+          runner_exit=$?
+          set -e
+          if [[ "$runner_exit" -eq 0 ]]; then
+            echo "Failure-contract self-test unexpectedly passed."
+            exit 1
+          fi
+          node <<'NODE'
+          const fs = require('fs');
+          const summaryPath = 'artifacts/catalog-quiz-keyboard-qa-failure-contract/summary.json';
+          if (!fs.existsSync(summaryPath)) throw new Error('Failure summary.json was not created');
+          const summary = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+          if (summary.status !== 'failed') throw new Error(`Expected failed status, got ${summary.status}`);
+          if (summary.all_keyboard_handoffs_passed !== false) throw new Error('Failed run cannot report keyboard handoffs passed');
+          if (!summary.failure?.message) throw new Error('Failed run must persist failure.message');
+          if (!Number.isInteger(summary.audit_count) || summary.audit_count < 0) throw new Error('Failed run must persist audit_count');
+          console.log(`Failure evidence contract passed with runner exit ${process.env.RUNNER_EXIT || 'nonzero'}: ${summary.failure.message}`);
+          NODE
+
       - name: Publish keyboard summary
         if: always()
         run: |
           if [[ ! -f artifacts/catalog-quiz-keyboard-qa/summary.json ]]; then
             echo '### Catalog quiz keyboard QA' >> "$GITHUB_STEP_SUMMARY"
             echo '' >> "$GITHUB_STEP_SUMMARY"
-            echo 'Summary was not created; inspect the browser audit step.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Summary was not created; inspect the runner/bootstrap failure.' >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
@@ -89,9 +114,11 @@ jobs:
           const summary = JSON.parse(fs.readFileSync('artifacts/catalog-quiz-keyboard-qa/summary.json', 'utf8'));
           console.log('### Catalog quiz keyboard QA');
           console.log('');
+          console.log(`- Status: ${summary.status || 'unknown'}`);
           console.log(`- Audits: ${summary.audit_count}/${summary.expected_audit_count}`);
           console.log(`- Keyboard handoffs passed: ${summary.all_keyboard_handoffs_passed}`);
           console.log(`- Live lead requests: ${summary.live_lead_requests}`);
+          if (summary.failure?.message) console.log(`- Failure: ${summary.failure.message}`);
           console.log('- Flow: start → 5 steps → back/forward → result → existing quick form.');
           console.log('- Browser emulation only; this does not replace manual keyboard or screen-reader QA.');
           NODE
@@ -101,6 +128,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: catalog-quiz-keyboard-qa-${{ github.run_id }}
-          path: artifacts/catalog-quiz-keyboard-qa/
+          path: |
+            artifacts/catalog-quiz-keyboard-qa/
+            artifacts/catalog-quiz-keyboard-qa-failure-contract/
           retention-days: 14
           if-no-files-found: warn
