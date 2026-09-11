@@ -11,6 +11,7 @@ on:
       - "data/qa/form-scenarios.json"
       - "tools/validate-catalog-rule-quiz.mjs"
       - "tools/validate-homepage-conversion-routes.mjs"
+      - "tools/run-catalog-quiz-keyboard-qa.mjs"
       - "docs/portal/CATALOG_RULE_QUIZ.md"
       - "docs/portal/HOMEPAGE_CONVERSION_ROUTES.md"
       - ".github/workflows/catalog-rule-quiz.yml"
@@ -26,6 +27,7 @@ on:
       - "data/qa/form-scenarios.json"
       - "tools/validate-catalog-rule-quiz.mjs"
       - "tools/validate-homepage-conversion-routes.mjs"
+      - "tools/run-catalog-quiz-keyboard-qa.mjs"
       - "docs/portal/CATALOG_RULE_QUIZ.md"
       - "docs/portal/HOMEPAGE_CONVERSION_ROUTES.md"
       - ".github/workflows/catalog-rule-quiz.yml"
@@ -33,9 +35,14 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: catalog-rule-quiz-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-catalog-rule-quiz:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,14 +52,55 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install pinned Chromium
+        run: |
+          npm install --no-save playwright@1.62.0
+          npx playwright install --with-deps chromium
+
       - name: Check JavaScript syntax
         run: |
           node --check assets/js/catalog-rule-quiz.js
           node --check tools/validate-catalog-rule-quiz.mjs
           node --check tools/validate-homepage-conversion-routes.mjs
+          node --check tools/run-catalog-quiz-keyboard-qa.mjs
 
       - name: Validate catalog rule quiz
         run: node tools/validate-catalog-rule-quiz.mjs
 
       - name: Validate homepage selection route
         run: node tools/validate-homepage-conversion-routes.mjs
+
+      - name: Audit catalog quiz keyboard handoffs
+        env:
+          CATALOG_QUIZ_KEYBOARD_QA_OUTPUT_DIR: artifacts/catalog-quiz-keyboard-qa
+        run: node tools/run-catalog-quiz-keyboard-qa.mjs
+
+      - name: Publish keyboard summary
+        if: always()
+        run: |
+          if [[ ! -f artifacts/catalog-quiz-keyboard-qa/summary.json ]]; then
+            echo '### Catalog quiz keyboard QA' >> "$GITHUB_STEP_SUMMARY"
+            echo '' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Summary was not created; inspect the browser audit step.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
+          const fs = require('fs');
+          const summary = JSON.parse(fs.readFileSync('artifacts/catalog-quiz-keyboard-qa/summary.json', 'utf8'));
+          console.log('### Catalog quiz keyboard QA');
+          console.log('');
+          console.log(`- Audits: ${summary.audit_count}/${summary.expected_audit_count}`);
+          console.log(`- Keyboard handoffs passed: ${summary.all_keyboard_handoffs_passed}`);
+          console.log(`- Live lead requests: ${summary.live_lead_requests}`);
+          console.log('- Flow: start → 5 steps → back/forward → result → existing quick form.');
+          console.log('- Browser emulation only; this does not replace manual keyboard or screen-reader QA.');
+          NODE
+
+      - name: Upload keyboard artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: catalog-quiz-keyboard-qa-${{ github.run_id }}
+          path: artifacts/catalog-quiz-keyboard-qa/
+          retention-days: 14
+          if-no-files-found: warn

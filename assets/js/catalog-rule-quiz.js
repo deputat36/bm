@@ -68,6 +68,14 @@
     status.hidden = !message;
   }
 
+  function focusStep(step) {
+    const targetInput = step?.querySelector('input[type="radio"]:checked')
+      || step?.querySelector('input[type="radio"]');
+    if (!targetInput) return false;
+    targetInput.focus();
+    return document.activeElement === targetInput;
+  }
+
   function showStep(index) {
     currentStep = Math.max(0, Math.min(index, steps.length - 1));
     intro?.setAttribute("hidden", "");
@@ -81,6 +89,7 @@
     }
     setStatus("");
     root.dataset.quizState = `step-${currentStep + 1}`;
+    focusStep(steps[currentStep]);
   }
 
   function selectedValue(step) {
@@ -286,7 +295,7 @@
     event.preventDefault();
     target.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => {
-      form.querySelector('input[name="name"]')?.focus({ preventScroll: true });
+      form.querySelector('input[name="name"]')?.focus();
     }, 250);
   });
 
