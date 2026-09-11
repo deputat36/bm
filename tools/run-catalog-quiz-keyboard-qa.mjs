@@ -21,6 +21,7 @@ const MIME_TYPES = new Map([
   [".png", "image/png"], [".jpg", "image/jpeg"], [".jpeg", "image/jpeg"],
   [".webp", "image/webp"], [".ico", "image/x-icon"], [".txt", "text/plain; charset=utf-8"]
 ]);
+const audits = [];
 
 function safeStaticPath(requestPath) {
   let decoded;
@@ -225,12 +226,34 @@ async function auditProfile(context, profile) {
   };
 }
 
+function buildSummary(failure = null) {
+  return {
+    schema_version: "1.0",
+    generated_at: new Date().toISOString(),
+    status: failure ? "failed" : "passed",
+    target: { mode: "local_static", path: CATALOG_PATH, physical_device: false },
+    profiles: PROFILES,
+    expected_audit_count: PROFILES.length,
+    audit_count: audits.length,
+    all_keyboard_handoffs_passed: !failure && audits.length === PROFILES.length && audits.every((audit) => audit.passed),
+    live_lead_requests: audits.reduce((sum, audit) => sum + audit.blocked_live_lead_requests, 0),
+    failure: failure ? { message: String(failure?.message || failure) } : null,
+    audits
+  };
+}
+
+async function writeSummary(failure = null) {
+  await fsp.mkdir(OUTPUT_DIR, { recursive: true });
+  const summary = buildSummary(failure);
+  await fsp.writeFile(path.join(OUTPUT_DIR, "summary.json"), `${JSON.stringify(summary, null, 2)}\n`, "utf8");
+  return summary;
+}
+
 async function main() {
   await fsp.rm(OUTPUT_DIR, { recursive: true, force: true });
   await fsp.mkdir(OUTPUT_DIR, { recursive: true });
   const server = await startStaticServer();
   const browser = await chromium.launch({ headless: true });
-  const audits = [];
   try {
     for (const profile of PROFILES) {
       const context = await browser.newContext({
@@ -247,22 +270,16 @@ async function main() {
     await new Promise((resolve) => server.close(resolve));
   }
 
-  const summary = {
-    schema_version: "1.0",
-    generated_at: new Date().toISOString(),
-    target: { mode: "local_static", path: CATALOG_PATH, physical_device: false },
-    profiles: PROFILES,
-    expected_audit_count: PROFILES.length,
-    audit_count: audits.length,
-    all_keyboard_handoffs_passed: audits.length === PROFILES.length && audits.every((audit) => audit.passed),
-    live_lead_requests: audits.reduce((sum, audit) => sum + audit.blocked_live_lead_requests, 0),
-    audits
-  };
-  await fsp.writeFile(path.join(OUTPUT_DIR, "summary.json"), `${JSON.stringify(summary, null, 2)}\n`, "utf8");
+  const summary = await writeSummary();
   console.log(`Catalog quiz keyboard QA passed: ${summary.audit_count}/${summary.expected_audit_count} profiles, live lead requests ${summary.live_lead_requests}.`);
 }
 
 main().catch(async (error) => {
+  try {
+    await writeSummary(error);
+  } catch (summaryError) {
+    console.error(`Failed to write QA summary: ${summaryError?.message || summaryError}`);
+  }
   console.error(error.stack || error.message || String(error));
-  process.exit(1);
+  process.exitCode = 1;
 });
