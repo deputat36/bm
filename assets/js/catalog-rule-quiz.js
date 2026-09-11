@@ -295,7 +295,7 @@
     event.preventDefault();
     target.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => {
-      form.querySelector('input[name="name"]')?.focus({ preventScroll: true });
+      form.querySelector('input[name="name"]')?.focus();
     }, 250);
   });
 
