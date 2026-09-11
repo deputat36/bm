@@ -81,7 +81,7 @@ jobs:
           if [[ ! -f artifacts/catalog-quiz-keyboard-qa/summary.json ]]; then
             echo '### Catalog quiz keyboard QA' >> "$GITHUB_STEP_SUMMARY"
             echo '' >> "$GITHUB_STEP_SUMMARY"
-            echo 'Summary was not created; inspect the browser audit step.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Summary was not created; inspect the runner/bootstrap failure.' >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           node <<'NODE' >> "$GITHUB_STEP_SUMMARY"
@@ -89,9 +89,11 @@ jobs:
           const summary = JSON.parse(fs.readFileSync('artifacts/catalog-quiz-keyboard-qa/summary.json', 'utf8'));
           console.log('### Catalog quiz keyboard QA');
           console.log('');
+          console.log(`- Status: ${summary.status || 'unknown'}`);
           console.log(`- Audits: ${summary.audit_count}/${summary.expected_audit_count}`);
           console.log(`- Keyboard handoffs passed: ${summary.all_keyboard_handoffs_passed}`);
           console.log(`- Live lead requests: ${summary.live_lead_requests}`);
+          if (summary.failure?.message) console.log(`- Failure: ${summary.failure.message}`);
           console.log('- Flow: start → 5 steps → back/forward → result → existing quick form.');
           console.log('- Browser emulation only; this does not replace manual keyboard or screen-reader QA.');
           NODE
