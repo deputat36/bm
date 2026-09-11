@@ -1,6 +1,6 @@
 # Rule-based подбор в каталоге
 
-Дата обновления: 2026-07-16
+Дата обновления: 2026-09-11
 
 ## Цель
 
@@ -32,6 +32,23 @@
 ```text
 data/qa/catalog-rule-quiz.json
 ```
+
+## Клавиатурный путь
+
+Квиз должен оставаться полностью проходимым без мыши.
+
+После каждого перехода `Начать подбор`, `Далее` или `Назад` runtime переводит focus в активный шаг: на уже выбранный radio-вариант или на первый вариант нового шага.
+
+После завершения:
+
+```text
+последний шаг
+→ заголовок результата
+→ CTA «Передать ответы специалисту»
+→ поле имени существующей короткой формы
+```
+
+Это устраняет потерю focus при скрытии предыдущего `fieldset` и делает переход между динамически показываемыми шагами предсказуемым для клавиатурного пользователя.
 
 ## Результаты
 
@@ -128,10 +145,11 @@ catalog_quiz_reset
 
 ```text
 tools/validate-catalog-rule-quiz.mjs
+tools/run-catalog-quiz-keyboard-qa.mjs
 .github/workflows/catalog-rule-quiz.yml
 ```
 
-Проверяются:
+Статический guard проверяет:
 
 - пять шагов и варианты ответов;
 - отсутствие новой формы;
@@ -145,3 +163,25 @@ tools/validate-catalog-rule-quiz.mjs
 - отсутствие рекомендаций конкретного объекта;
 - маршрут главной `/catalog/#quiz`;
 - сохранение `noindex,follow` и безопасных дисклеймеров.
+
+Browser keyboard QA дополнительно выполняет в Chromium два профиля:
+
+```text
+desktop 1440×1100
+mobile 390×844
+```
+
+Для каждого профиля проверяется реальный keyboard-only flow:
+
+```text
+start
+→ step 1
+→ step 2
+→ back to step 1
+→ forward through all 5 steps
+→ result title
+→ result CTA
+→ existing quick-form name field
+```
+
+Live lead endpoint блокируется, submit не выполняется, production data не меняется. Browser emulation не заменяет manual keyboard, screen-reader или physical-device QA.
