@@ -516,7 +516,41 @@ async function readDebugEvents(page) {
   });
 }
 
-function validateScenarioEvents(events, scenario) {
+async function handoffPrimaryCtaPlacement(page, scenario) {
+  if (scenario.form_role !== "primary") return "";
+
+  const selector = `a[data-track-action][data-track-placement][href="#${scenario.anchor}"]`;
+  const links = page.locator(selector);
+  const count = await links.count();
+  assertCondition(count > 0, `${scenario.id}: same-page tracked CTA not found for #${scenario.anchor}`);
+
+  let target = links.first();
+  for (let index = 0; index < count; index += 1) {
+    const candidate = links.nth(index);
+    if (await candidate.isVisible()) {
+      target = candidate;
+      break;
+    }
+  }
+
+  const placement = String(await target.getAttribute("data-track-placement") || "").trim();
+  assertCondition(NORMALIZED_PLACEMENT.test(placement), `${scenario.id}: CTA placement is missing or not normalized`);
+  await target.click();
+
+  const form = await targetForm(page, scenario);
+  await page.waitForFunction(
+    ({ formId, expected }) => {
+      const formNode = document.querySelector(`form[data-form-id="${formId}"]`);
+      return formNode?.dataset?.placement === expected;
+    },
+    { formId: scenario.form_id, expected: placement },
+    { timeout: 3000 }
+  );
+
+  return placement;
+}
+
+function validateScenarioEvents(events, scenario, expectedPlacement = "") {
   const targetEvents = events.filter((event) => event?.form_id === scenario.form_id);
   const counts = Object.fromEntries(REQUIRED_EVENTS.map((name) => [name, targetEvents.filter((event) => event.event === name).length]));
 
@@ -530,6 +564,9 @@ function validateScenarioEvents(events, scenario) {
     assertCondition(event.lead_type === scenario.lead_type, `${scenario.id}: lead_type mismatch in ${event.event}`);
     assertCondition(event.object_id === scenario.object_id, `${scenario.id}: object_id mismatch in ${event.event}`);
     assertCondition(NORMALIZED_PLACEMENT.test(String(event.placement || "")), `${scenario.id}: placement missing or not normalized in ${event.event}`);
+    if (expectedPlacement && ["lead_form_start", "lead_submit", "lead_submit_classified", "lead_thankyou_view"].includes(event.event)) {
+      assertCondition(event.placement === expectedPlacement, `${scenario.id}: CTA placement was not preserved in ${event.event}`);
+    }
   }
 
   const privacy = validateEventPrivacy(targetEvents);
@@ -558,6 +595,7 @@ async function runScenario(browser, config, matrix, scenario, iteration) {
     await waitForQaRuntime(page, scenario, config.timeoutMs);
     await waitForTargetView(page, scenario, config.timeoutMs);
 
+    const expectedCtaPlacement = await handoffPrimaryCtaPlacement(page, scenario);
     const emptyValidation = await checkEmptyValidationAndFocus(page, scenario);
     assertCondition(emptyValidation.passed, `${scenario.id}: empty submission did not focus an invalid field`);
 
@@ -578,7 +616,7 @@ async function runScenario(browser, config, matrix, scenario, iteration) {
     }, scenario.form_id, { timeout: config.timeoutMs });
 
     const events = await readDebugEvents(page);
-    const validated = validateScenarioEvents(events, scenario);
+    const validated = validateScenarioEvents(events, scenario, expectedCtaPlacement);
     assertCondition(network.leadEndpointRequests.length === 0, `${scenario.id}: dry-run attempted newbuild-lead fetch`);
     assertCondition(network.externalDataRequests.length === 0, `${scenario.id}: dry-run attempted external data delivery`);
 
@@ -597,7 +635,8 @@ async function runScenario(browser, config, matrix, scenario, iteration) {
         form_id: scenario.form_id,
         form_role: scenario.form_role,
         lead_type: scenario.lead_type,
-        object_id: scenario.object_id
+        object_id: scenario.object_id,
+        cta_placement: expectedCtaPlacement
       },
       checks: {
         target_form_visible: true,
@@ -609,6 +648,7 @@ async function runScenario(browser, config, matrix, scenario, iteration) {
         analytics_event_sequence: true,
         privacy_payload_check: true,
         repeat_submit_integrity: true,
+        same_page_cta_placement_handoff: scenario.form_role !== "primary" || Boolean(expectedCtaPlacement),
         status_and_recovery: true
       },
       phone_validation: phoneChecks,
