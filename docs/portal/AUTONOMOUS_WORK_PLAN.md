@@ -1,6 +1,6 @@
 # План автономной работы над порталом
 
-Дата актуализации: 2026-09-10
+Дата актуализации: 2026-09-27
 
 Репозиторий: `deputat36/bm`  
 Рабочая ветка: `main`
@@ -34,6 +34,23 @@ commercial_release_blocked_by_owner_legal_source_and_live_evidence
 ```
 
 Главная задача автономной работы теперь — не добавлять бесконечные функции, а сокращать оставшиеся доказуемые gaps, поддерживать качество и не подменять owner/external decisions кодом.
+
+### Синхронизация 27.09.2026
+
+После 10.09 дополнительно закрыты реальные gaps:
+
+- #230 / #231–#237 — buyer journey: intent prefill, project questions, cleaner public copy, optional name только в primary forms, same-page CTA placement handoff;
+- #239 — 30 unmanaged legacy lead pages выведены из lead-контура и заменены безопасными transition pages;
+- #244 — удалён второй конфликтующий redirect registry; source of truth только `data/migration/legacy-routes.json`;
+- #241 / #246 — production Pages и 11 core CI workflows переведены на Node 24 official Actions; core Node 20 deprecation warning устранён.
+
+Новые границы:
+
+- #116 Figma: recheck 27.09 всё ещё упирается в Starter MCP tool-call limit; production code остаётся источником истины;
+- #242 Pages: двойной custom + managed deployment требует owner/admin GitHub Pages setting, не автономного code workaround;
+- #110 primary sources: повторный indexed search без нового trigger не выполнять; нужен direct GIS OGD/export или новый exact identifier/evidence.
+
+Buyer journey issue #230 считается закрытой и не должна повторно открываться без новой browser/analytics regression.
 
 ## 2. Главный принцип
 
@@ -361,7 +378,7 @@ physical_android_and_iphone_required_before_campaign_launch
 
 Issue #116 остаётся полезным design-handoff backlog, но Figma не является launch-critical blocker для production интерфейса.
 
-Production code/tokens остаются источником истины, пока Figma MCP недоступен или ограничен.
+Production code/tokens остаются источником истины. Повторная проверка 27.09.2026 показала, что Figma MCP Starter всё ещё блокирует даже metadata read по месячному tool-call limit.
 
 Не ставить Figma sync выше:
 

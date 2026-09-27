@@ -1,6 +1,6 @@
 # STATUS портала novostroyki-borisoglebsk.ru
 
-Дата обновления: 2026-09-10
+Дата обновления: 2026-09-27
 
 Репозиторий: `deputat36/bm`  
 Основная ветка: `main`
@@ -20,6 +20,69 @@
 ```
 
 Портал является независимым городским каталогом и не позиционируется как официальный сайт застройщика или ЖК.
+
+## Milestone 27.09.2026
+
+После статуса от 10.09 в `main` закрыты дополнительные доказанные P1 gaps без повышения owner/legal/source/publication state.
+
+### Buyer journey / conversion
+
+Issue #230 завершена через PR #231–#237:
+
+- CTA комнатности на главной передаёт выбранный сценарий в форму;
+- карточки объектов передают конкретный вопрос пользователя;
+- header/hero CTA предзаполняют очевидный intent;
+- public copy очищен от внутренней launch/validation терминологии;
+- имя сделано необязательным только в 7 primary-формах; phone/context остаются обязательными;
+- browser QA подтверждает primary submit без имени на desktop/Android/iPhone emulation;
+- same-page CTA placement сохраняется до lead/thank-you context без storage/query/cookie.
+
+### Legacy / URL governance
+
+PR #239 вывел 30 unmanaged single-project lead URL из рабочего lead-контура:
+
+- URL сохранены как нейтральные `noindex,follow` transition pages;
+- старые формы, old-domain canonical и single-project lead context удалены;
+- маршруты направляют пользователя в актуальный каталог, карточку, ипотеку или контакты;
+- automatic JS/meta-refresh redirect не включён.
+
+PR #244 удалил конфликтующий `data/pages/legacy-redirects.json`.
+
+Единственный machine-readable source of truth:
+
+```text
+data/migration/legacy-routes.json
+```
+
+Canonical registry содержит 54 legacy routes; `npm run validate`, redirect preview и URL inventory используют один и тот же реестр.
+
+### CI / production delivery
+
+PR #241 обновил production GitHub Pages workflow до Node 24-compatible official Actions.
+
+PR #246 обновил 11 core CI workflows:
+
+```text
+actions/checkout@v7
+actions/setup-node@v7
+actions/upload-artifact@v7
+```
+
+Post-merge `main` runs прошли успешно; прежний `Node.js 20 is deprecated` warning в core validation отсутствует.
+
+Production Pages deploy для актуального `main` подтверждён на:
+
+```text
+https://novostroyki-borisoglebsk.ru/
+```
+
+Отдельный infrastructure blocker #242: GitHub сейчас запускает custom Pages workflow и managed `pages build and deployment` параллельно. Для устранения дубля требуется owner/admin setting в GitHub Pages; кодом это не подменяется.
+
+### Figma
+
+Повторная проверка issue #116 от 27.09.2026: Figma MCP Starter по-прежнему блокирует даже `get_metadata` месячным tool-call limit.
+
+Новых подготовительных Figma PR не создавать: execution/visual-QA/source-map packs уже подготовлены. Следующий Figma шаг — только после восстановления MCP-доступа.
 
 ## Интерфейс и buyer experience
 
@@ -419,7 +482,7 @@ public.newbuild_offer_history_events
 
 BM Group object-specific advertising для Просторной 4А требует external written approval.
 
-Legacy transition pages технически безопасны. Server redirect release подготовлен как state-independent transition, но реальный hosting format/evidence всё ещё нужен для фактического 301/308 выпуска.
+Legacy transition pages технически безопасны. После #239 unmanaged lead-форм на 30 старых URL больше нет; после #244 существует один canonical migration registry. Server redirect release остаётся отдельным hosting/release действием и требует фактического 301/308 capability/evidence.
 
 ## Supabase security
 
