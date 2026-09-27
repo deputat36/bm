@@ -90,7 +90,7 @@ function validatePublicPayload(source, marker, label) {
   "formObserver = new IntersectionObserver"
 ].forEach((fragment) => requireFragment(tracking, fragment, paths.tracking));
 
-const ctaHandoffStart = tracking.indexOf("function handoffSamePageCtaPlacement(target)");
+const ctaHandoffStart = tracking.indexOf("function findSamePageTargetForm(target)");
 const ctaHandoffEnd = ctaHandoffStart >= 0 ? tracking.indexOf("\n  function markFormViewed", ctaHandoffStart) : -1;
 const ctaHandoffBlock = ctaHandoffStart >= 0 && ctaHandoffEnd > ctaHandoffStart
   ? tracking.slice(ctaHandoffStart, ctaHandoffEnd)
@@ -98,13 +98,13 @@ const ctaHandoffBlock = ctaHandoffStart >= 0 && ctaHandoffEnd > ctaHandoffStart
 if (!ctaHandoffBlock) {
   errors.push(`${paths.tracking}: same-page CTA placement handoff block not found`);
 } else {
-  ["localStorage", "sessionStorage", "document.cookie", "searchParams.set", "history.pushState", "history.replaceState"].forEach((fragment) => {
+  ["localStorage", "sessionStorage", "document.cookie", "searchParams.set", "history.pushState", "history.replaceState", "window.location.href", "url.hash"].forEach((fragment) => {
     if (ctaHandoffBlock.includes(fragment)) {
       errors.push(`${paths.tracking}: CTA placement handoff must remain ephemeral; forbidden ${fragment}`);
     }
   });
-  if (!ctaHandoffBlock.includes("url.origin !== window.location.origin") || !ctaHandoffBlock.includes("url.pathname !== window.location.pathname")) {
-    errors.push(`${paths.tracking}: CTA placement handoff must remain same-origin and same-path only`);
+  if (!ctaHandoffBlock.includes('rawHref.startsWith("#")') || !ctaHandoffBlock.includes("rawHref.length < 2")) {
+    errors.push(`${paths.tracking}: CTA placement handoff must accept hash-only same-page links`);
   }
 }
 
