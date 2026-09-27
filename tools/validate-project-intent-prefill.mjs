@@ -54,6 +54,56 @@ const HOMEPAGE_ROOM_INTENTS = [
   }
 ];
 
+
+const ADDITIONAL_PROJECT_INTENTS = [
+  {
+    page: "catalog/prostornaya-4a/index.html",
+    objectId: "prostornaya-4a",
+    interest: "Цены и наличие квартир",
+    label: "Узнать цены и наличие",
+    placement: "project_hero",
+    action: "quick_consultation",
+    optionCount: 1
+  },
+  {
+    page: "catalog/prostornaya-4a/index.html",
+    objectId: "prostornaya-4a",
+    interest: "Цены и наличие квартир",
+    label: "Узнать актуальные варианты",
+    placement: "project_faq",
+    action: "quick_consultation",
+    optionCount: 1
+  },
+  {
+    page: "catalog/aerodromnaya-18g/index.html",
+    objectId: "aerodromnaya-18g",
+    interest: "Конкретная квартира и секция",
+    label: "Проверить квартиру",
+    placement: "header",
+    action: "quick_consultation",
+    optionCount: 1,
+    classAfterHref: true
+  },
+  {
+    page: "catalog/aerodromnaya-18g/index.html",
+    objectId: "aerodromnaya-18g",
+    interest: "Конкретная квартира и секция",
+    label: "Проверить квартиру",
+    placement: "project_hero",
+    action: "quick_consultation",
+    optionCount: 1
+  },
+  {
+    page: "catalog/sennaya-76/index.html",
+    objectId: "sennaya-76",
+    interest: "Актуальные цены и наличие",
+    label: "Узнать актуальные варианты",
+    placement: "project_faq",
+    action: "quick_consultation",
+    optionCount: 2
+  }
+];
+
 function read(relativePath) {
   const fullPath = path.join(ROOT, relativePath);
   if (!fs.existsSync(fullPath)) {
@@ -136,6 +186,20 @@ if (!(homepageMainPosition >= 0 && homepageMainPosition < homepageIntentPosition
   errors.push("index.html: script order must be main -> intent -> schema");
 }
 
+
+for (const intent of ADDITIONAL_PROJECT_INTENTS) {
+  const html = read(intent.page);
+  const classFragment = intent.classAfterHref ? ' class="button"' : "";
+  const exactCta = `href="#quick-lead"${classFragment} data-prefill-interest="${intent.interest}" data-track-action="${intent.action}" data-track-placement="${intent.placement}" data-track-object="${intent.objectId}">${intent.label}</a>`;
+
+  if (!html.includes(exactCta)) {
+    errors.push(`${intent.page}: missing additional intent CTA ${intent.label} / ${intent.placement}`);
+  }
+  if (count(html, `<option>${intent.interest}</option>`) !== intent.optionCount) {
+    errors.push(`${intent.page}: expected ${intent.optionCount} matching option(s) for ${intent.interest}`);
+  }
+}
+
 for (const project of PROJECTS) {
   const html = read(project.page);
   const ctaFragments = [
@@ -171,7 +235,7 @@ for (const project of PROJECTS) {
   if (!html.includes('content="noindex,follow"')) errors.push(`${project.page}: noindex,follow must remain`);
 }
 
-console.log(`Intent CTA routes checked: ${PROJECTS.length + HOMEPAGE_ROOM_INTENTS.length}`);
+console.log(`Intent CTA routes checked: ${PROJECTS.length + HOMEPAGE_ROOM_INTENTS.length + ADDITIONAL_PROJECT_INTENTS.length}`);
 console.log("New forms added: 0");
 console.log("Query parameters used: 0");
 console.log("Storage writes used: 0");
