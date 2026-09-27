@@ -1,104 +1,52 @@
 # Инвентаризация URL перед sitemap и миграцией
 
-Дата фиксации: 2026-07-07
+Дата обновления: 2026-09-27
 
-## 1. Назначение
+## Назначение
 
-До переноса `/portal-preview/` в корневую главную и до обновления `sitemap.xml` нужно видеть полную картину:
+Команда `npm run urls:inventory` строит единый отчёт по активным страницам портала и legacy-маршрутам перед изменением sitemap или выпуском серверных редиректов.
 
-- какие страницы портала уже заведены в `data/pages/index.json`;
-- какие страницы можно включать в sitemap;
-- какие страницы пока закрыты от sitemap;
-- какие старые URL планируется перенаправить;
-- какие редиректы требуют отдельного решения.
+## Источники истины
 
-Для этого добавлен инструмент:
-
-```text
-tools/build-url-inventory.mjs
-```
-
-## 2. Запуск
-
-Из корня проекта:
-
-```bash
-npm run urls:inventory
-```
-
-По умолчанию используются базовые адреса:
-
-```text
-PORTAL_BASE_URL=https://novostroyki-borisoglebsk.ru
-LEGACY_BASE_URL=https://tellermanovsad.ru
-```
-
-При необходимости их можно переопределить:
-
-```bash
-PORTAL_BASE_URL=https://example.ru LEGACY_BASE_URL=https://old.example.ru npm run urls:inventory
-```
-
-## 3. Что читает инструмент
+Инструмент читает только:
 
 ```text
 data/pages/index.json
-data/pages/legacy-redirects.json
+data/migration/legacy-routes.json
 ```
 
-## 4. Что выводит инструмент
+Файл `data/pages/legacy-redirects.json` выведен из эксплуатации и удалён. Его ранняя модель `planned/requires_decision/ready` больше не используется.
 
-Отчёт выводится в JSON и содержит:
+## Базовый домен
+
+По умолчанию:
+
+```text
+PORTAL_BASE_URL=https://novostroyki-borisoglebsk.ru
+```
+
+И source, и target URL migration registry считаются маршрутами текущего портала. Отдельная судьба домена `tellermanovsad.ru` не выводится из route registry и решается отдельным release/approval контуром.
+
+## Что выводит отчёт
 
 ```text
 generated_at
 portal_base_url
-legacy_base_url
+legacy_registry
+legacy_registry_schema
 summary
 sitemap_candidates
 sitemap_blocked_pages
-legacy_redirects_ready_or_active
-legacy_redirects_blocked
+legacy_routes_ready
+legacy_routes_blocked
 ```
 
-## 5. Логика sitemap
+Readiness legacy-маршрута определяется каноническими полями `migration_action`, `content_migration_status` и `redirect_ready`. Сам inventory ничего не публикует и не создаёт редиректы.
 
-Страница считается кандидатом для sitemap только если одновременно выполнено:
+## Перед выпуском
 
-```text
-status = published
-robots не равен noindex,follow
-```
-
-Все черновые страницы со статусом `draft` или `ready` не попадают в кандидаты sitemap.
-
-## 6. Логика редиректов
-
-Редирект считается готовым к включению только если его статус:
-
-```text
-ready
-```
-
-или:
-
-```text
-active
-```
-
-Записи со статусами `planned` и `requires_decision` остаются заблокированными для активации.
-
-## 7. Как использовать перед публикацией
-
-Перед обновлением sitemap нужно:
-
-1. Запустить `npm run validate`.
-2. Запустить `npm run urls:inventory`.
-3. Убедиться, что в `sitemap_candidates` попали только те страницы, которые действительно готовы к индексации.
-4. Проверить `sitemap_blocked_pages` и понять, какие страницы ещё нельзя публиковать.
-5. Проверить `legacy_redirects_blocked`, особенно записи со статусом `requires_decision`.
-6. Только после этого готовить новый `sitemap.xml`.
-
-## 8. Важное ограничение
-
-Этот инструмент не меняет `sitemap.xml` автоматически. Он только показывает будущую картину и помогает не включить черновые или юридически неготовые страницы в индекс.
+1. `npm run validate`.
+2. `npm run urls:inventory`.
+3. `npm run redirects:preview`.
+4. Проверить, что sitemap содержит только published/indexable страницы.
+5. Выпускать серверные правила только для маршрутов, где canonical registry разрешает release.

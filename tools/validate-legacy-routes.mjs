@@ -3,6 +3,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const REGISTRY_PATH = "data/migration/legacy-routes.json";
+const OBSOLETE_REGISTRY_PATH = "data/pages/legacy-redirects.json";
 const SITEMAP_PATH = "sitemap.xml";
 const errors = [];
 
@@ -35,6 +36,9 @@ function normalizeUrl(value) {
 
 const registry = readJson(REGISTRY_PATH);
 const sitemap = read(SITEMAP_PATH);
+if (fs.existsSync(path.join(ROOT, OBSOLETE_REGISTRY_PATH))) {
+  errors.push(`${OBSOLETE_REGISTRY_PATH}: obsolete duplicate registry must not exist; use ${REGISTRY_PATH}`);
+}
 const seenSources = new Set();
 const allowedStatuses = new Set(["transition_page", "redirect_ready", "redirected", "retired"]);
 const allowedActions = new Set(["redirect", "retain_content", "retire"]);
