@@ -3,7 +3,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const PORTAL_BASE_URL = process.env.PORTAL_BASE_URL || "https://novostroyki-borisoglebsk.ru";
-const LEGACY_BASE_URL = process.env.LEGACY_BASE_URL || "https://tellermanovsad.ru";
+const LEGACY_REGISTRY_PATH = "data/migration/legacy-routes.json";
 
 function fromRoot(...parts) {
   return path.join(ROOT, ...parts);
@@ -14,7 +14,6 @@ function readJson(relativePath) {
   if (!fs.existsSync(fullPath)) {
     throw new Error(`${relativePath}: file does not exist`);
   }
-
   return JSON.parse(fs.readFileSync(fullPath, "utf8"));
 }
 
@@ -31,7 +30,6 @@ function isNoindex(page) {
 function buildPageInventory(pages) {
   return pages.map((page) => {
     const canBeInSitemap = page.status === "published" && !isNoindex(page);
-
     return {
       url: page.url,
       absolute_url: normalizeUrl(PORTAL_BASE_URL, page.url),
@@ -51,27 +49,43 @@ function buildPageInventory(pages) {
   });
 }
 
-function buildRedirectInventory(redirects) {
-  return redirects.map((redirect) => {
-    const canBeActivated = redirect.status === "ready" || redirect.status === "active";
+function routeReadiness(route) {
+  if (route.migration_action === "retire") {
+    return { ready: false, reason: route.blocking_reason || "route marked for retirement" };
+  }
+  if (route.migration_action === "retain_content" && route.content_migration_status !== "migrated") {
+    return { ready: false, reason: route.blocking_reason || "content migration is pending" };
+  }
+  if (route.redirect_ready !== true) {
+    return { ready: false, reason: route.blocking_reason || "redirect_ready=false" };
+  }
+  return { ready: true, reason: null };
+}
 
+function buildLegacyRouteInventory(routes) {
+  return routes.map((route) => {
+    const readiness = routeReadiness(route);
     return {
-      source_url: redirect.source_url,
-      source_absolute_url: normalizeUrl(LEGACY_BASE_URL, redirect.source_url),
-      target_url: redirect.target_url,
-      target_absolute_url: normalizeUrl(PORTAL_BASE_URL, redirect.target_url),
-      redirect_type: redirect.redirect_type,
-      status: redirect.status,
-      can_be_activated: canBeActivated,
-      activation_block_reason: canBeActivated ? null : `status=${redirect.status}`,
-      notes: redirect.notes || ""
+      source_url: route.source_url,
+      source_absolute_url: normalizeUrl(PORTAL_BASE_URL, route.source_url),
+      source_file: route.source_file,
+      target_url: route.target_url,
+      target_absolute_url: normalizeUrl(PORTAL_BASE_URL, route.target_url),
+      target_file: route.target_file,
+      status: route.status,
+      migration_action: route.migration_action,
+      content_migration_status: route.content_migration_status || null,
+      redirect_phase: route.redirect_phase,
+      redirect_ready: route.redirect_ready === true,
+      can_be_activated: readiness.ready,
+      activation_block_reason: readiness.reason
     };
   });
 }
 
-function groupByStatus(items, field) {
+function groupBy(items, field) {
   return items.reduce((acc, item) => {
-    const key = item[field] || "not_set";
+    const key = item[field] ?? "not_set";
     acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
@@ -79,32 +93,36 @@ function groupByStatus(items, field) {
 
 function main() {
   const pages = readJson("data/pages/index.json");
-  const redirects = readJson("data/pages/legacy-redirects.json");
+  const registry = readJson(LEGACY_REGISTRY_PATH);
 
   if (!Array.isArray(pages)) throw new Error("data/pages/index.json must be an array");
-  if (!Array.isArray(redirects)) throw new Error("data/pages/legacy-redirects.json must be an array");
+  if (!registry || !Array.isArray(registry.routes)) {
+    throw new Error(`${LEGACY_REGISTRY_PATH}: routes must be an array`);
+  }
 
   const pageInventory = buildPageInventory(pages);
-  const redirectInventory = buildRedirectInventory(redirects);
+  const routeInventory = buildLegacyRouteInventory(registry.routes);
 
   const report = {
     generated_at: new Date().toISOString(),
     portal_base_url: PORTAL_BASE_URL,
-    legacy_base_url: LEGACY_BASE_URL,
+    legacy_registry: LEGACY_REGISTRY_PATH,
+    legacy_registry_schema: registry.schema_version || null,
     summary: {
       total_pages: pageInventory.length,
-      pages_by_status: groupByStatus(pageInventory, "status"),
+      pages_by_status: groupBy(pageInventory, "status"),
       pages_allowed_in_sitemap: pageInventory.filter((page) => page.can_be_in_sitemap).length,
       pages_blocked_from_sitemap: pageInventory.filter((page) => !page.can_be_in_sitemap).length,
-      total_legacy_redirects: redirectInventory.length,
-      redirects_by_status: groupByStatus(redirectInventory, "status"),
-      redirects_ready_or_active: redirectInventory.filter((redirect) => redirect.can_be_activated).length,
-      redirects_blocked: redirectInventory.filter((redirect) => !redirect.can_be_activated).length
+      total_legacy_routes: routeInventory.length,
+      legacy_routes_by_status: groupBy(routeInventory, "status"),
+      legacy_routes_by_action: groupBy(routeInventory, "migration_action"),
+      legacy_routes_ready: routeInventory.filter((route) => route.can_be_activated).length,
+      legacy_routes_blocked: routeInventory.filter((route) => !route.can_be_activated).length
     },
     sitemap_candidates: pageInventory.filter((page) => page.can_be_in_sitemap),
     sitemap_blocked_pages: pageInventory.filter((page) => !page.can_be_in_sitemap),
-    legacy_redirects_ready_or_active: redirectInventory.filter((redirect) => redirect.can_be_activated),
-    legacy_redirects_blocked: redirectInventory.filter((redirect) => !redirect.can_be_activated)
+    legacy_routes_ready: routeInventory.filter((route) => route.can_be_activated),
+    legacy_routes_blocked: routeInventory.filter((route) => !route.can_be_activated)
   };
 
   console.log(JSON.stringify(report, null, 2));

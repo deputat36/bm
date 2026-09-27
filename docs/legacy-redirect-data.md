@@ -1,102 +1,46 @@
 # Машинная карта миграции старых URL
 
-Дата фиксации: 2026-07-07
+Дата обновления: 2026-09-27
 
-## 1. Назначение
-
-Для миграции от старой структуры сайта ЖК «Теллерманов сад» к структуре городского портала добавлен файл:
+Единственный машиночитаемый источник истины:
 
 ```text
-data/pages/legacy-redirects.json
+data/migration/legacy-routes.json
 ```
 
-Он нужен, чтобы карта переадресаций была не только в документации, но и в проверяемых данных проекта.
+Ранний файл `data/pages/legacy-redirects.json` удалён и не должен восстанавливаться: он содержал устаревшие цели временной архитектуры `/zhk/tellermanov-sad/...` и противоречил текущему городскому порталу.
 
-## 2. Что хранится в записи
+## Каноническая запись
 
-Каждая запись содержит:
+Каждый маршрут содержит как минимум:
 
 ```text
 source_url
-```
-
-Старый URL, который сейчас работает в корне сайта.
-
-```text
+source_file
 target_url
-```
-
-Новый URL внутри структуры портала.
-
-```text
-redirect_type
-```
-
-Планируемый тип переадресации или статус решения.
-
-```text
+target_file
+target_href
 status
+migration_action
+redirect_phase
+redirect_ready
+blocking_reason
 ```
 
-Текущий статус записи.
+Для `retain_content` также используется `content_migration_status`.
 
-```text
-notes
+## Проверки
+
+```bash
+npm run validate:legacy
+npm run redirects:preview
+npm run urls:inventory
 ```
 
-Пояснение, что нужно проверить перед включением редиректа.
+`npm run validate` также запускает canonical legacy validator.
 
-## 3. Допустимые статусы
+Validator проверяет существование source/target, `noindex,follow` у transition pages, отсутствие старого домена/брендинга/лид-форм, запрет auto-redirect до release и отсутствие legacy URL в sitemap.
 
-```text
-planned
-requires_decision
-ready
-active
-archived
-```
+## Release boundary
 
-## 4. Допустимые типы редиректов
-
-```text
-301_after_migration
-html_or_301_after_audit
-decision_required
-html_redirect
-server_301
-```
-
-## 5. Что проверяет валидатор
-
-Команда:
-
-```text
-npm run validate
-```
-
-теперь проверяет `data/pages/legacy-redirects.json`:
-
-- файл существует и является массивом;
-- `source_url` начинается с `/`;
-- `target_url` начинается с `/`;
-- source и target не совпадают;
-- source URL не дублируется;
-- `redirect_type` входит в допустимый список;
-- `status` входит в допустимый список;
-- HTML-файл старого URL существует;
-- HTML-файл нового URL существует;
-- активный редирект может иметь только тип `html_redirect` или `server_301`.
-
-## 6. Текущий принцип
-
-Пока все редиректы остаются в статусе `planned` или `requires_decision`.
-
-Нельзя переводить запись в `active`, пока не выполнены условия:
-
-- новая страница готова визуально и содержательно;
-- проверены формы заявок;
-- проверены canonical;
-- принято решение по sitemap;
-- снят или оставлен `noindex` согласно стратегии;
-- проверены рекламные ссылки и UTM;
-- понятна стратегия домена `tellermanovsad.ru`.
+`redirect_ready=false` не является разрешением на серверный редирект. Изменение hosting rules выполняется отдельно и только после прохождения release checklist.
