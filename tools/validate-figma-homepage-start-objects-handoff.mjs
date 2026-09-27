@@ -81,7 +81,7 @@ if (code) {
     "Сенная 76",
     "Оставить заявку",
     "Посмотреть другие новостройки",
-    "Неподтверждённые цены не публикуются"
+    "Неподтверждённые цены и наличие не выдаются за актуальные"
   ]) assert(code.includes(marker), `Screen misses production content: ${marker}`);
 
   const tempFile = path.join(os.tmpdir(), `portal-v2-homepage-start-objects-${process.pid}.mjs`);
