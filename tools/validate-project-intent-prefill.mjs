@@ -35,6 +35,25 @@ const PROJECTS = [
   }
 ];
 
+
+const HOMEPAGE_ROOM_INTENTS = [
+  {
+    interest: "1-комнатная квартира",
+    label: "Подобрать 1-комнатную",
+    placement: "homepage_one_room"
+  },
+  {
+    interest: "2-комнатная квартира",
+    label: "Подобрать 2-комнатную",
+    placement: "homepage_two_room"
+  },
+  {
+    interest: "3-комнатная квартира",
+    label: "Подобрать 3-комнатную",
+    placement: "homepage_three_room"
+  }
+];
+
 function read(relativePath) {
   const fullPath = path.join(ROOT, relativePath);
   if (!fs.existsSync(fullPath)) {
@@ -69,6 +88,52 @@ for (const forbidden of [
   "history.replaceState", "fetch(", "innerHTML", "dispatchEvent(", "new FormData(", "document.cookie"
 ]) {
   if (runtime.includes(forbidden)) errors.push(`${RUNTIME_PATH}: forbidden mechanism ${forbidden}`);
+}
+
+
+const homepage = read("index.html");
+
+for (const intent of HOMEPAGE_ROOM_INTENTS) {
+  const fragments = [
+    'href="#lead"',
+    'data-track-action="quick_selection"',
+    `data-track-placement="${intent.placement}"`,
+    `data-prefill-interest="${intent.interest}"`,
+    `>${intent.label}</a>`
+  ];
+
+  for (const fragment of fragments) {
+    if (!homepage.includes(fragment)) errors.push(`index.html: missing homepage intent fragment ${fragment}`);
+  }
+
+  if (count(homepage, `data-track-placement="${intent.placement}"`) !== 1) {
+    errors.push(`index.html: expected exactly one homepage placement ${intent.placement}`);
+  }
+  if (count(homepage, `data-prefill-interest="${intent.interest}"`) !== 1) {
+    errors.push(`index.html: expected exactly one homepage prefill for ${intent.interest}`);
+  }
+  if (count(homepage, `<option>${intent.interest}</option>`) !== 1) {
+    errors.push(`index.html: expected one matching detailed-form option for ${intent.interest}`);
+  }
+}
+
+if (count(homepage, "data-prefill-interest=") !== HOMEPAGE_ROOM_INTENTS.length) {
+  errors.push("index.html: homepage must expose exactly three room intent prefills");
+}
+if (count(homepage, "<form ") !== 2) errors.push("index.html: active homepage form count must remain 2");
+for (const formId of ["homepage_quick_selection", "homepage_priority_selection"]) {
+  if (count(homepage, `data-form-id="${formId}"`) !== 1) {
+    errors.push(`index.html: form id must remain unique: ${formId}`);
+  }
+}
+
+const homepageIntentTag = '<script src="assets/js/project-intent-prefill.js"></script>';
+if (count(homepage, homepageIntentTag) !== 1) errors.push("index.html: intent runtime must load exactly once");
+const homepageMainPosition = homepage.indexOf('<script src="assets/js/main.js"></script>');
+const homepageIntentPosition = homepage.indexOf(homepageIntentTag);
+const homepageSchemaPosition = homepage.indexOf('<script src="assets/js/schema.js"></script>');
+if (!(homepageMainPosition >= 0 && homepageMainPosition < homepageIntentPosition && homepageIntentPosition < homepageSchemaPosition)) {
+  errors.push("index.html: script order must be main -> intent -> schema");
 }
 
 for (const project of PROJECTS) {
@@ -106,7 +171,7 @@ for (const project of PROJECTS) {
   if (!html.includes('content="noindex,follow"')) errors.push(`${project.page}: noindex,follow must remain`);
 }
 
-console.log(`Intent CTA routes checked: ${PROJECTS.length}`);
+console.log(`Intent CTA routes checked: ${PROJECTS.length + HOMEPAGE_ROOM_INTENTS.length}`);
 console.log("New forms added: 0");
 console.log("Query parameters used: 0");
 console.log("Storage writes used: 0");
