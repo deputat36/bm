@@ -39,7 +39,9 @@ const detailedForm = findForm(detailedFormId);
 if (!quickForm) errors.push(`catalog/index.html: missing ${quickFormId}`);
 if (!detailedForm) errors.push(`catalog/index.html: missing ${detailedFormId}`);
 
-["name", "phone", "residential_complex", "interest"].forEach((fieldName) => {
+if (quickForm && !hasField(quickForm, "name")) errors.push(`${quickFormId}: optional name field is missing`);
+if (quickForm && hasRequiredField(quickForm, "name")) errors.push(`${quickFormId}: name must remain optional`);
+["phone", "residential_complex", "interest"].forEach((fieldName) => {
   if (quickForm && !hasRequiredField(quickForm, fieldName)) {
     errors.push(`${quickFormId}: required field ${fieldName} is missing`);
   }
@@ -113,7 +115,7 @@ objects.forEach(([objectId, href]) => {
 });
 
 console.log("Checked catalog short and detailed conversion paths.");
-console.log("Catalog primary fields: name, phone, object, main question.");
+console.log("Catalog primary fields: optional name, required phone, object, main question.");
 
 if (errors.length) {
   console.error("\nCatalog conversion validation errors:");
