@@ -446,6 +446,32 @@
     });
   }
 
+  function findSamePageTargetForm(target) {
+    const rawHref = String(target?.getAttribute("href") || "").trim();
+    if (!rawHref.startsWith("#") || rawHref.length < 2) return null;
+
+    let id = rawHref.slice(1);
+    try {
+      id = decodeURIComponent(id);
+    } catch (error) {
+      // Keep the raw fragment when decoding fails.
+    }
+
+    const anchor = document.getElementById(id);
+    if (!anchor) return null;
+    if (anchor.matches?.("form[data-lead-form]")) return anchor;
+    return anchor.querySelector?.("form[data-lead-form]") || anchor.closest?.("form[data-lead-form]") || null;
+  }
+
+  function handoffSamePageCtaPlacement(target) {
+    const placement = normalizePlacement(target?.dataset?.trackPlacement || "");
+    const form = findSamePageTargetForm(target);
+    if (!placement || !form) return false;
+
+    form.dataset.placement = placement;
+    return true;
+  }
+
   function markFormViewed(form) {
     if (!form || viewedForms.has(form)) return false;
     viewedForms.add(form);
@@ -487,6 +513,7 @@
     const target = event.target.closest("[data-track-action]");
     if (!target) return;
 
+    handoffSamePageCtaPlacement(target);
     sendConversionEvent("lead_cta_click", {
       action: target.dataset.trackAction || "unknown",
       placement: normalizePlacement(target.dataset.trackPlacement || ""),

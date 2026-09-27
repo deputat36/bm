@@ -105,6 +105,8 @@ if (debugLoadIndex < 0 || trackingLoadIndex < 0 || debugLoadIndex > trackingLoad
 }
 
 [
+  'handoffSamePageCtaPlacement(target);',
+  'form.dataset.placement = placement',
   'sendConversionEvent("lead_cta_click"',
   'sendConversionEvent("lead_form_view"',
   'sendConversionEvent("lead_form_start"',
