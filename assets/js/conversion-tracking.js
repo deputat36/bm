@@ -448,26 +448,19 @@
 
   function findSamePageTargetForm(target) {
     const rawHref = String(target?.getAttribute("href") || "").trim();
-    if (!rawHref || !rawHref.includes("#")) return null;
+    if (!rawHref.startsWith("#") || rawHref.length < 2) return null;
 
+    let id = rawHref.slice(1);
     try {
-      const url = new URL(rawHref, window.location.href);
-      if (url.origin !== window.location.origin || url.pathname !== window.location.pathname || !url.hash) return null;
-
-      let id = url.hash.replace(/^#/, "");
-      try {
-        id = decodeURIComponent(id);
-      } catch (error) {
-        // Keep the raw hash when decoding fails.
-      }
-
-      const anchor = document.getElementById(id);
-      if (!anchor) return null;
-      if (anchor.matches?.("form[data-lead-form]")) return anchor;
-      return anchor.querySelector?.("form[data-lead-form]") || anchor.closest?.("form[data-lead-form]") || null;
+      id = decodeURIComponent(id);
     } catch (error) {
-      return null;
+      // Keep the raw fragment when decoding fails.
     }
+
+    const anchor = document.getElementById(id);
+    if (!anchor) return null;
+    if (anchor.matches?.("form[data-lead-form]")) return anchor;
+    return anchor.querySelector?.("form[data-lead-form]") || anchor.closest?.("form[data-lead-form]") || null;
   }
 
   function handoffSamePageCtaPlacement(target) {
