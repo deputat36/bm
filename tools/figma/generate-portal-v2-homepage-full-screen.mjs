@@ -398,7 +398,7 @@ for (const layout of ["Desktop", "Mobile"]) {
     width: desktop ? 718 : 336,
     color: semantic("text/inverse")
   });
-  const heroLead = await text(pitch, "Ищете квартиру в новом доме Борисоглебска? Выберите конкретный дом, получите общий подбор или предварительный расчёт покупки. Доступен подбор 1-, 2- и 3-комнатных квартир. Специалист проверит доступные документы и актуальные условия на дату обращения — без обещаний неподтверждённых цен и наличия.", {
+  const heroLead = await text(pitch, "Сравните новостройки Борисоглебска и получите подбор под комнатность, бюджет и способ покупки. Выберите конкретный дом, получите общий подбор или предварительный расчёт покупки. Специалист проверит доступные документы и актуальные условия на дату обращения — без обещаний неподтверждённых цен и наличия.", {
     name: "Hero lead",
     styleName: "Typography/Body Large",
     width: desktop ? 718 : 336,
@@ -408,7 +408,7 @@ for (const layout of ["Desktop", "Mobile"]) {
   const heroActions = auto("Hero actions", desktop ? "HORIZONTAL" : "VERTICAL");
   bind(heroActions, "itemSpacing", spacing("sm"));
   pitch.appendChild(heroActions);
-  configureButton(heroActions, heroPrimary, "Выбрать сценарий", "#start", !desktop);
+  configureButton(heroActions, heroPrimary, "Начать подбор", "#start", !desktop);
   configureButton(heroActions, heroSecondary, "Смотреть каталог", "catalog/", !desktop);
   if (desktop) configureButton(heroActions, heroSecondary, "8 903 857-69-09", "tel:+79038576909");
 
@@ -462,7 +462,7 @@ for (const layout of ["Desktop", "Mobile"]) {
   appendInstance(routeGrid, scenarioVariants.Mortgage, "Scenario / Mortgage");
 
   const objectsContainer = createSection(screen, "objects", "Objects section", screenWidth, contentWidth, "surface/primary", desktop);
-  await addSectionHeader(objectsContainer, "Приоритет сбора заявок", "Выберите интересующий объект", "Каждая заявка привязывается к конкретному адресу. Для остальных новостроек доступен общий подбор через каталог.", desktop ? 830 : 336);
+  await addSectionHeader(objectsContainer, "Объекты для сравнения", "Выберите интересующий объект", "Откройте карточку дома, посмотрите доступные подтверждённые сведения и задайте вопрос специалисту. Для остальных новостроек доступен общий подбор через каталог.", desktop ? 830 : 336);
   const projectGrid = createGrid(objectsContainer, "Project cards", desktop, 3);
   for (const item of projects) configureProject(projectGrid, desktop ? projectDesktop : projectMobile, item);
   const objectActions = auto("Object actions", desktop ? "HORIZONTAL" : "VERTICAL");
