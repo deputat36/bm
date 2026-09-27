@@ -363,7 +363,7 @@ for (const layout of ["Desktop", "Mobile"]) {
   await addNotice(quizCard, "Результат основан только на ответах пользователя. Он не подтверждает наличие квартиры, цену, статус объекта или решение банка.", desktop ? 796 : 292);
 
   const priority = createSection(screen, "priority", "Catalog priority projects", screenWidth, contentWidth, "surface/primary", desktop);
-  await addSectionHeader(priority, "Сравнение проверки", "Три ключевых объекта", "Сравнение показывает только состояние внутренней проверки и доступные категории сведений. Оно не раскрывает рабочие значения характеристик, документов, цен или наличия.", desktop ? 900 : 336);
+  await addSectionHeader(priority, "Проверка данных", "Три ключевых объекта", "Сравнение показывает, какие сведения уже подтверждены, а какие нужно уточнить перед покупкой. Цены и наличие проверяются на дату обращения.", desktop ? 900 : 336);
   const projectGrid = auto("Priority project cards", desktop ? "HORIZONTAL" : "VERTICAL");
   bind(projectGrid, "itemSpacing", spacing("lg"));
   priority.appendChild(projectGrid);
@@ -373,7 +373,7 @@ for (const layout of ["Desktop", "Mobile"]) {
   const reference = createSection(screen, "reference", "Reference catalog", screenWidth, contentWidth, "background/soft", desktop);
   await addSectionHeader(reference, "Справочная часть", "Другие новостройки города", "Выводятся только объекты с подтверждённым адресом, статусом и хотя бы одним публичным источником. Для них используется общая форма подбора.", desktop ? 900 : 336);
   createRows(reference, "Reference rules", desktop, referenceItems, (parent, item) => configureLink(parent, desktop ? linkDesktop : linkMobile, "Reference / " + item.title, item.title, item.description, "#quick-lead"));
-  await addNotice(reference, "Неподтверждённые адреса и характеристики не выводятся. Новая карточка появляется только после проверки источников и внутренней валидации.", desktop ? 900 : 336);
+  await addNotice(reference, "Неподтверждённые адреса и характеристики не выводятся. Новая карточка появляется только после проверки источников.", desktop ? 900 : 336);
 
   const lead = createSection(screen, "lead", "Catalog detailed lead", screenWidth, contentWidth, "surface/emphasis", desktop);
   await addSectionHeader(lead, "Подробный подбор квартиры", "Указать параметры будущей квартиры", "Форма подходит, если пользователь готов сразу сообщить комнатность, бюджет и способ покупки.", desktop ? 760 : 336, true);
