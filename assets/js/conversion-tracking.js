@@ -446,6 +446,39 @@
     });
   }
 
+  function findSamePageTargetForm(target) {
+    const rawHref = String(target?.getAttribute("href") || "").trim();
+    if (!rawHref || !rawHref.includes("#")) return null;
+
+    try {
+      const url = new URL(rawHref, window.location.href);
+      if (url.origin !== window.location.origin || url.pathname !== window.location.pathname || !url.hash) return null;
+
+      let id = url.hash.replace(/^#/, "");
+      try {
+        id = decodeURIComponent(id);
+      } catch (error) {
+        // Keep the raw hash when decoding fails.
+      }
+
+      const anchor = document.getElementById(id);
+      if (!anchor) return null;
+      if (anchor.matches?.("form[data-lead-form]")) return anchor;
+      return anchor.querySelector?.("form[data-lead-form]") || anchor.closest?.("form[data-lead-form]") || null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function handoffSamePageCtaPlacement(target) {
+    const placement = normalizePlacement(target?.dataset?.trackPlacement || "");
+    const form = findSamePageTargetForm(target);
+    if (!placement || !form) return false;
+
+    form.dataset.placement = placement;
+    return true;
+  }
+
   function markFormViewed(form) {
     if (!form || viewedForms.has(form)) return false;
     viewedForms.add(form);
@@ -487,6 +520,7 @@
     const target = event.target.closest("[data-track-action]");
     if (!target) return;
 
+    handoffSamePageCtaPlacement(target);
     sendConversionEvent("lead_cta_click", {
       action: target.dataset.trackAction || "unknown",
       placement: normalizePlacement(target.dataset.trackPlacement || ""),
