@@ -39,7 +39,9 @@ const detailedForm = findForm(detailedFormId);
 if (!quickForm) errors.push(`contacts/index.html: missing ${quickFormId}`);
 if (!detailedForm) errors.push(`contacts/index.html: missing ${detailedFormId}`);
 
-["name", "phone", "residential_complex"].forEach((fieldName) => {
+if (quickForm && !hasField(quickForm, "name")) errors.push(`${quickFormId}: optional name field is missing`);
+if (quickForm && hasRequiredField(quickForm, "name")) errors.push(`${quickFormId}: name must remain optional`);
+["phone", "residential_complex"].forEach((fieldName) => {
   if (quickForm && !hasRequiredField(quickForm, fieldName)) {
     errors.push(`${quickFormId}: required field ${fieldName} is missing`);
   }
