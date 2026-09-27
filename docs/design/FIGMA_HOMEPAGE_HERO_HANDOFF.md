@@ -78,7 +78,7 @@ CSS-декор не заменяется случайным рендером и�
 
 Hero actions:
 
-1. `Выбрать сценарий` — Hero Primary;
+1. `Начать подбор` — Hero Primary;
 2. `Смотреть каталог` — Hero Secondary;
 3. `8 903 857-69-09` — Hero Secondary.
 
