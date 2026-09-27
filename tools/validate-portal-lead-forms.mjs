@@ -103,6 +103,16 @@ const PROJECT_TRUST_PAGES = [
   { file: "catalog/sennaya-76/index.html", complexId: "sennaya-76" }
 ];
 
+const PRIMARY_QUICK_FORMS = [
+  { file: "index.html", formId: "homepage_quick_selection" },
+  { file: "catalog/index.html", formId: "catalog_quick_selection" },
+  { file: "catalog/prostornaya-4a/index.html", formId: "catalog_prostornaya_4a_quick_consultation" },
+  { file: "catalog/aerodromnaya-18g/index.html", formId: "catalog_aerodromnaya_18g_quick_consultation" },
+  { file: "catalog/sennaya-76/index.html", formId: "catalog_sennaya_76_quick_consultation" },
+  { file: "contacts/index.html", formId: "contacts_quick_selection" },
+  { file: "ipoteka/index.html", formId: "portal_mortgage_quick_consultation" }
+];
+
 const errors = [];
 const checkedFormIds = new Set();
 
@@ -218,7 +228,13 @@ function validateProjectForm(expected, formTag) {
 function validateQuickProjectForm(expected, html, formBlock) {
   const label = `${expected.file}:${expected.formId}`;
 
-  ["name", "phone", "interest"].forEach((fieldName) => {
+  if (!hasNamedField(formBlock, "name")) {
+    errors.push(`${label}: quick form must keep optional name field`);
+  }
+  if (hasRequiredNamedField(formBlock, "name")) {
+    errors.push(`${label}: quick form name must remain optional`);
+  }
+  ["phone", "interest"].forEach((fieldName) => {
     if (!hasRequiredNamedField(formBlock, fieldName)) {
       errors.push(`${label}: quick form requires ${fieldName}`);
     }
@@ -308,6 +324,29 @@ for (const expected of EXPECTED_FORMS) {
   }
 }
 
+PRIMARY_QUICK_FORMS.forEach(({ file, formId }) => {
+  const html = read(file);
+  if (!html) return;
+  const formBlock = findFormBlock(html, formId);
+  const label = `${file}:${formId}`;
+  if (!formBlock) {
+    errors.push(`${label}: primary form not found`);
+    return;
+  }
+  if (!hasNamedField(formBlock, "name")) {
+    errors.push(`${label}: optional name field is missing`);
+  }
+  if (hasRequiredNamedField(formBlock, "name")) {
+    errors.push(`${label}: primary form name must not be required`);
+  }
+  if (!formBlock.includes("Имя (необязательно)")) {
+    errors.push(`${label}: optional name label is missing`);
+  }
+  if (!hasRequiredNamedField(formBlock, "phone")) {
+    errors.push(`${label}: phone must remain required`);
+  }
+});
+
 PROJECT_TRUST_PAGES.forEach(validateProjectTrustPage);
 
 const homepage = read("index.html");
@@ -366,6 +405,7 @@ if (!mobileLeadBarScript.includes('form.closest("[data-primary-lead]")')) {
 });
 
 console.log(`Checked portal lead forms: ${EXPECTED_FORMS.length}`);
+console.log(`Checked optional-name primary forms: ${PRIMARY_QUICK_FORMS.length}`);
 console.log(`Checked project trust and FAQ pages: ${PROJECT_TRUST_PAGES.length}`);
 
 if (errors.length) {

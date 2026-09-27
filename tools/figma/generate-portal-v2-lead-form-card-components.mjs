@@ -116,7 +116,7 @@ for (const layout of ["Desktop", "Mobile"]) {
     const fields = auto("Form fields", "VERTICAL");
     bind(fields, "itemSpacing", spacing("sm"));
     node.appendChild(fields);
-    await addField(fields, fieldSize, "Input", "Имя", "Как к вам обращаться");
+    await addField(fields, fieldSize, "Input", quick ? "Имя (необязательно)" : "Имя", "Как к вам обращаться");
     await addField(fields, fieldSize, "Input", "Телефон", "+7 ___ ___-__-__");
     await addField(fields, fieldSize, "Select", "Интересующий объект", "Выберите объект");
     if (!quick) {
@@ -186,7 +186,7 @@ for (const layout of ["Desktop", "Mobile"]) {
     bindVisibilityProperty(footer, showFooterProperty);
 
     node.description = quick
-      ? "Короткая форма первого шага: имя, телефон и объект. Согласие обязательно; заявка не является бронью."
+      ? "Короткая форма первого шага: необязательное имя, обязательные телефон и контекст обращения. Согласие обязательно; заявка не является бронью."
       : "Подробная форма после осознанного выбора сценария: восемь полей, согласие и один основной CTA.";
     variants.push(node);
   }
@@ -199,7 +199,7 @@ const notes = auto("Usage notes", "VERTICAL");
 notes.itemSpacing = 12;
 root.appendChild(notes);
 await text(notes, "Правила использования", { name: "Notes title", styleName: "Typography/H3", width: 1080 });
-await text(notes, "Quick используется в hero и карточках объекта: только имя, телефон и выбор объекта. Detailed применяется после того, как пользователь готов указать параметры покупки. Согласие на обработку данных обязательно в обоих вариантах и располагается перед CTA. Submit action является exposed Button Context=Light instance, поэтому экран может безопасно менять Label без фиктивного свойства родителя. Форма не обещает цену, наличие, бронь, одобрение ипотеки или юридический результат. На мобильной ширине используются настоящие Form Field Size=Mobile, а не масштабированные desktop-поля.", {
+await text(notes, "Quick используется в hero и карточках объекта: имя остаётся необязательным, телефон и контекст обращения обязательны. Detailed применяется после того, как пользователь готов указать параметры покупки. Согласие на обработку данных обязательно в обоих вариантах и располагается перед CTA. Submit action является exposed Button Context=Light instance, поэтому экран может безопасно менять Label без фиктивного свойства родителя. Форма не обещает цену, наличие, бронь, одобрение ипотеки или юридический результат. На мобильной ширине используются настоящие Form Field Size=Mobile, а не масштабированные desktop-поля.", {
   name: "Notes body",
   styleName: "Typography/Body",
   width: 1080,

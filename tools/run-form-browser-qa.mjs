@@ -461,6 +461,9 @@ async function fillForm(page, scenario) {
       continue;
     }
 
+    if (scenario.form_role === "primary" && meta.name === "name") {
+      continue;
+    }
     if (meta.type === "tel" || meta.name === "phone") {
       await control.fill(generatedPhone(10));
       continue;
