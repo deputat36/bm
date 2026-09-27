@@ -106,11 +106,7 @@ function isDraftPath(relativePath) {
 }
 
 function addLeadFormMetadataProblem(relativePath, message) {
-  if (isDraftPath(relativePath)) {
-    addError(message);
-  } else {
-    addWarning(`${message}; legacy published page should be upgraded before migration`);
-  }
+  addError(message);
 }
 
 function isExternalReference(value) {
