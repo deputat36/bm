@@ -60,6 +60,34 @@ const ADDITIONAL_PROJECT_INTENTS = [
     page: "catalog/prostornaya-4a/index.html",
     objectId: "prostornaya-4a",
     interest: "Цены и наличие квартир",
+    label: "Узнать варианты",
+    placement: "header",
+    action: "quick_consultation",
+    optionCount: 1
+  },
+  {
+    page: "catalog/sennaya-76/index.html",
+    objectId: "sennaya-76",
+    interest: "Актуальные цены и наличие",
+    label: "Узнать о квартирах",
+    placement: "header",
+    action: "quick_consultation",
+    optionCount: 2,
+    classAfterHref: true
+  },
+  {
+    page: "catalog/sennaya-76/index.html",
+    objectId: "sennaya-76",
+    interest: "Актуальные цены и наличие",
+    label: "Проверить квартиры",
+    placement: "project_hero",
+    action: "quick_consultation",
+    optionCount: 2
+  },
+  {
+    page: "catalog/prostornaya-4a/index.html",
+    objectId: "prostornaya-4a",
+    interest: "Цены и наличие квартир",
     label: "Узнать цены и наличие",
     placement: "project_hero",
     action: "quick_consultation",
