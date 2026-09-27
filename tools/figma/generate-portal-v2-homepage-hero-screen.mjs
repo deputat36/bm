@@ -138,7 +138,7 @@ for (const layout of ["Desktop", "Mobile"]) {
     width: desktop ? 718 : 336,
     color: semantic("text/inverse")
   });
-  const lead = await text(pitch, "Ищете квартиру в новом доме Борисоглебска? Выберите конкретный дом, получите общий подбор или предварительный расчёт покупки. Доступен подбор 1-, 2- и 3-комнатных квартир. Специалист проверит доступные документы и актуальные условия на дату обращения — без обещаний неподтверждённых цен и наличия.", {
+  const lead = await text(pitch, "Сравните новостройки Борисоглебска и получите подбор под комнатность, бюджет и способ покупки. Выберите конкретный дом, получите общий подбор или предварительный расчёт покупки. Специалист проверит доступные документы и актуальные условия на дату обращения — без обещаний неподтверждённых цен и наличия.", {
     name: "Hero lead",
     styleName: "Typography/Body Large",
     width: desktop ? 718 : 336,
@@ -149,7 +149,7 @@ for (const layout of ["Desktop", "Mobile"]) {
   const actions = auto("Hero actions", desktop ? "HORIZONTAL" : "VERTICAL");
   bind(actions, "itemSpacing", spacing("sm"));
   pitch.appendChild(actions);
-  configureButton(actions, heroPrimary, "Выбрать сценарий", !desktop);
+  configureButton(actions, heroPrimary, "Начать подбор", !desktop);
   configureButton(actions, heroSecondary, "Смотреть каталог", !desktop);
   if (desktop) configureButton(actions, heroSecondary, "8 903 857-69-09");
 
