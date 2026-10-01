@@ -3,7 +3,6 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const PORTAL_BASE_URL = process.env.PORTAL_BASE_URL || "https://novostroyki-borisoglebsk.ru";
-const LASTMOD = process.env.SITEMAP_LASTMOD || new Date().toISOString().slice(0, 10);
 
 function fromRoot(...parts) {
   return path.join(ROOT, ...parts);
@@ -75,8 +74,11 @@ function buildSitemapXml(pages) {
   const urls = pages
     .filter(isSitemapCandidate)
     .map((page) => {
+      if (!page.lastmod || !/^\d{4}-\d{2}-\d{2}$/.test(String(page.lastmod))) {
+        throw new Error(`Published sitemap candidate ${page.url} must define explicit YYYY-MM-DD lastmod`);
+      }
       const loc = escapeXml(normalizeUrl(PORTAL_BASE_URL, page.url));
-      const lastmod = escapeXml(page.lastmod || LASTMOD);
+      const lastmod = escapeXml(page.lastmod);
       const priority = escapeXml(page.priority || getPriority(page));
 
       return `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <priority>${priority}</priority>\n  </url>`;
