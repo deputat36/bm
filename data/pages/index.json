@@ -4,7 +4,8 @@
     "title": "Новостройки Борисоглебска — квартиры, каталог и ипотека",
     "page_type": "home",
     "robots": "index,follow",
-    "status": "published"
+    "status": "published",
+    "lastmod": "2026-09-27"
   },
   {
     "url": "/catalog/",
@@ -99,7 +100,8 @@
     "title": "Консультация по новостройкам Борисоглебска — телефон и заявка",
     "page_type": "contacts",
     "robots": "index,follow",
-    "status": "published"
+    "status": "published",
+    "lastmod": "2026-09-27"
   },
   {
     "url": "/about/",
