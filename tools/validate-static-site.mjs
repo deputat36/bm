@@ -415,6 +415,10 @@ function validatePageIndex() {
     if (page.status === "published" && page.robots === "noindex,follow") {
       addError(`${label}: published page must not have robots=noindex,follow`);
     }
+
+    if (page.status === "published" && !/^\d{4}-\d{2}-\d{2}$/.test(String(page.lastmod || ""))) {
+      addError(`${label}: published page must define explicit YYYY-MM-DD lastmod`);
+    }
   });
 }
 
@@ -450,16 +454,22 @@ function validateLeadTypeCompatibility() {
   }
 }
 
-function extractSitemapLocs(xml) {
-  const locs = [];
-  const regex = /<loc>\s*([^<]+?)\s*<\/loc>/gi;
+function extractSitemapEntries(xml) {
+  const entries = [];
+  const urlRegex = /<url>([\s\S]*?)<\/url>/gi;
   let match;
 
-  while ((match = regex.exec(xml))) {
-    locs.push(match[1].trim());
+  while ((match = urlRegex.exec(xml))) {
+    const block = match[1];
+    const locMatch = block.match(/<loc>\s*([^<]+?)\s*<\/loc>/i);
+    const lastmodMatch = block.match(/<lastmod>\s*([^<]+?)\s*<\/lastmod>/i);
+    entries.push({
+      loc: locMatch ? locMatch[1].trim() : "",
+      lastmod: lastmodMatch ? lastmodMatch[1].trim() : ""
+    });
   }
 
-  return locs;
+  return entries;
 }
 
 function validateSitemap() {
@@ -477,18 +487,25 @@ function validateSitemap() {
       : []
   );
   const seenLocs = new Set();
+  const seenPaths = new Set();
   const xml = read(sitemapFile);
-  const locs = extractSitemapLocs(xml);
+  const entries = extractSitemapEntries(xml);
 
-  if (!locs.length) {
-    addWarning(`${sitemapPath}: no <loc> entries found`);
+  if (!entries.length) {
+    addError(`${sitemapPath}: no <url> entries found`);
   }
 
-  locs.forEach((loc) => {
+  entries.forEach((entry) => {
+    const loc = entry.loc;
     results.checkedSitemapUrls += 1;
 
+    if (!loc) {
+      addError(`${sitemapPath}: <url> entry is missing <loc>`);
+      return;
+    }
+
     if (seenLocs.has(loc)) {
-      addWarning(`${sitemapPath}: duplicate loc ${loc}`);
+      addError(`${sitemapPath}: duplicate loc ${loc}`);
     }
     seenLocs.add(loc);
 
@@ -496,13 +513,14 @@ function validateSitemap() {
     try {
       parsed = new URL(loc);
     } catch (error) {
-      addWarning(`${sitemapPath}: invalid loc URL "${loc}"`);
+      addError(`${sitemapPath}: invalid loc URL "${loc}"`);
       return;
     }
 
     const pathname = normalizePathname(parsed.pathname);
     const relativePath = pathname.replace(/^\/+/, "");
     const indexedPage = pageByUrl.get(pathname);
+    seenPaths.add(pathname);
 
     if (isDraftPath(relativePath)) {
       addWarning(`${sitemapPath}: draft portal URL must not be in current sitemap: ${pathname}`);
@@ -516,6 +534,10 @@ function validateSitemap() {
       if (indexedPage.robots === "noindex,follow" || indexedPage.robots === "noindex, follow") {
         addWarning(`${sitemapPath}: ${pathname} is listed but data/pages/index.json robots=${indexedPage.robots}`);
       }
+
+      if (indexedPage.status === "published" && entry.lastmod !== indexedPage.lastmod) {
+        addError(`${sitemapPath}: ${pathname} lastmod=${entry.lastmod || "missing"} does not match page registry lastmod=${indexedPage.lastmod || "missing"}`);
+      }
     }
 
     const pageFile = resolvePageFile(pathname);
@@ -527,6 +549,17 @@ function validateSitemap() {
       }
     }
   });
+
+  if (Array.isArray(pages)) {
+    pages
+      .filter((page) => page.status === "published" && page.robots !== "noindex,follow" && page.robots !== "noindex, follow")
+      .forEach((page) => {
+        const expectedPath = normalizePathname(page.url);
+        if (!seenPaths.has(expectedPath)) {
+          addError(`${sitemapPath}: published indexable page missing from sitemap: ${expectedPath}`);
+        }
+      });
+  }
 }
 
 function validateDataFiles() {
