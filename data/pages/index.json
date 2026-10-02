@@ -89,6 +89,41 @@
     "status": "ready"
   },
   {
+    "url": "/guides/kakie-dokumenty-zaprosit-u-prodavtsa-novoy-kvartiry/",
+    "title": "Какие документы запросить у продавца новой квартиры",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/guides/kak-proverit-kadastrovyy-nomer-i-vypisku-egrn/",
+    "title": "Как проверить кадастровый номер квартиры и выписку ЕГРН",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/guides/ddu-dkp-predvaritelnyy-investitsionnyy-dogovor/",
+    "title": "ДДУ, ДКП, предварительный и инвестиционный договор",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/guides/kak-proverit-razreshenie-na-vvod/",
+    "title": "Как проверить разрешение на ввод дома в эксплуатацию",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
+    "url": "/guides/pokupka-kvartiry-v-nevvedennoy-sektsii/",
+    "title": "Покупка квартиры в невведённой секции — что проверить",
+    "page_type": "guide_article",
+    "robots": "noindex,follow",
+    "status": "ready"
+  },
+  {
     "url": "/news/",
     "title": "Новости новостроек Борисоглебска",
     "page_type": "news_index",
