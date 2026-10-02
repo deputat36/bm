@@ -562,6 +562,26 @@ function validateSitemap() {
   }
 }
 
+function validateUnmanagedIndexRoutes(htmlFiles) {
+  const pages = readJson("data/pages/index.json") || [];
+  if (!Array.isArray(pages)) return;
+
+  const registeredFiles = new Set(
+    pages.map((page) => resolvePageFile(page.url))
+  );
+
+  htmlFiles.forEach((file) => {
+    const relativePath = toPosix(path.relative(ROOT, file));
+    if (!relativePath.endsWith("index.html")) return;
+    if (registeredFiles.has(relativePath)) return;
+
+    const html = read(file);
+    if (!htmlHasNoindex(html)) {
+      addError(`${relativePath}: unmanaged route must include noindex; register the page in data/pages/index.json before making it indexable`);
+    }
+  });
+}
+
 function validateDataFiles() {
   validateProjectIndex();
   validateResearchRegister();
@@ -572,6 +592,7 @@ function main() {
   const htmlFiles = walk(ROOT);
   htmlFiles.forEach(validateHtmlFile);
   validateDataFiles();
+  validateUnmanagedIndexRoutes(htmlFiles);
   validateLeadTypeCompatibility();
   validateSitemap();
 
