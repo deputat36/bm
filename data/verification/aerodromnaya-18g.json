@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "updated_at": "2026-07-18",
+  "updated_at": "2026-10-03",
   "project_id": "aerodromnaya-18g",
   "portal_slug": "aerodromnaya-18g",
   "page_url": "/catalog/aerodromnaya-18g/",
@@ -32,12 +32,12 @@
     },
     {
       "id": "owner-project-name-confirmation",
-      "source_type": "owner_project_name_confirmation",
-      "title": "Подтверждение владельца проекта: ЖК «Патриот»",
-      "reference": "https://github.com/deputat36/bm/issues/110#issuecomment-5010781446",
-      "status": "verified",
-      "last_checked_at": "2026-07-18",
-      "notes": "Владелец проекта подтвердил, что объект по адресу ул. Аэродромная, 18Г относится к ЖК «Патриот». Название «Чкалов» в карточке ЦИАН признано ошибочным для этого объекта. Подтверждение не заменяет официальный документ застройщика или ЕИСЖС."
+      "source_type": "user_operational_information",
+      "title": "Рабочее уточнение названия: ЖК «Патриот»",
+      "reference": "",
+      "status": "user_operational_information",
+      "last_checked_at": "2026-10-03",
+      "notes": "Рабочее уточнение названия портала. Не является публичным первичным документом застройщика, ЕИСЖС или разрешительной документацией и не должно использоваться как externally verified source."
     },
     {
       "id": "cian-complex-card",
@@ -46,7 +46,7 @@
       "reference": "https://zhk-chkalov-voronezh-i.cian.ru/",
       "status": "verified",
       "last_checked_at": "2026-07-18",
-      "notes": "Источник используется только для атрибутированных общих характеристик. Название ЖК в карточке ЦИАН не используется как название объекта портала после исправления владельца проекта. Карточка не заменяет наш.дом.рф, разрешения, проектную декларацию, ЕГРН и документы продавца."
+      "notes": "Источник используется только для атрибутированных общих характеристик. Карточка ЦИАН использует название ЖК «Чкалов»; портал не считает это доказательством идентичности объекта. Нужен официальный документ, связывающий название и адрес. Карточка не заменяет наш.дом.рф, разрешения, проектную декларацию, ЕГРН и документы продавца."
     },
     {
       "id": "yandex-address-listings",
@@ -100,34 +100,43 @@
       "value": "ул. Аэродромная, 18Г",
       "importance": "critical",
       "verification_status": "confirmed",
-      "source_ids": ["owner-project-name-confirmation", "yandex-address-listings"],
-      "checked_at": "2026-07-18",
+      "source_ids": [
+        "yandex-address-listings"
+      ],
+      "checked_at": "2026-10-03",
       "publication_allowed": true
     },
     {
       "field": "public_name",
       "value": "ЖК «Патриот»",
       "importance": "standard",
-      "verification_status": "confirmed",
-      "source_ids": ["owner-project-name-confirmation"],
-      "checked_at": "2026-07-18",
-      "publication_allowed": true
+      "verification_status": "user_operational_information",
+      "source_ids": [
+        "owner-project-name-confirmation"
+      ],
+      "checked_at": "2026-10-03",
+      "publication_allowed": false
     },
     {
-      "field": "marketplace_incorrect_name_statement",
-      "value": "ЦИАН ошибочно использует для объекта название ЖК «Чкалов»",
+      "field": "marketplace_name_conflict_statement",
+      "value": "ЦИАН использует название ЖК «Чкалов», портал использует рабочее название ЖК «Патриот»; нужен первичный документ по идентичности объекта",
       "importance": "standard",
-      "verification_status": "confirmed",
-      "source_ids": ["owner-project-name-confirmation", "cian-complex-card"],
-      "checked_at": "2026-07-18",
-      "publication_allowed": true
+      "verification_status": "requires_document_confirmation",
+      "source_ids": [
+        "owner-project-name-confirmation",
+        "cian-complex-card"
+      ],
+      "checked_at": "2026-10-03",
+      "publication_allowed": false
     },
     {
       "field": "developer_attribution_statement",
       "value": "ЦИАН указывает застройщиком ООО «Первая Строительная Компания»",
       "importance": "standard",
       "verification_status": "confirmed",
-      "source_ids": ["cian-complex-card"],
+      "source_ids": [
+        "cian-complex-card"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": true
     },
@@ -136,7 +145,9 @@
       "value": "В карточке ЦИАН объект указан как кирпичный",
       "importance": "standard",
       "verification_status": "confirmed",
-      "source_ids": ["cian-complex-card"],
+      "source_ids": [
+        "cian-complex-card"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": true
     },
@@ -145,7 +156,9 @@
       "value": "В карточке ЦИАН указана этажность 3–7",
       "importance": "standard",
       "verification_status": "confirmed",
-      "source_ids": ["cian-complex-card"],
+      "source_ids": [
+        "cian-complex-card"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": true
     },
@@ -154,7 +167,9 @@
       "value": "В карточке ЦИАН указана высота потолков 2,7 м",
       "importance": "standard",
       "verification_status": "confirmed",
-      "source_ids": ["cian-complex-card"],
+      "source_ids": [
+        "cian-complex-card"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": true
     },
@@ -163,7 +178,9 @@
       "value": "В карточке ЦИАН указана черновая отделка",
       "importance": "standard",
       "verification_status": "confirmed",
-      "source_ids": ["cian-complex-card"],
+      "source_ids": [
+        "cian-complex-card"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": true
     },
@@ -172,7 +189,9 @@
       "value": "В карточке ЦИАН указана гостевая парковка",
       "importance": "standard",
       "verification_status": "confirmed",
-      "source_ids": ["cian-complex-card"],
+      "source_ids": [
+        "cian-complex-card"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": true
     },
@@ -181,7 +200,9 @@
       "value": "В карточке ЦИАН перечислены детская и спортивная площадки и места отдыха",
       "importance": "standard",
       "verification_status": "confirmed",
-      "source_ids": ["cian-complex-card"],
+      "source_ids": [
+        "cian-complex-card"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": true
     },
@@ -190,7 +211,9 @@
       "value": 8,
       "importance": "standard",
       "verification_status": "secondary_only",
-      "source_ids": ["working-due-diligence-report"],
+      "source_ids": [
+        "working-due-diligence-report"
+      ],
       "checked_at": "2026-07-15",
       "publication_allowed": false
     },
@@ -199,7 +222,9 @@
       "value": "Поэтапный ввод по секциям или подъездам",
       "importance": "critical",
       "verification_status": "user_operational_information",
-      "source_ids": ["user-operational-information"],
+      "source_ids": [
+        "user-operational-information"
+      ],
       "checked_at": "2026-07-15",
       "publication_allowed": false
     },
@@ -208,16 +233,24 @@
       "value": 6,
       "importance": "standard",
       "verification_status": "user_operational_information",
-      "source_ids": ["user-operational-information"],
+      "source_ids": [
+        "user-operational-information"
+      ],
       "checked_at": "2026-07-15",
       "publication_allowed": false
     },
     {
       "field": "uncommissioned_sections_probable",
-      "value": [3, 5],
+      "value": [
+        3,
+        5
+      ],
       "importance": "critical",
       "verification_status": "requires_document_confirmation",
-      "source_ids": ["user-operational-information", "commissioning-documents"],
+      "source_ids": [
+        "user-operational-information",
+        "commissioning-documents"
+      ],
       "checked_at": "2026-07-15",
       "publication_allowed": false
     },
@@ -226,7 +259,10 @@
       "value": 7,
       "importance": "standard",
       "verification_status": "requires_document_confirmation",
-      "source_ids": ["working-due-diligence-report", "commissioning-documents"],
+      "source_ids": [
+        "working-due-diligence-report",
+        "commissioning-documents"
+      ],
       "checked_at": "2026-07-15",
       "publication_allowed": false
     },
@@ -235,7 +271,10 @@
       "value": "Сообщается о продаже только за наличные",
       "importance": "critical",
       "verification_status": "user_operational_information",
-      "source_ids": ["user-operational-information", "seller-contract"],
+      "source_ids": [
+        "user-operational-information",
+        "seller-contract"
+      ],
       "checked_at": "2026-07-15",
       "publication_allowed": false
     },
@@ -244,7 +283,9 @@
       "value": null,
       "importance": "critical",
       "verification_status": "not_found",
-      "source_ids": ["seller-contract"],
+      "source_ids": [
+        "seller-contract"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": false
     },
@@ -253,7 +294,9 @@
       "value": null,
       "importance": "critical",
       "verification_status": "not_found",
-      "source_ids": ["seller-contract"],
+      "source_ids": [
+        "seller-contract"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": false
     },
@@ -262,7 +305,9 @@
       "value": null,
       "importance": "critical",
       "verification_status": "not_found",
-      "source_ids": ["commissioning-documents"],
+      "source_ids": [
+        "commissioning-documents"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": false
     },
@@ -271,7 +316,9 @@
       "value": null,
       "importance": "critical",
       "verification_status": "not_found",
-      "source_ids": ["public-object-registry"],
+      "source_ids": [
+        "public-object-registry"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": false
     },
@@ -280,7 +327,9 @@
       "value": null,
       "importance": "volatile",
       "verification_status": "not_found",
-      "source_ids": ["seller-contract"],
+      "source_ids": [
+        "seller-contract"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": false
     },
@@ -289,7 +338,9 @@
       "value": null,
       "importance": "volatile",
       "verification_status": "not_found",
-      "source_ids": ["seller-contract"],
+      "source_ids": [
+        "seller-contract"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": false
     },
@@ -298,7 +349,10 @@
       "value": "На площадках присутствуют объявления по адресу",
       "importance": "volatile",
       "verification_status": "confirmed",
-      "source_ids": ["cian-complex-card", "yandex-address-listings"],
+      "source_ids": [
+        "cian-complex-card",
+        "yandex-address-listings"
+      ],
       "checked_at": "2026-07-18",
       "publication_allowed": false
     }
@@ -312,7 +366,7 @@
     {
       "id": "marketplace-project-name-error",
       "status": "requires_document_confirmation",
-      "summary": "Владелец проекта подтвердил название ЖК «Патриот». Карточка ЦИАН использует ошибочное название ЖК «Чкалов». Официальный документ застройщика или ЕИСЖС всё ещё требуется для юридического контура."
+      "summary": "Портал использует рабочее название ЖК «Патриот», а карточка ЦИАН — ЖК «Чкалов». Публичный первичный документ, связывающий название с адресом 18Г, пока не принят."
     },
     {
       "id": "marketplace-characteristics-scope",

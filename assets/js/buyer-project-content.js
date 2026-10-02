@@ -76,24 +76,24 @@
 
   function updateAerodromnayaHomepageCard(claims) {
     const card = findHomepageProjectCard("Аэродромная 18Г", "ЖК «Патриот»", "ЖК «Патриот» на Аэродромной 18Г");
-    if (!card || !claims.has("public_name") || !claims.has("building_type_statement")) return false;
+    if (!card || !claims.has("building_type_statement")) return false;
     const eyebrow = card.querySelector(".eyebrow");
     const title = card.querySelector("h3");
     const description = card.querySelector("p");
     const list = card.querySelector("ul.list");
     const primary = card.querySelector('a[data-track-action="object_quick_consultation"]');
     const details = card.querySelector('a[data-track-action="object_details"]');
-    if (eyebrow) eyebrow.textContent = "Название подтверждено владельцем проекта";
+    if (eyebrow) eyebrow.textContent = "Рабочее название · первичный документ ожидается";
     if (title) title.textContent = "ЖК «Патриот»";
     if (description) description.textContent = "ЖК «Патриот» на Аэродромной 18Г. Общие характеристики дома приведены по карточке ЦИАН и требуют сверки по выбранной секции.";
     if (list) list.replaceChildren(
-      createListItem("Название ЖК «Патриот» подтверждено владельцем проекта."),
+      createListItem("ЖК «Патриот» используется как рабочее название; первичный документ по связке названия и адреса пока не принят."),
       createListItem("ЦИАН указывает кирпичный дом, этажность 3–7, потолки 2,7 м и черновую отделку."),
       createListItem("Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире.")
     );
     if (primary) primary.textContent = "Проверить квартиру";
     if (details) details.textContent = "Смотреть ЖК";
-    card.dataset.buyerContent = "owner-confirmed-name-marketplace-characteristics";
+    card.dataset.buyerContent = "working-name-marketplace-characteristics";
     return true;
   }
 

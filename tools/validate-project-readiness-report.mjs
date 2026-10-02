@@ -9,7 +9,7 @@ const DOC_PATH = "docs/portal/PROJECT_VERIFICATION_READINESS.md";
 const REPORT_SCRIPT = "tools/build-project-readiness-report.mjs";
 const EXPECTED = {
   "tellermanov-sad": { sourcesMin: 5, claimsMin: 30, criticalMin: 8, verifiedMin: 4, confirmedMin: 6, publicMin: 21 },
-  "aerodromnaya-18g": { sourcesMin: 9, claimsMin: 23, criticalMin: 8, verifiedMin: 3, confirmedMin: 1, publicMin: 10 },
+  "aerodromnaya-18g": { sourcesMin: 9, claimsMin: 23, criticalMin: 8, verifiedMin: 2, confirmedMin: 1, publicMin: 8 },
   "sennaya-76": { sourcesMin: 8, claimsMin: 32, criticalMin: 13, verifiedMin: 1, confirmedMin: 1, publicMin: 14 }
 };
 const EXPECTED_IDS = new Set(Object.keys(EXPECTED));

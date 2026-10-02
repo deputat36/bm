@@ -40,6 +40,10 @@ const FORBIDDEN_PATTERNS = [
   {
     label: "ссылка на архивную главную",
     pattern: /portal-preview\//i
+  },
+  {
+    label: "внутренняя GitHub issue/PR ссылка",
+    pattern: /github\.com\/deputat36\/bm\/(?:issues|pull)\//i
   }
 ];
 

@@ -100,10 +100,10 @@
 
   function renderAerodromnayaBuyerCard(card, profile, claims) {
     const publicClaims = getPublicClaimMap(claims);
-    if (!publicClaims.has("public_name") || !publicClaims.has("building_type_statement")) return false;
+    if (!publicClaims.has("building_type_statement")) return false;
     const title = card.querySelector("h3");
     if (title) title.textContent = "ЖК «Патриот»";
-    setText(card, "[data-verification-status]", "Название подтверждено владельцем проекта; характеристики — по ЦИАН");
+    setText(card, "[data-verification-status]", "Рабочее название портала; характеристики — по ЦИАН, идентичность требует первичного документа");
     setText(card, "[data-verification-date]", `Профиль обновлён: ${formatDate(profile?.updated_at)}`);
     setText(card, "[data-verification-sources]", "Кирпичный дом · этажность 3–7 · потолки 2,7 м");
     setText(card, "[data-verification-critical]", "Черновая отделка · гостевая парковка · площадки и места отдыха");
@@ -112,7 +112,7 @@
     const detailsAction = card.querySelector('a[data-track-action="object_open"]');
     if (primaryAction) primaryAction.textContent = "Проверить квартиру";
     if (detailsAction) detailsAction.textContent = "Смотреть ЖК";
-    card.dataset.buyerContent = "owner-confirmed-name-marketplace-characteristics";
+    card.dataset.buyerContent = "working-name-marketplace-characteristics";
     return true;
   }
 
