@@ -79,11 +79,9 @@ const configs = {
   aerodromnaya: {
     profilePath: "data/verification/aerodromnaya-18g.json",
     pagePath: "catalog/aerodromnaya-18g/index.html",
-    minimum: 10,
+    minimum: 8,
     expected: new Map([
       ["address", "ул. Аэродромная, 18Г"],
-      ["public_name", "ЖК «Патриот»"],
-      ["marketplace_incorrect_name_statement", "ЦИАН ошибочно использует для объекта название ЖК «Чкалов»"],
       ["developer_attribution_statement", "ЦИАН указывает застройщиком ООО «Первая Строительная Компания»"],
       ["building_type_statement", "В карточке ЦИАН объект указан как кирпичный"],
       ["floor_range_statement", "В карточке ЦИАН указана этажность 3–7"],
@@ -132,7 +130,7 @@ requireFragments(runtimePath, runtime, [
   'ЖК «Патриот» — Аэродромная 18Г',
   'Дом на Сенной 76',
   'updateAerodromnayaHomepageCard',
-  'Название ЖК «Патриот» подтверждено владельцем проекта.',
+  'ЖК «Патриот» используется как рабочее название; первичный документ по связке названия и адреса пока не принят.',
   'Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире.',
   'updateHomepageStructuredData("/catalog/aerodromnaya-18g/", "ЖК «Патриот»")',
   'Promise.allSettled',
@@ -150,7 +148,7 @@ requireFragments(catalogRuntimePath, catalogRuntime, [
   'profile?.project_id === "aerodromnaya-18g"',
   'profile?.project_id === "sennaya-76"',
   'renderAerodromnayaBuyerCard',
-  'Название подтверждено владельцем проекта; характеристики — по ЦИАН',
+  'Рабочее название портала; характеристики — по ЦИАН, идентичность требует первичного документа',
   'Кирпичный дом · этажность 3–7 · потолки 2,7 м',
   'Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире',
   'primaryAction.textContent = "Проверить квартиру"'
@@ -168,10 +166,9 @@ requireFragments(configs.aerodromnaya.pagePath, loaded.aerodromnaya.page, [
   '<title>ЖК «Патриот» на Аэродромной 18Г',
   'data-schema-project-name="ЖК Патриот на Аэродромной 18Г"',
   '<h1>ЖК «Патриот» на Аэродромной 18Г</h1>',
-  'Название «Патриот» подтверждено владельцем проекта',
+  'Название «Патриот» используется в портале как рабочее уточнение',
   'Карточка ЦИАН использует название ЖК «Чкалов»',
-  'href="https://github.com/deputat36/bm/issues/110#issuecomment-5010781446"',
-  'href="https://zhk-chkalov-voronezh-i.cian.ru/"',
+    'href="https://zhk-chkalov-voronezh-i.cian.ru/"',
   'href="https://realty.yandex.ru/borisoglebsk/kupit/kvartira/st-aehrodromnaya-ulica-115486/"',
   'Название отделено от юридических фактов сделки',
   'Нужны первичные документы',
@@ -221,15 +218,23 @@ for (const field of ["price_from", "available_offers_count", "seller_identity", 
   if (!claim || claim.publication_allowed !== false) errors.push(`${configs.sennaya.profilePath}: ${field} must remain private`);
 }
 
-for (const sourceId of ["owner-project-name-confirmation", "cian-complex-card", "yandex-address-listings"]) {
+for (const sourceId of ["cian-complex-card", "yandex-address-listings"]) {
   const source = results.aerodromnaya.sources.find((item) => item.id === sourceId);
   if (!source || source.status !== "verified" || !String(source.reference || "").startsWith("https://")) {
     errors.push(`${configs.aerodromnaya.profilePath}: verified source ${sourceId} is required`);
   }
 }
-const ownerConfirmation = results.aerodromnaya.sources.find((source) => source.id === "owner-project-name-confirmation");
-if (!String(ownerConfirmation?.reference || "").includes("issues/110#issuecomment-5010781446")) {
-  errors.push(`${configs.aerodromnaya.profilePath}: owner confirmation must reference issue #110 correction`);
+const ownerWorkingName = results.aerodromnaya.sources.find((source) => source.id === "owner-project-name-confirmation");
+if (!ownerWorkingName || ownerWorkingName.status !== "user_operational_information" || String(ownerWorkingName.reference || "").trim()) {
+  errors.push(`${configs.aerodromnaya.profilePath}: working project name must remain internal user information without a public source URL`);
+}
+const workingNameClaim = results.aerodromnaya.claims.find((claim) => claim.field === "public_name");
+if (!workingNameClaim || workingNameClaim.verification_status !== "user_operational_information" || workingNameClaim.publication_allowed !== false) {
+  errors.push(`${configs.aerodromnaya.profilePath}: public_name must remain a non-public working name until primary evidence is accepted`);
+}
+const nameConflictClaim = results.aerodromnaya.claims.find((claim) => claim.field === "marketplace_name_conflict_statement");
+if (!nameConflictClaim || nameConflictClaim.verification_status !== "requires_document_confirmation" || nameConflictClaim.publication_allowed !== false) {
+  errors.push(`${configs.aerodromnaya.profilePath}: marketplace name conflict must remain unpublished until primary evidence is accepted`);
 }
 const sennayaInterview = results.sennaya.sources.find((source) => source.id === "developer-engineer-interview");
 if (!sennayaInterview || sennayaInterview.status !== "verified" || !String(sennayaInterview.reference || "").includes("ria-glas.ru/2024/")) {
