@@ -1,6 +1,6 @@
 # План автономной работы над порталом
 
-Дата актуализации: 2026-09-27
+Дата актуализации: 2026-10-03
 
 Репозиторий: `deputat36/bm`  
 Рабочая ветка: `main`
@@ -51,6 +51,37 @@ commercial_release_blocked_by_owner_legal_source_and_live_evidence
 - #110 primary sources: повторный indexed search без нового trigger не выполнять; нужен direct GIS OGD/export или новый exact identifier/evidence.
 
 Buyer journey issue #230 считается закрытой и не должна повторно открываться без новой browser/analytics regression.
+
+### Синхронизация 03.10.2026
+
+После 27.09 дополнительно закрыты и подтверждены реальные gaps:
+
+- #254 — sitemap lastmod переведён на factual/fail-closed contract;
+- #257 — 31 unmanaged indexable HTML route закрыты `noindex,follow`, добавлен registry-first guard;
+- #259 — устранён конфликт `robots.txt` и page-level `noindex`;
+- #260 — все оставшиеся GitHub workflows переведены на Node 24-compatible official Actions, добавлен permanent workflow guard;
+- #262 — все 8 SEO-guides зарегистрированы в page registry и HTML-карте сайта без снятия `noindex`;
+- #266 — STATUS и GUIDE_LAUNCH_READINESS синхронизированы с machine-state.
+
+Новые подтверждённые границы:
+
+- production lead endpoint healthy, scheduled non-persistent smoke проходит;
+- `public.newbuild_leads`: accepted production rows = 0 на read-only проверке 01.10;
+- Google Search Console connector: connected properties = 0; sitemap submission / URL Inspection evidence отсутствуют;
+- публичный `site:novostroyki-borisoglebsk.ru` search не дал страниц домена в текущем web-search; это сигнал, но не абсолютное доказательство отсутствия индексации;
+- #116 Figma: metadata read частично восстановлен, но `get_design_context` и `use_figma` остаются blocked Starter MCP limit;
+- #242 Pages: двойной custom + managed deployment требует owner/admin GitHub Pages setting;
+- #110 primary object evidence требует нового exact external evidence, а не повторного indexed search.
+
+После этой точки автономная работа не должна создавать косметические PR ради активности. Приоритет только у:
+
+1. фактической regression/bug;
+2. новой доступности primary evidence;
+3. machine-state/doc mismatch;
+4. проверяемого CRO/SEO/QA gap;
+5. owner-approved release action.
+
+Search Console, controlled real lead, legal review, operations activation, campaign publication и Pages source setting нельзя подменять кодом.
 
 ## 2. Главный принцип
 
