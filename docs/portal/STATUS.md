@@ -1,6 +1,6 @@
 # STATUS портала novostroyki-borisoglebsk.ru
 
-Дата обновления: 2026-09-27
+Дата обновления: 2026-10-02
 
 Репозиторий: `deputat36/bm`  
 Основная ветка: `main`
@@ -83,6 +83,57 @@ https://novostroyki-borisoglebsk.ru/
 Повторная проверка issue #116 от 27.09.2026: Figma MCP Starter по-прежнему блокирует даже `get_metadata` месячным tool-call limit.
 
 Новых подготовительных Figma PR не создавать: execution/visual-QA/source-map packs уже подготовлены. Следующий Figma шаг — только после восстановления MCP-доступа.
+
+## Milestone 02.10.2026
+
+После milestone 27.09 в `main` закрыты дополнительные SEO/CI governance gaps без повышения owner/legal/source/publication state.
+
+### Sitemap / indexability
+
+PR #254:
+
+- `/` и `/contacts/` получили фактический `lastmod=2026-09-27`;
+- sitemap preview больше не подставляет текущую дату как ложный freshness signal;
+- static validator сверяет page registry ↔ sitemap и требует присутствия всех published/indexable URL.
+
+PR #257:
+
+- 31 unmanaged HTML route, обходивших page registry, переведены в `noindex,follow`;
+- canonical на старый `tellermanovsad.ru` удалены из затронутых страниц;
+- static validator запрещает повторное появление unmanaged indexable routes.
+
+PR #259:
+
+- `robots.txt` синхронизирован с meta-robots model: legacy/noindex URL не блокируются от crawl только ради robots-level Disallow;
+- поисковый робот может увидеть `noindex`, не создавая конфликт между crawl blocking и deindexing contract.
+
+### CI runtime
+
+PR #260 завершил migration оставшихся workflows на Node 24-compatible official Actions и добавил fail-closed guard, запрещающий возврат deprecated Actions major.
+
+### SEO guides
+
+PR #262 синхронизировал все 8 подготовленных guide routes с `data/pages/index.json` и HTML-картой сайта.
+
+Machine-state:
+
+```text
+guides=8
+editorial_passed=8
+source_verified_or_not_applicable=8
+legal_passed=0
+legal_not_applicable=1
+index_ready=1
+index_blocked=7
+```
+
+Это не является разрешением SEO release: `guide_content_publication` и `seo_guide_indexing` остаются blocked.
+
+### Figma recheck 01.10
+
+`get_metadata` снова смог прочитать файл и подтвердил только страницу `00 Cover`.
+
+Но `get_design_context` и `use_figma` продолжают возвращать Starter MCP tool-call limit. Следовательно, #116 остаётся execution-blocked: metadata-access частично восстановлен, write/design-context доступ не восстановлен.
 
 ## Интерфейс и buyer experience
 
