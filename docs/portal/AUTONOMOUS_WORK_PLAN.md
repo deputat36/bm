@@ -1,6 +1,6 @@
 # План автономной работы над порталом
 
-Дата актуализации: 2026-09-27
+Дата актуализации: 2026-10-02
 
 Репозиторий: `deputat36/bm`  
 Рабочая ветка: `main`
@@ -51,6 +51,26 @@ commercial_release_blocked_by_owner_legal_source_and_live_evidence
 - #110 primary sources: повторный indexed search без нового trigger не выполнять; нужен direct GIS OGD/export или новый exact identifier/evidence.
 
 Buyer journey issue #230 считается закрытой и не должна повторно открываться без новой browser/analytics regression.
+
+### Синхронизация 02.10.2026
+
+Дополнительно закрыты реальные gaps:
+
+- #254 — factual/fail-closed sitemap lastmod;
+- #257 — 31 unmanaged indexable routes закрыты `noindex`, добавлен registry-first guard;
+- #259 — robots/noindex conflict устранён;
+- #260 — 73 оставшихся workflow перенесены на Node 24 Actions, добавлен permanent guard; 84/84 checks green;
+- #262 — все 8 SEO-guides синхронизированы с page registry без снятия `noindex`.
+
+Текущие доказанные границы:
+
+- production lead endpoint health подтверждён, но accepted lead store содержит 0 строк; real-lead test требует explicit owner consent и не выполняется автономно;
+- `seo_guide_indexing` остаётся BLOCKED: 1 guide individually ready, 7 blocked legal review, общий `legal_owner_review` не пройден;
+- Figma metadata частично читается, но design-context/write API всё ещё blocked Starter-limit;
+- Pages duplicate deployment #242 требует owner/admin GitHub setting;
+- primary object evidence #110 требует нового external evidence trigger.
+
+Новые PR после этой точки должны либо исправлять фактическую regression/state mismatch, либо использовать новое внешнее evidence. Нельзя подменять legal owner approval, controlled real lead, Search Console evidence или primary-source confirmation кодом.
 
 ## 2. Главный принцип
 
