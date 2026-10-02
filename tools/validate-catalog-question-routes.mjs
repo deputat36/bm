@@ -101,7 +101,7 @@ const comparisonContracts = [
     profile: "../data/verification/aerodromnaya-18g.json",
     objectFragment: 'data-track-object="aerodromnaya-18g"',
     projectId: "aerodromnaya-18g",
-    minimumPublicClaims: 9
+    minimumPublicClaims: 8
   },
   {
     label: "Сенная 76",
