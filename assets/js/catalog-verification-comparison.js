@@ -103,7 +103,7 @@
     if (!publicClaims.has("public_name") || !publicClaims.has("building_type_statement")) return false;
     const title = card.querySelector("h3");
     if (title) title.textContent = "ЖК «Патриот»";
-    setText(card, "[data-verification-status]", "Название подтверждено владельцем проекта; характеристики — по ЦИАН");
+    setText(card, "[data-verification-status]", "Рабочее название портала; характеристики — по ЦИАН, идентичность требует первичного документа");
     setText(card, "[data-verification-date]", `Профиль обновлён: ${formatDate(profile?.updated_at)}`);
     setText(card, "[data-verification-sources]", "Кирпичный дом · этажность 3–7 · потолки 2,7 м");
     setText(card, "[data-verification-critical]", "Черновая отделка · гостевая парковка · площадки и места отдыха");
