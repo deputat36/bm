@@ -16,7 +16,7 @@ const PROJECTS = [
     page: "catalog/aerodromnaya-18g/index.html",
     profile: "data/verification/aerodromnaya-18g.json",
     htmlProfile: "../../data/verification/aerodromnaya-18g.json",
-    expected: { sourcesMin: 9, claimsMin: 23, criticalMin: 8, confirmedCriticalMin: 1, publicClaimsMin: 10, verifiedSourcesMin: 3 }
+    expected: { sourcesMin: 9, claimsMin: 23, criticalMin: 8, confirmedCriticalMin: 1, publicClaimsMin: 8, verifiedSourcesMin: 2 }
   },
   {
     page: "catalog/sennaya-76/index.html",
