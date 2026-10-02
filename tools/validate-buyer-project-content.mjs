@@ -143,6 +143,15 @@ requireFragments(loaderPath, loader, [
   'buyerContentScript.dataset.buyerProjectContent = "true"'
 ]);
 
+if (runtime.includes('claims.has("public_name") || !claims.has("building_type_statement")')) {
+  errors.push(`${runtimePath}: Aerodromnaya buyer runtime must not depend on private public_name claim`);
+}
+if (catalogRuntime.includes('publicClaims.has("public_name") || !publicClaims.has("building_type_statement")')) {
+  errors.push(`${catalogRuntimePath}: Aerodromnaya catalog runtime must not depend on private public_name claim`);
+}
+requireFragments(runtimePath, runtime, ['working-name-marketplace-characteristics']);
+requireFragments(catalogRuntimePath, catalogRuntime, ['working-name-marketplace-characteristics']);
+
 requireFragments(catalogRuntimePath, catalogRuntime, [
   'profile?.project_id === "tellermanov-sad"',
   'profile?.project_id === "aerodromnaya-18g"',
