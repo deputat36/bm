@@ -76,7 +76,7 @@
 
   function updateAerodromnayaHomepageCard(claims) {
     const card = findHomepageProjectCard("Аэродромная 18Г", "ЖК «Патриот»", "ЖК «Патриот» на Аэродромной 18Г");
-    if (!card || !claims.has("public_name") || !claims.has("building_type_statement")) return false;
+    if (!card || !claims.has("building_type_statement")) return false;
     const eyebrow = card.querySelector(".eyebrow");
     const title = card.querySelector("h3");
     const description = card.querySelector("p");
@@ -93,7 +93,7 @@
     );
     if (primary) primary.textContent = "Проверить квартиру";
     if (details) details.textContent = "Смотреть ЖК";
-    card.dataset.buyerContent = "owner-confirmed-name-marketplace-characteristics";
+    card.dataset.buyerContent = "working-name-marketplace-characteristics";
     return true;
   }
 
