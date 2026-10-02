@@ -3,6 +3,7 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const REGISTRY_PATH = "data/content/guides.json";
+const PAGE_REGISTRY_PATH = "data/pages/index.json";
 const GUIDE_INDEX_PATH = "guides/index.html";
 const SITEMAP_PATH = "sitemap.xml";
 const errors = [];
@@ -59,9 +60,18 @@ function isIsoDate(value) {
 }
 
 const registry = readJson(REGISTRY_PATH);
+const pageRegistry = readJson(PAGE_REGISTRY_PATH);
 const guideIndex = read(GUIDE_INDEX_PATH);
 const sitemap = read(SITEMAP_PATH);
-if (!registry || !guideIndex || !sitemap) process.exit(1);
+if (!registry || !Array.isArray(pageRegistry) || !guideIndex || !sitemap) process.exit(1);
+
+const pageByFile = new Map(
+  pageRegistry.map((page) => {
+    const url = String(page?.url || "");
+    const filePath = url === "/" ? "index.html" : `${url.replace(/^\/+|\/+$/g, "")}/index.html`;
+    return [filePath, page];
+  })
+);
 
 if (registry.schema_version !== "1.0") errors.push(`${REGISTRY_PATH}: schema_version must be 1.0`);
 if (registry.portal_id !== "newbuilds-borisoglebsk") errors.push(`${REGISTRY_PATH}: invalid portal_id`);
@@ -168,6 +178,15 @@ for (const guide of guides) {
     if (editorialReview !== "passed") errors.push(`${label}: ready requires editorial_review=passed`);
     if (!new Set(["passed", "not_applicable"]).has(legalReview)) errors.push(`${label}: ready requires legal review`);
     if (!new Set(["verified_on_date", "not_applicable"]).has(sourceStatus)) errors.push(`${label}: ready requires source review`);
+  }
+
+  const pageEntry = pageByFile.get(filePath);
+  if (!pageEntry) {
+    errors.push(`${label}: page is missing from ${PAGE_REGISTRY_PATH}`);
+  } else {
+    if (pageEntry.page_type !== "guide_article") errors.push(`${label}: page registry page_type must be guide_article`);
+    if (pageEntry.status !== "ready") errors.push(`${label}: page registry status must remain ready before explicit SEO release`);
+    if (pageEntry.robots !== "noindex,follow") errors.push(`${label}: page registry robots must remain noindex,follow before explicit SEO release`);
   }
 
   const article = read(filePath);
