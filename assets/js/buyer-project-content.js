@@ -83,11 +83,11 @@
     const list = card.querySelector("ul.list");
     const primary = card.querySelector('a[data-track-action="object_quick_consultation"]');
     const details = card.querySelector('a[data-track-action="object_details"]');
-    if (eyebrow) eyebrow.textContent = "Название подтверждено владельцем проекта";
+    if (eyebrow) eyebrow.textContent = "Рабочее название · первичный документ ожидается";
     if (title) title.textContent = "ЖК «Патриот»";
     if (description) description.textContent = "ЖК «Патриот» на Аэродромной 18Г. Общие характеристики дома приведены по карточке ЦИАН и требуют сверки по выбранной секции.";
     if (list) list.replaceChildren(
-      createListItem("Название ЖК «Патриот» подтверждено владельцем проекта."),
+      createListItem("ЖК «Патриот» используется как рабочее название; первичный документ по связке названия и адреса пока не принят."),
       createListItem("ЦИАН указывает кирпичный дом, этажность 3–7, потолки 2,7 м и черновую отделку."),
       createListItem("Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире.")
     );
