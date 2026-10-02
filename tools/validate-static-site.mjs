@@ -18,6 +18,7 @@ const ALLOWED_VERIFICATION_STATUSES = new Set([
   "do_not_publish"
 ]);
 const ALLOWED_PAGE_STATUSES = new Set(["draft", "ready", "published", "archived"]);
+const ALLOWED_ROBOTS_DISALLOWS = new Set(["/tools/", "/docs/", "/data/", "/links/"]);
 const ALLOWED_LEAD_TYPES = new Set([
   "complex_interest",
   "mortgage",
@@ -582,6 +583,34 @@ function validateUnmanagedIndexRoutes(htmlFiles) {
   });
 }
 
+function validateRobotsPolicy() {
+  const robotsPath = "robots.txt";
+  const robotsFile = fromRoot(robotsPath);
+  if (!fs.existsSync(robotsFile)) {
+    addError(`${robotsPath}: file does not exist`);
+    return;
+  }
+
+  const disallows = read(robotsFile)
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => /^Disallow:/i.test(line))
+    .map((line) => line.replace(/^Disallow:\s*/i, "").trim())
+    .filter(Boolean);
+
+  disallows.forEach((rule) => {
+    if (!ALLOWED_ROBOTS_DISALLOWS.has(rule)) {
+      addError(`${robotsPath}: route-level Disallow "${rule}" conflicts with meta-robots release control; use noindex for HTML routes`);
+    }
+  });
+
+  ALLOWED_ROBOTS_DISALLOWS.forEach((rule) => {
+    if (!disallows.includes(rule)) {
+      addWarning(`${robotsPath}: expected technical crawl block is missing: ${rule}`);
+    }
+  });
+}
+
 function validateDataFiles() {
   validateProjectIndex();
   validateResearchRegister();
@@ -593,6 +622,7 @@ function main() {
   htmlFiles.forEach(validateHtmlFile);
   validateDataFiles();
   validateUnmanagedIndexRoutes(htmlFiles);
+  validateRobotsPolicy();
   validateLeadTypeCompatibility();
   validateSitemap();
 
