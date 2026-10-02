@@ -1,6 +1,6 @@
 # STATUS портала novostroyki-borisoglebsk.ru
 
-Дата обновления: 2026-09-27
+Дата обновления: 2026-10-02
 
 Репозиторий: `deputat36/bm`  
 Основная ветка: `main`
@@ -83,6 +83,64 @@ https://novostroyki-borisoglebsk.ru/
 Повторная проверка issue #116 от 27.09.2026: Figma MCP Starter по-прежнему блокирует даже `get_metadata` месячным tool-call limit.
 
 Новых подготовительных Figma PR не создавать: execution/visual-QA/source-map packs уже подготовлены. Следующий Figma шаг — только после восстановления MCP-доступа.
+
+## Milestone 02.10.2026
+
+После milestone 27.09 закрыты дополнительные доказанные gaps без повышения owner/legal/source/publication state.
+
+### SEO governance
+
+- PR #254: `sitemap.xml` переведён на explicit factual `lastmod`; published/indexable страницы обязаны совпадать с page registry.
+- PR #257: 31 unmanaged indexable HTML-route переведены в `noindex,follow`; новый unmanaged `index.html` не может стать indexable без регистрации.
+- PR #259: устранён конфликт `robots.txt` и `noindex`; route-level Disallow для HTML страниц удалён, сохранены только technical crawl blocks.
+- PR #262: все 8 подготовленных SEO-гайдов находятся под page-registry governance; пять недостающих страниц зарегистрированы как `ready + noindex`, HTML-карта сайта синхронизирована.
+
+Guide machine-state:
+
+```text
+total=8
+index_ready=1
+index_blocked=7
+source_verified=7
+source_not_applicable=1
+editorial_passed=8
+legal_passed=0
+legal_not_applicable=1
+seo_guide_indexing=BLOCKED
+```
+
+Фактический SEO release остаётся заблокирован `guide_content_publication` и `legal_owner_review`; `noindex` не снимается.
+
+### CI
+
+PR #260 завершил миграцию всех оставшихся workflows на Node 24-compatible official Actions и добавил fail-closed `validate-workflow-actions.mjs`.
+
+Приёмка #260:
+
+```text
+84/84 PR workflows = success
+Android Chromium = success
+Desktop Chromium = success
+iPhone WebKit = success
+```
+
+### Live lead evidence
+
+Scheduled non-persistent smoke подтверждает production Edge Function/CORS/rejection-before-persistence.
+
+Read-only production check на 01.10.2026:
+
+```text
+public.newbuild_leads total=0
+last_7_days=0
+last_30_days=0
+```
+
+Следовательно, server route технически жив, но controlled accepted production lead и фактический поток реальных обращений ещё не доказаны. Контракт real-lead test по-прежнему требует explicit owner consent и secure contact reference.
+
+### Figma
+
+01.10 metadata read смог увидеть пустую страницу `00 Cover`, но `get_design_context` и `use_figma` всё ещё возвращают Starter MCP tool-call limit. Запись foundations/components/screens не выполнялась.
 
 ## Интерфейс и buyer experience
 
