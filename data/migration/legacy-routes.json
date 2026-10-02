@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.8",
-  "updated_at": "2026-09-27",
-  "scope": "phase_1_to_6_legacy_pages",
-  "purpose": "Реестр старых страниц, которые остаются в noindex до переноса полезного содержания и выпуска подтвержденных серверных редиректов. Phase 6 выводит unmanaged single-project lead-страницы из публичного lead-контура.",
+  "schema_version": "1.9",
+  "updated_at": "2026-10-03",
+  "scope": "phase_1_to_7_legacy_pages",
+  "purpose": "Реестр старых страниц, которые остаются в noindex до переноса полезного содержания и выпуска подтвержденных серверных редиректов. Phase 7 переводит short aliases из client-side meta refresh в управляемые transition routes.",
   "rules": {
     "source_must_exist": true,
     "target_must_exist": true,
@@ -669,6 +669,54 @@
       "redirect_phase": 6,
       "redirect_ready": false,
       "blocking_reason": "Старый unmanaged lead-URL выведен из single-project контура; серверный редирект требует отдельного hosting/release шага."
+    },
+    {
+      "source_url": "/1k/",
+      "source_file": "1k/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "migration_action": "redirect",
+      "redirect_phase": 7,
+      "redirect_ready": false,
+      "blocking_reason": "Короткий legacy alias сохранён как noindex transition page; server redirect требует отдельного hosting/release шага."
+    },
+    {
+      "source_url": "/dom-prostornaya-4a/",
+      "source_file": "dom-prostornaya-4a/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "migration_action": "redirect",
+      "redirect_phase": 7,
+      "redirect_ready": false,
+      "blocking_reason": "Legacy alias объекта сохранён как noindex transition page; server redirect требует отдельного hosting/release шага."
+    },
+    {
+      "source_url": "/price/",
+      "source_file": "price/index.html",
+      "target_url": "/catalog/prostornaya-4a/",
+      "target_file": "catalog/prostornaya-4a/index.html",
+      "target_href": "../catalog/prostornaya-4a/",
+      "status": "transition_page",
+      "migration_action": "redirect",
+      "redirect_phase": 7,
+      "redirect_ready": false,
+      "blocking_reason": "Legacy price alias сохранён как noindex transition page; server redirect требует отдельного hosting/release шага."
+    },
+    {
+      "source_url": "/ipoteka-start/",
+      "source_file": "ipoteka-start/index.html",
+      "target_url": "/ipoteka/",
+      "target_file": "ipoteka/index.html",
+      "target_href": "../ipoteka/",
+      "status": "transition_page",
+      "migration_action": "redirect",
+      "redirect_phase": 7,
+      "redirect_ready": false,
+      "blocking_reason": "Legacy mortgage alias сохранён как noindex transition page; server redirect требует отдельного hosting/release шага."
     }
   ]
 }
