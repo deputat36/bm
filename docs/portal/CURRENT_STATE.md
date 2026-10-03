@@ -1,85 +1,49 @@
-# Актуальное состояние портала
+# Точка продолжения портала
 
-Дата фиксации: 6 августа 2026 года.
+Дата сверки: 2026-10-03.
 
-## Фактическая архитектура
+Подробный статус: [STATUS.md](STATUS.md). Этот файл служит кратким входом в работу; исторические результаты сохраняются отдельно.
 
-- независимый городской каталог на `novostroyki-borisoglebsk.ru`;
-- три приоритетных объекта: Просторная 4А, Аэродромная 18Г и Сенная 76;
-- 14 форм на семи страницах;
-- обязательная запись только через Supabase Edge Function `newbuild-lead`;
-- основное хранилище `public.newbuild_leads`;
-- защищённый журнал, rate limit, RLS, серверная валидация и автоматический триаж;
-- live smoke-test и автоматическая GitHub-тревога;
-- активного прямого браузерного маршрута через Web3Forms нет.
+## Что завершено
 
-## Историческая P0-приёмка на commit 8b9845d
+- 14 форм на 7 страницах; единственный транспорт `newbuild-lead` → `public.newbuild_leads`.
+- Исправления placement, lead_form_view, storage и browser-приёмка после #153: production desktop, Android Chromium, iPhone WebKit emulation — по 15/15 runs и 2/2 storage cases.
+- Visual QA: 21 capture; accessibility и keyboard QA: по 14 audits согласно STATUS.
+- Короткие primary-формы без обязательного имени, intent и CTA context handoff (#231–#237).
+- Sitemap, robots/noindex и guide registry синхронизированы (#254/#257/#259/#262).
+- Последние merged #269 и #271 исправили source framing 18Г и четыре legacy aliases.
 
-Production проверялся только с параметрами:
+Поздняя эмуляция не является физическим тестом. Исторические `0 passed / 14 failed / 28 blocked` от 03.08 не являются текущим browser state и не переписываются.
 
-`lead_test=dry-run&analytics_test=debug&test_ack=1`.
+## Что пока не доказано
 
-Зафиксированный результат browser QA:
+- Controlled real lead не выполнена; цепочка запись → ответственный → контакт → квалификация → консультация не принята end-to-end.
+- Production live analytics не подтверждена.
+- Operations: approved=1/8, pending=7/8, activation=false.
+- Legal owner review и mobile/manual release policy остаются отдельными решениями.
+- На read-only проверке 01.10, указанной в #79, принято 0 заявок; это датированное evidence, не новый запрос к базе 03.10.
+- В реестре первой волны фактических публикаций нет; Search Console verification/inspection не подтверждены.
 
-- passed: 0;
-- failed: 14 desktop-слотов;
-- blocked: 28 Android/iPhone-слотов;
-- not_run: 0.
+## Следующий технический блокер
 
-Все 14 desktop-форм фактически открывались и отправлялись в dry-run. Валидация телефона 9/10/15/16 цифр, фокус, элементы формы, test thank-you, privacy и защита от повторного submit были проверены. Слоты получили `failed`, потому что обязательный `placement` отсутствовал в локальных событиях; у подробной формы Аэродромной 18Г дважды не сформировался целевой `lead_form_view`.
+[Issue #272](https://github.com/deputat36/bm/issues/272): Pages workflow загружает весь репозиторий (`path: .`). В production artifact попадают внутренние реестры, исходники и изображения с неразрешёнными правами. Нужно отдельное staged public-safe artifact с проверкой runtime dependencies. До реализации и post-deploy проверки задача остаётся открытой. Эту проблему нельзя исправить одним robots.txt.
 
-Android и iPhone отмечены `blocked`: доступная среда не предоставила физические устройства или эмуляцию. Эмуляция не выдавалась за физическое устройство.
+## Следующий коммерческий шаг
 
-Шесть первоначальных storage-сценариев отмечены `blocked`: на момент прогона безопасного способа отключить выбранное хранилище без изменения production-кода не было.
+Использовать [конкретный пакет согласования](LEAD_OPERATIONS_APPROVAL.md#пакет-ограниченного-запуска-03102026), получить недостающие owner/legal факты, применить утверждённые решения и отдельно разрешённую активацию, затем выполнить ровно одну согласованную real lead с серверным и операционным evidence.
 
-Эти результаты являются evidence состояния до исправлений и не переписываются задним числом.
+Общий подбор и ипотечная консультация имеют отдельные prepared placements. BM Group approval относится только к covered object-specific рекламе Просторной 4А и не является глобальным запретом общего подбора. Общая кампания всё равно требует всех восьми campaign_launch gates; object indexing и городской completeness этим не повышаются.
 
-## Исправления после приёмки
+## Источники истины
 
-PR #153 слит в `main` squash-коммитом `6fa7c1e8af86d6a25ea2917a7d8571dfb16ede4b`.
+- [#71](https://github.com/deputat36/bm/issues/71) — P0 и позднее browser evidence;
+- [#79](https://github.com/deputat36/bm/issues/79) и последние комментарии — roadmap и датированное live evidence;
+- `data/operations/lead-operations-approval.json` — решения и активация;
+- `data/legal/legal-owner-approval.json` — юридические решения;
+- `data/qa/mobile-release-policy.json` — mobile policy;
+- `data/release/real-lead-test.json` — согласие и результаты controlled lead;
+- `data/analytics/live-provider.json` — внешний счётчик;
+- `data/release/manual-gates.json` — ручные gates;
+- `data/marketing/first-wave.json` и `campaign-publications.json` — план и факт публикаций.
 
-Реализовано:
-
-- единый нормализованный `placement`;
-- общий контекст `form_id`, `form_role`, `lead_type`, `object_id` для обязательных событий формы;
-- стабильный `lead_form_view` для переходов на `#quick-lead` и `#lead` с дедупликацией по форме;
-- безопасный allowlist-режим `storage_fail=local|session`, доступный только при тройном подтверждении dry-run/debug;
-- fail-safe работа с localStorage и sessionStorage;
-- восстановление формы при отказе storage без fetch, PII-черновиков, обходной отправки и переноса персональных значений в URL;
-- динамические launch-readiness инварианты вместо исторически зафиксированных чисел;
-- согласованные analytics, privacy, storage и thank-you validators.
-
-На head PR #153 успешно завершились все 17 GitHub Actions, включая Portal guards, оба Validate static site, Form QA execution pack, analytics, privacy, fail-closed, primary-route и launch-readiness проверки.
-
-Issue #151 остаётся открытым только до повторного browser QA на версии после `6fa7c1e8`.
-
-## Серверный контроль
-
-- Edge Function `newbuild-lead`: ACTIVE, version 2;
-- health при первоначальной приёмке: `status=ok`, schema `2.0`;
-- storage, event log и rate limit готовы;
-- активная операционная политика отсутствует;
-- количество записей `public.newbuild_leads`: 0 до и 0 после первоначального dry-run;
-- реальная заявка не создавалась;
-- PR #153 не менял Supabase schema, Edge Function, RLS или основной endpoint.
-
-## Gates
-
-- повторный desktop browser QA после исправлений: pending;
-- Android/iPhone QA: blocked до доступности честной эмуляции или устройств;
-- real lead delivery: blocked;
-- live analytics: blocked;
-- legal owner review: blocked;
-- operations activation: blocked;
-- campaign publication: blocked;
-- source/publication gates: не пройдены;
-- `noindex` сохраняется.
-
-## Следующий шаг
-
-1. Повторно выполнить 14 desktop-сценариев на версии после `6fa7c1e8`.
-2. Отдельно проверить `catalog_aerodromnaya_18g_priority_lead`.
-3. Фактически выполнить desktop-проверки `storage_fail=local` и `storage_fail=session`.
-4. Добавить новый evidence отдельным датированным набором, не изменяя исторические результаты от 3 августа.
-5. После успешной повторной приёмки обновить issue #151 и решить судьбу evidence PR #152.
-6. Реальная контрольная заявка, live analytics, legal и operations gates остаются отдельными решениями владельца.
+Не повторять широкий source search без нового документа/доступа. Не начинать Figma или новый редизайн вместо активации обработки и получения доказанных заявок.
