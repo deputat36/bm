@@ -575,3 +575,11 @@ Portal-owned `newbuild_*` scope отделён и защищён CI. Shared CRM/
 8. разрешённые SEO pages выпущены, заблокированные сохраняют noindex;
 9. первая controlled traffic wave реально опубликована с attribution evidence;
 10. можно измерить минимум `received → contacted → qualified → consultation` по реальным данным.
+
+## Production publication boundary — сверка 03.10 вечером
+
+PR #274 реализовал `_site` и public-safe browser views. Custom artifact проверен после deployment: 184 tar files, internal roots/uncleared gallery/withheld values отсутствуют; PR checks 13/13 и 14 Chromium desktop/mobile captures прошли.
+
+Live domain acceptance НЕ пройдена: вечером 03.10 внутренние STATUS.md и Edge Function source доступны HTTP 200, live A18G JSON содержит 15 withheld values. #272 остаётся open до Settings → Pages → Source → GitHub Actions (#242), повторного deployment и live acceptance.
+
+Добавлен отдельный read-only `Live publication boundary`: после deployments и ежедневно проверяет forbidden URLs=404, safe profiles без unpublished values/internal provenance и доступность главной/каталога/контактов. Ошибка сохраняется как failed Actions run с обезличенным artifact. PR выполняет только mock tests. Мониторинг не является real-lead QA, legal approval или разрешением рекламы.

@@ -24,9 +24,15 @@
 - На read-only проверке 01.10, указанной в #79, принято 0 заявок; это датированное evidence, не новый запрос к базе 03.10.
 - В реестре первой волны фактических публикаций нет; Search Console verification/inspection не подтверждены.
 
-## Следующий технический блокер
+## Публикация на домене: подтверждённое расхождение
 
-[Issue #272](https://github.com/deputat36/bm/issues/272): Pages workflow загружает весь репозиторий (`path: .`). В production artifact попадают внутренние реестры, исходники и изображения с неразрешёнными правами. Нужно отдельное staged public-safe artifact с проверкой runtime dependencies. До реализации и post-deploy проверки задача остаётся открытой. Эту проблему нельзя исправить одним robots.txt.
+PR #274 слит (`71281c7`): custom Pages workflow собирает `_site`, семь public-safe JSON views и исключает internal roots/uncleared gallery. Все 13 PR checks прошли; Chromium desktop/mobile QA дал 14 captures. Реальный custom artifact `11270069478` проверен: 184 tar files, внутренние файлы и withheld values отсутствуют.
+
+Однако live HTTP проверка 03.10 вечером всё ещё получила 200 для `/docs/portal/STATUS.md` и `/supabase/functions/newbuild-lead/index.ts`; в live JSON Аэродромной 18Г остаются 15 withheld values. Поэтому #272 остаётся открытой: успешная custom сборка не является принятием домена.
+
+Параллельно выполняется managed `pages build and deployment`. Остаточный admin blocker #242: Settings → Pages → Source → GitHub Actions. После переключения требуется повторная custom выкладка и live acceptance. Не считать этот настройочный шаг выполненным без evidence.
+
+`Live publication boundary` проверяет домен после выкладок и ежедневно; PR проверяет только mock-контракт, без внешних запросов. Live failure сохраняет отчёт с HTTP статусами и кодами ошибок без response bodies. Он не выключает сайт, не меняет release gates и не отправляет заявки.
 
 ## Следующий коммерческий шаг
 
