@@ -1,0 +1,45 @@
+name: Live publication boundary
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '43 5 * * *'
+  workflow_run:
+    workflows: ['Deploy GitHub Pages', 'pages build and deployment']
+    types: [completed]
+    branches: [main]
+  pull_request:
+    paths:
+      - 'tools/check-live-publication-boundary.mjs'
+      - 'tools/test-live-publication-boundary.mjs'
+      - '.github/workflows/live-publication-boundary.yml'
+permissions:
+  contents: read
+concurrency:
+  group: live-publication-boundary-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: node tools/test-live-publication-boundary.mjs
+  live:
+    if: github.event_name != 'pull_request'
+    needs: contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: node tools/check-live-publication-boundary.mjs
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: live-publication-boundary
+          path: artifacts/live-publication-boundary/report.json
+          if-no-files-found: warn
