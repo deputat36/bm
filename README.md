@@ -51,9 +51,11 @@ npm run validate
 npm run validate:launch-readiness
 ```
 
-Фактический QA-реестр содержит 42 статуса. Историческая приёмка на commit `8b9845d` зафиксировала `0 passed / 14 failed / 28 blocked`. Эти evidence не переписываются задним числом.
+Исторический QA-реестр от 03.08.2026 содержит `0 passed / 14 failed / 28 blocked` и не переписывается задним числом. Эти результаты не описывают текущую исправленную версию.
 
-PR #153 слит в `main` коммитом `6fa7c1e8`: исправлены `placement`, целевой `lead_form_view`, fail-safe storage и state-locked launch-readiness. Автоматические проверки проходят на честной исторической матрице. Issue #151 остаётся открытым до повторного browser QA после исправлений.
+Позднее отдельно подтверждены production desktop, Android Chromium и iPhone WebKit emulation: по 15/15 browser runs и 2/2 storage cases. Mobile evidence имеет `physical_device=false`. Повторять закрытую приёмку issue #151 без нового дефекта не требуется.
+
+Текущие release-блокеры: mobile/manual policy, controlled real lead, live analytics, legal и операционная активация. Успешный dry-run не доказывает реальную доставку или обработку.
 
 ## Ограничения публикации
 
@@ -66,7 +68,9 @@ PR #153 слит в `main` коммитом `6fa7c1e8`: исправлены `pl
 ## Точка продолжения
 
 - P0 и фактические результаты: issue #71;
-- повторная browser-приёмка после исправлений: issue #151;
 - общий roadmap: issue #79;
-- текущая фиксация: `docs/portal/CURRENT_STATE.md`;
+- канонический подробный статус: `docs/portal/STATUS.md`;
+- краткая точка продолжения: `docs/portal/CURRENT_STATE.md`;
+- конкретный пакет решений: `docs/portal/LEAD_OPERATIONS_APPROVAL.md`;
+- граница production artifact: issue #272 (до исправления считать открытой);
 - историческое evidence: `evidence/qa/2026-08-03/`.
