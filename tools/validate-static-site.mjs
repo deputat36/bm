@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const IGNORED_DIRS = new Set([".git", "node_modules"]);
+const IGNORED_DIRS = new Set([".git", "node_modules", "_site"]);
 const DRAFT_PREFIXES = [
   "portal-preview/",
   "novostroyki/",

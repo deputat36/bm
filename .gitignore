@@ -8,3 +8,6 @@ build/figma-visual-qa-pack/
 build/figma-code-connect-readiness/
 .env
 .env.*
+
+# Generated public Pages artifact
+_site/
