@@ -72,6 +72,22 @@ try {
     errors.push("mobile policy must not alter historical form_qa counts");
   }
 
+  const publicSafetyGate = gates.find((item) => item.id === "production_publication_boundary");
+  const manualGates = readJson("data/release/manual-gates.json").gates || [];
+  const sourceSafety = manualGates.find((item) => item.id === "production_publication_boundary");
+  if (!sourceSafety) errors.push("production publication boundary manual gate missing");
+  if (!publicSafetyGate) errors.push("production publication boundary report gate missing");
+  if (publicSafetyGate?.status !== sourceSafety?.status) errors.push("production publication boundary status mismatch");
+  if (publicSafetyGate?.status === "not_applicable") errors.push("production publication boundary cannot be waived");
+  for (const profile of profiles) {
+    if (!profile.required_gates?.includes("production_publication_boundary")) {
+      errors.push(`${profile.id}: must require live production publication boundary`);
+    }
+    if (sourceSafety?.status !== "passed" && !profile.blocked_gates?.includes("production_publication_boundary")) {
+      errors.push(`${profile.id}: unsafe live site must remain BLOCKED`);
+    }
+  }
+
   const mobileGate = gates.find((item) => item.id === "mobile_qa_release_policy");
   const campaign = profiles.find((item) => item.id === "campaign_launch");
   const mobileMetrics = report.metrics?.mobile_qa_policy || {};
