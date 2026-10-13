@@ -99,7 +99,12 @@ for (const project of ["Просторная 4А", "Аэродромная 18Г"
 }
 
 const tellermanovPublicClaims = validatePublicClaims(TELLERMANOV_PROFILE_PATH, tellermanovProfile, 21);
-const aerodromnayaPublicClaims = validatePublicClaims(AERODROMNAYA_PROFILE_PATH, aerodromnayaProfile, 10);
+// Восемь атрибутированных публичных secondary statements; порог 10 устарел после fail-closed сверки.
+const aerodromnayaPublicClaims = validatePublicClaims(AERODROMNAYA_PROFILE_PATH, aerodromnayaProfile, 8);
+const patriotPublicName = aerodromnayaProfile.claims.find((claim) => claim.field === "public_name");
+if (!patriotPublicName || patriotPublicName.publication_allowed !== false || patriotPublicName.verification_status === "confirmed") {
+  errors.push(`${AERODROMNAYA_PROFILE_PATH}: working project name must remain withheld until primary evidence`);
+}
 const sennayaPublicClaims = validatePublicClaims(SENNAYA_PROFILE_PATH, sennayaProfile, 14);
 
 for (const fragment of [
@@ -112,8 +117,8 @@ for (const fragment of [
   'updateTellermanovHomepageCard',
   'updateAerodromnayaHomepageCard',
   'updateSennayaHomepageCard',
-  'Название подтверждено владельцем проекта',
-  'Название ЖК «Патриот» подтверждено владельцем проекта.',
+  'Рабочее название · первичный документ ожидается',
+  'ЖК «Патриот» используется как рабочее название; первичный документ по связке названия и адреса пока не принят.',
   'Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире.',
   'Цена, наличие, продавец и документы конкретной квартиры проверяются отдельно.',
   'updateHomepageStructuredData("/catalog/aerodromnaya-18g/", "ЖК «Патриот»")',
