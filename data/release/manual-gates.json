@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0",
-  "updated_at": "2026-08-09",
+  "schema_version": "1.1",
+  "updated_at": "2026-10-13",
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Журнал только фактически пройденных ручных ворот запуска. Отсутствие доказательств не может считаться положительным результатом.",
   "rules": {
@@ -13,6 +13,23 @@
     "evidence_must_be_https_or_repository_path": true
   },
   "gates": [
+    {
+      "id": "production_publication_boundary",
+      "title": "Безопасность публичной сборки на рабочем домене",
+      "scope": "campaign_and_seo",
+      "status": "blocked",
+      "required_evidence": [
+        "GitHub Pages Source переключён на GitHub Actions, управляемая публикация полного репозитория прекращена.",
+        "Свежий успешный custom deploy безопасной сборки _site после переключения Pages Source.",
+        "Live publication boundary run после выкладки: все forbidden URLs возвращают HTTP 404.",
+        "В трёх публичных verification JSON отсутствуют withheld values и внутренние provenance notes.",
+        "Страницы главная, каталог и контакты отдают HTTP 200; приведена ссылка на post-deploy evidence."
+      ],
+      "evidence": [],
+      "checked_at": null,
+      "reviewer": "",
+      "notes": "На 12.10.2026 production-domain check #38255941528 failed: 8 запрещённых URL отдали HTTP 200, в трёх verification профилях обнаружены withheld values. Custom _site artifact безопасен, но параллельный managed Pages deploy возвращает публикацию всего репозитория. Требуется owner/admin Settings → Pages → Source: GitHub Actions, повторный deploy и live HTTP acceptance по #272/#242. Не считать отдельный успешный upload _site доказательством безопасного live-домена."
+    },
     {
       "id": "real_lead_delivery",
       "title": "Контролируемая реальная доставка заявки",
