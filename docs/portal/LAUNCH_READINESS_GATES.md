@@ -1,10 +1,25 @@
 # Ворота готовности запуска
 
-Дата обновления: 2026-10-13 (включая критический release blocker; часть примеров ниже историческая)
+Дата обновления: 2026-10-13 (production publication boundary принят по live evidence; остальные примеры ниже частично исторические)
 
-## Критический release blocker — 13.10.2026
+## Production boundary: принято 13.10.2026 после fresh deploy
 
-Канонический machine-state расширен обязательным ручным gate:
+Владелец переключил Settings → Pages → Source на GitHub Actions. Новый custom deploy [38355348378](https://github.com/deputat36/bm/actions/runs/38355348378) для main `c2e3adb9` прошёл успешно; параллельного `pages build and deployment` для этого push не было.
+
+Независимая post-deploy read-only проверка [38355410958](https://github.com/deputat36/bm/actions/runs/38355410958) завершилась `passed` 13.10.2026 06:12 UTC:
+
+- 8/8 запрещённых URL → HTTP 404;
+- 3/3 public-safe verification JSON → HTTP 200, без withheld values и внутренних provenance;
+- главная, каталог и контакты → HTTP 200;
+- `findings=[]`, `real_lead_submissions=0`.
+
+По этому конкретному техническому критерию `production_publication_boundary=passed` с датой, reviewer и evidence в `data/release/manual-gates.json`.
+
+**Это не снимает другие блокеры**: legal owner review, operations, form/manual/physical QA, real lead delivery, live analytics, media rights и object-level source readiness. Любая регрессия live check должна снова блокировать публикацию.
+
+## История инцидента — 12–13.10.2026
+
+Канонический machine-state был расширен обязательным ручным gate (историческое состояние на 13.10 до исправления):
 
 ```text
 production_publication_boundary=blocked
