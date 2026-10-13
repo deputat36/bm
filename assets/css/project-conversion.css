@@ -254,3 +254,28 @@
     flex: 1 1 100%;
   }
 }
+.catalog-page #priority .card {
+  display: flex;
+  flex-direction: column;
+  border-top: 4px solid var(--accent, #c59154);
+}
+
+.catalog-page #priority .hero__actions {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.catalog-page #priority .eyebrow {
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.5;
+}
+
+.catalog-card-address {
+  font-weight: 600;
+  margin: 18px 0 4px;
+}
+
+.catalog-page #priority [data-verification-date] {
+  font-size: 0.875rem;
+}

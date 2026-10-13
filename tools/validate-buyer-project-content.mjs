@@ -158,7 +158,7 @@ requireFragments(catalogRuntimePath, catalogRuntime, [
   'profile?.project_id === "sennaya-76"',
   'renderAerodromnayaBuyerCard',
   'Рабочее название портала; характеристики — по ЦИАН, идентичность требует первичного документа',
-  'Кирпичный дом · этажность 3–7 · потолки 2,7 м',
+  'statement(publicClaims, field)',
   'Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире',
   'primaryAction.textContent = "Проверить квартиру"'
 ]);
