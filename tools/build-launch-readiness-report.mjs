@@ -212,6 +212,7 @@ const profiles = [
     id: "campaign_launch",
     title: "Запуск рекламы и сбор реальных заявок",
     required_gates: [
+      "production_publication_boundary",
       "form_manual_qa",
       "mobile_qa_release_policy",
       "lead_operations_approval",
@@ -226,6 +227,7 @@ const profiles = [
     id: "seo_object_indexing",
     title: "Снятие noindex с карточек объектов",
     required_gates: [
+      "production_publication_boundary",
       "source_collection",
       "project_publication",
       "legal_owner_review"
@@ -235,6 +237,7 @@ const profiles = [
     id: "seo_guide_indexing",
     title: "Индексация материалов справочника",
     required_gates: [
+      "production_publication_boundary",
       "guide_content_publication",
       "legal_owner_review"
     ]
@@ -243,6 +246,7 @@ const profiles = [
     id: "legacy_redirect_release",
     title: "Выпуск серверных legacy-редиректов",
     required_gates: [
+      "production_publication_boundary",
       "hosting_redirect_format",
       "legal_owner_review"
     ]
