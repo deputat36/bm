@@ -104,6 +104,7 @@ for (const key of [
 }
 
 const expectedGates = new Set([
+  "production_publication_boundary",
   "form_manual_qa",
   "mobile_qa_release_policy",
   "lead_operations_approval",
