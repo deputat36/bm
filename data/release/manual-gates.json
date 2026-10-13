@@ -4,7 +4,12 @@
   "portal_id": "newbuilds-borisoglebsk",
   "purpose": "Журнал только фактически пройденных ручных ворот запуска. Отсутствие доказательств не может считаться положительным результатом.",
   "rules": {
-    "allowed_statuses": ["blocked", "in_review", "passed", "not_applicable"],
+    "allowed_statuses": [
+      "blocked",
+      "in_review",
+      "passed",
+      "not_applicable"
+    ],
     "passed_requires_evidence": true,
     "passed_requires_checked_at": true,
     "passed_requires_reviewer": true,
@@ -17,7 +22,7 @@
       "id": "production_publication_boundary",
       "title": "Безопасность публичной сборки на рабочем домене",
       "scope": "campaign_and_seo",
-      "status": "blocked",
+      "status": "passed",
       "required_evidence": [
         "GitHub Pages Source переключён на GitHub Actions, управляемая публикация полного репозитория прекращена.",
         "Свежий успешный custom deploy безопасной сборки _site после переключения Pages Source.",
@@ -25,10 +30,26 @@
         "В трёх публичных verification JSON отсутствуют withheld values и внутренние provenance notes.",
         "Страницы главная, каталог и контакты отдают HTTP 200; приведена ссылка на post-deploy evidence."
       ],
-      "evidence": [],
-      "checked_at": null,
-      "reviewer": "",
-      "notes": "На 12.10.2026 production-domain check #38255941528 failed: 8 запрещённых URL отдали HTTP 200, в трёх verification профилях обнаружены withheld values. Custom _site artifact безопасен, но параллельный managed Pages deploy возвращает публикацию всего репозитория. Требуется owner/admin Settings → Pages → Source: GitHub Actions, повторный deploy и live HTTP acceptance по #272/#242. Не считать отдельный успешный upload _site доказательством безопасного live-домена."
+      "evidence": [
+        {
+          "type": "report",
+          "reference": "https://github.com/deputat36/bm/actions/runs/38355348378",
+          "note": "Fresh custom GitHub Actions deploy of c2e3adb9 successfully published the public-safe _site artifact after owner-confirmed Pages Source switch."
+        },
+        {
+          "type": "report",
+          "reference": "https://github.com/deputat36/bm/actions/runs/38355410958",
+          "note": "Live publication boundary PASSED after new deploy: 8 forbidden URLs HTTP 404, 3 public-safe verification profiles HTTP 200 without withheld values/internal provenance, 3 public pages HTTP 200, findings []. Real lead submissions: 0."
+        },
+        {
+          "type": "issue",
+          "reference": "https://github.com/deputat36/bm/issues/242",
+          "note": "Owner confirmed in conversation that GitHub Pages Source is now GitHub Actions; no parallel GitHub-managed dynamic Pages deployment was observed on main c2e3adb9."
+        }
+      ],
+      "checked_at": "2026-10-13T06:12:34Z",
+      "reviewer": "ChatGPT — read-only GitHub Actions live evidence reviewer",
+      "notes": "Passed technical production-domain publication boundary on 2026-10-13 from independent read-only evidence. This is NOT legal approval, operational activation, manual mobile/form QA, real lead delivery, live marketing analytics or permission to index/publish ads. Recheck on each deployment; regression must re-block."
     },
     {
       "id": "real_lead_delivery",
