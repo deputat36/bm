@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 168" role="img" aria-labelledby="t">
+<title id="t">Иллюстрация выбора планировки квартиры</title>
+<rect width="400" height="168" rx="18" fill="#f2f5f5"/><circle cx="78" cy="141" r="81" fill="#e4eeeb"/>
+<g transform="translate(59 36) rotate(-8 65 57)"><rect width="126" height="112" rx="12" fill="#fff" stroke="#c8d7d5" stroke-width="2"/><path d="M19 20h86v75H19zM19 59h86M65 20v39M46 59v36" stroke="#98aeb1" stroke-width="3" fill="none" stroke-linejoin="round"/></g>
+<g transform="translate(144 20)"><rect width="136" height="124" rx="12" fill="#fff" stroke="#102a43" stroke-width="3"/><path d="M19 19h98v86H19zM19 62h98M64 19v43M46 62v43" stroke="#7499a8" stroke-width="3" fill="none" stroke-linejoin="round"/><rect x="75" y="75" width="28" height="16" rx="4" fill="#e6f1ed"/><path d="m79 83 6 5 13-14" stroke="#2f6b5e" stroke-width="3" stroke-linecap="round" fill="none"/></g>
+<g transform="translate(267 43) rotate(8 50 45)"><rect width="112" height="98" rx="12" fill="#fff" stroke="#c8d7d5" stroke-width="2"/><path d="M16 17h81v65H16zM16 49h81M55 17v32" stroke="#98aeb1" stroke-width="3" fill="none"/></g>
+<circle cx="291" cy="27" r="18" fill="#e85d3f"/><path d="m282 27 6 7 12-14" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
