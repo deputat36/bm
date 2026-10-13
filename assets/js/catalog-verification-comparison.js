@@ -76,6 +76,16 @@
     if (node) node.textContent = value;
   }
 
+  function renderFacts(card, selector, facts) {
+    setText(card, selector, facts.filter(Boolean).join(" · ") || "Сведения уточняются");
+  }
+
+  function statement(publicClaims, field) {
+    const value = publicClaims.get(field);
+    if (typeof value !== "string" || !value.trim()) return "";
+    return value.replace(/^(?:В карточке ЦИАН (?:объект указан как |указана |перечислены )|В публичном интервью (?:заявлен |заявлена |заявлены ))/u, "");
+  }
+
   function renderTellermanovBuyerCard(card, profile, claims) {
     const publicClaims = getPublicClaimMap(claims);
     const buildings = publicClaims.get("buildings_total");
@@ -85,12 +95,24 @@
     const familyTo = publicClaims.get("four_room_area_to_m2");
     const finish = publicClaims.get("finish_type");
     const title = card.querySelector("h3");
-    if (title) title.textContent = "ЖК «Теллерманов сад»";
-    setText(card, "[data-verification-status]", "Подтверждённые сведения о проекте");
+    if (title && statement(publicClaims, "complex_name")) title.textContent = publicClaims.get("complex_name");
+    setText(card, "[data-verification-status]", publicClaims.size ? "Подтверждённые сведения о проекте" : "Сведения требуют проверки");
     setText(card, "[data-verification-date]", `Источник проверен: ${formatDate(profile?.updated_at)}`);
-    setText(card, "[data-verification-sources]", `${buildings || 2} дома · ${apartments || 194} квартиры · потолки ${String(ceiling || 2.7).replace(".", ",")} м`);
-    setText(card, "[data-verification-critical]", "Закрытый двор · общедомовая котельная · видеонаблюдение");
-    setText(card, "[data-verification-categories]", `Студии от ${studioFrom || 25} м² · семейные квартиры до ${familyTo || 92} м² · ${String(finish || "предчистовая отделка").toLowerCase()}`);
+    renderFacts(card, "[data-verification-sources]", [
+      Number.isFinite(buildings) && buildings > 0 && `${buildings} дома`,
+      Number.isFinite(apartments) && apartments > 0 && `${apartments} квартиры`,
+      Number.isFinite(ceiling) && ceiling > 0 && `потолки ${String(ceiling).replace(".", ",")} м`
+    ]);
+    renderFacts(card, "[data-verification-critical]", [
+      publicClaims.get("closed_yard") === true && "Закрытый двор",
+      publicClaims.get("house_boiler") === true && "Общедомовая котельная",
+      publicClaims.get("video_surveillance") === true && "Видеонаблюдение"
+    ]);
+    renderFacts(card, "[data-verification-categories]", [
+      Number.isFinite(studioFrom) && studioFrom > 0 && `Студии от ${studioFrom} м²`,
+      Number.isFinite(familyTo) && familyTo > 0 && `Семейные квартиры до ${familyTo} м²`,
+      typeof finish === "string" && finish.trim() && finish
+    ]);
     const primaryAction = card.querySelector('a[data-track-action="object_quick_consultation"]');
     const detailsAction = card.querySelector('a[data-track-action="object_open"]');
     if (primaryAction) primaryAction.textContent = "Узнать цены и наличие";
@@ -105,8 +127,8 @@
     if (title) title.textContent = "ЖК «Патриот»";
     setText(card, "[data-verification-status]", "Рабочее название портала; характеристики — по ЦИАН, идентичность требует первичного документа");
     setText(card, "[data-verification-date]", `Профиль обновлён: ${formatDate(profile?.updated_at)}`);
-    setText(card, "[data-verification-sources]", "Кирпичный дом · этажность 3–7 · потолки 2,7 м");
-    setText(card, "[data-verification-critical]", "Черновая отделка · гостевая парковка · площадки и места отдыха");
+    renderFacts(card, "[data-verification-sources]", ["building_type_statement", "floor_range_statement", "ceiling_height_statement"].map(field => statement(publicClaims, field)));
+    renderFacts(card, "[data-verification-critical]", ["finish_statement", "guest_parking_statement", "territory_features_statement"].map(field => statement(publicClaims, field)));
     setText(card, "[data-verification-categories]", "Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире");
     const primaryAction = card.querySelector('a[data-track-action="object_quick_consultation"]');
     const detailsAction = card.querySelector('a[data-track-action="object_open"]');
@@ -120,12 +142,12 @@
     const publicClaims = getPublicClaimMap(claims);
     if (!publicClaims.has("public_name") || !publicClaims.has("facade_material_statement")) return false;
     const title = card.querySelector("h3");
-    if (title) title.textContent = "Дом на Сенной 76";
+    if (title && statement(publicClaims, "public_name")) title.textContent = publicClaims.get("public_name");
     setText(card, "[data-verification-status]", "Публичные сведения представителя застройщика");
     setText(card, "[data-verification-date]", `Источник проверен: ${formatDate(profile?.updated_at)}`);
-    setText(card, "[data-verification-sources]", "Кирпичный фасад · керамическая кровля · утепление фасада");
-    setText(card, "[data-verification-critical]", "Индивидуальное отопление · система «умный дом» · видеонаблюдение");
-    setText(card, "[data-verification-categories]", "Ландшафтный дизайн · автополив · энергоэффективное освещение; документы квартиры проверяются отдельно");
+    renderFacts(card, "[data-verification-sources]", ["facade_material_statement", "roof_material_statement", "facade_insulation_statement"].map(field => statement(publicClaims, field)));
+    renderFacts(card, "[data-verification-critical]", ["individual_heating_statement", "smart_home_statement", "video_surveillance_statement"].map(field => statement(publicClaims, field)));
+    setText(card, "[data-verification-categories]", "Документы, продавец, цена и наличие проверяются по конкретной квартире");
     const primaryAction = card.querySelector('a[data-track-action="object_quick_consultation"]');
     const detailsAction = card.querySelector('a[data-track-action="object_open"]');
     if (primaryAction) primaryAction.textContent = "Проверить квартиры";

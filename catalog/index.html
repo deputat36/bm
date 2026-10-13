@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="../assets/css/leadgen.css">
   <link rel="stylesheet" href="../assets/css/project-conversion.css">
 </head>
-<body>
+<body class="catalog-page">
   <header class="topbar">
     <div class="container topbar__inner">
       <a class="brand" href="../" aria-label="Новостройки Борисоглебска"><strong>Новостройки Борисоглебска</strong></a>
@@ -28,8 +28,8 @@
         <div class="project-hero__content">
           <span class="eyebrow">Городской каталог</span>
           <h1>Новостройки Борисоглебска</h1>
-          <p class="lead">Сравните объекты по статусу проверки, пройдите быстрый подбор или выберите главный вопрос. Специалист сообщит только сведения, которые можно подтвердить на дату обращения.</p>
-          <div class="hero__actions"><a class="button" href="#quiz" data-track-action="catalog_quiz_open" data-track-placement="catalog_hero_quiz">Пройти быстрый подбор</a><a class="button button--ghost" href="#questions" data-track-action="catalog_question_start" data-track-placement="catalog_hero_questions">Выбрать вопрос</a><a class="button button--ghost" href="#priority" data-track-action="priority_objects" data-track-placement="catalog_hero">Сравнить объекты</a><a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="catalog_hero">8 903 857-69-09</a></div>
+          <p class="lead">Начните с карточек домов: изучите доступные сведения и то, что ещё нужно проверить. Специалист сообщит только сведения, которые можно подтвердить на дату обращения.</p>
+          <div class="hero__actions"><a class="button" href="#priority">Смотреть дома</a><a class="button button--ghost" href="#quiz" data-track-action="catalog_quiz_open" data-track-placement="catalog_hero_quiz">Пройти быстрый подбор</a><a class="button button--ghost" href="#questions" data-track-action="catalog_question_start" data-track-placement="catalog_hero_questions">Выбрать вопрос</a><a class="button button--ghost" href="#priority" data-track-action="priority_objects" data-track-placement="catalog_hero">Сравнить объекты</a><a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="catalog_hero">8 903 857-69-09</a></div>
           <div class="notice">Цена, наличие квартир и условия покупки уточняются перед консультацией. Заявка не является бронью и не фиксирует стоимость.</div>
         </div>
 
@@ -45,6 +45,28 @@
             <div class="form__status" data-form-status></div>
           </fieldset><noscript><p class="form__status form__status--noscript is-visible">Для безопасной отправки заявки включите JavaScript или позвоните: <strong>8 903 857-69-09</strong>.</p></noscript></form>
         </aside>
+      </div>
+    </section>
+
+    <section id="priority">
+      <div class="container">
+        <div class="section__head"><span class="eyebrow">Проверка данных</span><h2>Три ключевых объекта</h2><p>Сравнение показывает, какие сведения уже подтверждены, а какие нужно уточнить перед покупкой. Цены и наличие проверяются на дату обращения.</p></div>
+        <div class="grid grid--3" data-catalog-verification-comparison>
+          <article class="card card--shadow" data-catalog-verification-card data-verification-profile="../data/verification/prostornaya-4a.json"><span class="eyebrow" data-verification-status>Загружаем статус проверки</span><p class="catalog-card-address">Просторная 4А</p><h3>Просторная 4А</h3><p data-verification-date>Дата обновления уточняется</p><ul class="list"><li data-verification-sources>Источники уточняются</li><li data-verification-critical>Ключевые сведения уточняются</li><li data-verification-categories>Категории сведений уточняются</li></ul><div class="hero__actions"><a class="button" href="prostornaya-4a/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_comparison_card" data-track-object="prostornaya-4a">Получить обновление</a><a class="button button--ghost" href="prostornaya-4a/" data-track-action="object_open" data-track-placement="catalog_comparison_card" data-track-object="prostornaya-4a">Подробнее</a></div></article>
+          <article class="card card--shadow" data-catalog-verification-card data-verification-profile="../data/verification/aerodromnaya-18g.json"><span class="eyebrow" data-verification-status>Загружаем статус проверки</span><p class="catalog-card-address">Аэродромная 18Г</p><h3>Аэродромная 18Г</h3><p data-verification-date>Дата обновления уточняется</p><ul class="list"><li data-verification-sources>Источники уточняются</li><li data-verification-critical>Ключевые сведения уточняются</li><li data-verification-categories>Категории сведений уточняются</li></ul><div class="hero__actions"><a class="button" href="aerodromnaya-18g/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_comparison_card" data-track-object="aerodromnaya-18g">Получить обновление</a><a class="button button--ghost" href="aerodromnaya-18g/" data-track-action="object_open" data-track-placement="catalog_comparison_card" data-track-object="aerodromnaya-18g">Подробнее</a></div></article>
+          <article class="card card--shadow" data-catalog-verification-card data-verification-profile="../data/verification/sennaya-76.json"><span class="eyebrow" data-verification-status>Загружаем статус проверки</span><p class="catalog-card-address">Сенная 76</p><h3>Сенная 76</h3><p data-verification-date>Дата обновления уточняется</p><ul class="list"><li data-verification-sources>Источники уточняются</li><li data-verification-critical>Ключевые сведения уточняются</li><li data-verification-categories>Категории сведений уточняются</li></ul><div class="hero__actions"><a class="button" href="sennaya-76/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_comparison_card" data-track-object="sennaya-76">Получить обновление</a><a class="button button--ghost" href="sennaya-76/" data-track-action="object_open" data-track-placement="catalog_comparison_card" data-track-object="sennaya-76">Подробнее</a></div></article>
+        </div>
+        <div class="notice">Сведения о доме не подтверждают наличие квартиры в продаже. Перед покупкой отдельно проверяются документы, продавец, цена и условия сделки.</div>
+      </div>
+    </section>
+
+    <section class="section--soft" id="reference">
+      <div class="container">
+        <div class="section__head"><span class="eyebrow">Справочная часть</span><h2>Другие новостройки города</h2><p>Ещё несколько домов с проверенными справочными сведениями и ссылками на источники. Наличие квартир в продаже нужно уточнять отдельно.</p></div>
+        <div class="grid grid--3" data-reference-catalog data-source="../data/research/reference-projects.json" aria-live="polite">
+          <article class="card"><h3>Загрузка справочного каталога</h3><p>Проверяем доступные карточки объектов.</p></article>
+        </div>
+        <div class="notice">Неподтверждённые адреса и характеристики не выводятся. Новая карточка появляется только после проверки источников.</div>
       </div>
     </section>
 
@@ -131,28 +153,6 @@
           <div class="notice">Результат основан только на ваших ответах. Он не подтверждает наличие квартиры, цену, статус объекта или решение банка.</div>
           <div class="hero__actions"><a class="button" href="#quick-lead" data-quiz-to-form data-track-action="catalog_quiz_to_form" data-track-placement="catalog_quiz_result">Передать ответы специалисту</a><button class="button button--ghost" type="button" data-quiz-reset data-track-action="catalog_quiz_reset" data-track-placement="catalog_quiz_result_reset">Пройти заново</button></div>
         </div>
-      </div>
-    </section>
-
-    <section id="priority">
-      <div class="container">
-        <div class="section__head"><span class="eyebrow">Проверка данных</span><h2>Три ключевых объекта</h2><p>Сравнение показывает, какие сведения уже подтверждены, а какие нужно уточнить перед покупкой. Цены и наличие проверяются на дату обращения.</p></div>
-        <div class="grid grid--3" data-catalog-verification-comparison>
-          <article class="card card--shadow" data-catalog-verification-card data-verification-profile="../data/verification/prostornaya-4a.json"><span class="eyebrow" data-verification-status>Загружаем статус проверки</span><h3>Просторная 4А</h3><p data-verification-date>Дата обновления уточняется</p><ul class="list"><li data-verification-sources>Источники уточняются</li><li data-verification-critical>Ключевые сведения уточняются</li><li data-verification-categories>Категории сведений уточняются</li></ul><div class="hero__actions"><a class="button" href="prostornaya-4a/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_comparison_card" data-track-object="prostornaya-4a">Получить обновление</a><a class="button button--ghost" href="prostornaya-4a/" data-track-action="object_open" data-track-placement="catalog_comparison_card" data-track-object="prostornaya-4a">Подробнее</a></div></article>
-          <article class="card card--shadow" data-catalog-verification-card data-verification-profile="../data/verification/aerodromnaya-18g.json"><span class="eyebrow" data-verification-status>Загружаем статус проверки</span><h3>Аэродромная 18Г</h3><p data-verification-date>Дата обновления уточняется</p><ul class="list"><li data-verification-sources>Источники уточняются</li><li data-verification-critical>Ключевые сведения уточняются</li><li data-verification-categories>Категории сведений уточняются</li></ul><div class="hero__actions"><a class="button" href="aerodromnaya-18g/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_comparison_card" data-track-object="aerodromnaya-18g">Получить обновление</a><a class="button button--ghost" href="aerodromnaya-18g/" data-track-action="object_open" data-track-placement="catalog_comparison_card" data-track-object="aerodromnaya-18g">Подробнее</a></div></article>
-          <article class="card card--shadow" data-catalog-verification-card data-verification-profile="../data/verification/sennaya-76.json"><span class="eyebrow" data-verification-status>Загружаем статус проверки</span><h3>Сенная 76</h3><p data-verification-date>Дата обновления уточняется</p><ul class="list"><li data-verification-sources>Источники уточняются</li><li data-verification-critical>Ключевые сведения уточняются</li><li data-verification-categories>Категории сведений уточняются</li></ul><div class="hero__actions"><a class="button" href="sennaya-76/#quick-lead" data-track-action="object_quick_consultation" data-track-placement="catalog_comparison_card" data-track-object="sennaya-76">Получить обновление</a><a class="button button--ghost" href="sennaya-76/" data-track-action="object_open" data-track-placement="catalog_comparison_card" data-track-object="sennaya-76">Подробнее</a></div></article>
-        </div>
-        <div class="notice">Нулевой показатель означает, что источник или ключевое сведение ещё не принято для публичного использования. Это не означает отсутствие самого объекта или документов.</div>
-      </div>
-    </section>
-
-    <section class="section--soft" id="reference">
-      <div class="container">
-        <div class="section__head"><span class="eyebrow">Справочная часть</span><h2>Другие новостройки города</h2><p>Здесь автоматически выводятся только объекты с подтверждённым адресом, статусом и хотя бы одним публичным источником. Для них используется общая форма подбора без отдельной продающей страницы.</p></div>
-        <div class="grid grid--3" data-reference-catalog data-source="../data/research/reference-projects.json" aria-live="polite">
-          <article class="card"><h3>Загрузка справочного каталога</h3><p>Проверяем доступные карточки объектов.</p></article>
-        </div>
-        <div class="notice">Неподтверждённые адреса и характеристики не выводятся. Новая карточка появляется только после проверки источников.</div>
       </div>
     </section>
 

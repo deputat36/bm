@@ -10,6 +10,7 @@ on:
       - "assets/js/catalog-verification-comparison.js"
       - "assets/js/page-accessibility.js"
       - "tools/validate-buyer-project-content.mjs"
+      - "tools/test-catalog-claim-safety.mjs"
       - "tools/validate-prostornaya-page-verification-safety.mjs"
       - ".github/workflows/buyer-project-content.yml"
   push:
@@ -23,6 +24,7 @@ on:
       - "assets/js/catalog-verification-comparison.js"
       - "assets/js/page-accessibility.js"
       - "tools/validate-buyer-project-content.mjs"
+      - "tools/test-catalog-claim-safety.mjs"
       - "tools/validate-prostornaya-page-verification-safety.mjs"
       - ".github/workflows/buyer-project-content.yml"
 
@@ -51,6 +53,9 @@ jobs:
 
       - name: Validate buyer project content
         run: node tools/validate-buyer-project-content.mjs
+
+      - name: Reject catalog claims without publication permission
+        run: node tools/test-catalog-claim-safety.mjs
 
       - name: Validate project page safety
         run: node tools/validate-prostornaya-page-verification-safety.mjs
