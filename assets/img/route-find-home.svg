@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 168" role="img" aria-labelledby="t">
+<title id="t">Иллюстрация выбора нового дома</title>
+<rect width="400" height="168" rx="18" fill="#eff4f3"/><circle cx="321" cy="37" r="66" fill="#dbe9e5"/><path d="M0 146h400v22H0z" fill="#e0e9e7"/>
+<path d="M82 147V58l91-21v110z" fill="#fff" stroke="#102a43" stroke-width="3" stroke-linejoin="round"/>
+<path d="M173 147V31l108 24v92z" fill="#f9fbfa" stroke="#102a43" stroke-width="3" stroke-linejoin="round"/>
+<g fill="#9cbdc3"><rect x="100" y="77" width="14" height="18" rx="2"/><rect x="127" y="70" width="14" height="18" rx="2"/><rect x="100" y="108" width="14" height="18" rx="2"/><rect x="127" y="101" width="14" height="18" rx="2"/><rect x="192" y="60" width="18" height="18" rx="2"/><rect x="226" y="68" width="18" height="18" rx="2"/><rect x="192" y="93" width="18" height="18" rx="2"/><rect x="226" y="100" width="18" height="18" rx="2"/></g>
+<rect x="190" y="121" width="19" height="26" rx="2" fill="#e85d3f"/><path d="M282 140h-224" stroke="#102a43" stroke-width="3" stroke-linecap="round"/>
+<path d="M329 45c0 18-25 44-25 44s-25-26-25-44a25 25 0 1 1 50 0z" fill="#e85d3f" transform="translate(12 -4)"/><circle cx="316" cy="41" r="8" fill="#fff"/>
+<circle cx="340" cy="134" r="17" fill="#d6e5df"/><path d="M340 121v26m-8-14 8 8 9-13" stroke="#2f6b5e" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>

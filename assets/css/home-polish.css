@@ -1057,6 +1057,22 @@ body {
   padding-top: 30px;
 }
 
+/* Buyer-route illustration cards are conceptual, never renders of actual projects. */
+#start .route-art {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 400 / 168;
+  object-fit: cover;
+  border-radius: 16px;
+  margin: 0 0 24px;
+  background: var(--slate-100);
+}
+
+#start .card h3 {
+  margin-top: 0;
+}
+
 #start .card::before {
   content: "";
   position: absolute;

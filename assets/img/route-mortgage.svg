@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 168" role="img" aria-labelledby="t">
+<title id="t">Иллюстрация расчёта бюджета и ипотеки</title>
+<rect width="400" height="168" rx="18" fill="#eef3f5"/><circle cx="303" cy="25" r="80" fill="#e1eaeb"/>
+<g transform="translate(97 20) rotate(-5 98 67)"><rect width="181" height="138" rx="13" fill="#fff" stroke="#102a43" stroke-width="3"/><path d="M23 32h67M23 48h111M23 64h84" stroke="#b0c3c8" stroke-width="7" stroke-linecap="round"/><rect x="23" y="87" width="131" height="29" rx="8" fill="#eff4f3"/><path d="M35 102h28m12 0h19" stroke="#7499a8" stroke-width="5" stroke-linecap="round"/><path d="m117 104 9-9 10 9 13-18" stroke="#e85d3f" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+<g transform="translate(280 89)"><ellipse cx="26" cy="44" rx="31" ry="9" fill="#c9d8d8"/><path d="M0 20v20c0 14 52 14 52 0V20" fill="#f5c474" stroke="#a96d13" stroke-width="2"/><ellipse cx="26" cy="20" rx="26" ry="8" fill="#ffdf99" stroke="#a96d13" stroke-width="2"/><path d="M0 31c11 9 41 9 52 0" stroke="#b68132" stroke-width="2" fill="none"/></g>
+<g transform="translate(45 84)"><circle cx="26" cy="26" r="24" fill="#e85d3f"/><path d="M15 27 26 16 38 27M19 25v17h15V25M23 42v-9h7v9" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
+</svg>
