@@ -83,7 +83,7 @@
   function statement(publicClaims, field) {
     const value = publicClaims.get(field);
     if (typeof value !== "string" || !value.trim()) return "";
-    return value.replace(/^(?:В карточке ЦИАН (?:объект указан как |указана |перечислены )|В публичном интервью (?:заявлен |заявлена |заявлены )|Представитель застройщика сообщил об? )/u, "");
+    return value.replace(/^(?:В карточке ЦИАН (?:объект указан как |указана |перечислены )|В публичном интервью (?:заявлен |заявлена |заявлены ))/u, "");
   }
 
   function renderTellermanovBuyerCard(card, profile, claims) {
