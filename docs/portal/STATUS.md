@@ -1,9 +1,18 @@
 # STATUS портала novostroyki-borisoglebsk.ru
 
-Дата обновления: 2026-10-02
+Дата обновления: 2026-10-13
 
 Репозиторий: `deputat36/bm`  
 Основная ветка: `main`
+
+## Milestone 13.10.2026 — безопасность Pages и brand identity
+
+- Owner переключил GitHub Pages Source на GitHub Actions.
+- PR [#277](https://github.com/deputat36/bm/pull/277) merged: оригинальные SVG-логотип и favicon на 7 canonical lead-bearing страницах, более лаконичный hero; 38/38 PR workflow runs success.
+- Fresh custom Pages deploy [38355348378](https://github.com/deputat36/bm/actions/runs/38355348378) success на `main@c2e3adb9`; параллельный dynamic managed Pages run не обнаружен.
+- Post-deploy live [38355410958](https://github.com/deputat36/bm/actions/runs/38355410958) `passed`: 8 forbidden URLs=404, 3 public-safe JSON profiles=200 без withheld/internal, главная/каталог/контакты=200, findings=0, lead submissions=0.
+- `production_publication_boundary` переведён из blocked в passed с evidence и reviewer. Это только техническая безопасность публикации, **не разрешение рекламы, SEO, рассылок, реальной тестовой заявки или legal/operations activation**.
+- Historical post-deploy incident section ниже относится к 03.10, а не к текущему состоянию 13.10.
 
 ## Текущая стадия
 
