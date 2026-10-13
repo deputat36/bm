@@ -120,7 +120,7 @@ if (gate) {
 
 if (profile) {
   const required = Array.isArray(profile.required_gates) ? profile.required_gates : [];
-  if (JSON.stringify(required) !== JSON.stringify(["guide_content_publication", "legal_owner_review"])) {
+  if (JSON.stringify(required) !== JSON.stringify(["production_publication_boundary", "guide_content_publication", "legal_owner_review"])) {
     errors.push("seo_guide_indexing: unexpected required_gates");
   }
 
