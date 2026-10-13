@@ -7,6 +7,7 @@ const REAL_LEAD_PATH = "data/release/real-lead-test.json";
 const LEGAL_APPROVAL_PATH = "data/legal/legal-owner-approval.json";
 const LIVE_ANALYTICS_PATH = "data/analytics/live-provider.json";
 const EXPECTED_GATE_IDS = new Set([
+  "production_publication_boundary",
   "real_lead_delivery",
   "live_analytics_debug",
   "legal_owner_review",
@@ -14,6 +15,7 @@ const EXPECTED_GATE_IDS = new Set([
   "hosting_redirect_format"
 ]);
 const NON_WAIVABLE_GATE_IDS = new Set([
+  "production_publication_boundary",
   "real_lead_delivery",
   "live_analytics_debug",
   "legal_owner_review",
@@ -236,6 +238,17 @@ if (!registry || !Array.isArray(registry.gates)) {
   }
 
   scanForbiddenKeys(registry, GATES_PATH);
+}
+
+const publicationGate = gateMap.get("production_publication_boundary");
+if (publicationGate?.status === "passed") {
+  const evidence = Array.isArray(publicationGate.evidence) ? publicationGate.evidence : [];
+  if (!evidence.some((item) => /^https:\/\/github\.com\/deputat36\/bm\/actions\/runs\/\d+(?:\/.*)?$/.test(String(item.reference || "")))) {
+    errors.push(`${GATES_PATH}:production_publication_boundary: passed требует ссылку на завершённый live publication boundary run`);
+  }
+  if (!evidence.some((item) => /live|publication|boundary/i.test(String(item.note || "")))) {
+    errors.push(`${GATES_PATH}:production_publication_boundary: passed требует evidence именно live-domain check, а не только staged artifact`);
+  }
 }
 
 const realLeadGate = gateMap.get("real_lead_delivery");
