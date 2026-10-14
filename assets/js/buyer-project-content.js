@@ -46,28 +46,71 @@
     return item;
   }
 
+
+  function publicMetric(claims, field) {
+    const value = claims.get(field);
+    return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : null;
+  }
+
+  function publicStatement(claims, field) {
+    const value = claims.get(field);
+    return typeof value === "string" ? value.trim() : "";
+  }
+
+  function replacePublicFacts(list, facts) {
+    if (!list) return;
+    const visible = facts.filter((value) => typeof value === "string" && value.trim());
+    list.replaceChildren(...(visible.length ? visible : ["Дополнительные характеристики уточняются."]).map(createListItem));
+  }
+
   function updateTellermanovHomepageCard(claims) {
     const card = findHomepageProjectCard("Просторная 4А", "ЖК «Теллерманов сад»");
-    if (!card) return false;
-    const buildings = claims.get("buildings_total") || 2;
-    const apartments = claims.get("complex_apartments_total") || 194;
-    const ceiling = String(claims.get("ceiling_height") || 2.7).replace(".", ",");
-    const studioFrom = claims.get("studio_area_from_m2") || 25;
-    const familyTo = claims.get("four_room_area_to_m2") || 92;
+    if (!card || !publicStatement(claims, "complex_name") || !claims.has("complex_apartments_total")) return false;
+    const buildings = publicMetric(claims, "buildings_total");
+    const apartments = publicMetric(claims, "complex_apartments_total");
+    const ceiling = publicMetric(claims, "ceiling_height");
+    const studioFrom = publicMetric(claims, "studio_area_from_m2");
+    const familyTo = publicMetric(claims, "four_room_area_to_m2");
+    const purchaseMethods = Array.isArray(claims.get("purchase_methods"))
+      ? claims.get("purchase_methods").filter((method) => typeof method === "string" && method.trim())
+      : [];
     const eyebrow = card.querySelector(".eyebrow");
     const title = card.querySelector("h3");
     const description = card.querySelector("p");
     const list = card.querySelector("ul.list");
     const primary = card.querySelector('a[data-track-action="object_quick_consultation"]');
     const details = card.querySelector('a[data-track-action="object_details"]');
-    if (eyebrow) eyebrow.textContent = "Старт продаж · подтверждённые сведения";
-    if (title) title.textContent = "ЖК «Теллерманов сад»";
-    if (description) description.textContent = "Два дома комфорт-класса на улице Просторной с закрытым двором, общедомовой котельной и улучшенной предчистовой отделкой.";
-    if (list) list.replaceChildren(
-      createListItem(`${buildings} дома · ${apartments} квартиры · потолки ${ceiling} м.`),
-      createListItem(`Студии от ${studioFrom} м² и семейные квартиры до ${familyTo} м².`),
-      createListItem("Ипотека, семейная ипотека, материнский капитал, рассрочка и trade-in — условия уточняются.")
-    );
+
+    if (eyebrow) eyebrow.textContent = publicStatement(claims, "sales_status") === "Старт продаж"
+      ? "Старт продаж · подтверждённые сведения"
+      : "Подтверждённые сведения о проекте";
+    if (title) title.textContent = publicStatement(claims, "complex_name");
+    const features = [
+      publicStatement(claims, "class") && `Класс: ${publicStatement(claims, "class")}`,
+      claims.get("closed_yard") === true && "Закрытый двор",
+      claims.get("house_boiler") === true && "Общедомовая котельная",
+      publicStatement(claims, "finish_type")
+    ].filter(Boolean);
+    if (description) description.textContent = [
+      publicStatement(claims, "address") && `Адрес: ${publicStatement(claims, "address")}.`,
+      features.length && `${features.join(" · ")}.`
+    ].filter(Boolean).join(" ") || "Сведения о доме проверяются по первичным источникам.";
+
+    const buildingFacts = [
+      buildings !== null && `${buildings} ${buildings === 1 ? "дом" : buildings < 5 ? "дома" : "домов"}`,
+      apartments !== null && `${apartments} квартир`,
+      ceiling !== null && `потолки ${String(ceiling).replace(".", ",")} м`
+    ].filter(Boolean);
+    const areaFacts = [
+      studioFrom !== null && `Студии от ${String(studioFrom).replace(".", ",")} м²`,
+      familyTo !== null && `Четырёхкомнатные квартиры до ${String(familyTo).replace(".", ",")} м²`
+    ].filter(Boolean);
+
+    replacePublicFacts(list, [
+      buildingFacts.length && `${buildingFacts.join(" · ")}.`,
+      areaFacts.length && `${areaFacts.join("; ")}.`,
+      purchaseMethods.length && `Указанные способы покупки: ${purchaseMethods.join(", ")}. Условия уточняются.`
+    ]);
     if (primary) primary.textContent = "Узнать цены и наличие";
     if (details) details.textContent = "Смотреть проект";
     card.dataset.buyerContent = "confirmed";
@@ -76,7 +119,7 @@
 
   function updateAerodromnayaHomepageCard(claims) {
     const card = findHomepageProjectCard("Аэродромная 18Г", "ЖК «Патриот»", "ЖК «Патриот» на Аэродромной 18Г");
-    if (!card || !claims.has("building_type_statement")) return false;
+    if (!card || !publicStatement(claims, "building_type_statement")) return false;
     const eyebrow = card.querySelector(".eyebrow");
     const title = card.querySelector("h3");
     const description = card.querySelector("p");
@@ -86,11 +129,12 @@
     if (eyebrow) eyebrow.textContent = "Рабочее название · первичный документ ожидается";
     if (title) title.textContent = "ЖК «Патриот»";
     if (description) description.textContent = "ЖК «Патриот» на Аэродромной 18Г. Общие характеристики дома приведены по карточке ЦИАН и требуют сверки по выбранной секции.";
-    if (list) list.replaceChildren(
-      createListItem("ЖК «Патриот» используется как рабочее название; первичный документ по связке названия и адреса пока не принят."),
-      createListItem("ЦИАН указывает кирпичный дом, этажность 3–7, потолки 2,7 м и черновую отделку."),
-      createListItem("Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире.")
-    );
+    replacePublicFacts(list, [
+      "ЖК «Патриот» используется как рабочее название; первичный документ по связке названия и адреса пока не принят.",
+      ...["building_type_statement", "floor_range_statement", "ceiling_height_statement", "finish_statement"]
+        .map((field) => publicStatement(claims, field)),
+      "Секция, ввод, продавец, договор, цена и ипотека проверяются по конкретной квартире."
+    ]);
     if (primary) primary.textContent = "Проверить квартиру";
     if (details) details.textContent = "Смотреть ЖК";
     card.dataset.buyerContent = "working-name-marketplace-characteristics";
@@ -99,7 +143,7 @@
 
   function updateSennayaHomepageCard(claims) {
     const card = findHomepageProjectCard("Сенная 76", "Дом на Сенной 76");
-    if (!card || !claims.has("public_name") || !claims.has("facade_material_statement")) return false;
+    if (!card || !publicStatement(claims, "public_name") || !publicStatement(claims, "facade_material_statement")) return false;
     const eyebrow = card.querySelector(".eyebrow");
     const title = card.querySelector("h3");
     const description = card.querySelector("p");
@@ -107,13 +151,15 @@
     const primary = card.querySelector('a[data-track-action="object_quick_consultation"]');
     const details = card.querySelector('a[data-track-action="object_details"]');
     if (eyebrow) eyebrow.textContent = "Публичные сведения о доме";
-    if (title) title.textContent = "Дом на Сенной 76";
-    if (description) description.textContent = "Дом с заявленными кирпичным фасадом, керамической кровлей, индивидуальным отоплением, благоустройством и видеонаблюдением.";
-    if (list) list.replaceChildren(
-      createListItem("Фасад из голландского кирпича и кровля из керамической черепицы — по публичному заявлению представителя застройщика."),
-      createListItem("Индивидуальное отопление, система «умный дом» и энергоэффективное освещение."),
-      createListItem("Цена, наличие, продавец и документы конкретной квартиры проверяются отдельно.")
-    );
+    if (title) title.textContent = publicStatement(claims, "public_name");
+    if (description) description.textContent = "Характеристики дома приводятся по публичному интервью представителя застройщика и требуют проверки для конкретной квартиры.";
+    replacePublicFacts(list, [
+      ...[
+        "facade_material_statement", "roof_material_statement", "individual_heating_statement",
+        "smart_home_statement", "energy_efficient_lighting_statement", "video_surveillance_statement"
+      ].map((field) => publicStatement(claims, field)),
+      "Цена, наличие, продавец и документы конкретной квартиры проверяются отдельно."
+    ]);
     if (primary) primary.textContent = "Проверить квартиры";
     if (details) details.textContent = "Смотреть дом";
     card.dataset.buyerContent = "confirmed-statement";
