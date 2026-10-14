@@ -50,6 +50,34 @@ function trackReferenceCatalogAction(project, action) {
   }
 }
 
+// Preserve the general-form context when a buyer explores a reference card.
+// Reference attribution is valid only while its temporary option is selected.
+const referenceFormContexts = new WeakMap();
+
+function bindReferenceForm(form) {
+  if (referenceFormContexts.has(form)) return;
+  const select = form.querySelector("select[name='residential_complex']");
+  if (!select) return;
+
+  referenceFormContexts.set(form, {
+    complex: form.dataset.complex || "",
+    complexId: form.dataset.complexId || ""
+  });
+
+  select.addEventListener("change", () => {
+    if (select.selectedOptions[0]?.hasAttribute("data-reference-option")) return;
+
+    form.querySelectorAll("[data-reference-catalog-field]").forEach((field) => field.remove());
+    select.querySelectorAll("option[data-reference-option]").forEach((option) => option.remove());
+
+    const initial = referenceFormContexts.get(form);
+    if (initial.complex) form.dataset.complex = initial.complex;
+    else delete form.dataset.complex;
+    if (initial.complexId) form.dataset.complexId = initial.complexId;
+    else delete form.dataset.complexId;
+  });
+}
+
 function setHiddenField(form, name, value) {
   let field = form.querySelector(`input[name='${name}']`);
 
@@ -61,6 +89,7 @@ function setHiddenField(form, name, value) {
   }
 
   field.value = value || "";
+  field.setAttribute("data-reference-catalog-field", "");
   return field;
 }
 
@@ -71,6 +100,7 @@ function attachReferenceInterest(project) {
   const objectName = project.display_name || project.address || "Выбранная новостройка";
   const objectId = project.id ? `reference:${project.id}` : "reference-object";
   const select = form.querySelector("select[name='residential_complex']");
+  bindReferenceForm(form);
 
   if (select) {
     select.querySelectorAll("option[data-reference-option]").forEach((option) => option.remove());
@@ -181,5 +211,8 @@ async function loadReferenceCatalog(container) {
     container.append(card);
   }
 }
+
+const detailedForm = document.querySelector("form[data-form-id='catalog_priority_selection']");
+if (detailedForm) bindReferenceForm(detailedForm);
 
 document.querySelectorAll("[data-reference-catalog]").forEach(loadReferenceCatalog);
