@@ -119,7 +119,7 @@ async function audit(browser, profile) {
     assert(switched.value === "Просторная 4А", "Switch to priority building failed");
     assert(!switched.id && !switched.referenceId && !switched.referenceName && !switched.referenceAddress, "Stale reference metadata after switching to priority building");
     assert(switched.referenceFields === 0 && switched.referenceOptions === 0, "Dynamic reference fields/options were not removed");
-    assert(switched.complex === initial.complex && switched.complexId === initial.complexId, "General form dataset context not restored");
+    assert(switched.complex === initial.complex && switched.complexId === initial.complexId, `General form dataset context not restored: ${JSON.stringify({ initial, switched })}`);
 
     await pickReference(0);
     await select.selectOption("Общий подбор новостройки");
