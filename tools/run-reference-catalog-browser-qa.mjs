@@ -93,6 +93,7 @@ async function audit(browser, profile) {
     await page.waitForFunction(() =>
       document.querySelector('form[data-form-id="catalog_priority_selection"]')?.dataset.jsReady === "true"
       && document.querySelectorAll("[data-reference-catalog] article.card").length === 4
+      && Boolean(document.querySelector('form[data-form-id="catalog_priority_selection"] input[name="residential_complex_id"]'))
     );
     const initial = await formState(page);
     assert(!initial.id && !initial.referenceId, "Initial detailed form unexpectedly contains object IDs");
@@ -117,15 +118,18 @@ async function audit(browser, profile) {
     await select.selectOption("Просторная 4А");
     const switched = await formState(page);
     assert(switched.value === "Просторная 4А", "Switch to priority building failed");
-    assert(!switched.id && !switched.referenceId && !switched.referenceName && !switched.referenceAddress, "Stale reference metadata after switching to priority building");
+    assert(switched.id === "prostornaya-4a" && !switched.referenceId && !switched.referenceName && !switched.referenceAddress, "Wrong or stale attribution after switching to priority building");
     assert(switched.referenceFields === 0 && switched.referenceOptions === 0, "Dynamic reference fields/options were not removed");
-    assert(switched.complex === initial.complex && switched.complexId === initial.complexId, `General form dataset context not restored: ${JSON.stringify({ initial, switched })}`);
+    assert(switched.complex === "Просторная 4А" && switched.complexId === "prostornaya-4a", `Priority form dataset not synchronized: ${JSON.stringify({ initial, switched })}`);
 
     await pickReference(0);
     await select.selectOption("Общий подбор новостройки");
     const general = await formState(page);
     assert(general.value === "Общий подбор новостройки", "General selection failed");
-    assert(!general.id && !general.referenceId && general.referenceFields === 0 && general.referenceOptions === 0, "Stale metadata after general selection");
+    assert(general.id === "all-newbuilds" && general.complexId === "all-newbuilds"
+      && general.complex === "Общий подбор новостройки"
+      && !general.referenceId && general.referenceFields === 0 && general.referenceOptions === 0,
+      "Stale or wrong attribution after general selection");
     assert(general.quickValue === initial.quickValue, "Reference selection unexpectedly mutated separate quick form");
     assert(!posts.length, `Unexpected live requests: ${posts.length}`);
     assert(!errors.length, `Browser exceptions: ${errors.join(" | ")}`);
