@@ -11,6 +11,7 @@ on:
       - "assets/js/page-accessibility.js"
       - "tools/validate-buyer-project-content.mjs"
       - "tools/test-catalog-claim-safety.mjs"
+      - "tools/test-homepage-public-claims.mjs"
       - "tools/validate-prostornaya-page-verification-safety.mjs"
       - ".github/workflows/buyer-project-content.yml"
   push:
@@ -25,6 +26,7 @@ on:
       - "assets/js/page-accessibility.js"
       - "tools/validate-buyer-project-content.mjs"
       - "tools/test-catalog-claim-safety.mjs"
+      - "tools/test-homepage-public-claims.mjs"
       - "tools/validate-prostornaya-page-verification-safety.mjs"
       - ".github/workflows/buyer-project-content.yml"
 
@@ -50,12 +52,16 @@ jobs:
           node --check assets/js/page-accessibility.js
           node --check tools/validate-buyer-project-content.mjs
           node --check tools/validate-prostornaya-page-verification-safety.mjs
+          node --check tools/test-homepage-public-claims.mjs
 
       - name: Validate buyer project content
         run: node tools/validate-buyer-project-content.mjs
 
       - name: Reject catalog claims without publication permission
         run: node tools/test-catalog-claim-safety.mjs
+
+      - name: Reject homepage facts after source permission is revoked
+        run: node tools/test-homepage-public-claims.mjs
 
       - name: Validate project page safety
         run: node tools/validate-prostornaya-page-verification-safety.mjs
