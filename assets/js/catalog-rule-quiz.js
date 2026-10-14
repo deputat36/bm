@@ -318,7 +318,7 @@
     target.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => {
       // Name is optional; take the buyer directly to the required contact field.
-      form.querySelector('input[name="phone"]')?.focus({ preventScroll: true });
+      form.querySelector('input[name="phone"]')?.focus();
     }, 250);
   });
 
