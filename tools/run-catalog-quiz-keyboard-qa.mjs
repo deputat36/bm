@@ -88,7 +88,7 @@ async function focusState(page) {
       quiz_show_result: element.hasAttribute("data-quiz-show-result"),
       quiz_result_title: element.hasAttribute("data-quiz-result-title"),
       quiz_to_form: element.hasAttribute("data-quiz-to-form"),
-      quick_form_name: Boolean(element.matches('form[data-form-id="catalog_quick_selection"] input[name="name"]')),
+      quick_form_phone: Boolean(element.matches('form[data-form-id="catalog_quick_selection"] input[name="phone"]')),
       checked: "checked" in element ? Boolean(element.checked) : null,
       hidden: style.display === "none" || style.visibility === "hidden" || element.closest("[hidden],[aria-hidden='true'],[inert]") !== null,
       disabled: Boolean(element.disabled || element.getAttribute("aria-disabled") === "true"),
@@ -208,9 +208,51 @@ async function auditProfile(context, profile) {
   await page.keyboard.press("Enter");
   await page.waitForTimeout(350);
   state = await focusState(page);
-  assertUsableFocus(state, `${profile.id}/quick_form_name`);
-  if (!state.quick_form_name) throw new Error(`${profile.id}: handoff did not focus the quick-form name field`);
-  phases.push({ phase: "quick_form_name", state });
+  assertUsableFocus(state, `${profile.id}/quick_form_phone`);
+  if (!state.quick_form_phone) throw new Error(`${profile.id}: handoff did not focus the required quick-form phone field`);
+  phases.push({ phase: "quick_form_phone", state });
+
+  // Regression: defaults are useful with blank fields, but a buyer's later edits win.
+  const objectField = page.locator('form[data-form-id="catalog_quick_selection"] select[name="residential_complex"]');
+  const interestField = page.locator('form[data-form-id="catalog_quick_selection"] select[name="interest"]');
+  const defaultValues = [await objectField.inputValue(), await interestField.inputValue()];
+  if (defaultValues[0] !== "Общий подбор новостройки"
+    || defaultValues[1] !== "Наличие и актуальный статус") {
+    throw new Error(`${profile.id}: quiz did not provide safe defaults to initially blank fields: ${JSON.stringify(defaultValues)}`);
+  }
+  phases.push({ phase: "safe_quiz_defaults", values: defaultValues });
+
+  // The buyer changes the fields after the recommendation, then restarts.
+  await objectField.selectOption("Просторная 4А");
+  await interestField.selectOption("Документы по объекту");
+  await page.locator("[data-catalog-rule-quiz] [data-quiz-reset]").click();
+  const afterReset = [await objectField.inputValue(), await interestField.inputValue()];
+  if (afterReset[0] !== "Просторная 4А" || afterReset[1] !== "Документы по объекту") {
+    throw new Error(`${profile.id}: quiz reset discarded manual choices: ${JSON.stringify(afterReset)}`);
+  }
+  phases.push({ phase: "manual_choices_survive_reset", values: afterReset });
+
+  // A second quiz completion must not overwrite a user-selected house or question.
+  await page.locator("[data-catalog-rule-quiz] [data-quiz-start]").click();
+  for (let index = 0; index < STEP_IDS.length; index += 1) {
+    const step = page.locator(`[data-quiz-step="${STEP_IDS[index]}"]`);
+    await step.locator('input[type="radio"]').first().check();
+    await step.locator(index === STEP_IDS.length - 1 ? "[data-quiz-show-result]" : "[data-quiz-next]").click();
+  }
+  const afterSecondResult = [await objectField.inputValue(), await interestField.inputValue()];
+  if (afterSecondResult[0] !== "Просторная 4А" || afterSecondResult[1] !== "Документы по объекту") {
+    throw new Error(`${profile.id}: second quiz result overwrote manual choices: ${JSON.stringify(afterSecondResult)}`);
+  }
+  phases.push({ phase: "manual_choices_survive_second_result", values: afterSecondResult });
+
+  await page.locator("[data-catalog-rule-quiz] [data-quiz-reset]").click();
+  if (await objectField.inputValue() !== "Просторная 4А"
+    || await interestField.inputValue() !== "Документы по объекту") {
+    throw new Error(`${profile.id}: second reset discarded existing user choices`);
+  }
+  if (await page.locator('form[data-form-id="catalog_quick_selection"] [data-catalog-quiz-field]').count()) {
+    throw new Error(`${profile.id}: reset retained hidden quiz metadata`);
+  }
 
   if (blockedLeadRequests.length) {
     throw new Error(`${profile.id}: quiz keyboard flow attempted live lead delivery`);

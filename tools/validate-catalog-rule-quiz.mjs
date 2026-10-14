@@ -217,6 +217,22 @@ for (const required of [
   if (!runtime.includes(required)) errors.push(`${RUNTIME_PATH}: missing required fragment ${required}`);
 }
 
+// Protect buyer-entered object/question choices and the required-field handoff.
+for (const fragment of [
+  "function applyQuizDefault(select, option)",
+  "function resetQuizDefault(select)",
+  "select.dataset.quizAppliedValue",
+  "if (!quizOwned && select.value) return",
+  "if (quizOwned && select.value !== select.dataset.quizAppliedValue)",
+  "select.value === select.dataset.quizAppliedValue",
+  "applyQuizDefault(objectSelect, objectOption)",
+  "applyQuizDefault(interestSelect, interestOption)",
+  'form.querySelectorAll("[data-quiz-prefilled=\'true\']").forEach(resetQuizDefault)',
+  'form.querySelector(\'input[name="phone"]\')?.focus()'
+]) {
+  if (!runtime.includes(fragment)) errors.push(`${RUNTIME_PATH}: buyer intent preservation missing ${fragment}`);
+}
+
 const handoffFields = Array.isArray(qa?.handoff_fields) ? qa.handoff_fields : [];
 if (handoffFields.length !== 11) errors.push(`${QA_PATH}: expected 11 handoff fields`);
 for (const field of handoffFields) {
