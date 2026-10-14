@@ -174,20 +174,45 @@
     }) || null;
   }
 
+  // Quiz defaults must never replace an apartment or question the buyer chose.
+  // Remember only values that this quiz itself applied; do not use browser storage.
+  function releaseQuizOwnership(select) {
+    delete select.dataset.quizPrefilled;
+    delete select.dataset.quizAppliedValue;
+    delete select.dataset.quizPreviousValue;
+  }
+
+  function applyQuizDefault(select, option) {
+    if (!select || !option) return;
+    const quizOwned = select.dataset.quizPrefilled === "true";
+    if (quizOwned && select.value !== select.dataset.quizAppliedValue) {
+      // A buyer edited the field after an earlier quiz result.
+      releaseQuizOwnership(select);
+      return;
+    }
+    if (!quizOwned && select.value) return;
+    if (!quizOwned) select.dataset.quizPreviousValue = select.value;
+    select.value = option.value;
+    select.dataset.quizAppliedValue = option.value;
+    select.dataset.quizPrefilled = "true";
+  }
+
+  function resetQuizDefault(select) {
+    if (select.dataset.quizPrefilled === "true"
+      && select.value === select.dataset.quizAppliedValue) {
+      select.value = select.dataset.quizPreviousValue || "";
+    }
+    releaseQuizOwnership(select);
+  }
+
   function prefillContactForm(answers, recommendation) {
     const objectSelect = form.querySelector('select[name="residential_complex"]');
     const interestSelect = form.querySelector('select[name="interest"]');
     const objectOption = findOption(objectSelect, "Общий подбор новостройки");
     const interestOption = findOption(interestSelect, recommendation.interest);
 
-    if (objectSelect && objectOption) {
-      objectSelect.value = objectOption.value;
-      objectSelect.dataset.quizPrefilled = "true";
-    }
-    if (interestSelect && interestOption) {
-      interestSelect.value = interestOption.value;
-      interestSelect.dataset.quizPrefilled = "true";
-    }
+    applyQuizDefault(objectSelect, objectOption);
+    applyQuizDefault(interestSelect, interestOption);
 
     const readableAnswers = [
       `Приоритет: ${label("priority", answers.priority)}`,
@@ -254,10 +279,7 @@
       });
     });
     form.querySelectorAll("[data-catalog-quiz-field]").forEach((field) => field.remove());
-    form.querySelectorAll("[data-quiz-prefilled='true']").forEach((field) => {
-      field.value = "";
-      delete field.dataset.quizPrefilled;
-    });
+    form.querySelectorAll("[data-quiz-prefilled='true']").forEach(resetQuizDefault);
     delete form.dataset.quizCompleted;
     latestResult = null;
     currentStep = 0;
@@ -295,7 +317,8 @@
     event.preventDefault();
     target.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => {
-      form.querySelector('input[name="name"]')?.focus();
+      // Name is optional; take the buyer directly to the required contact field.
+      form.querySelector('input[name="phone"]')?.focus({ preventScroll: true });
     }, 250);
   });
 
