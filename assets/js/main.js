@@ -184,11 +184,37 @@ function getConsentText(form) {
   return consent ? consent.textContent.replace(/\s+/g, " ").trim() : "Согласие на обработку персональных данных для обработки заявки и обратной связи.";
 }
 
+// Unspecified choices carry no buying-intent evidence. Never infer a budget
+// from free-text comments: they can contain arbitrary questions or callbacks.
+function hasSpecificLeadAnswer(raw) {
+  const value = String(raw || "").trim().toLowerCase().replace(/\s+/g, " ");
+  if (!value) return false;
+  return ![
+    "не знаю",
+    "пока не знаю",
+    "пока не определился",
+    "пока не определилась",
+    "не определился",
+    "не определилась",
+    "пока не определён",
+    "пока не определен",
+    "пока не определена",
+    "бюджет пока не определён",
+    "бюджет пока не определен",
+    "комнатность пока не определена",
+    "способ покупки пока не определён",
+    "способ покупки пока не определен",
+    "пока изучаю варианты",
+    "пока изучаю",
+    "нужна консультация по вариантам"
+  ].includes(value);
+}
+
 function qualifyLead(data) {
   let score = 0;
   const reasons = [];
   const leadType = String(data.lead_type || "").toLowerCase();
-  const budget = String(data.budget || data.comment || "").toLowerCase();
+  const budget = String(data.budget || "").toLowerCase();
   const timeline = String(data.timeline || data.purchase_timeline || "").toLowerCase();
   const purchaseMethod = String(data.purchase_method || data.mortgage_program || "").toLowerCase();
   const callbackTime = String(data.callback_time || data.convenient_time || "").toLowerCase();
@@ -198,35 +224,37 @@ function qualifyLead(data) {
     reasons.push("оставлен телефон");
   }
 
-  if (data.room_type || data.interest) {
+  if (hasSpecificLeadAnswer(data.room_type) || hasSpecificLeadAnswer(data.interest)) {
     score += 10;
     reasons.push("понятен интерес по квартире или услуге");
   }
 
-  if (budget && !["не знаю", "пока не знаю", ""].includes(budget)) {
+  if (hasSpecificLeadAnswer(budget)) {
     score += 15;
     reasons.push("указан бюджет или финансовый ориентир");
   }
 
-  if (purchaseMethod) {
+  if (hasSpecificLeadAnswer(purchaseMethod)) {
     score += 15;
     reasons.push("указан способ покупки или ипотечная программа");
   }
 
-  if (timeline.includes("сейчас") || timeline.includes("месяц") || timeline.includes("1-2") || timeline.includes("ближай")) {
-    score += 20;
-    reasons.push("короткий срок принятия решения");
-  } else if (timeline) {
-    score += 8;
-    reasons.push("указан срок покупки");
+  if (hasSpecificLeadAnswer(timeline)) {
+    if (timeline.includes("сейчас") || timeline.includes("месяц") || timeline.includes("1-2") || timeline.includes("ближай")) {
+      score += 20;
+      reasons.push("короткий срок принятия решения");
+    } else {
+      score += 8;
+      reasons.push("указан срок покупки");
+    }
   }
 
-  if (leadType.includes("callback") || callbackTime) {
+  if (leadType.includes("callback") || hasSpecificLeadAnswer(callbackTime)) {
     score += 15;
     reasons.push("запрошен звонок");
   }
 
-  if (leadType.includes("mortgage") || purchaseMethod.includes("ипотек")) {
+  if (leadType.includes("mortgage") || (hasSpecificLeadAnswer(purchaseMethod) && purchaseMethod.includes("ипотек"))) {
     score += 10;
     reasons.push("нужна ипотечная квалификация");
   }
