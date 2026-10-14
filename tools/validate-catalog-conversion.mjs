@@ -114,6 +114,37 @@ objects.forEach(([objectId, href]) => {
   }
 });
 
+
+/* Product-safety contract: catalog illustration must never look like documentary building photography. */
+const catalogArtPath = path.join(ROOT, "assets/img/catalog-neutral-housing.svg");
+if (!fs.existsSync(catalogArtPath)) {
+  errors.push("catalog: neutral architecture SVG is missing");
+} else {
+  const artwork = fs.readFileSync(catalogArtPath, "utf8");
+  if (!artwork.includes("иллюстрация не изображает конкретный объект недвижимости")) {
+    errors.push("catalog: SVG must explicitly identify itself as a generic drawing");
+  }
+  if (/<script\b|<foreignObject\b|(?:href|src)\s*=\s*["']https?:/i.test(artwork)) {
+    errors.push("catalog: generic SVG must not reference scripts or external content");
+  }
+}
+objects.forEach(([objectId], index) => {
+  const marker = `data-verification-profile="../data/verification/${objectId}.json"`;
+  const start = html.indexOf(marker);
+  const nextCard = html.indexOf("</article>", start);
+  const block = start >= 0 && nextCard >= 0 ? html.slice(start, nextCard) : "";
+  const sequence = String(index + 1).padStart(2, "0");
+  for (const required of [
+    'class="catalog-card-art catalog-card-art--' + sequence + '"',
+    'src="../assets/img/catalog-neutral-housing.svg"',
+    'alt="" aria-hidden="true"',
+    'class="catalog-card-art__label">Схема, не фото дома</span>',
+    'class="catalog-card-art__number">' + sequence + ' / 03</span>'
+  ]) {
+    if (!block.includes(required)) errors.push(`catalog: ${objectId} needs honest, accessible neutral visual: ${required}`);
+  }
+});
+
 console.log("Checked catalog short and detailed conversion paths.");
 console.log("Catalog primary fields: optional name, required phone, object, main question.");
 
