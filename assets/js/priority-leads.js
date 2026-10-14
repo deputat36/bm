@@ -61,7 +61,6 @@ function enhancePriorityObjectForm(form) {
   const select = form.querySelector("select[name='residential_complex']");
   if (!select) return;
 
-  const hiddenId = ensureHiddenObjectId(form);
   const requestedObject = getRequestedObjectName();
 
   if (requestedObject && Array.from(select.options).some((option) => option.value === requestedObject)) {
@@ -70,7 +69,13 @@ function enhancePriorityObjectForm(form) {
 
   const syncObject = () => {
     const objectName = select.value.trim();
-    const objectId = PRIORITY_OBJECTS[objectName] || "";
+    // Reference cards create a temporary option and their own verified object id.
+    // Re-resolve the field on every change: reference cleanup may remove its prior input.
+    const referenceId = select.selectedOptions[0]?.hasAttribute("data-reference-option")
+      ? String(form.querySelector('input[name="reference_object_id"]')?.value || "").trim()
+      : "";
+    const objectId = referenceId ? `reference:${referenceId}` : (PRIORITY_OBJECTS[objectName] || "");
+    const hiddenId = ensureHiddenObjectId(form);
 
     hiddenId.value = objectId;
     form.dataset.complex = objectName || "Общий подбор новостройки";
