@@ -88,7 +88,7 @@ async function focusState(page) {
       quiz_show_result: element.hasAttribute("data-quiz-show-result"),
       quiz_result_title: element.hasAttribute("data-quiz-result-title"),
       quiz_to_form: element.hasAttribute("data-quiz-to-form"),
-      quick_form_phone: Boolean(element.matches('form[data-form-id="catalog_quick_selection"] input[name="name"]')),
+      quick_form_phone: Boolean(element.matches('form[data-form-id="catalog_quick_selection"] input[name="phone"]')),
       checked: "checked" in element ? Boolean(element.checked) : null,
       hidden: style.display === "none" || style.visibility === "hidden" || element.closest("[hidden],[aria-hidden='true'],[inert]") !== null,
       disabled: Boolean(element.disabled || element.getAttribute("aria-disabled") === "true"),
