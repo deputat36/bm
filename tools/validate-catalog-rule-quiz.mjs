@@ -228,7 +228,7 @@ for (const fragment of [
   "applyQuizDefault(objectSelect, objectOption)",
   "applyQuizDefault(interestSelect, interestOption)",
   'form.querySelectorAll("[data-quiz-prefilled=\'true\']").forEach(resetQuizDefault)',
-  'form.querySelector(\'input[name="phone"]\')?.focus({ preventScroll: true })'
+  'form.querySelector(\'input[name="phone"]\')?.focus()'
 ]) {
   if (!runtime.includes(fragment)) errors.push(`${RUNTIME_PATH}: buyer intent preservation missing ${fragment}`);
 }
