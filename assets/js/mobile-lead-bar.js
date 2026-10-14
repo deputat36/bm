@@ -143,6 +143,19 @@
     }
   }
 
+  function firstUnansweredRequiredField() {
+    // main.js inserts an invisible tabindex=-1 anti-spam input before buyer fields.
+    // Never focus that input or a disabled/hidden control from the sticky CTA.
+    const fields = Array.from(form.querySelectorAll("input[required], select[required], textarea[required]"));
+    const visible = fields.filter((field) => !field.disabled
+      && !field.closest("[data-honeypot-field], [hidden], [inert], [aria-hidden='true']")
+      && field.getClientRects().length > 0);
+    return visible.find((field) => !field.checkValidity())
+      || form.querySelector('button[type="submit"]:not(:disabled)')
+      || visible[0]
+      || null;
+  }
+
   const leadLink = document.createElement("a");
   leadLink.className = "mobile-lead-bar__button mobile-lead-bar__button--primary";
   leadLink.href = `#${leadSection.id}`;
@@ -150,8 +163,8 @@
   leadLink.addEventListener("click", () => {
     trackAction("lead");
     window.setTimeout(() => {
-      const firstField = form.querySelector("input:not([type='hidden']), select, textarea");
-      firstField?.focus({ preventScroll: true });
+      // Native focus scroll keeps the chosen required field visible on small screens.
+      firstUnansweredRequiredField()?.focus();
     }, 450);
   });
 

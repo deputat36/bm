@@ -1,0 +1,65 @@
+name: Mobile sticky lead focus QA
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "assets/js/mobile-lead-bar.js"
+      - "assets/js/main.js"
+      - "assets/js/schema.js"
+      - "assets/js/form-accessibility.js"
+      - "assets/css/mobile-lead-bar.css"
+      - "data/qa/form-scenarios.json"
+      - "tools/run-mobile-lead-focus-qa.mjs"
+      - ".github/workflows/mobile-lead-focus.yml"
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "catalog/**"
+      - "contacts/**"
+      - "ipoteka/**"
+      - "assets/js/mobile-lead-bar.js"
+      - "assets/js/main.js"
+      - "assets/js/schema.js"
+      - "assets/js/form-accessibility.js"
+      - "assets/css/mobile-lead-bar.css"
+      - "data/qa/form-scenarios.json"
+      - "tools/run-mobile-lead-focus-qa.mjs"
+      - ".github/workflows/mobile-lead-focus.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-lead-focus-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-focus:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Install pinned Chromium
+        run: |
+          npm install --no-save playwright@1.62.0
+          npx playwright install --with-deps chromium
+
+      - name: Check mobile runtime and test syntax
+        run: |
+          node --check assets/js/mobile-lead-bar.js
+          node --check tools/run-mobile-lead-focus-qa.mjs
+
+      - name: Check all canonical mobile focus handoffs without sending leads
+        run: node tools/run-mobile-lead-focus-qa.mjs
