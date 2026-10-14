@@ -1,0 +1,62 @@
+name: Reference catalog lead context QA
+
+on:
+  pull_request:
+    paths:
+      - "assets/js/reference-catalog.js"
+      - "assets/js/main.js"
+      - "assets/js/priority-leads.js"
+      - "catalog/index.html"
+      - "data/research/reference-projects.json"
+      - "tools/validate-reference-projects.mjs"
+      - "tools/run-reference-catalog-browser-qa.mjs"
+      - ".github/workflows/reference-catalog-browser-qa.yml"
+  push:
+    branches: [main]
+    paths:
+      - "assets/js/reference-catalog.js"
+      - "assets/js/main.js"
+      - "assets/js/priority-leads.js"
+      - "catalog/index.html"
+      - "data/research/reference-projects.json"
+      - "tools/validate-reference-projects.mjs"
+      - "tools/run-reference-catalog-browser-qa.mjs"
+      - ".github/workflows/reference-catalog-browser-qa.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reference-catalog-lead-context-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-context:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Install pinned Chromium
+        run: |
+          npm install --no-save playwright@1.62.0
+          npx playwright install --with-deps chromium
+
+      - name: Check syntax
+        run: |
+          node --check assets/js/reference-catalog.js
+          node --check assets/js/priority-leads.js
+          node --check tools/validate-reference-projects.mjs
+          node --check tools/run-reference-catalog-browser-qa.mjs
+
+      - name: Validate safe reference registry and runtime contract
+        run: node tools/validate-reference-projects.mjs
+
+      - name: Test reference selection without lead submission
+        run: node tools/run-reference-catalog-browser-qa.mjs

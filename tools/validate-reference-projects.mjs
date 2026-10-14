@@ -160,7 +160,16 @@ function validateRuntimeContract(source) {
     'link.target = "_blank";',
     'link.rel = "noopener noreferrer";',
     'fetch(source, { cache: "no-store" })',
-    'data.projects.filter(isPublishableReferenceProject)'
+    'data.projects.filter(isPublishableReferenceProject)',
+    'const referenceFormContexts = new WeakMap();',
+    'function bindReferenceForm(form)',
+    'select.addEventListener("change",',
+    'select.selectedOptions[0]?.hasAttribute("data-reference-option")',
+    'form.querySelectorAll("[data-reference-catalog-field]").forEach((field) => field.remove())',
+    'select.querySelectorAll("option[data-reference-option]").forEach((option) => option.remove())',
+    'form.dataset.complex = initial.complex',
+    'delete form.dataset.complexId',
+    'field.setAttribute("data-reference-catalog-field", "")'
   ];
 
   for (const fragment of requiredFragments) {
