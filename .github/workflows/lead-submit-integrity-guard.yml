@@ -7,6 +7,8 @@ on:
       - "assets/js/form-accessibility.js"
       - "tools/validate-lead-submit-integrity.mjs"
       - "tools/validate-post-submit-cooldown.mjs"
+      - "tools/test-lead-qualification.mjs"
+      - "docs/portal/LEAD_QUALIFICATION_CALIBRATION.md"
       - "docs/portal/LEAD_SUBMIT_INTEGRITY.md"
       - "docs/portal/POST_SUBMIT_COOLDOWN.md"
       - ".github/workflows/lead-submit-integrity-guard.yml"
@@ -18,6 +20,8 @@ on:
       - "assets/js/form-accessibility.js"
       - "tools/validate-lead-submit-integrity.mjs"
       - "tools/validate-post-submit-cooldown.mjs"
+      - "tools/test-lead-qualification.mjs"
+      - "docs/portal/LEAD_QUALIFICATION_CALIBRATION.md"
       - "docs/portal/LEAD_SUBMIT_INTEGRITY.md"
       - "docs/portal/POST_SUBMIT_COOLDOWN.md"
       - ".github/workflows/lead-submit-integrity-guard.yml"
@@ -43,9 +47,13 @@ jobs:
           node --check assets/js/form-accessibility.js
           node --check tools/validate-lead-submit-integrity.mjs
           node --check tools/validate-post-submit-cooldown.mjs
+          node --check tools/test-lead-qualification.mjs
 
       - name: Validate lead submit integrity
         run: node tools/validate-lead-submit-integrity.mjs
+
+      - name: Test conservative buyer qualification
+        run: node tools/test-lead-qualification.mjs
 
       - name: Validate post-submit cooldown
         run: node tools/validate-post-submit-cooldown.mjs
