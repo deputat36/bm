@@ -5,6 +5,7 @@ on:
     paths:
       - "assets/js/reference-catalog.js"
       - "assets/js/main.js"
+      - "assets/js/priority-leads.js"
       - "catalog/index.html"
       - "data/research/reference-projects.json"
       - "tools/validate-reference-projects.mjs"
@@ -15,6 +16,7 @@ on:
     paths:
       - "assets/js/reference-catalog.js"
       - "assets/js/main.js"
+      - "assets/js/priority-leads.js"
       - "catalog/index.html"
       - "data/research/reference-projects.json"
       - "tools/validate-reference-projects.mjs"
@@ -49,6 +51,7 @@ jobs:
       - name: Check syntax
         run: |
           node --check assets/js/reference-catalog.js
+          node --check assets/js/priority-leads.js
           node --check tools/validate-reference-projects.mjs
           node --check tools/run-reference-catalog-browser-qa.mjs
 
