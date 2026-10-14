@@ -125,8 +125,9 @@ async function audit(browser, file, viewport) {
     await bar.click();
     await page.waitForTimeout(580);
     const next = await inspectFocus(page);
-    assert(next.name === "residential_complex" && next.inForm && !next.honeypot && next.visible && next.inViewport,
-      `${file}: CTA should focus next unanswered required select ${JSON.stringify(next)}`);
+    assert(next.name === next.nextInvalid && next.name !== "phone"
+      && next.inForm && !next.honeypot && next.visible && next.inViewport,
+      `${file}: CTA should focus the page's next unanswered required control ${JSON.stringify(next)}`);
     assert(blockedPosts.length === 0, `${file}: QA unexpectedly attempted a lead POST`);
     assert(errors.length === 0, `${file}: uncaught browser errors: ${errors.join(" | ")}`);
     return { page: file, viewport: viewport.width, focus: initial.name, next: next.name, passed: true, livePosts: 0 };
