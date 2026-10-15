@@ -9,6 +9,7 @@ on:
       - "data/analytics/events.json"
       - "tools/validate-analytics-delivery-consistency.mjs"
       - "tools/validate-internal-lead-id-privacy.mjs"
+      - "tools/test-cta-placement-attribution.mjs"
       - "docs/portal/ANALYTICS_DELIVERY_CONSISTENCY.md"
       - ".github/workflows/analytics-delivery-consistency-guard.yml"
   push:
@@ -21,6 +22,7 @@ on:
       - "data/analytics/events.json"
       - "tools/validate-analytics-delivery-consistency.mjs"
       - "tools/validate-internal-lead-id-privacy.mjs"
+      - "tools/test-cta-placement-attribution.mjs"
       - "docs/portal/ANALYTICS_DELIVERY_CONSISTENCY.md"
       - ".github/workflows/analytics-delivery-consistency-guard.yml"
 
@@ -45,9 +47,13 @@ jobs:
           node --check assets/js/mobile-lead-bar.js
           node --check tools/validate-analytics-delivery-consistency.mjs
           node --check tools/validate-internal-lead-id-privacy.mjs
+          node --check tools/test-cta-placement-attribution.mjs
 
       - name: Validate analytics delivery consistency
         run: node tools/validate-analytics-delivery-consistency.mjs
 
       - name: Validate internal lead ID privacy
         run: node tools/validate-internal-lead-id-privacy.mjs
+
+      - name: Verify CTA and campaign placement precedence
+        run: node tools/test-cta-placement-attribution.mjs
