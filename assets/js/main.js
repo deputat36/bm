@@ -301,7 +301,9 @@ function collectFormData(form) {
   data.referrer = sanitizeLeadUrl(document.referrer);
   data.tracking = getTrackingData();
   data.lead_source = data.lead_source || data.tracking?.current?.lead_source || "";
-  data.placement = data.placement || data.tracking?.current?.placement || "";
+  // Keep the clicked on-page CTA placement distinct from inbound campaign attribution.
+  // Explicit form/quiz placement wins; same-page CTA handoff wins over incoming ?placement.
+  data.placement = data.placement || form.dataset.placement || data.tracking?.current?.placement || "";
   data.created_at = new Date().toISOString();
   data.client_fixation_id = createClientFixationId();
   data.client_fixation_basis = "Заявка с формы сайта с сохранением страницы, времени, формы, согласия и рекламных меток.";
