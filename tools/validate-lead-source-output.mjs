@@ -47,7 +47,7 @@ const registry = readJson(REGISTRY_PATH);
 requireFragments(main, MAIN_PATH, [
   'LEAD_ENDPOINT: "' + ENDPOINT + '"',
   'data.lead_source = data.lead_source || data.tracking?.current?.lead_source || "";',
-  'data.placement = data.placement || data.tracking?.current?.placement || "";',
+  'data.placement = data.placement || form.dataset.placement || data.tracking?.current?.placement || "";',
   'lead_source: data.lead_source || ""',
   'placement: data.placement || ""',
   'body: JSON.stringify(data)',
