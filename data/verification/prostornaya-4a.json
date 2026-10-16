@@ -1,6 +1,6 @@
 {
   "schema_version": "1.1",
-  "updated_at": "2026-07-17",
+  "updated_at": "2026-10-16",
   "project_id": "tellermanov-sad",
   "portal_slug": "prostornaya-4a",
   "page_url": "/catalog/prostornaya-4a/",
@@ -18,7 +18,7 @@
       "title": "Официальная страница ЖК «Теллерманов сад» на сайте BM Group",
       "reference": "https://bm36.ru/projects/tellermanov-sad/",
       "status": "verified",
-      "last_checked_at": "2026-07-17",
+      "last_checked_at": "2026-10-16",
       "notes": "Первичный публичный источник для описания комплекса, преимуществ, отделки, способов покупки и опубликованного комплекта документов. Изменяемые условия необходимо проверять повторно."
     },
     {
@@ -27,7 +27,7 @@
       "title": "Официальный список проектов BM Group",
       "reference": "https://bm36.ru/projects/",
       "status": "verified",
-      "last_checked_at": "2026-07-17",
+      "last_checked_at": "2026-10-16",
       "notes": "Подтверждает название проекта, город, адресный ориентир, общее количество квартир и заявленный срок."
     },
     {
@@ -70,7 +70,7 @@
       "importance": "critical",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page", "official-developer-project-list"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -79,7 +79,7 @@
       "importance": "critical",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page", "official-developer-project-list"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -88,7 +88,7 @@
       "importance": "critical",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -97,7 +97,7 @@
       "importance": "volatile",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page", "official-developer-project-list"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true,
       "notes": "Статус изменяемый; проверять перед рекламой и консультацией."
     },
@@ -107,7 +107,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -116,7 +116,7 @@
       "importance": "critical",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -125,7 +125,7 @@
       "importance": "critical",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page", "official-developer-project-list"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -134,7 +134,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -143,7 +143,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -152,7 +152,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -161,7 +161,7 @@
       "importance": "volatile",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-list"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true,
       "notes": "Заявленный срок необходимо сверять по актуальной проектной декларации перед сделкой."
     },
@@ -171,7 +171,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -180,7 +180,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -189,7 +189,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -198,7 +198,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -207,7 +207,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -216,7 +216,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -225,7 +225,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -234,7 +234,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -243,7 +243,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -252,7 +252,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -261,7 +261,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -270,7 +270,7 @@
       "importance": "standard",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {
@@ -279,7 +279,7 @@
       "importance": "volatile",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true,
       "notes": "Применимость, условия и доступность каждого способа проверяются на дату обращения."
     },
@@ -289,7 +289,7 @@
       "importance": "critical",
       "verification_status": "confirmed",
       "source_ids": ["official-developer-project-page", "project-declaration", "building-permit"],
-      "checked_at": "2026-07-17",
+      "checked_at": "2026-10-16",
       "publication_allowed": true
     },
     {

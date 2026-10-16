@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="../assets/css/home-polish.css">
   <link rel="stylesheet" href="../assets/css/leadgen.css">
   <link rel="stylesheet" href="../assets/css/project-conversion.css">
+  <link rel="stylesheet" href="../assets/css/city-project-guide.css">
 </head>
 <body class="catalog-page">
   <header class="topbar">
@@ -28,8 +29,9 @@
         <div class="project-hero__content">
           <span class="eyebrow">Городской каталог</span>
           <h1>Новостройки Борисоглебска</h1>
-          <p class="lead">Начните с карточек домов: изучите доступные сведения и то, что ещё нужно проверить. Специалист сообщит только сведения, которые можно подтвердить на дату обращения.</p>
-          <div class="hero__actions"><a class="button" href="#priority">Смотреть дома</a><a class="button button--ghost" href="#quiz" data-track-action="catalog_quiz_open" data-track-placement="catalog_hero_quiz">Пройти быстрый подбор</a><a class="button button--ghost" href="#questions" data-track-action="catalog_question_start" data-track-placement="catalog_hero_questions">Выбрать вопрос</a><a class="button button--ghost" href="#priority" data-track-action="priority_objects" data-track-placement="catalog_hero">Сравнить объекты</a><a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="catalog_hero">8 903 857-69-09</a></div>
+          <p class="lead">Сравните новые дома по адресу, отделке и особенностям. Посмотрите источники, выберите подходящие варианты и запросите актуальные цены и наличие.</p>
+          <div class="hero__actions"><a class="button" href="#city-guide">Смотреть дома</a><a class="button button--ghost" href="#quiz" data-track-action="catalog_quiz_open" data-track-placement="catalog_hero_quiz">Пройти быстрый подбор</a><a class="button button--ghost" href="tel:+79038576909" data-track-action="phone" data-track-placement="catalog_hero">8 903 857-69-09</a></div>
+          <p><a href="#questions" data-track-action="catalog_question_start" data-track-placement="catalog_hero_questions">Выбрать главный вопрос для консультации</a></p>
           <div class="notice">Цена, наличие квартир и условия покупки уточняются перед консультацией. Заявка не является бронью и не фиксирует стоимость.</div>
         </div>
 
@@ -48,6 +50,15 @@
       </div>
     </section>
 
+    <section id="city-guide" class="city-guide" aria-labelledby="city-guide-title">
+      <div class="container">
+        <div class="section__head"><span class="eyebrow">Сравнить и выбрать</span><h2 id="city-guide-title">Какой дом подходит вам?</h2><p>Краткий обзор изученных проектов. У каждого — свои источники и дата проверки. Каталог дополняется и не является полным реестром строительства города.</p></div>
+        <div class="city-guide__toolbar" hidden data-guide-search-wrap><label for="city-guide-search">Найти дом<input id="city-guide-search" type="search" placeholder="ЖК, улица или застройщик" autocomplete="off" data-guide-search></label><p role="status" aria-live="polite" data-guide-count></p></div>
+        <div data-city-guide><p>Подробные карточки — ниже: <a href="#priority">основные объекты</a> и <a href="#reference">другие новые дома</a>.</p></div>
+        <details class="city-guide__drawing" id="aerodromnaya-18b"><summary><span>Аэродромная 18Б — отдельный проект</span><small>Что видно в проектной схеме</small></summary><div class="city-guide__drawing-body"><p>18Б и 18Г — разные адреса. В предоставленном проектном чертеже по Аэродромной 18Б (этап №2, декабрь 2025 года) показаны первый этаж и типовые этажи 2–8, колясочная и лифтовой холл. В названии проекта упомянута пристроенная котельная.</p><p>Это сведения из архивной схемы, а не подтверждение текущей готовности, индивидуальных котлов или комплектации квартиры. Ввод, срок передачи, отделка, площади по договору, цена и наличие проверяются отдельно. Планировки и характеристики 18Г сюда не переносятся.</p><p class="city-guide__source">Источник: предоставленный проектный чертёж «Аэродромная 18Б», этап №2, листы 2–3; изучен 16.10.2026. Схема не заменяет разрешительные документы.</p><a class="button button--ghost" href="#lead" data-prefill-interest="Альтернативы и общий подбор" data-track-action="catalog_question_prefill" data-track-placement="catalog_18b_drawing">Уточнить сведения по 18Б</a><p class="form__hint">Укажите «Аэродромная 18Б» в комментарии к подробной заявке.</p></div></details>
+      </div>
+    </section>
+
     <section id="priority">
       <div class="container">
         <div class="section__head"><span class="eyebrow">Проверка данных</span><h2>Три ключевых объекта</h2><p>Сравнение показывает, какие сведения уже подтверждены, а какие нужно уточнить перед покупкой. Цены и наличие проверяются на дату обращения.</p></div>
@@ -62,8 +73,8 @@
 
     <section class="section--soft" id="reference">
       <div class="container">
-        <div class="section__head"><span class="eyebrow">Справочная часть</span><h2>Другие новостройки города</h2><p>Ещё несколько домов с проверенными справочными сведениями и ссылками на источники. Наличие квартир в продаже нужно уточнять отдельно.</p></div>
-        <div class="grid grid--3" data-reference-catalog data-source="../data/research/reference-projects.json" aria-live="polite">
+        <div class="section__head"><span class="eyebrow">Другие дома</span><h2>Другие новостройки города</h2><p>История проекта, особенности домов и вопросы для просмотра. В раскрывающихся блоках — дополнительные сведения и ссылки на источники.</p></div>
+        <div class="grid grid--2 reference-buyers" data-reference-catalog data-source="../data/research/reference-projects.json" aria-live="polite">
           <article class="card"><h3>Загрузка справочного каталога</h3><p>Проверяем доступные карточки объектов.</p></article>
         </div>
         <div class="notice">Неподтверждённые адреса и характеристики не выводятся. Новая карточка появляется только после проверки источников.</div>
@@ -181,5 +192,6 @@
   <script src="../assets/js/catalog-verification-comparison.js"></script>
   <script src="../assets/js/reference-catalog.js"></script>
   <script src="../assets/js/schema.js"></script>
+<script src="../assets/js/city-project-guide.js"></script>
 </body>
 </html>

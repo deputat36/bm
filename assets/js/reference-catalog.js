@@ -137,6 +137,7 @@ function createSourceLink(source, project) {
 
 function renderReferenceProject(project) {
   const card = createElement("article", "card card--shadow");
+  card.id = `reference-${project.id}`;
   const status = createElement("span", "eyebrow", project.public_status_label || "Данные проверены");
   const title = createElement("h3", "", project.display_name || project.address || "Новостройка");
   const address = createElement("p", "", project.address || "Адрес подтверждается");
@@ -151,11 +152,38 @@ function renderReferenceProject(project) {
   }
 
   if (project.last_checked_at) {
-    card.append(createElement("p", "", `Проверено: ${project.last_checked_at}`));
+    card.append(createElement("p", "city-guide__source", `Основные сведения проверены: ${project.last_checked_at}. Даты дополнительных сведений указаны в источниках.`));
   }
 
+  const details = createElement("details", "reference-buyers__details");
+  details.append(createElement("summary", "", "Особенности, вопросы и источники"));
+  const acceptedUrls = new Set(project.sources.map((source) => source.url));
+  const publicFacts = (project.buyer_facts || []).filter((fact) =>
+    fact.publication_allowed === true && fact.verification_status === "confirmed"
+    && acceptedUrls.has(fact.source_url) && typeof fact.text === "string"
+  );
+  publicFacts.forEach((fact) => {
+    details.append(createElement("p", "", fact.text));
+    const source = createSourceLink({url: fact.source_url, title: `Источник · проверено ${fact.checked_at}`}, project);
+    if (source) { source.className = "city-guide__source"; details.append(source); }
+  });
+  if (Array.isArray(project.buyer_checks) && project.buyer_checks.length) {
+    details.append(createElement("h4", "", "Что уточнить на просмотре"));
+    const checks = createElement("ul", "list");
+    project.buyer_checks.forEach((check) => checks.append(createElement("li", "", check)));
+    details.append(checks);
+  }
+  details.append(createElement("h4", "", "Источники по дому"));
+  const sourceList = createElement("ul", "list");
+  project.sources.forEach((source) => {
+    const link = createSourceLink(source, project);
+    if (link) { const item = createElement("li"); item.append(link); sourceList.append(item); }
+  });
+  details.append(sourceList);
+  card.append(details);
+
   const actions = createElement("div", "hero__actions");
-  const selectionLink = createElement("a", "button", "Подобрать новостройку");
+  const selectionLink = createElement("a", "button", "Узнать о квартирах");
   selectionLink.href = "#lead";
   selectionLink.addEventListener("click", () => attachReferenceInterest(project));
   actions.append(selectionLink);

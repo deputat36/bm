@@ -35,6 +35,13 @@ for (const file of jsonPaths) {
   if (file.startsWith('data/verification/')) for (const claim of data.claims) {
     if (claim.publication_allowed !== true || !['confirmed', 'verified'].includes(claim.verification_status)) assert(!Object.hasOwn(claim, 'value'), `Withheld claim leaked: ${claim.field}`);
   }
+  if (file === 'data/research/reference-projects.json') for (const project of data.projects) {
+    for (const fact of project.buyer_facts || []) {
+      assert(fact.publication_allowed === true && fact.verification_status === 'confirmed', `Unaccepted buyer fact: ${project.id}`);
+      assert(project.sources.some(source => source.url === fact.source_url), `Unattributed buyer fact: ${project.id}`);
+      assert(/^\d{4}-\d{2}-\d{2}$/.test(fact.checked_at), `Undated buyer fact: ${project.id}`);
+    }
+  }
 }
 const media = JSON.parse(fs.readFileSync(path.join(out, 'data/media/prostornaya-4a.json')));
 const allowedMedia = media.assets.flatMap(item => {

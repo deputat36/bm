@@ -38,9 +38,9 @@ for (const id of ['prostornaya-4a', 'aerodromnaya-18g', 'sennaya-76']) {
   put(file, {
     ...pick(profile, ['project_id', 'updated_at', 'overall_status']),
     // Only status metadata is needed for counts; internal notes/identifiers stay in GitHub.
-    sources: profile.sources.map(source => ({status: source.status, ...(external(source.reference) ? {reference: source.reference} : {})})),
+    sources: profile.sources.map(source => ({status: source.status, ...(external(source.reference) ? {...pick(source, ['title', 'last_checked_at']), reference: source.reference} : {})})),
     claims: profile.claims.map(claim => ({
-      ...pick(claim, ['field', 'importance', 'verification_status', 'publication_allowed']),
+      ...pick(claim, ['field', 'importance', 'verification_status', 'publication_allowed', 'checked_at']),
       ...(claim.publication_allowed === true && ['confirmed', 'verified'].includes(claim.verification_status) ? {value: claim.value} : {})
     }))
   });
@@ -54,7 +54,9 @@ const references = read('data/research/reference-projects.json');
 put('data/research/reference-projects.json', {
   projects: references.projects.filter(project => project.commercial_role === 'reference_catalog' && project.verification_status === 'confirmed' && project.is_public_ready === true && project.sources.some(source => external(source.url))).map(project => ({
     ...pick(project, ['id', 'display_name', 'address', 'commercial_role', 'verification_status', 'is_public_ready', 'last_checked_at', 'public_status_label', 'building_status', 'builder_name', 'commissioned_year', 'handover', 'floors', 'wall_material']),
-    sources: project.sources.filter(source => external(source.url)).map(source => pick(source, ['url', 'title']))
+    buyer_checks: (project.buyer_checks || []).filter(check => typeof check === 'string'),
+    buyer_facts: (project.buyer_facts || []).filter(fact => fact.publication_allowed === true && fact.verification_status === 'confirmed' && external(fact.source_url) && project.sources.some(source => source.url === fact.source_url)).map(fact => pick(fact, ['text', 'source_url', 'checked_at', 'verification_status', 'publication_allowed'])),
+    sources: project.sources.filter(source => external(source.url)).map(source => pick(source, ['url', 'title', 'checked_at']))
   }))
 });
 const media = read('data/media/prostornaya-4a.json');

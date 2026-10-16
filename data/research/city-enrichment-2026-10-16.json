@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0",
+  "checked_at": "2026-10-16",
+  "scope": "city_newbuild_buyer_information",
+  "inventory_complete": false,
+  "confirmed_full_city_coverage": false,
+  "published_priority_slugs": [
+    "prostornaya-4a",
+    "aerodromnaya-18g",
+    "sennaya-76"
+  ],
+  "enriched_reference_ids": [
+    "uyutnyy-voronezh-grad",
+    "aerodromnaya-29b-psk",
+    "aerodromnaya-32-aleks",
+    "evropeyskiy-proekt-invest"
+  ],
+  "supplemental_document_excerpt": {
+    "address": "Аэродромная 18Б",
+    "source_filename": "Skhema_Aerodromnaya_18_B.pdf",
+    "sha256": "aa0bcf853f95e45d50b6109d2eea0bbc4318e42320a455ec0bc701e041e051b1",
+    "document_date": "12.2025",
+    "stage": "Этап №2",
+    "sheets": [
+      2,
+      3
+    ],
+    "publication": "attributed_archival_excerpt_only",
+    "source_visual_review": true,
+    "rights_to_publish_drawing": false,
+    "current_sales_verified": false,
+    "primary_legal_identity_gate_passed": false,
+    "observed": [
+      "План первого этажа",
+      "План типовых 2–8 этажей",
+      "Колясочная",
+      "Лифтовой холл",
+      "Пристроенная котельная в наименовании проекта"
+    ],
+    "not_derived": [
+      "current_price",
+      "current_availability",
+      "current_handover",
+      "individual_boiler",
+      "current_finish_specification",
+      "areas_under_current_sale_contract"
+    ]
+  },
+  "material_findings": [
+    {
+      "subject": "Аэродромная 18Б",
+      "finding": "Marketplace listing 333605415 has address 18Г in heading and 18Б in body. No address, boiler or legal-status promotion from that listing.",
+      "url": "https://voronezh.cian.ru/sale/flat/333605415/"
+    },
+    {
+      "subject": "Европейский",
+      "finding": "Official historical masterplan and marketplace completed buildings describe different scopes. No 2027 handover for all houses; no infrastructure-as-delivered claim.",
+      "url": "https://zhk-evropeyskiy-voronezh-borisoglebsk-i.cian.ru/"
+    },
+    {
+      "subject": "Гайдара 1А",
+      "finding": "Marketplace directory says Borisoglebsk in address but Voronezh in body; not promoted without primary city/address evidence.",
+      "url": "https://voronezh.domostroyrf.ru/novostroyki/dom-dom-na-gaydara"
+    }
+  ],
+  "source_failures": [
+    {
+      "url": "https://наш.дом.рф/новостройки/борисоглебск/",
+      "result": "403 during direct open; indexed listing not a complete fresh inventory"
+    },
+    {
+      "url": "https://proektinvest.com/objects/zhilishnoe-stroitelstvo/55-zk-evropeyskiy-borisoglebsk.html",
+      "result": "unavailable; historical primary-source dates not renewed"
+    },
+    {
+      "url": "https://zhk-chkalov-voronezh-i.cian.ru/",
+      "result": "403; historical claim dates not renewed"
+    }
+  ],
+  "publication_constraints": [
+    "no_source_or_legal_gate_promotion",
+    "no_indexability_change",
+    "no_media_without_rights",
+    "no_live_lead_submissions"
+  ]
+}

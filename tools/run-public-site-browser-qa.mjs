@@ -40,10 +40,33 @@ try {
       if (url === '/catalog/') {
         await page.waitForFunction(() => [...document.querySelectorAll('[data-catalog-verification-card]')].every(card => card.dataset.verificationLoaded === 'true'));
         await page.waitForFunction(() => document.querySelector('[data-reference-catalog]')?.children.length === 4);
+        await page.waitForSelector('[data-guide-loaded="true"]');
+        assert.equal(await page.locator('.city-guide__row').count(), 7);
+        const search = page.locator('[data-guide-search]');
+        await search.fill('уютная');
+        assert.equal(await page.locator('.city-guide__row:visible').count(), 1);
+        await search.fill('18Б');
+        assert.equal(await page.locator('.city-guide__row:visible').count(), 0);
+        assert.equal(await page.locator('#aerodromnaya-18b').isVisible(), true);
+        await search.fill('неттакогодома');
+        assert.equal(await page.locator('.city-guide__row:visible').count(), 0);
+        assert.equal(await page.locator('#aerodromnaya-18b').isVisible(), false);
+        await search.fill('');
+        assert.equal(await page.locator('.city-guide__row:visible').count(), 7);
+        assert.equal(await page.locator('.reference-buyers__details').count(), 4);
+        await page.locator('.reference-buyers__details').first().locator('summary').click();
+        assert((await page.locator('.reference-buyers__details').first().textContent()).includes('Дорожная 50А — 7'));
+        await page.locator('.reference-buyers__details').first().locator('summary').click();
       }
-      if (url.includes('/catalog/') && url !== '/catalog/') await page.waitForSelector('[data-verification-summary-rendered="true"]');
+      if (url.includes('/catalog/') && url !== '/catalog/') {
+        await page.waitForSelector('[data-verification-summary-rendered="true"]');
+        await page.waitForSelector('[data-passport-loaded="true"]');
+        assert.equal(await page.locator('.buyer-section-nav').count(), 1);
+        assert((await page.locator('.buyer-passport__facts > div').count()) >= 4);
+      }
       if (url.includes('18g') || url.includes('sennaya')) await page.waitForSelector('[data-project-market-snapshot]');
       assert.deepEqual(errors, [], url);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `Horizontal overflow: ${url}`);
       await page.screenshot({path:`artifacts/public-site-qa/${profile}-${url.replaceAll('/', '_')}.png`, fullPage:true});
       captures++;
       await page.close();
