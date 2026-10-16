@@ -5,14 +5,15 @@
     "page_type": "home",
     "robots": "index,follow",
     "status": "published",
-    "lastmod": "2026-09-27"
+    "lastmod": "2026-10-16"
   },
   {
     "url": "/catalog/",
     "title": "Каталог новостроек Борисоглебска",
     "page_type": "catalog",
     "robots": "noindex,follow",
-    "status": "ready"
+    "status": "ready",
+    "lastmod": "2026-10-16"
   },
   {
     "url": "/catalog/prostornaya-4a/",
@@ -20,7 +21,8 @@
     "page_type": "project",
     "project_id": "tellermanov-sad",
     "robots": "noindex,follow",
-    "status": "ready"
+    "status": "ready",
+    "lastmod": "2026-10-16"
   },
   {
     "url": "/catalog/aerodromnaya-18g/",
@@ -28,7 +30,8 @@
     "page_type": "project",
     "project_id": "aerodromnaya-18g",
     "robots": "noindex,follow",
-    "status": "ready"
+    "status": "ready",
+    "lastmod": "2026-10-16"
   },
   {
     "url": "/catalog/sennaya-76/",
@@ -36,7 +39,8 @@
     "page_type": "project",
     "project_id": "sennaya-76",
     "robots": "noindex,follow",
-    "status": "ready"
+    "status": "ready",
+    "lastmod": "2026-10-16"
   },
   {
     "url": "/developers/",
