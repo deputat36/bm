@@ -45,14 +45,14 @@
     if (slug === 'prostornaya-4a') {
       add('Застройщик', 'builder_name');
       add('Заявленный срок', 'handover');
+      add('Отделка', 'finish_type');
+      add('Отопление', 'house_boiler', v => v === true ? 'Общедомовая котельная' : '');
+      add('Потолки', 'ceiling_height', v => `${String(v).replace('.', ',')} м`);
       add('Домов в опубликованном проекте', 'buildings_total', v => String(v));
       add('Квартир в комплексе', 'complex_apartments_total', v => String(v));
-      add('Потолки', 'ceiling_height', v => `${String(v).replace('.', ',')} м`);
-      add('Отделка', 'finish_type');
       add('Входит в отделку', 'finish_includes', v => Array.isArray(v) ? v.join(', ') : '');
       add('Двор', 'yard_area_m2', v => `${v} м²`);
       add('Парковочные места в проекте', 'parking_spaces', v => String(v));
-      add('Отопление', 'house_boiler', v => v === true ? 'Общедомовая котельная' : '');
       add('Способы покупки, заявленные застройщиком', 'purchase_methods', v => Array.isArray(v) ? v.join(', ') : '');
       note = 'Сведения — с официального сайта застройщика. Срок строительства и срок передачи ключей сверяются по выбранному дому и договору.';
       checks = ['Номер дома, секцию, этаж и площадь именно вашей квартиры.', 'Ведомость отделки и бюджет оставшихся работ.', 'Актуальную цену, доступность квартиры и срок передачи по договору.'];
@@ -127,7 +127,8 @@
       const heading = el('div'); heading.append(el('span', 'Подробная карточка', 'eyebrow'));
       const h = el('h3'); h.append(link(data.name, `${data.slug}/#passport`)); heading.append(h);
       const facts = el('ul', '', 'list');
-      data.items.filter(item => !['Адрес', 'Входит в отделку', 'Застройщик на площадке'].includes(item.label)).slice(0,3).forEach(item => facts.append(el('li', `${item.label}: ${item.text}`)));
+      const summaryLabels = new Set(['Заявленный срок', 'Отделка', 'Отопление', 'Материал по ЦИАН', 'Этажность по ЦИАН', 'Отделка по ЦИАН', 'Фасад — по интервью', 'Кровля — по интервью', 'Отопление — по интервью']);
+      data.items.filter(item => summaryLabels.has(item.label)).slice(0,3).forEach(item => facts.append(el('li', `${item.label}: ${item.text}`)));
       const note = el('div'); note.append(el('p', data.note));
       const action = link('Смотреть дом →', `${data.slug}/#passport`); note.append(action);
       row.append(heading, facts, note); list.append(row);
