@@ -119,6 +119,144 @@
     });
     passport.before(nav); passport.dataset.passportLoaded = 'true';
   }
+  function comparisonRecord(data) {
+    const find = (...labels) => data.items.find(item => labels.includes(item.label))?.text || 'Уточняется';
+    return {
+      id: data.slug, name: data.name, sources: data.sources,
+      values: [find('Адрес'), find('Застройщик', 'Застройщик на площадке'), find('Заявленный срок', 'Готовность'),
+        find('Этажность', 'Этажность по ЦИАН'), find('Отделка', 'Отделка по ЦИАН'), find('Отопление', 'Отопление — по интервью')],
+      note: data.note
+    };
+  }
+  function referenceComparison(project) {
+    if (project.commercial_role !== 'reference_catalog' || project.verification_status !== 'confirmed' || project.is_public_ready !== true || !project.sources?.length) return null;
+    return comparisonRecord({
+      slug: project.id, name: project.display_name, note: 'Наличие квартир и условия продажи проверяются отдельно.',
+      items: [['Адрес', project.address], ['Застройщик', project.builder_name], ['Готовность', project.building_status], ['Этажность', project.floors]]
+        .filter(([,text]) => typeof text === 'string' && text).map(([label,text]) => ({label,text})),
+      sources: project.sources.filter(source => /^https:\/\//.test(source.url || '')).map(source => ({reference: source.url, title: source.title, last_checked_at: source.checked_at}))
+    });
+  }
+  function mergeSelectionComment(current, previous, block) {
+    let text = String(current || '');
+    if (previous && text.includes(previous)) text = text.replace(previous, '').trim();
+    return text.includes(block) ? text : [text.trim(), block].filter(Boolean).join('\n\n');
+  }
+  function setupComparison(entries) {
+    const form = document.querySelector('form[data-form-id="catalog_priority_selection"]');
+    const section = document.getElementById('lead');
+    const selected = new Map();
+    const buttons = new Map();
+    const rowOpeners = new Map();
+    let previousRequest = '';
+    let lastOpener;
+    const toolbar = el('div', '', 'buyer-compare');
+    const instruction = el('p', 'Выберите два или три дома, чтобы сопоставить их по одним параметрам.');
+    const status = el('p', '', 'buyer-compare__status'); status.setAttribute('role','status'); status.setAttribute('aria-live','polite');
+    const chips = el('div', '', 'buyer-compare__chips');
+    const actions = el('div', '', 'hero__actions');
+    const open = el('button', 'Сравнить выбранные дома', 'button'); open.type = 'button'; open.disabled = true;
+    const clear = el('button', 'Сбросить выбор', 'button button--ghost'); clear.type = 'button'; clear.disabled = true;
+    const panel = el('section', '', 'buyer-compare__panel'); panel.id = 'buyer-comparison'; panel.hidden = true;
+    panel.setAttribute('aria-labelledby','buyer-comparison-title'); panel.tabIndex = -1;
+    const heading = el('h3','Сравнение выбранных домов'); heading.id = 'buyer-comparison-title';
+    const close = el('button','Закрыть сравнение','button button--ghost'); close.type = 'button';
+    const content = el('div');
+    const request = link('Запросить подбор по этим домам', '#lead'); request.className = 'button';
+    request.dataset.trackAction = 'quick_selection'; request.dataset.trackPlacement = 'catalog_compare_request';
+    const help = el('p','Если точного подтверждения пока нет, в таблице указано «Уточняется». Цены, наличие и условия покупки проверяются по конкретной квартире.','city-guide__source');
+    panel.append(heading,content,help,request,close);
+    actions.append(open,clear); toolbar.append(instruction,chips,status,actions);
+    catalog.before(toolbar,panel);
+
+    function requestSelection(names, placement) {
+      const comment = form?.querySelector('textarea[name="comment"]');
+      const select = form?.querySelector('select[name="residential_complex"]');
+      if (!form || !section || !comment || !select) return;
+      let note = section.querySelector('[data-comparison-request-note]');
+      if (!note) { note = el('p','','notice'); note.dataset.comparisonRequestNote = ''; note.setAttribute('role','status'); form.prepend(note); }
+      const block = `Прошу подобрать и сравнить квартиры по следующим домам:\n${names.map(name=>`• ${name}`).join('\n')}`;
+      const nextComment = mergeSelectionComment(comment.value,previousRequest,block);
+      // The existing browser privacy layer caps comments at 1000, below the server's 1500.
+      const commentLimit = comment.maxLength > 0 ? Math.min(comment.maxLength,1000) : 1000;
+      if (nextComment.length > commentLimit) {
+        note.textContent = `Список домов пока не добавлен: вместе с ним комментарий превышает ${commentLimit} символов. Сократите комментарий и нажмите кнопку ещё раз.`;
+        section.scrollIntoView({block:'start'});comment.focus();return;
+      }
+      // A list of homes is a general selection, not a single-object attribution.
+      select.value = 'Общий подбор новостройки'; select.dispatchEvent(new Event('change',{bubbles:true}));
+      comment.value = nextComment; previousRequest = block;
+      comment.dispatchEvent(new Event('input',{bubbles:true}));
+      form.dataset.placement = placement;
+      note.textContent = 'Выбранные дома добавлены в комментарий. Укажите контакты и комнатность; список можно отредактировать.';
+      section.scrollIntoView({block:'start'});
+      const phone = form.querySelector('input[name="phone"]');
+      (phone && !phone.value.trim() ? phone : comment).focus();
+    }
+    function renderTable() {
+      const records = [...selected.values()];
+      const scroll = el('div','','buyer-compare__scroll'); scroll.tabIndex = 0;
+      scroll.setAttribute('role','region'); scroll.setAttribute('aria-label','Таблица сравнения домов; можно прокручивать по горизонтали');
+      const table = el('table'); table.dataset.homes = String(records.length);
+      const caption = el('caption','Параметры и источники');
+      const columns = el('colgroup'); columns.append(el('col'));
+      records.forEach(()=>columns.append(el('col')));
+      const head = el('thead'); const headRow = el('tr'); const first = el('th','Параметр'); first.scope = 'col'; headRow.append(first);
+      records.forEach(record=>{const th=el('th',record.name);th.scope='col';headRow.append(th);});head.append(headRow);
+      const body = el('tbody');
+      ['Адрес','Застройщик','Срок / готовность','Этажность','Отделка','Отопление'].forEach((label,index)=>{
+        const row=el('tr'); const th=el('th',label);th.scope='row';row.append(th);
+        records.forEach(record=>row.append(el('td',record.values[index])));body.append(row);
+      });
+      const sourceRow=el('tr');const sourceHeading=el('th','Источники и даты');sourceHeading.scope='row';sourceRow.append(sourceHeading);
+      records.forEach(record=>{
+        const cell=el('td');cell.append(el('p',record.note));
+        const details=el('details');details.append(el('summary','Показать источники'));
+        record.sources.forEach(source=>{
+          const anchor=link(source.title||'Открыть источник',source.reference);anchor.target='_blank';anchor.rel='noopener noreferrer';
+          details.append(anchor,el('small',`Проверено ${date(source.last_checked_at)}`,'city-guide__source'));
+        });cell.append(details);sourceRow.append(cell);
+      });body.append(sourceRow);table.append(caption,columns,head,body);scroll.append(table);
+      content.replaceChildren(el('p','На небольшом экране таблицу можно прокручивать влево и вправо.','city-guide__source'),scroll);
+    }
+    function sync(message) {
+      chips.replaceChildren();
+      selected.forEach(record=>{
+        const remove=el('button',`${record.name} ×`,'buyer-compare__chip');remove.type='button';remove.setAttribute('aria-label',`Убрать из сравнения: ${record.name}`);
+        remove.addEventListener('click',()=>{
+          selected.delete(record.id);sync();
+          const button=buttons.get(record.id);
+          if (button && !button.closest('[hidden]')) button.focus();
+          else document.querySelector('[data-guide-search]')?.focus();
+        });chips.append(remove);
+      });
+      buttons.forEach((button,id)=>{const active=selected.has(id);button.setAttribute('aria-pressed',String(active));button.textContent=active?'Добавлено в сравнение':'Сравнить';});
+      rowOpeners.forEach((button,id)=>{button.hidden=!selected.has(id)||selected.size<2;button.textContent=`Сравнить ${selected.size} дома`;});
+      status.textContent=message||`Выбрано ${selected.size} из 3 домов.`;open.disabled=selected.size<2;clear.disabled=!selected.size;
+      if (selected.size<2) panel.hidden=true;
+      else if (!panel.hidden) renderTable();
+    }
+    entries.forEach(({node,record})=>{
+      if (!record) return;
+      const button=el('button','Сравнить','button button--ghost buyer-compare__toggle');button.type='button';button.setAttribute('aria-pressed','false');
+      button.setAttribute('aria-label',`Добавить или убрать из сравнения: ${record.name}`);buttons.set(record.id,button);
+      button.addEventListener('click',()=>{
+        if (selected.has(record.id)) selected.delete(record.id);
+        else if (selected.size<3) selected.set(record.id,record);
+        else {sync('Можно сравнить до трёх домов. Сначала уберите один из выбранных.');return;}
+        sync();
+      });node.lastElementChild.append(button);
+      const opener=el('button','Открыть сравнение','button buyer-compare__open');opener.type='button';opener.hidden=true;
+      opener.addEventListener('click',()=>openComparison(opener));rowOpeners.set(record.id,opener);node.lastElementChild.append(opener);
+    });
+    function openComparison(trigger) {if(selected.size<2)return;lastOpener=trigger;renderTable();panel.hidden=false;panel.focus();}
+    open.addEventListener('click',()=>openComparison(open));
+    close.addEventListener('click',()=>{panel.hidden=true;(lastOpener||open).focus();});
+    clear.addEventListener('click',()=>{selected.clear();sync();});
+    request.addEventListener('click',event=>{if(selected.size<2)return;event.preventDefault();requestSelection([...selected.values()].map(record=>record.name),'catalog_compare_request');});
+    document.querySelector('[data-drawing-request]')?.addEventListener('click',event=>{event.preventDefault();requestSelection(['Аэродромная 18Б'],'catalog_18b_drawing');});
+    sync();toolbar.dataset.comparisonReady='true';
+  }
   function renderGuide(priority, references) {
     const list = el('div', '', 'city-guide__rows');
     const rows = [];
@@ -132,7 +270,7 @@
       const note = el('div'); note.append(el('p', data.note));
       const action = link('Смотреть дом →', `${data.slug}/#passport`); note.append(action);
       row.append(heading, facts, note); list.append(row);
-      rows.push({node:row, search:[data.name,...data.items.map(i=>i.text)].join(' ')});
+      rows.push({node:row, record:comparisonRecord(data), search:[data.name,...data.items.map(i=>i.text)].join(' ')});
     });
     (references.projects || []).filter(p => p.commercial_role === 'reference_catalog' && p.verification_status === 'confirmed' && p.is_public_ready === true && p.sources?.length).forEach(p => {
       const row = el('article', '', 'city-guide__row');
@@ -142,12 +280,13 @@
       [p.builder_name,p.building_status,p.floors && `Этажность: ${p.floors}`].filter(Boolean).forEach(text=>facts.append(el('li',text)));
       const action = el('div'); action.append(el('p','Наличие квартир и условия продажи уточняются отдельно.'),link('Особенности и источники →',`#reference-${p.id}`));
       row.append(heading,facts,action); list.append(row);
-      rows.push({node:row, search:[p.display_name,p.address,p.builder_name].join(' ')});
+      rows.push({node:row, record:referenceComparison(p), search:[p.display_name,p.address,p.builder_name].join(' ')});
     });
     if (!rows.length) return;
     const drawing = document.getElementById('aerodromnaya-18b');
     if (drawing) rows.push({node:drawing, search:'Аэродромная 18Б Патриот этап 2 проектная схема колясочная котельная'});
     catalog.replaceChildren(list);
+    setupComparison(rows);
     const search = document.querySelector('[data-guide-search]');
     const count = document.querySelector('[data-guide-count]');
     const normalize = value => String(value).toLocaleLowerCase('ru').replace(/ё/g,'е').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
