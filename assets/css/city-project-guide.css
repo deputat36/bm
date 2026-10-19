@@ -66,8 +66,8 @@
 }
 @media (max-width:560px) {
   .buyer-compare,.buyer-compare__panel {padding:16px;}
-  .buyer-compare__panel table {min-width:448px;font-size:14px;}
-  .buyer-compare__panel table[data-homes="3"] {min-width:616px;}
+  .buyer-compare__panel table {min-width:424px;font-size:14px;}
+  .buyer-compare__panel table[data-homes="3"] {min-width:580px;}
   .buyer-compare__panel col:first-child {width:112px;}
   .buyer-compare__panel th,.buyer-compare__panel td {padding:10px;}
   .city-guide__toolbar {align-items:stretch; flex-direction:column; gap:8px;}
@@ -78,4 +78,7 @@
   .buyer-passport__facts > div {grid-template-columns:1fr; gap:6px;}
   .buyer-section-nav {padding:0 18px;}
   .city-guide__drawing {padding:16px 18px;}
+}
+@media (max-width:360px) {
+  .buyer-compare__panel {padding:12px;}
 }
