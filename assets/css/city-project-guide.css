@@ -5,6 +5,27 @@
 .city-guide__toolbar p {color:#3f5665; font-size:14px; white-space:nowrap;}
 .city-guide__row {display:grid; grid-template-columns:1.05fr 1.15fr 1fr; gap:24px; padding:26px; border:1px solid #dce4e3; border-radius:18px; margin:12px 0; background:#fff;}
 .city-guide__row[hidden], .city-guide__toolbar[hidden] {display:none;}
+.buyer-compare {border:1px solid #dce4e3;border-radius:18px;padding:20px 24px;background:#f4f7f5;margin:20px 0;}
+.buyer-compare p {margin:0 0 12px;}
+.buyer-compare__status {font-size:14px;color:#3f5665;}
+.buyer-compare__chips {display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;}
+.buyer-compare__chip {border:1px solid #b8c5c8;background:#fff;color:#102a43;border-radius:12px;padding:10px 14px;font:inherit;text-align:left;cursor:pointer;max-width:100%;overflow-wrap:anywhere;}
+.buyer-compare__toggle {margin-top:14px;}
+.buyer-compare__open {margin:10px 0 0;}
+.buyer-compare__open[hidden] {display:none;}
+.buyer-compare__toggle[aria-pressed="true"] {border-color:#d94c34;background:#fce8e3;color:#102a43;}
+.buyer-compare__panel {min-width:0;border:1px solid #b8c5c8;border-radius:18px;padding:24px;margin:20px 0;background:#fff;scroll-margin-top:110px;}
+.buyer-compare__panel[hidden] {display:none;}
+.buyer-compare__panel > .button {margin:14px 12px 0 0;}
+.buyer-compare__scroll {width:100%;overflow:auto;margin:16px 0;}
+.buyer-compare__panel table {width:100%;min-width:700px;border-collapse:collapse;font-size:15px;table-layout:fixed;}
+.buyer-compare__panel caption {text-align:left;font-weight:700;padding:10px 0;}
+.buyer-compare__panel th,.buyer-compare__panel td {text-align:left;vertical-align:top;border:1px solid #dce4e3;padding:14px;overflow-wrap:anywhere;}
+.buyer-compare__panel thead {background:#eef3f2;}
+.buyer-compare__panel tbody th {background:#f8f8f4;width:140px;}
+.buyer-compare__panel details a {display:block;margin:12px 0 4px;}
+.buyer-compare__panel summary {cursor:pointer;font-weight:700;}
+.city-guide button:focus-visible,.buyer-compare__panel:focus-visible,.buyer-compare__scroll:focus-visible {outline:3px solid #d94c34;outline-offset:4px;}
 .city-guide__row h3 {font-size:21px; line-height:1.35; margin:8px 0 10px;}
 .city-guide__row h3 a {color:#102a43; text-decoration:none;}
 .city-guide__row h3 a:hover {text-decoration:underline;}
@@ -41,6 +62,7 @@
   .buyer-passport__layout {grid-template-columns:1fr;}
 }
 @media (max-width:560px) {
+  .buyer-compare,.buyer-compare__panel {padding:16px;}
   .city-guide__toolbar {align-items:stretch; flex-direction:column; gap:8px;}
   .city-guide__toolbar p {margin:0;}
   .city-guide__row {grid-template-columns:1fr; padding:20px; gap:8px;}
