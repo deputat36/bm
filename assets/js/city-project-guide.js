@@ -173,14 +173,20 @@
       const comment = form?.querySelector('textarea[name="comment"]');
       const select = form?.querySelector('select[name="residential_complex"]');
       if (!form || !section || !comment || !select) return;
-      // A list of homes is a general selection, not a single-object attribution.
-      select.value = 'Общий подбор новостройки'; select.dispatchEvent(new Event('change',{bubbles:true}));
-      const block = `Прошу подобрать и сравнить квартиры по следующим домам:\n${names.map(name=>`• ${name}`).join('\n')}`;
-      comment.value = mergeSelectionComment(comment.value,previousRequest,block); previousRequest = block;
-      comment.dispatchEvent(new Event('input',{bubbles:true}));
-      form.dataset.placement = placement;
       let note = section.querySelector('[data-comparison-request-note]');
       if (!note) { note = el('p','','notice'); note.dataset.comparisonRequestNote = ''; note.setAttribute('role','status'); form.prepend(note); }
+      const block = `Прошу подобрать и сравнить квартиры по следующим домам:\n${names.map(name=>`• ${name}`).join('\n')}`;
+      const nextComment = mergeSelectionComment(comment.value,previousRequest,block);
+      // Match the existing server's comment limit, preserving buyer text and attribution on failure.
+      if (nextComment.length > 1500) {
+        note.textContent = 'Список домов пока не добавлен: вместе с ним комментарий превышает 1500 символов. Сократите комментарий и нажмите кнопку ещё раз.';
+        section.scrollIntoView({block:'start'});comment.focus();return;
+      }
+      // A list of homes is a general selection, not a single-object attribution.
+      select.value = 'Общий подбор новостройки'; select.dispatchEvent(new Event('change',{bubbles:true}));
+      comment.value = nextComment; previousRequest = block;
+      comment.dispatchEvent(new Event('input',{bubbles:true}));
+      form.dataset.placement = placement;
       note.textContent = 'Выбранные дома добавлены в комментарий. Укажите контакты и комнатность; список можно отредактировать.';
       section.scrollIntoView({block:'start'});
       const phone = form.querySelector('input[name="phone"]');

@@ -79,7 +79,7 @@ try {
         assert.equal(await page.locator('.buyer-compare__chip').count(),3,'Comparison exceeded three homes');
         assert.equal(await toggles.nth(1).getAttribute('aria-pressed'),'false');
         await toggles.nth(2).click();
-        await page.getByRole('button',{name:'Сравнить выбранные дома',exact:true}).click();
+        await page.getByRole('button',{name:/^Сравнить выбранные дома/}).click();
         assert.equal(await page.locator('#buyer-comparison').isVisible(),true);
         assert.equal(await page.locator('#buyer-comparison th[scope="col"]').count(),3);
         assert.equal(await page.locator('#buyer-comparison').getAttribute('id'),await page.evaluate(()=>document.activeElement.id));
@@ -100,6 +100,12 @@ try {
         await page.locator('[data-reference-catalog] article.card').first().locator('a[href="#lead"]').click();
         const detailed = page.locator('form[data-form-id="catalog_priority_selection"]');
         const comment = detailed.locator('textarea[name="comment"]');
+        const referenceValue = await detailed.locator('select[name="residential_complex"]').inputValue();
+        await comment.fill('а'.repeat(1450));
+        await page.locator('#buyer-comparison a[href="#lead"]').click();
+        assert.equal((await comment.inputValue()).length,1450,'Long buyer text was truncated or overwritten');
+        assert.equal(await detailed.locator('select[name="residential_complex"]').inputValue(),referenceValue,'Rejected transfer changed object attribution');
+        assert((await detailed.locator('[data-comparison-request-note]').textContent()).includes('1500'));
         await comment.fill('Комментарий покупателя');
         await detailed.locator('select[name="interest"]').selectOption('2-комнатная квартира');
         await detailed.locator('input[name="budget"]').fill('До 5 млн');
