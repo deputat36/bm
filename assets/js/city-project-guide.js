@@ -197,7 +197,10 @@
       const records = [...selected.values()];
       const scroll = el('div','','buyer-compare__scroll'); scroll.tabIndex = 0;
       scroll.setAttribute('role','region'); scroll.setAttribute('aria-label','Таблица сравнения домов; можно прокручивать по горизонтали');
-      const table = el('table'); const caption = el('caption','Параметры и источники по выбранным домам');
+      const table = el('table'); table.dataset.homes = String(records.length);
+      const caption = el('caption','Параметры и источники');
+      const columns = el('colgroup'); columns.append(el('col'));
+      records.forEach(()=>columns.append(el('col')));
       const head = el('thead'); const headRow = el('tr'); const first = el('th','Параметр'); first.scope = 'col'; headRow.append(first);
       records.forEach(record=>{const th=el('th',record.name);th.scope='col';headRow.append(th);});head.append(headRow);
       const body = el('tbody');
@@ -213,7 +216,7 @@
           const anchor=link(source.title||'Открыть источник',source.reference);anchor.target='_blank';anchor.rel='noopener noreferrer';
           details.append(anchor,el('small',`Проверено ${date(source.last_checked_at)}`,'city-guide__source'));
         });cell.append(details);sourceRow.append(cell);
-      });body.append(sourceRow);table.append(caption,head,body);scroll.append(table);
+      });body.append(sourceRow);table.append(caption,columns,head,body);scroll.append(table);
       content.replaceChildren(el('p','На небольшом экране таблицу можно прокручивать влево и вправо.','city-guide__source'),scroll);
     }
     function sync(message) {

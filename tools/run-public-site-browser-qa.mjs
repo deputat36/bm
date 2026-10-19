@@ -34,6 +34,7 @@ try {
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(origin + url + '?lead_test=dry-run&analytics_test=debug&test_ack=1');
+      await page.addStyleTag({content:'[data-analytics-debug-panel]{display:none!important}'});
       await page.waitForFunction(() => window.__NEWBUILD_BUYER_PROJECT_CONTENT__ === true);
       assert.equal(await page.locator('[data-lead-form]').count(), 2, url);
       assert.equal(await page.locator('[data-lead-fieldset]:disabled').count(), 0, url);
@@ -92,6 +93,13 @@ try {
           await page.setViewportSize({width:320,height:740});
           assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false,'320px comparison caused page overflow');
           assert.equal(await page.locator('.buyer-compare__scroll').evaluate(node=>node.scrollWidth>node.clientWidth),true,'Narrow comparison lost its scroll region');
+          const narrowTable=await page.locator('.buyer-compare__scroll').evaluate(node=>{
+            const header=node.querySelector('th').getBoundingClientRect();
+            const value=node.querySelector('td').getBoundingClientRect();
+            return {labelWidth:header.width,valueRight:value.right,viewportRight:node.getBoundingClientRect().right};
+          });
+          assert(narrowTable.labelWidth<=113,'Narrow parameter column obscures home values');
+          assert(narrowTable.valueRight<=narrowTable.viewportRight+1,'320px cannot show one complete home value beside its label');
           await page.locator('#buyer-comparison').screenshot({path:`artifacts/public-site-qa/comparison-320px.png`});
           captures++;
           await page.setViewportSize(originalViewport);
