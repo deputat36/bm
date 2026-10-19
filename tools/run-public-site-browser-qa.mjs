@@ -101,11 +101,11 @@ try {
         const detailed = page.locator('form[data-form-id="catalog_priority_selection"]');
         const comment = detailed.locator('textarea[name="comment"]');
         const referenceValue = await detailed.locator('select[name="residential_complex"]').inputValue();
-        await comment.fill('а'.repeat(1450));
+        await comment.fill('а'.repeat(950));
         await page.locator('#buyer-comparison a[href="#lead"]').click();
-        assert.equal((await comment.inputValue()).length,1450,'Long buyer text was truncated or overwritten');
+        assert.equal((await comment.inputValue()).length,950,'Long buyer text was truncated or overwritten');
         assert.equal(await detailed.locator('select[name="residential_complex"]').inputValue(),referenceValue,'Rejected transfer changed object attribution');
-        assert((await detailed.locator('[data-comparison-request-note]').textContent()).includes('1500'));
+        assert((await detailed.locator('[data-comparison-request-note]').textContent()).includes('1000'));
         await comment.fill('Комментарий покупателя');
         await detailed.locator('select[name="interest"]').selectOption('2-комнатная квартира');
         await detailed.locator('input[name="budget"]').fill('До 5 млн');
